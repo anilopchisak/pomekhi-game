@@ -6,4 +6,4 @@ For each mechanism describe its purpose, owning modules/interfaces, source of tr
 
 Update explanations in the same change when the implemented design changes. For refactor/style/test-only work with no design effect report the reason. Structural checks validate paths, not truth. Avoid storing one-off investigation snapshots alongside current design.
 
-Current mechanisms: [runtime lifecycle](runtime-foundation.md) , [lobby membership, authorization and recovery](lobby-sessions.md), and [private cards and reading](dealing.md).
+Current mechanisms: [runtime lifecycle](runtime-foundation.md) , [lobby membership, authorization and recovery](lobby-sessions.md), [private cards and reading](dealing.md), and [timed rounds](rounds.md).

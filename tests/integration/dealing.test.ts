@@ -5,6 +5,7 @@ import { readdir, readFile } from 'node:fs/promises';
 import { resolve } from 'node:path';
 import { createAppServer } from '../../src/server/app.js';
 import { CARD_BANK } from '../../src/server/cards.js';
+import { controlledClock } from '../helpers/game-clock.js';
 import type { ClientToServerEvents, LobbyCommand, LobbyInputs, LobbyReply, LobbyView, RoomSnapshot, ServerToClientEvents } from '../../src/shared/protocol.js';
 
 type Client = Socket<ServerToClientEvents, ClientToServerEvents>;
@@ -12,7 +13,7 @@ let app: ReturnType<typeof createAppServer>, origin: string;
 const sockets: Client[] = [];
 let requestSequence = 0;
 beforeEach(async () => {
-  app = createAppServer({ organizerCode: 'TESTHOSTCODE', clientDirectory: resolve('dist/client') });
+  app = createAppServer({ organizerCode: 'TESTHOSTCODE', clientDirectory: resolve('dist/client'), clock: controlledClock().clock });
   await new Promise<void>(resolve => app.server.listen(0, '127.0.0.1', resolve));
   const address = app.server.address(); if (!address || typeof address === 'string') throw new Error('Missing address');
   origin = `http://127.0.0.1:${address.port}`; requestSequence = 0;
@@ -120,7 +121,7 @@ it('joins late once, preserves others on departure and cancels without removing 
   for (let i = 1; i < 4; i++) expect((await player(phones[i], sessions[i])).assignment).toEqual(before[i].assignment);
   const current = await player(late, session);
   const cancelled = value(await send(host, 'deal:cancel', base(current.room)));
-  expect(cancelled).toMatchObject({ room: { players: expect.any(Array), dealing: { phase: 'lobby', assignments: [] } } });
+  expect(cancelled).toMatchObject({ room: { players: expect.any(Array), game: { phase: 'lobby' }, dealing: { assignments: [] } } });
   expect((await player(late, session)).assignment).toBeNull();
   expect(await send(phones[0], 'player:resume', sessions[0])).toEqual({ ok: false, error: 'SESSION_EXPIRED' });
 });

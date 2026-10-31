@@ -1,18 +1,21 @@
 import { useCallback, useEffect, useRef, useState } from 'react';
 import QRCode from 'qrcode';
 import { dealCommand, describeError, useLobbyConnection } from '../../../shared/api/index.js';
-import { LobbyShell } from '../../../shared/ui/index.js';
+import { LobbyShell, RoundStatus } from '../../../shared/ui/index.js';
 import { invitationUrl } from '../invitation.js';
 import type { LobbyInputs, LobbyCommand } from '../../../../shared/protocol.js';
 import { DealControls } from './DealControls.js';
+import { GameControls } from './GameControls.js';
+import { SoundControls } from './SoundControls.js';
 
 const storageKey = 'pomekhi.organizer';
 function storedCode() { try { return sessionStorage.getItem(storageKey) ?? ''; } catch { return ''; } }
 
 export function HostPage() {
-  const { connection, generation, view, request } = useLobbyConnection();
+  const { connection, generation, view, request, clockOffset, cue } = useLobbyConnection();
   const credential = useRef(storedCode());
   const operation = useRef(0);
+  const prepareSound = useRef<(() => Promise<void>) | null>(null);
   const [code, setCode] = useState(credential.current);
   const [busy, setBusy] = useState(false);
   const [error, setError] = useState('');
@@ -55,6 +58,8 @@ export function HostPage() {
   async function run<Command extends LobbyCommand>(command: Command, input: LobbyInputs[Command]) {
     const attempt = ++operation.current;
     setBusy(true); setError('');
+    if (command.startsWith('round:') || command === 'party:finish') await prepareSound.current?.();
+    if (attempt !== operation.current) return;
     const result = await request(command, input);
     if (attempt !== operation.current) return;
     setBusy(false);
@@ -64,7 +69,7 @@ export function HostPage() {
     } else setPending(null);
   }
 
-  return <LobbyShell title="Сбор у экрана" connection={connection} error={error}>
+  return <LobbyShell title="Пульт дома" connection={connection} error={error}>
     {pending && <button disabled={busy || connection !== 'online'} onClick={() => void run(pending.command, pending.input)}>Повторить действие</button>}
     {view?.kind !== 'organizer' ? <form onSubmit={event => { event.preventDefault(); void authorize(code.trim().toUpperCase()); }}>
       <h3>Вход организатора</h3>
@@ -75,6 +80,7 @@ export function HostPage() {
       <p>Соберите всех у экрана. Создайте комнату и пригласите участников с телефонов.</p>
       <button disabled={busy || connection !== 'online'} onClick={() => void run('room:create', {})}>Создать комнату</button>
     </section> : <>
+      <RoundStatus game={room.game} clockOffset={clockOffset} connection={connection} />
       <section>
         <h3>Комната <code>{room.code}</code></h3>
         <form onSubmit={event => {
@@ -96,17 +102,24 @@ export function HostPage() {
         </>}
       </section>
       <DealControls room={room} disabled={busy || connection !== 'online'} run={run} />
+      <GameControls key={room.id} room={room} disabled={busy || connection !== 'online'} run={run} />
+      <SoundControls enabled={view.audioEnabled} disabled={busy || connection !== 'online'} cue={cue} prepareRef={prepareSound} gameVersion={room.game.version} clockOffset={clockOffset} claim={async enabled => {
+        const result = await request('organizer:audio', { enabled });
+        if (!result.ok) setError(describeError(result.error));
+        return result.ok;
+      }} />
       <section>
         <h3>Участники: {room.players.length} / {room.capacity}</h3>
         <p>Организатор тоже входит с телефона. Этот экран не занимает место.</p>
         {room.players.length ? <ul>{room.players.map(player => <li key={player.id}>
           <span>{player.name}</span><small>{player.online ? 'На связи' : 'Нет связи'}</small>
           {room.dealing.assignments.filter(item => item.playerId === player.id).map(item => <span key={item.assignmentId}>
-            <small>{item.replacementRequested ? 'Просит замену' : item.ready ? 'Прочитал' : 'Читает'}</small>
-            <button disabled={busy || connection !== 'online'} onClick={() => void run('deal:replace', {
+            <small>{room.game.phase === 'reading' ? item.replacementRequested ? 'Просит замену' : item.ready ? 'Прочитал' : 'Читает' : room.game.activePlayerIds.includes(player.id) ? 'В составе раунда' : 'Ждёт раздачи'}</small>
+            {room.game.phase === 'reading' && <button disabled={busy || connection !== 'online'} onClick={() => void run('deal:replace', {
               ...dealCommand(room), playerId: player.id, assignmentId: item.assignmentId,
-            })} aria-label={`Заменить карточку ${player.name}`}>Заменить карточку</button>
+            })} aria-label={`Заменить карточку ${player.name}`}>Заменить карточку</button>}
           </span>)}
+          {!room.dealing.assignments.some(item => item.playerId === player.id) && <small>Ждёт следующей раздачи</small>}
           <button data-danger disabled={busy || connection !== 'online'} onClick={() => {
             if (window.confirm(`Удалить участника «${player.name}»? Его прежний вход перестанет действовать.`)) void run('player:remove', { roomId: room.id, playerId: player.id });
           }} aria-label={`Удалить участника ${player.name}`}>Удалить</button>

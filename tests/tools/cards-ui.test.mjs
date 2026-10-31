@@ -6,24 +6,31 @@ import { PlayerPage } from '../../src/client/pages/player/index.js';
 import { HostPage } from '../../src/client/pages/host/index.js';
 import { savePlayerSession } from '../../src/client/pages/player/session.js';
 import { createLobby } from '../../src/server/lobby.js';
+import { controlledClock } from '../helpers/game-clock.js';
 
 const { io } = vi.hoisted(() => ({ io: vi.fn() }));
 vi.mock('socket.io-client', () => ({ io }));
-let root, container, lobby, room, phoneId, saved, sequence;
+let root, container, lobby, room, phoneId, saved, sequence, clock;
 const clients = new Map();
 const value = reply => { if (!reply.ok) throw new Error(reply.error); return reply.view; };
 function base() {
   const room = lobby.viewFor('host').room;
   return { roomId: room.id, dealVersion: room.dealing.version, dealId: room.dealing.dealId, requestId: `test-request-${++sequence}` };
 }
-function publish() { for (const [id, socket] of clients) if (socket.connected) socket.listeners.get('lobby:state')?.(lobby.viewFor(id)); }
+function publish(cue) {
+  for (const [id, socket] of clients) if (socket.connected) {
+    const view = lobby.viewFor(id);
+    if (view) socket.listeners.get('lobby:state')?.(view);
+    if (cue && view?.kind === 'organizer' && view.audioEnabled) socket.listeners.get('game:cue')?.(cue);
+  }
+}
 function socket(id, dropCommand) {
   let dropped = false;
   const client = {
     listeners: new Map(), connected: false,
     on(event, listener) { this.listeners.set(event, listener); return this; },
     connect() { this.connected = true; this.listeners.get('connect')(); },
-    disconnect() { this.connected = false; lobby.disconnect(id); },
+    disconnect() { this.connected = false; lobby.disconnect(id); this.listeners.get('disconnect')?.(); },
     removeAllListeners() { this.listeners.clear(); },
     timeout() { return this; }, get volatile() { return this; },
     emit(command, input, acknowledge) {
@@ -43,10 +50,13 @@ function button(name) {
 async function click(name) { await act(async () => button(name).click()); }
 beforeEach(() => {
   vi.stubGlobal('IS_REACT_ACT_ENVIRONMENT', true);
+  globalThis.window.confirm = vi.fn().mockReturnValue(true);
   globalThis.localStorage.clear(); globalThis.sessionStorage.clear();
   globalThis.history.replaceState(null, '', '/?room=ABCDEF');
   sequence = 0;
-  lobby = createLobby({ organizerCode: 'HOST', generateRoomCode: () => 'ABCDEF' });
+  clock = controlledClock();
+  lobby = createLobby({ organizerCode: 'HOST', generateRoomCode: () => 'ABCDEF', clock: clock.clock });
+  lobby.subscribe(publish);
   value(lobby.execute('host', 'organizer:authorize', { code: 'HOST' }));
   room = value(lobby.execute('host', 'room:create', {})).room;
   for (let i = 0; i < 7; i++) {
@@ -60,8 +70,8 @@ beforeEach(() => {
   container = globalThis.document.createElement('div'); globalThis.document.body.append(container); root = createRoot(container);
 });
 afterEach(async () => {
-  await act(async () => root.unmount()); container.remove(); clients.clear();
-  globalThis.localStorage.clear(); globalThis.sessionStorage.clear(); vi.unstubAllGlobals(); vi.clearAllMocks();
+  await act(async () => root.unmount()); lobby.dispose(); container.remove(); clients.clear();
+  globalThis.localStorage.clear(); globalThis.sessionStorage.clear(); vi.unstubAllGlobals(); vi.restoreAllMocks(); vi.clearAllMocks();
 });
 
 it('conceals restored cards, preserves readiness while hidden and remounts closed', async () => {
@@ -140,4 +150,127 @@ it('organizer controls do not render private content and retries one replacement
   await click('Повторить действие'); expect(lobby.viewFor('player-check').assignment).toEqual(replaced);
   expect(container.textContent).not.toContain(replaced.card.title);
   expect(container.querySelector('input[type="number"]').value).toBe('3');
+});
+
+function gameBase() {
+  const room = lobby.viewFor('host').room;
+  return { roomId: room.id, gameVersion: room.game.version, roundId: room.game.roundId, requestId: `round-request-${++sequence}` };
+}
+it('confirms a warned start, retries a lost acknowledgement once and restores paused controls', async () => {
+  globalThis.sessionStorage.setItem('pomekhi.organizer', 'HOST');
+  io.mockReturnValue(socket('panel', 'round:start'));
+  const confirm = globalThis.window.confirm.mockReturnValue(false);
+  await act(async () => root.render(createElement(HostPage)));
+  await click('Начать раунд'); expect(confirm).toHaveBeenCalled(); expect(lobby.viewFor('host').room.game.phase).toBe('reading');
+  confirm.mockReturnValue(true); await click('Начать раунд');
+  const id = lobby.viewFor('host').room.game.roundId;
+  expect(container.textContent).toContain('Расстановка'); expect(button('Повторить действие')).toBeDefined();
+  await click('Повторить действие'); expect(lobby.viewFor('host').room.game.roundId).toBe(id);
+  expect(container.querySelector('[aria-label="Заменить карточку Player 0"]')).toBeNull();
+  await click('Пауза'); expect(container.textContent).toContain('Прекратите действия');
+  expect(clock.pending()).toBe(0); await click('Продолжить'); expect(lobby.viewFor('host').room.game.paused).toBe(false);
+});
+
+it('restores a private card during a round, freezes pause time and marks offline timing unconfirmed', async () => {
+  vi.spyOn(globalThis.performance, 'now').mockImplementation(clock.clock.now);
+  const client = socket('phone'); io.mockReturnValue(client); await act(async () => root.render(createElement(PlayerPage)));
+  const original = lobby.viewFor('phone').assignment;
+  await act(async () => value(lobby.execute('host', 'round:start', { ...gameBase(), confirmWarnings: true })));
+  expect(container.querySelector('[role="timer"]').textContent).toBe('00:45');
+  expect([...container.querySelectorAll('button')].some(button => button.textContent === 'Я прочитал карточку')).toBe(false);
+  await act(async () => { clock.advance(2500); value(lobby.execute('host', 'round:pause', gameBase())); });
+  expect(container.querySelector('[role="timer"]').textContent).toBe('00:43');
+  await act(async () => root.unmount()); root = createRoot(container); io.mockReturnValue(socket('refreshed'));
+  await act(async () => root.render(createElement(PlayerPage)));
+  expect(container.textContent).toContain('Пауза'); expect(container.querySelector('h4')).toBeNull();
+  await click('Открыть карточку'); expect(container.textContent).toContain(original.card.title);
+  expect(lobby.viewFor('refreshed').assignment.id).toBe(original.id);
+  await act(async () => clients.get('refreshed').disconnect());
+  expect(container.textContent).toContain('Фаза и таймер не подтверждены');
+});
+
+it('shows a late player waiting without a card until the next manual deal', async () => {
+  value(lobby.execute('host', 'round:start', { ...gameBase(), confirmWarnings: true }));
+  const session = { roomCode: room.code, name: 'Late', resumeKey: 'f'.repeat(64), pending: true };
+  savePlayerSession(session); io.mockReturnValue(socket('late'));
+  await act(async () => root.render(createElement(PlayerPage)));
+  expect(container.textContent).toContain('Вы участвуете со следующего раунда');
+  expect(container.querySelector('[aria-label="Личная карточка"]')).toBeNull();
+  await act(async () => {
+    value(lobby.execute('host', 'round:abort', gameBase()));
+    value(lobby.execute('host', 'deal:create', { ...base(), possessedCount: 3 }));
+  });
+  expect(button('Открыть карточку')).toBeDefined(); expect(container.querySelector('h4')).toBeNull();
+});
+
+it('unlocks audio explicitly, plays live cues once and does not replay when volume or mute changes', async () => {
+  const tones = [];
+  const audios = [];
+  class Audio {
+    state = 'suspended'; currentTime = 0; destination = {};
+    constructor() { audios.push(this); }
+    resume() { this.state = 'running'; return Promise.resolve(); }
+    close() { return Promise.resolve(); }
+    createOscillator() {
+      const tone = { frequency: { setValueAtTime() {}, exponentialRampToValueAtTime() {} }, connect() {}, disconnect() {}, start: vi.fn(), stop() {} };
+      tones.push(tone); return tone;
+    }
+    createGain() { return { gain: { setValueAtTime() {}, linearRampToValueAtTime() {} }, connect() {}, disconnect() {} }; }
+  }
+  vi.stubGlobal('AudioContext', Audio);
+  globalThis.sessionStorage.setItem('pomekhi.organizer', 'HOST'); io.mockReturnValue(socket('panel'));
+  globalThis.window.confirm.mockImplementation(() => { if (audios.length) audios.at(-1).state = 'suspended'; return true; });
+  await act(async () => root.render(createElement(HostPage)));
+  expect(tones).toHaveLength(0); await click('Включить звук здесь'); expect(tones).toHaveLength(1);
+  await click('Начать раунд'); expect(tones).toHaveLength(2);
+  const mute = [...container.querySelectorAll('label')].find(label => label.textContent.includes('Без звука')).querySelector('input');
+  await act(async () => mute.click()); expect(tones).toHaveLength(2);
+  await click('Пауза'); expect(tones).toHaveLength(2);
+  await act(async () => mute.click()); expect(tones).toHaveLength(2);
+  await click('Продолжить'); expect(tones).toHaveLength(3);
+  await click('Обновить состояние'); expect(tones).toHaveLength(3);
+});
+
+it.each([
+  ['mute', 0], ['zero volume', 0], ['lower volume', 1],
+])('applies current %s when a live cue finishes resuming audio', async (setting, expectedTones) => {
+  const tones = [], ramps = [], audios = [];
+  let completeResume, holdResume = false;
+  class Audio {
+    state = 'suspended'; currentTime = 0; destination = {};
+    constructor() { audios.push(this); }
+    resume() {
+      if (holdResume) return new Promise(resolve => { completeResume = () => { this.state = 'running'; resolve(); }; });
+      this.state = 'running'; return Promise.resolve();
+    }
+    close() { return Promise.resolve(); }
+    createOscillator() {
+      return { frequency: { setValueAtTime() {}, exponentialRampToValueAtTime() {} }, connect() {}, disconnect() {}, start() { tones.push(true); }, stop() {} };
+    }
+    createGain() { return { gain: { setValueAtTime() {}, linearRampToValueAtTime(value) { ramps.push(value); } }, connect() {}, disconnect() {} }; }
+  }
+  vi.stubGlobal('AudioContext', Audio);
+  globalThis.sessionStorage.setItem('pomekhi.organizer', 'HOST'); io.mockReturnValue(socket('panel'));
+  await act(async () => root.render(createElement(HostPage)));
+  await click('Включить звук здесь'); expect(tones).toHaveLength(1);
+  tones.length = 0; ramps.length = 0;
+  audios[0].state = 'suspended'; holdResume = true;
+  await act(async () => value(lobby.execute('host', 'round:start', { ...gameBase(), confirmWarnings: true })));
+  expect(completeResume).toBeTypeOf('function');
+  const mute = [...container.querySelectorAll('label')].find(label => label.textContent.includes('Без звука')).querySelector('input');
+  const volume = container.querySelector('input[type="range"]');
+  await act(async () => {
+    if (setting === 'mute') mute.click();
+    else {
+      Object.getOwnPropertyDescriptor(globalThis.HTMLInputElement.prototype, 'value').set.call(volume, setting === 'zero volume' ? '0' : '0.1');
+      volume.dispatchEvent(new globalThis.Event('input', { bubbles: true }));
+    }
+  });
+  if (setting === 'mute') expect(mute.checked).toBe(true);
+  else expect(volume.value).toBe(setting === 'zero volume' ? '0' : '0.1');
+  await act(async () => completeResume());
+  expect(tones).toHaveLength(expectedTones);
+  if (expectedTones) expect(ramps[0]).toBeCloseTo(.1 * .35);
+  await act(async () => mute.click());
+  expect(tones).toHaveLength(expectedTones);
 });

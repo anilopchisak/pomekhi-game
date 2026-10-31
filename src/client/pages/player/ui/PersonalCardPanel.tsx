@@ -1,8 +1,8 @@
 import { useState } from 'react';
 import type { Assignment } from '../../../../shared/protocol.js';
 
-export function PersonalCardPanel({ assignment, disabled, act }: {
-  assignment: Assignment; disabled: boolean;
+export function PersonalCardPanel({ assignment, disabled, readOnly = false, act }: {
+  assignment: Assignment; disabled: boolean; readOnly?: boolean;
   act: (action: 'card:ready' | 'card:request', flag: boolean) => Promise<void>;
 }) {
   const [revealed, setRevealed] = useState<string | null>(null);
@@ -22,11 +22,11 @@ export function PersonalCardPanel({ assignment, disabled, act }: {
         <p>Ваша основная цель — находить одержимых и помогать им освободиться.</p>
         <p><strong>Дополнительная миссия:</strong> {card.mission}</p>
       </>}
-      <p>Это простая карточка без заражения. Действовать пока не нужно: сейчас все читают.</p>
+      <p>Это простая карточка без заражения. {readOnly ? 'Следуйте текущей фазе на экране.' : 'Действовать пока не нужно: сейчас все читают.'}</p>
     </div>}
-    <p role="status">{assignment.ready ? 'Вы отметили, что прочитали карточку.' : 'Когда прочитаете карточку, отметьте готовность.'}</p>
+    {!readOnly && <><p role="status">{assignment.ready ? 'Вы отметили, что прочитали карточку.' : 'Когда прочитаете карточку, отметьте готовность.'}</p>
     <button disabled={disabled || assignment.replacementRequested} onClick={() => void act('card:ready', !assignment.ready)}>{assignment.ready ? 'Я пока не готов' : 'Я прочитал карточку'}</button>
     <button disabled={disabled} onClick={() => void act('card:request', !assignment.replacementRequested)}>{assignment.replacementRequested ? 'Отменить запрос замены' : 'Попросить замену карточки'}</button>
-    {assignment.replacementRequested && <p>Запрос передан организатору. Дождитесь замены или отмените запрос. Карточку меняют с ноутбука.</p>}
+    {assignment.replacementRequested && <p>Запрос передан организатору. Дождитесь замены или отмените запрос. Карточку меняют с ноутбука.</p>}</>}
   </section>;
 }

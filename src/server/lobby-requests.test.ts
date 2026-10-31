@@ -1,9 +1,11 @@
 import { expect, it } from 'vitest';
 import { createLobby } from './lobby.js';
+import { controlledClock } from '../../tests/helpers/game-clock.js';
 
 function readingRoom() {
   let id = 0, code = 0;
   const lobby = createLobby({
+    clock: controlledClock().clock,
     organizerCode: 'HOST', generateId: () => `id-${++id}`,
     generateRoomCode: () => String.fromCharCode(65 + code++).repeat(6), randomIndex: () => 0,
   });

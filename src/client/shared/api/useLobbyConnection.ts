@@ -1,7 +1,7 @@
 import { useCallback, useEffect, useRef, useState } from 'react';
 import { io } from 'socket.io-client';
 import type { Socket } from 'socket.io-client';
-import type { ClientToServerEvents, LobbyCommand, LobbyError, LobbyInputs, LobbyReply, LobbyView, ServerToClientEvents } from '../../../shared/protocol.js';
+import type { ClientToServerEvents, GameCue, LobbyCommand, LobbyError, LobbyInputs, LobbyReply, LobbyView, ServerToClientEvents } from '../../../shared/protocol.js';
 
 export type ConnectionState = 'connecting' | 'online' | 'offline';
 type RequestError = LobbyError | 'CONNECTION_LOST' | 'TIMEOUT';
@@ -21,6 +21,11 @@ const messages: Record<RequestError, string> = {
   STALE_CARD: 'Карточка уже изменилась. Откройте и прочитайте новую.',
   REPLACEMENT_PENDING: 'Сначала дождитесь замены карточки или отмените запрос.',
   REQUEST_LIMIT: 'Слишком много действий в этой комнате. Попросите организатора открыть новую комнату.',
+  INVALID_PHASE: 'Это действие сейчас недоступно. Проверьте текущую фазу.',
+  STALE_GAME: 'Раунд уже изменился. Проверьте фазу перед новым действием.',
+  START_WARNING: 'Есть неготовые или отключённые участники. Проверьте состав и подтвердите запуск.',
+  RESUME_WARNING: 'Состав раунда изменился. Подтвердите продолжение с оставшимися участниками.',
+  SETTINGS_LOCKED: 'Количество раундов и режим фиксируются при первом запуске партии.',
   CONNECTION_LOST: 'Нет связи с домом. Дождитесь подключения и повторите действие.',
   TIMEOUT: 'Ответ задерживается. Проверьте состояние комнаты перед повтором действия.',
 };
@@ -32,8 +37,17 @@ export function useLobbyConnection() {
   const [connection, setConnection] = useState<ConnectionState>('connecting');
   const [generation, setGeneration] = useState(0);
   const [view, setView] = useState<LobbyView>();
-  const accept = useCallback((next: LobbyView) => {
-    setView(previous => !previous || next.revision >= previous.revision ? next : previous);
+  const latestView = useRef<LobbyView>(undefined);
+  const offsetRef = useRef<number | null>(null);
+  const [clockOffset, setClockOffset] = useState<number | null>(null);
+  const [cue, setCue] = useState<GameCue>();
+  const accept = useCallback((next: LobbyView, sampledAt?: number) => {
+    if (latestView.current && next.revision < latestView.current.revision) return;
+    latestView.current = next; setView(next);
+    if (next.kind !== 'ended' && next.room && (sampledAt !== undefined || offsetRef.current === null)) {
+      const offset = next.room.game.serverNow - (sampledAt ?? performance.now());
+      offsetRef.current = offset; setClockOffset(offset);
+    }
   }, []);
 
   useEffect(() => {
@@ -41,12 +55,19 @@ export function useLobbyConnection() {
     socketRef.current = socket;
     socket.on('connect', () => {
       epoch.current++;
+      latestView.current = undefined; offsetRef.current = null; setClockOffset(null); setCue(undefined);
       setView(undefined);
       setConnection('online');
       setGeneration(value => value + 1);
     });
     socket.on('lobby:state', accept);
-    socket.on('disconnect', () => { epoch.current++; setConnection('offline'); });
+    socket.on('game:cue', next => {
+      const current = latestView.current;
+      if (current?.kind === 'organizer' && current.audioEnabled && current.room?.id === next.roomId
+        && current.room.game.version === next.version && offsetRef.current !== null
+        && Math.abs(performance.now() + offsetRef.current - next.serverNow) < 2000) setCue(next);
+    });
+    socket.on('disconnect', () => { epoch.current++; setCue(undefined); setConnection('offline'); });
     socket.on('connect_error', () => setConnection('offline'));
     socket.connect();
     return () => { epoch.current++; socket.removeAllListeners(); socket.disconnect(); socketRef.current = null; };
@@ -56,6 +77,7 @@ export function useLobbyConnection() {
     const socket = socketRef.current;
     if (!socket?.connected) return Promise.resolve({ ok: false, error: 'CONNECTION_LOST' });
     const sentAt = epoch.current;
+    const startedAt = performance.now();
     return new Promise(resolve => {
       // Volatile emits never queue a control command for a later connection.
       const emit = socket.timeout(6000).volatile.emit.bind(socket) as (
@@ -64,10 +86,20 @@ export function useLobbyConnection() {
       emit(command, input, (error, reply) => {
         if (epoch.current !== sentAt) { resolve({ ok: false, error: 'CONNECTION_LOST' }); return; }
         if (error || !reply) { resolve({ ok: false, error: 'TIMEOUT' }); return; }
-        if (reply.ok) accept(reply.view);
+        if (reply.ok) accept(reply.view, (startedAt + performance.now()) / 2);
         resolve(reply);
       });
     });
   }, [accept]);
-  return { connection, generation, view, request };
+  const roomId = view && view.kind !== 'ended' ? view.room?.id : undefined;
+  const timed = view && view.kind !== 'ended' && view.room ? ['placement', 'search', 'return'].includes(view.room.game.phase) : false;
+  useEffect(() => {
+    if (connection !== 'online' || !roomId) return;
+    const sync = () => { if (!document.hidden) void request('lobby:sync', {}); };
+    document.addEventListener('visibilitychange', sync);
+    const timer = timed ? window.setInterval(sync, 30000) : undefined;
+    if (timed) sync();
+    return () => { document.removeEventListener('visibilitychange', sync); window.clearInterval(timer); };
+  }, [connection, roomId, timed, generation, request]);
+  return { connection, generation, view, request, clockOffset, cue };
 }

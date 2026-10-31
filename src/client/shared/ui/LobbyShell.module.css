@@ -9,6 +9,8 @@
 .screen section form { border: 0; padding: 0; background: transparent; }
 .screen label { display: block; margin: 1rem 0; line-height: 1.5; }
 .screen input { display: block; box-sizing: border-box; width: 100%; min-width: 0; margin-top: .4rem; padding: .8rem; background: #0b0e09; color: #eeeee3; border: 1px solid #686e59; border-radius: .25rem; font: inherit; font-size: 1rem; }
+.screen input[type=checkbox] { display: inline-block; width: 1.1rem; height: 1.1rem; margin: 0 .4rem 0 0; vertical-align: middle; }
+.screen summary { cursor: pointer; padding: .7rem 0; }
 .screen button { min-height: 2.8rem; padding: .7rem 1rem; margin: .3rem .5rem .3rem 0; border: 1px solid #9fae7f; border-radius: .25rem; background: #c5d49e; color: #14170d; font: inherit; cursor: pointer; }
 .screen button[data-danger] { background: transparent; color: #edbdb3; border-color: #9f675d; }
 .screen :is(button, input):focus-visible { outline: 3px solid #ebd59a; outline-offset: 3px; }

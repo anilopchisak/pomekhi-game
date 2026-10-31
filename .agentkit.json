@@ -17,7 +17,8 @@
     "docs/design/runtime-foundation.md",
     ".agents/skills/project-graphify/SKILL.md",
     "docs/design/lobby-sessions.md",
-    "docs/design/dealing.md"
+    "docs/design/dealing.md",
+    "docs/design/rounds.md"
   ],
   "inputExclude": [
     "dist/**",
@@ -268,6 +269,24 @@
         "id": "private-card-bank-source",
         "operation": "source",
         "value": "src/server/cards.ts"
+      },
+      {
+        "id": "game-owner-query",
+        "operation": "query",
+        "query": "createGame",
+        "expectedSources": [
+          "src/server/game.ts"
+        ],
+        "budget": 1500
+      },
+      {
+        "id": "round-status-query",
+        "operation": "query",
+        "query": "RoundStatus",
+        "expectedSources": [
+          "src/client/shared/ui/RoundStatus.tsx"
+        ],
+        "budget": 1500
       }
     ],
     "contextRoots": [
@@ -281,7 +300,8 @@
       "tools/agentkit/import_boundaries.py",
       "src/client/app/global.css",
       "src/client/index.html",
-      "src/client/shared/ui/LobbyShell.module.css"
+      "src/client/shared/ui/LobbyShell.module.css",
+      "src/client/shared/ui/RoundStatus.module.css"
     ]
   }
 }

@@ -1,6 +1,7 @@
 import { createHash, randomInt, randomUUID, timingSafeEqual } from 'node:crypto';
-import type { LobbyCommand, LobbyError, LobbyReply, LobbyView, RoomSnapshot } from '../shared/protocol.js';
-import { createDealing } from './dealing.js';
+import type { GameCue, GameSettings, LobbyCommand, LobbyError, LobbyReply, LobbyView, RoomSnapshot } from '../shared/protocol.js';
+import { createGame, validSettings } from './game.js';
+import type { GameClock } from './game.js';
 
 const alphabet = 'ABCDEFGHJKLMNPQRSTUVWXYZ23456789';
 const maximumRequestsPerPrincipal = 1024;
@@ -14,7 +15,7 @@ type Actor = { kind: 'organizer' } | { kind: 'player'; playerId: string }
   | { kind: 'ended'; reason: 'closed' | 'removed' | 'left' };
 interface Room {
   id: string; code: string; players: Map<string, Player>; revoked: Set<string>;
-  dealing: ReturnType<typeof createDealing>;
+  game: ReturnType<typeof createGame>;
   requests: Map<string, Map<string, string>>;
 }
 interface LobbyOptions {
@@ -22,18 +23,28 @@ interface LobbyOptions {
   generateId?: () => string;
   generateRoomCode?: () => string;
   randomIndex?: (limit: number) => number;
+  clock?: GameClock;
 }
 
-export function createLobby({ organizerCode, generateId = randomUUID, generateRoomCode = () => randomCode(6), randomIndex = randomInt }: LobbyOptions) {
+export function createLobby({ organizerCode, generateId = randomUUID, generateRoomCode = () => randomCode(6), randomIndex = randomInt, clock }: LobbyOptions) {
   let room: Room | undefined;
   let revision = 0;
   const actors = new Map<string, Actor>();
   const usedCodes = new Set<string>();
+  const listeners = new Set<(cue?: GameCue) => void>();
+  let audioOwner: string | null = null;
+
+  function notify() {
+    revision++;
+    const pending = room?.game.takeCue();
+    const cue = pending && room ? { ...pending, roomId: room.id } : undefined;
+    for (const listener of listeners) listener(cue);
+  }
 
   function snapshot(): RoomSnapshot | null {
     return room ? {
       id: room.id, code: room.code, version: revision, capacity: 12,
-      dealing: room.dealing.publicState(),
+      dealing: room.game.dealingState(), game: room.game.publicState(),
       players: [...room.players.values()].map(player => ({
         id: player.id, name: player.name, online: player.connections.size > 0,
       })),
@@ -43,20 +54,27 @@ export function createLobby({ organizerCode, generateId = randomUUID, generateRo
   function viewFor(connection: string): LobbyView | undefined {
     const actor = actors.get(connection);
     if (!actor) return undefined;
-    if (actor.kind === 'organizer') return { revision, kind: 'organizer', room: snapshot() };
+    if (actor.kind === 'organizer') return { revision, kind: 'organizer', room: snapshot(), audioEnabled: audioOwner === connection };
     if (actor.kind === 'ended') return { revision, ...actor };
     const state = snapshot();
     if (!state) return undefined;
-    return { revision, kind: 'player', room: state, playerId: actor.playerId, assignment: room!.dealing.personal(actor.playerId) };
+    return { revision, kind: 'player', room: state, playerId: actor.playerId, assignment: room!.game.personal(actor.playerId) };
   }
 
   function disconnect(connection: string) {
     const actor = actors.get(connection);
+    let changed = false;
     if (actor?.kind === 'player') {
       const player = room?.players.get(actor.playerId);
-      if (player?.connections.delete(connection) && player.connections.size === 0) revision++;
+      if (player?.connections.delete(connection) && player.connections.size === 0) changed = true;
     }
     actors.delete(connection);
+    if (audioOwner === connection) { audioOwner = null; changed = true; }
+    if (actor?.kind === 'organizer' && ![...actors.values()].some(item => item.kind === 'organizer')) {
+      if (room?.game.synchronize()) changed = true;
+      if (room && room.game.pause('organizer_disconnected') === undefined) changed = true;
+    }
+    if (changed) notify();
   }
 
   function attach(connection: string, player: Player) {
@@ -70,23 +88,30 @@ export function createLobby({ organizerCode, generateId = randomUUID, generateRo
   function remove(player: Player, reason: 'left' | 'removed') {
     room!.revoked.add(player.key);
     room!.players.delete(player.id);
-    room!.dealing.remove(player.id);
+    room!.game.remove(player.id);
     room!.requests.delete(`player:${player.id}`);
     for (const connection of player.connections) actors.set(connection, { kind: 'ended', reason });
   }
 
   function execute(connection: string, command: LobbyCommand, input: unknown): LobbyReply {
     const fail = (error: LobbyError): LobbyReply => ({ ok: false, error });
+    if (room?.game.synchronize()) notify();
     if (!input || typeof input !== 'object' || Array.isArray(input)) return fail('INVALID_INPUT');
     const data = input as Record<string, unknown>;
     const actor = actors.get(connection);
+    if (command === 'lobby:sync') return actor ? { ok: true, view: viewFor(connection)! } : fail('FORBIDDEN');
     if (command === 'organizer:authorize') {
       if (typeof data.code !== 'string' || data.code.length > 32) return fail('INVALID_INPUT');
       const candidate = Buffer.from(data.code.trim().toUpperCase());
       const expected = Buffer.from(organizerCode);
       if (candidate.length !== expected.length || !timingSafeEqual(candidate, expected)) return fail('INVALID_ORGANIZER_CODE');
-      disconnect(connection);
+      if (actor?.kind !== 'organizer') disconnect(connection);
       actors.set(connection, { kind: 'organizer' });
+    } else if (command === 'organizer:audio') {
+      if (actor?.kind !== 'organizer') return fail('FORBIDDEN');
+      if (typeof data.enabled !== 'boolean') return fail('INVALID_INPUT');
+      if (data.enabled) audioOwner = connection;
+      else if (audioOwner === connection) audioOwner = null;
     } else if (command === 'room:create' || command === 'room:close' || command === 'player:remove') {
       if (actor?.kind !== 'organizer') return fail('FORBIDDEN');
       if (command === 'room:create') {
@@ -95,14 +120,14 @@ export function createLobby({ organizerCode, generateId = randomUUID, generateRo
           for (let attempts = 0; usedCodes.has(code) && attempts < 32; attempts++) code = generateRoomCode();
           if (usedCodes.has(code)) throw new Error('Room code generator did not provide an unused code.');
           usedCodes.add(code);
-          room = { id: generateId(), code, players: new Map(), revoked: new Set(), dealing: createDealing({ generateId, randomIndex }), requests: new Map() };
+          room = { id: generateId(), code, players: new Map(), revoked: new Set(), game: createGame({ generateId, randomIndex, clock, onChange: notify }), requests: new Map() };
         }
       } else {
         if (typeof data.roomId !== 'string') return fail('INVALID_INPUT');
         if (!room || room.id !== data.roomId) return fail('ROOM_NOT_FOUND');
         if (command === 'room:close') {
           for (const [id, current] of actors) if (current.kind === 'player') actors.set(id, { kind: 'ended', reason: 'closed' });
-          room = undefined;
+          room.game.dispose(); room = undefined; audioOwner = null;
         } else {
           if (typeof data.playerId !== 'string') return fail('INVALID_INPUT');
           const player = room.players.get(data.playerId);
@@ -124,7 +149,7 @@ export function createLobby({ organizerCode, generateId = randomUUID, generateRo
         if ([...room.players.values()].some(item => item.name.toLocaleLowerCase('ru-RU') === name.toLocaleLowerCase('ru-RU'))) return fail('NAME_TAKEN');
         if (room.players.size >= 12) return fail('ROOM_FULL');
         player = { id: generateId(), name, key: data.resumeKey, connections: new Set() };
-        room.dealing.add(player.id);
+        room.game.add(player.id);
         room.players.set(player.id, player);
       }
       attach(connection, player);
@@ -135,12 +160,19 @@ export function createLobby({ organizerCode, generateId = randomUUID, generateRo
       const player = room.players.get(actor.playerId);
       if (!player) return fail('SESSION_EXPIRED');
       remove(player, 'left');
-    } else if (['deal:create', 'deal:shuffle', 'deal:cancel', 'deal:replace', 'card:ready', 'card:request'].includes(command)) {
-      const organizerAction = command.startsWith('deal:');
+    } else if (['deal:create', 'deal:shuffle', 'deal:cancel', 'deal:replace', 'card:ready', 'card:request',
+      'game:configure', 'round:start', 'round:pause', 'round:resume', 'round:return', 'round:abort', 'party:finish', 'party:extend'].includes(command)) {
+      const gameAction = command.startsWith('game:') || command.startsWith('round:') || command.startsWith('party:');
+      const organizerAction = command.startsWith('deal:') || gameAction;
       if (organizerAction ? actor?.kind !== 'organizer' : actor?.kind !== 'player') return fail('FORBIDDEN');
       if (!room || room.id !== data.roomId) return fail('ROOM_NOT_FOUND');
-      if (typeof data.requestId !== 'string' || !/^[a-zA-Z0-9_-]{8,80}$/.test(data.requestId)
-        || !Number.isInteger(data.dealVersion) || (data.dealVersion as number) < 0
+      if (typeof data.requestId !== 'string' || !/^[a-zA-Z0-9_-]{8,80}$/.test(data.requestId)) return fail('INVALID_INPUT');
+      if (gameAction) {
+        if (!Number.isInteger(data.gameVersion) || (data.gameVersion as number) < 0
+          || !(data.roundId === null || typeof data.roundId === 'string')) return fail('INVALID_INPUT');
+        if (command === 'game:configure' && !validSettings(data.settings, Math.max(99, room.game.publicState().settings.roundLimit ?? 99))) return fail('INVALID_INPUT');
+        if ((command === 'round:start' || command === 'round:resume') && typeof data.confirmWarnings !== 'boolean') return fail('INVALID_INPUT');
+      } else if (!Number.isInteger(data.dealVersion) || (data.dealVersion as number) < 0
         || !(data.dealId === null || typeof data.dealId === 'string')) return fail('INVALID_INPUT');
       if ((command === 'deal:create' || command === 'deal:shuffle') && !Number.isInteger(data.possessedCount)) return fail('INVALID_INPUT');
       if (command === 'deal:replace' && typeof data.playerId !== 'string') return fail('INVALID_INPUT');
@@ -148,7 +180,12 @@ export function createLobby({ organizerCode, generateId = randomUUID, generateRo
       if (command === 'card:ready' && typeof data.ready !== 'boolean') return fail('INVALID_INPUT');
       if (command === 'card:request' && typeof data.requested !== 'boolean') return fail('INVALID_INPUT');
       const principal = actor!.kind === 'player' ? `player:${actor!.playerId}` : 'organizer';
-      const fields = [command, data.roomId, data.dealVersion, data.dealId];
+      const fields: unknown[] = [command, data.roomId, gameAction ? data.gameVersion : data.dealVersion, gameAction ? data.roundId : data.dealId];
+      if (command === 'game:configure') {
+        const settings = data.settings as GameSettings;
+        fields.push(settings.roundLimit, settings.placementSeconds, settings.searchSeconds, settings.returnSeconds);
+      }
+      if (command === 'round:start' || command === 'round:resume') fields.push(data.confirmWarnings);
       if (command === 'deal:create' || command === 'deal:shuffle') fields.push(data.possessedCount);
       if (command === 'deal:replace') fields.push(data.playerId, data.assignmentId);
       if (command === 'card:ready') fields.push(data.assignmentId, data.ready);
@@ -157,24 +194,36 @@ export function createLobby({ organizerCode, generateId = randomUUID, generateRo
       const requests = room.requests.get(principal);
       const previous = requests?.get(data.requestId);
       if (previous) return previous === fingerprint ? { ok: true, view: viewFor(connection)! } : fail('INVALID_INPUT');
-      const state = room.dealing.publicState();
-      if (data.dealVersion !== state.version || data.dealId !== state.dealId) return fail('STALE_DEAL');
-      if ((command === 'deal:create') !== (state.phase === 'lobby')) return fail('STALE_DEAL');
+      const state = room.game.dealingState();
+      const gameState = room.game.publicState();
+      if (gameAction) {
+        if (data.gameVersion !== gameState.version || data.roundId !== gameState.roundId) return fail('STALE_GAME');
+      } else if (data.dealVersion !== state.version || data.dealId !== state.dealId) return fail('STALE_DEAL');
       if (requests && requests.size >= maximumRequestsPerPrincipal) return fail('REQUEST_LIMIT');
       let error: LobbyError | undefined;
-      if (command === 'deal:create' || command === 'deal:shuffle') error = room.dealing.deal([...room.players.keys()], data.possessedCount as number);
-      else if (command === 'deal:cancel') room.dealing.cancel();
-      else if (command === 'deal:replace') error = room.dealing.change(data.playerId as string, data.assignmentId as string, 'replace');
-      else if (actor!.kind === 'player') error = room.dealing.change(actor!.playerId, data.assignmentId as string, command === 'card:ready' ? 'ready' : 'request', (command === 'card:ready' ? data.ready : data.requested) as boolean);
+      if (command === 'deal:create' || command === 'deal:shuffle') error = room.game.deal([...room.players.keys()], data.possessedCount as number, command === 'deal:shuffle');
+      else if (command === 'deal:cancel') error = room.game.cancelDeal();
+      else if (command === 'deal:replace') error = room.game.change(data.playerId as string, data.assignmentId as string, 'replace');
+      else if (command === 'game:configure') error = room.game.configure(data.settings as GameSettings);
+      else if (command === 'round:start') error = room.game.start([...room.players.values()].map(player => ({ id: player.id, online: player.connections.size > 0 })), data.confirmWarnings as boolean);
+      else if (command === 'round:pause') error = room.game.pause();
+      else if (command === 'round:resume') error = room.game.resume(data.confirmWarnings as boolean);
+      else if (command === 'round:return') error = room.game.beginReturn();
+      else if (command === 'round:abort') error = room.game.abort();
+      else if (command === 'party:finish') error = room.game.finishParty();
+      else if (command === 'party:extend') error = room.game.extend();
+      else if (actor!.kind === 'player') error = room.game.change(actor!.playerId, data.assignmentId as string, command === 'card:ready' ? 'ready' : 'request', (command === 'card:ready' ? data.ready : data.requested) as boolean);
       if (error) return fail(error);
       if (requests) requests.set(data.requestId, fingerprint);
       else room.requests.set(principal, new Map([[data.requestId, fingerprint]]));
     } else return fail('INVALID_INPUT');
-    revision++;
+    notify();
     return { ok: true, view: viewFor(connection)! };
   }
 
-  return { execute, disconnect, viewFor };
+  function subscribe(listener: (cue?: GameCue) => void) { listeners.add(listener); return () => { listeners.delete(listener); }; }
+  function dispose() { room?.game.dispose(); room = undefined; listeners.clear(); actors.clear(); audioOwner = null; }
+  return { execute, disconnect, viewFor, subscribe, dispose };
 }
 
 export type Lobby = ReturnType<typeof createLobby>;

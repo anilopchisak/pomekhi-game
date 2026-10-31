@@ -7,6 +7,8 @@
 | Health/readiness | Server factory and [protocol](../../src/shared/protocol.ts) | HTTP callers, connection hook, transport and bootstrap tests; foundation stage does not claim playable rounds |
 | Lobby commands and projections | [Lobby](../../src/server/lobby.ts) through Socket.IO | Organizer page, independent phone pages and [real-client tests](../../tests/integration/lobby.test.ts) |
 | Private card and reading metadata | [Dealing](../../src/server/dealing.ts), [protocol](../../src/shared/protocol.ts) | One authorized player receives its own card; organizer and other players receive public readiness/request metadata |
+| Round lifecycle and timing | [Game session](../../src/server/game.ts), [round design](../design/rounds.md) | Host controls, shared status/countdown, personal phase instructions and real-client timer tests |
+| Live sound cues | Game transitions, lobby sound ownership and socket transport | One explicitly selected host panel; phones receive no cues, and recovery replays none |
 | Original introductory bank | [Server bank](../../src/server/cards.ts) | Server dealing only; production bundle and Vite/HTTP privacy tests |
 | Organizer authorization | Process-generated code and connection authorization in lobby | Laptop panel; sessionStorage recovery; the terminal intentionally displays the bootstrap code |
 | Player credentials | Phone pre-join key and server membership | Reload, retry and multiple-tab recovery; browser storage is origin-scoped |
@@ -19,7 +21,7 @@
 
 ## Future consumers
 
-Private cards and reading are implemented. Timed gameplay, audio, task editor and disk recovery are planned. Changes to game events must review laptop and personal projections together. The organizer participates from a phone while controls stay on the laptop. Rules are owned by [product requirements](../product/README.md).
+Private cards, timed phases and short laptop signals are implemented. Release/infection, results, music/voice, task editor and disk recovery are planned. Changes to game events must review laptop and personal projections together. The organizer participates from a phone while controls stay on the laptop. Rules are owned by [product requirements](../product/README.md).
 
 ## Verification boundaries
 

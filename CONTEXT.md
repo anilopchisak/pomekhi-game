@@ -11,7 +11,12 @@ Pomekhi is a cooperative horror party game. The organizer participates while sof
 | Base | The physical gathering location containing the laptop. |
 | Zone | A named physical area used for possessed-player placement. |
 | Round | One assignment and search cycle; it includes a placement head start and return phase. |
-| Reading phase | Implemented untimed access to private dealt cards and readiness. Timed round startup is future work; readiness never starts it. |
+| Reading phase | Untimed access to private dealt cards and readiness before a manual round start; readiness never starts it. |
+| Placement | A timed head start: possessed players take places while exorcists wait at base. |
+| Search | The timed phase for finding and helping possessed players. |
+| Return | A timed instruction for everyone to return to base; its normal completion credits the round. |
+| Pause | The current timed phase with frozen remaining time; participants stop actions and wait safely. |
+| Break | Untimed waiting between rounds; the next deal and start are manual. |
 | Possessed player | A participant with a behavior, clue, release condition and optional infection trigger. |
 | Exorcist | A participant who tries to release possessed players and has an optional private mission. |
 | Original possessed player | A player assigned possession at the initial round deal; this defines the rescue-score denominator. |

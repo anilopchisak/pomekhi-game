@@ -9,6 +9,7 @@ export interface HealthResponse {
 export interface ServerToClientEvents {
   'server:ready': (health: HealthResponse) => void;
   'lobby:state': (view: LobbyView) => void;
+  'game:cue': (cue: GameCue) => void;
 }
 
 export interface RoomSnapshot {
@@ -18,7 +19,32 @@ export interface RoomSnapshot {
   capacity: number;
   players: { id: string; name: string; online: boolean }[];
   dealing: DealingSnapshot;
+  game: GameSnapshot;
 }
+
+export type GamePhase = 'lobby' | 'reading' | 'placement' | 'search' | 'return' | 'between_rounds' | 'finished';
+export type TimedPhase = 'placement' | 'search' | 'return';
+export type PauseReason = 'organizer' | 'organizer_disconnected' | 'participant_left' | 'clock_gap';
+export interface GameSettings { roundLimit: number | null; placementSeconds: number; searchSeconds: number; returnSeconds: number }
+export interface GameSnapshot {
+  phase: GamePhase;
+  version: number;
+  roundId: string | null;
+  roundNumber: number;
+  completedRounds: number;
+  settings: GameSettings;
+  started: boolean;
+  paused: boolean;
+  pauseReason: PauseReason | null;
+  deadline: number | null;
+  remainingMs: number | null;
+  serverNow: number;
+  activePlayerIds: string[];
+  rosterChanged: boolean;
+  lastRoundAborted: boolean;
+}
+export interface GameCue { roomId: string; version: number; phase: GamePhase; kind: 'start' | 'phase' | 'pause' | 'resume' | 'abort' | 'finish'; serverNow: number }
+interface GameCommand { roomId: string; requestId: string; gameVersion: number; roundId: string | null }
 
 export type Role = 'possessed' | 'exorcist';
 export type PersonalCard = { id: string; title: string; difficulty: 1 } & (
@@ -32,7 +58,6 @@ export interface Assignment {
   replacementRequested: boolean;
 }
 export interface DealingSnapshot {
-  phase: 'lobby' | 'reading';
   version: number;
   dealId: string | null;
   initialPossessedCount: number | null;
@@ -43,18 +68,21 @@ interface DealCommand { roomId: string; requestId: string; dealVersion: number; 
 interface CardCommand extends DealCommand { assignmentId: string }
 
 export type LobbyView = { revision: number } & (
-  | { kind: 'organizer'; room: RoomSnapshot | null }
+  | { kind: 'organizer'; room: RoomSnapshot | null; audioEnabled: boolean }
   | { kind: 'player'; room: RoomSnapshot; playerId: string; assignment: Assignment | null }
   | { kind: 'ended'; reason: 'closed' | 'removed' | 'left' }
 );
 
 export type LobbyError = 'INVALID_INPUT' | 'INVALID_ORGANIZER_CODE' | 'FORBIDDEN'
   | 'ROOM_NOT_FOUND' | 'ROOM_FULL' | 'NAME_TAKEN' | 'SESSION_EXPIRED'
-  | 'INVALID_COMPOSITION' | 'STALE_DEAL' | 'STALE_CARD' | 'REPLACEMENT_PENDING' | 'REQUEST_LIMIT';
+  | 'INVALID_COMPOSITION' | 'STALE_DEAL' | 'STALE_CARD' | 'REPLACEMENT_PENDING' | 'REQUEST_LIMIT'
+  | 'INVALID_PHASE' | 'STALE_GAME' | 'START_WARNING' | 'RESUME_WARNING' | 'SETTINGS_LOCKED';
 export type LobbyReply = { ok: true; view: LobbyView } | { ok: false; error: LobbyError };
 
 export interface LobbyInputs {
   'organizer:authorize': { code: string };
+  'organizer:audio': { enabled: boolean };
+  'lobby:sync': Record<string, never>;
   'room:create': Record<string, never>;
   'room:close': { roomId: string };
   'player:join': { roomCode: string; name: string; resumeKey: string };
@@ -67,6 +95,14 @@ export interface LobbyInputs {
   'deal:replace': CardCommand & { playerId: string };
   'card:ready': CardCommand & { ready: boolean };
   'card:request': CardCommand & { requested: boolean };
+  'game:configure': GameCommand & { settings: GameSettings };
+  'round:start': GameCommand & { confirmWarnings: boolean };
+  'round:pause': GameCommand;
+  'round:resume': GameCommand & { confirmWarnings: boolean };
+  'round:return': GameCommand;
+  'round:abort': GameCommand;
+  'party:finish': GameCommand;
+  'party:extend': GameCommand;
 }
 
 export type LobbyCommand = keyof LobbyInputs;

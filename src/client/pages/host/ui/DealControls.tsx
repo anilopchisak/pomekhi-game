@@ -9,8 +9,9 @@ export function DealControls({ room, disabled, run }: {
   const [selected, setSelected] = useState<number>();
   const maximum = Math.max(1, Math.floor(room.players.length / 2));
   const count = Math.min(selected ?? room.dealing.initialPossessedCount ?? 3, maximum);
-  const reading = room.dealing.phase === 'reading';
+  const reading = room.game.phase === 'reading';
   const readyCount = room.dealing.assignments.filter(item => item.ready).length;
+  if (!['lobby', 'reading', 'between_rounds'].includes(room.game.phase)) return null;
   return <section>
     <h3>{reading ? 'Чтение карточек' : 'Подготовка раздачи'}</h3>
     <label>Одержимых при новой общей раздаче

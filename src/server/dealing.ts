@@ -20,22 +20,24 @@ export function createDealing({ generateId, randomIndex }: Options) {
   function publicState(): DealingSnapshot {
     const { possessed, exorcists } = counts();
     return {
-      phase: dealId ? 'reading' : 'lobby', version, dealId, initialPossessedCount,
+      version, dealId, initialPossessedCount,
       compositionValid: assignments.size >= 4 && assignments.size <= 12 && possessed >= 1 && exorcists >= 2 && possessed <= exorcists,
-      assignments: [...assignments].map(([playerId, item]) => ({ playerId, assignmentId: item.id, ready: item.ready, replacementRequested: item.replacementRequested })),
+      assignments: [...assignments].sort(([a], [b]) => a.localeCompare(b)).map(([playerId, item]) => ({ playerId, assignmentId: item.id, ready: item.ready, replacementRequested: item.replacementRequested })),
     };
   }
   function personal(playerId: string): Assignment | null {
     const assignment = assignments.get(playerId);
     return assignment ? structuredClone(assignment) : null;
   }
-  function deal(players: string[], possessedCount: number): LobbyError | undefined {
+  function deal(players: string[], possessedCount: number, history: ReadonlyMap<string, number> = new Map()): LobbyError | undefined {
     if (players.length < 4 || players.length > 12 || !Number.isInteger(possessedCount) || possessedCount < 1 || possessedCount > Math.floor(players.length / 2)) return 'INVALID_COMPOSITION';
     const shuffled = [...players];
     for (let i = shuffled.length - 1; i > 0; i--) {
       const j = randomIndex(i + 1);
       [shuffled[i], shuffled[j]] = [shuffled[j], shuffled[i]];
     }
+    // A stable sort retains random tie order while favoring less-played possessed roles.
+    shuffled.sort((a, b) => (history.get(a) ?? 0) - (history.get(b) ?? 0));
     const next = new Map<string, Assignment>();
     const used = new Set<string>();
     shuffled.forEach((playerId, index) => {

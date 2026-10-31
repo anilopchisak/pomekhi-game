@@ -1,13 +1,13 @@
 import { useCallback, useEffect, useRef, useState } from 'react';
 import { dealCommand, describeError, useLobbyConnection } from '../../../shared/api/index.js';
-import { LobbyShell } from '../../../shared/ui/index.js';
+import { LobbyShell, RoundStatus } from '../../../shared/ui/index.js';
 import { clearPlayerSession, createResumeKey, readPlayerSession, savePlayerSession } from '../session.js';
 import type { PlayerSession } from '../session.js';
 import { PersonalCardPanel } from './PersonalCardPanel.js';
 import type { LobbyInputs } from '../../../../shared/protocol.js';
 
 export function PlayerPage() {
-  const { connection, generation, view, request } = useLobbyConnection();
+  const { connection, generation, view, request, clockOffset } = useLobbyConnection();
   const invitationCode = new URLSearchParams(window.location.search).get('room')?.toUpperCase() ?? '';
   const initial = readPlayerSession();
   const saved = useRef(initial && (!invitationCode || initial.roomCode === invitationCode) ? initial : null);
@@ -78,20 +78,23 @@ export function PlayerPage() {
       <label>Ваше имя<input value={name} autoComplete="nickname" maxLength={48} onChange={event => setName(event.target.value)} required /></label>
       <button disabled={busy || connection !== 'online'}>{busy ? 'Входим…' : 'Войти в комнату'}</button>
     </form> : <>
-    {playerView.assignment && <PersonalCardPanel assignment={playerView.assignment} disabled={busy || connection !== 'online'} act={async (action, flag) => {
+    <RoundStatus game={playerView.room.game} clockOffset={clockOffset} connection={connection}
+      role={playerView.assignment?.card.role} waiting={!playerView.assignment} />
+    {playerView.assignment && <PersonalCardPanel assignment={playerView.assignment} disabled={busy || connection !== 'online'} readOnly={playerView.room.game.phase !== 'reading'} act={async (action, flag) => {
       const base = { ...dealCommand(playerView.room), assignmentId: playerView.assignment!.id };
       await cardAction(action, action === 'card:ready' ? { ...base, ready: flag } : { ...base, requested: flag });
     }} />}
     <section>
       <h3>{playerView.room.players.find(player => player.id === playerView.playerId)?.name}, оставайтесь на связи</h3>
       <p>Комната <code>{playerView.room.code}</code></p>
-      <p>{playerView.assignment ? 'Читаем карточки, не начиная игру.' : 'Собираемся у экрана.'} Участников: {playerView.room.players.length} / {playerView.room.capacity}.</p>
+      <p>Участников: {playerView.room.players.length} / {playerView.room.capacity}.</p>
       <ul>{playerView.room.players.map(player => <li key={player.id}>
         <span>{player.name}{player.id === playerView.playerId ? ' (вы)' : ''}</span><small>{player.online ? 'На связи' : 'Нет связи'}</small>
-        {playerView.room.dealing.assignments.filter(item => item.playerId === player.id).map(item => <small key={item.assignmentId}>{item.replacementRequested ? 'Просит замену' : item.ready ? 'Прочитал' : 'Читает'}</small>)}
+        {playerView.room.dealing.assignments.filter(item => item.playerId === player.id).map(item => <small key={item.assignmentId}>{playerView.room.game.phase === 'reading' ? item.replacementRequested ? 'Просит замену' : item.ready ? 'Прочитал' : 'Читает' : 'Карточка выдана'}</small>)}
+        {!playerView.room.dealing.assignments.some(item => item.playerId === player.id) && <small>Ждёт следующей раздачи</small>}
       </li>)}</ul>
       <button data-danger disabled={busy || connection !== 'online'} onClick={async () => {
-        if (!window.confirm('Выйти из комнаты? Ваше место освободится.')) return;
+        if (!window.confirm('Выйти из комнаты? Ваше место освободится. Если вы участвуете в текущем раунде, он будет поставлен на паузу.')) return;
         const attempt = ++operation.current;
         setBusy(true); setError('');
         const result = await request('player:leave', { roomId: playerView.room.id });

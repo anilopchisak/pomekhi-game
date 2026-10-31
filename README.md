@@ -2,7 +2,7 @@
 
 A cooperative horror party game with a shared laptop display and private phone assignments. Product copy is Russian; project and agent documentation is English.
 
-**Current status: runtime, lobby and private-card reading.** One in-memory room supports organizer authorization, invitations with QR, up to 12 participants and browser identity recovery. Private cards, readiness, individual replacement and overall reshuffle/cancellation are implemented. Round timing, infection, task editing, server persistence and atmosphere audio remain planned. See [product requirements](docs/product/README.md).
+**Current status: runtime, lobby, private cards and timed rounds.** One in-memory room supports organizer authorization, invitations with QR, up to 12 participants and browser identity recovery. Private cards, readiness, individual replacement and overall reshuffle/cancellation are implemented. Timed placement/search/return, pause and short laptop signals are implemented. Release/infection, results, task editing, server persistence and atmosphere music remain planned. See [product requirements](docs/product/README.md).
 
 The client uses App, Pages and Shared layers from Feature-Sliced Design. Organizer and player pages expose public interfaces; Shared owns their common connection and CSS Module shell. The server and cross-runtime protocol remain separate. See [architecture](docs/agent/architecture.md) for placement and ESLint import restrictions.
 
@@ -51,9 +51,17 @@ The public origin field accepts HTTPS without credentials, additional paths, que
 
 After 4-12 participants join, select the possessed count on the laptop (default three, limited to half the roster) and deal. Offline participants also receive cards. Phones open cards privately, mark readiness and request replacement; only the organizer can issue a different card. Readiness never starts a timer.
 
-A single replacement preserves its role and all other participants. A full confirmed reshuffle redistributes roles/cards and clears readiness/requests. Late joiners get one assignment without affecting existing cards. Departure removes only that participant; the laptop warns about an unsuitable composition. Cancel returns everyone to lobby without removing membership. Phones recover the same card and readiness on refresh/reconnect, initially concealed. The original 24 introductory cards contain no infection.
+A single replacement preserves its role and all other participants. A full confirmed reshuffle redistributes roles/cards and clears readiness/requests. Late joiners during reading get one assignment without affecting existing cards. During timed phases they wait for the next deal. Departure removes only that participant; the laptop warns about an unsuitable composition. Cancel restores the previous waiting phase without removing membership or completed-round progress. Phones recover the same card and readiness on refresh/reconnect, initially concealed. The original 24 introductory cards contain no infection.
 
-If a command times out, inspect current state before using the visible manual retry. The retry retains its original identity and cannot issue a second card change. A complete server restart still clears all room/card state. No task-bank editor or timed gameplay is present yet.
+If a command times out, inspect current state before using the visible manual retry. The retry retains its original identity and cannot issue a second card change. A complete server restart still clears all room/card state. The task-bank editor and release/infection actions remain future work.
+
+## Run rounds
+
+Open the round settings on the laptop. Defaults are five rounds, 45-second placement, 180-second search and 45-second return; endless mode is available. Save changes, deal cards, then manually start. Unready/offline members require confirmation; replacement requests and an unsuitable composition block start. Readiness never starts the timer.
+
+The server advances placement, search and return automatically, then waits for a manual next deal/start. Pause preserves the phase/remainder and instructs players to stop safely. Loss of the last organizer panel or explicit active-player departure pauses; a phone connection loss does not. Resume stays manual. Early search finish starts return; abort returns everyone to base without credit. A finished finite party can add another round.
+
+Use the explicit sound button to select one laptop panel, then test volume before play. Phones remain silent. Refresh restores current phase/card; laptop sleep causes a conservative pause rather than replaying missed phases. Full program restart still loses state. See [round design](docs/design/rounds.md).
 
 ## Checks
 
@@ -103,6 +111,6 @@ The double-click equivalents are start-public.command and start-public.cmd. The 
 
 If the server is already running, open a separate terminal and use `npm run tunnel`. This command verifies local Pomekhi health first and exposes the configured HOST/PORT. A fixed positive PORT is required. Traffic-body inspection is disabled. The default Tuna region is Russia; the free plan supports the HTTP/WebSocket tunnel used by this app. A first-visit browser warning can appear before the application.
 
-No automatic installer, account registration, API-key forwarding or subscription purchase is performed by project commands. ngrok remains an optional manually operated fallback, not the primary launcher. Game rooms and organizer authorization are still future implementation, so this foundation is a connectivity preview.
+No automatic installer, account registration, API-key forwarding or subscription purchase is performed by project commands. ngrok remains an optional manually operated fallback, not the primary launcher. Organizer authorization, private cards and round controls stay on the local server; the public invitation grants player entry only.
 
 For a machine-local Node, use `.runtime/node/bin/node scripts/project.mjs tuna:login` or `.runtime/node/bin/node scripts/project.mjs start:public` on macOS. Other machines should follow normal Node setup above.

@@ -71,6 +71,29 @@
         "private projections and stale/repeated commands",
         "server file exposure or browser recovery"
       ]
+    },
+    {
+      "id": "rounds",
+      "path": "docs/design/rounds.md",
+      "sources": [
+        "src/server/game.ts",
+        "src/server/lobby.ts",
+        "src/server/dealing.ts",
+        "src/server/transport/socket.ts",
+        "src/server/app.ts",
+        "src/shared/protocol.ts"
+      ],
+      "prefixes": [
+        "src/client/shared/",
+        "src/client/pages/host/",
+        "src/client/pages/player/"
+      ],
+      "reviewWhen": [
+        "phase transitions, settings, timers or pause",
+        "round membership, role history or completion",
+        "clock synchronization, sound ownership or recovered state",
+        "timer and subscription disposal"
+      ]
     }
   ]
 }

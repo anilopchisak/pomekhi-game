@@ -33,7 +33,7 @@ describe('dealing rules', () => {
     const cards = issued(dealing);
     expect(cards.filter(item => item.card.role === 'possessed')).toHaveLength(count);
     expect(new Set(cards.map(item => item.card.id)).size).toBe(n);
-    expect(dealing.publicState()).toMatchObject({ phase: 'reading', compositionValid: true });
+    expect(dealing.publicState()).toMatchObject({ compositionValid: true, dealId: expect.any(String) });
   });
   it('rejects invalid composition without discarding an existing deal', () => {
     const { dealing } = setup(); const before = issued(dealing);
@@ -41,6 +41,20 @@ describe('dealing rules', () => {
       expect(dealing.deal(Array.from({ length: n }, (_, i) => `x${i}`), count)).toBe('INVALID_COMPOSITION');
       expect(issued(dealing)).toEqual(before);
     }
+  });
+  it('publishes assignments in player order independently of private roles and history', () => {
+    const { dealing, players } = setup();
+    const order = () => dealing.publicState().assignments.map(item => item.playerId);
+    const roles = () => players.map(player => dealing.personal(player)!.card.role);
+    const before = roles();
+    const initialOrder = order();
+    const history = new Map(players.map((player, index) => [player, players.length - index]));
+    expect(dealing.deal(players, 3, history)).toBeUndefined();
+    expect(roles()).not.toEqual(before);
+    expect(order()).toEqual(initialOrder);
+    expect(order()).toEqual([...players].sort());
+    dealing.add('a-late');
+    expect(order()).toEqual(['a-late', ...players].sort());
   });
   it('replaces one card preserving role and resets only its status', () => {
     const { dealing, players } = setup();
@@ -112,7 +126,7 @@ describe('dealing rules', () => {
     expect(state).not.toContain('role'); expect(state).not.toContain('exorcists');
     const version = dealing.publicState().version;
     dealing.cancel();
-    expect(dealing.publicState()).toMatchObject({ phase: 'lobby', dealId: null, version: version + 1, assignments: [] });
+    expect(dealing.publicState()).toMatchObject({ dealId: null, version: version + 1, assignments: [] });
     for (const player of players) expect(dealing.personal(player)).toBeNull();
     dealing.add('late'); expect(dealing.personal('late')).toBeNull();
   });

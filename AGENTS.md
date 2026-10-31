@@ -1,6 +1,6 @@
 # Pomekhi agent guide
 
-Pomekhi is a horror party game with a shared laptop display and private phone cards. This checkout implements the runtime, lobby and private-card reading; timed rounds are future work. [Product requirements](docs/product/README.md) distinguish the agreed target from implemented behavior.
+Pomekhi is a horror party game with a shared laptop display and private phone cards. This checkout implements the runtime, lobby, private-card reading and timed rounds; physical game actions and disk recovery are future work. [Product requirements](docs/product/README.md) distinguish the agreed target from implemented behavior.
 
 ## Sources and scope
 
@@ -18,7 +18,7 @@ Use a ready graph first. With a degraded graph inspect the changed/deleted sourc
 
 Read [architecture](docs/agent/architecture.md) before changing boundaries, [stack](docs/agent/stack.md) for runtime/build changes, and [consumers](docs/agent/ownership.md) for shared contracts. Search existing code before adding an abstraction. Keep one-consumer helpers beside their consumer.
 
-The server owns authoritative game state when that feature is implemented. Clients present their authorized projection. Private assignments, the task database and organizer credentials stay out of public snapshots and client bundles. Keep timers, randomness and state transitions testable independently of transport and presentation.
+The server owns authoritative game state, phase deadlines and role history. Clients present their authorized projection. Private assignments, the task database and organizer credentials stay out of public snapshots and client bundles. Keep timers, randomness and state transitions testable independently of transport and presentation.
 
 Preserve connection, loading, failure, keyboard and focus states. Treat real-device behavior as a separate acceptance boundary. Add dependencies within the authorized task and update the lockfile; never add paid runtime services to satisfy a free-hosting requirement silently.
 

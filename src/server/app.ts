@@ -6,12 +6,14 @@ import { createHttpApp } from './transport/http.js';
 import type { HttpErrorReporter } from './transport/http.js';
 import { createSocketServer } from './transport/socket.js';
 import { createLobby, generateOrganizerCode } from './lobby.js';
+import type { GameClock } from './game.js';
 
 export interface AppServerOptions {
   clientDirectory?: string;
   reportError?: HttpErrorReporter;
   shutdownTimeoutMs?: number;
   organizerCode?: string;
+  clock?: GameClock;
 }
 
 export function buildHealthResponse(): HealthResponse {
@@ -26,7 +28,7 @@ export function createAppServer(options: AppServerOptions = {}) {
   const health = buildHealthResponse();
   const app = createHttpApp({ health, clientDirectory: options.clientDirectory, reportError: options.reportError });
   const server = createServer(app);
-  const lobby = createLobby({ organizerCode: options.organizerCode ?? generateOrganizerCode() });
+  const lobby = createLobby({ organizerCode: options.organizerCode ?? generateOrganizerCode(), clock: options.clock });
   const io = createSocketServer(server, health, lobby);
   const connections = new Set<Socket>();
   server.on('connection', socket => {
@@ -42,6 +44,7 @@ export function createAppServer(options: AppServerOptions = {}) {
 
   function close(): Promise<void> {
     if (closing) return closing;
+    lobby.dispose();
     closing = new Promise<void>((resolve, reject) => {
       const deadline = setTimeout(() => {
         forceClose();

@@ -1,10 +1,10 @@
 # Runtime foundation
 
-Status: implemented scaffold. This document describes current startup and transport ownership; it does not describe an implemented game engine.
+Status: implemented runtime. This document describes startup and transport ownership; [round design](rounds.md) describes the game session.
 
 ## Composition
 
-[createAppServer](../../src/server/app.ts) builds one health response, passes it to the [HTTP](../../src/server/transport/http.ts) and [Socket.IO](../../src/server/transport/socket.ts) transports, and owns the resulting HTTP server and socket cleanup. Importing or constructing the factory does not listen on a port. Its existing server, io and close interface remains available to integration consumers. Optional reportError and shutdownTimeoutMs construction options support diagnostics and bounded-cleanup checks without environment settings.
+[createAppServer](../../src/server/app.ts) builds one health response, passes it to the [HTTP](../../src/server/transport/http.ts) and [Socket.IO](../../src/server/transport/socket.ts) transports, and owns the resulting HTTP server and socket cleanup. It disposes the lobby/game timers and subscriptions before closing transports. Importing or constructing the factory does not listen on a port. Its existing server, io and close interface remains available to integration consumers. Optional reportError and shutdownTimeoutMs construction options support diagnostics and bounded-cleanup checks without environment settings.
 
 [createServerRuntime](../../src/server/runtime.ts) receives parsed configuration and application options, exposing start and stop without process-global handlers. [The process entry](../../src/server/index.ts) alone reads environment/build paths, registers signals, prints lifecycle messages and sends IPC readiness. The shared configuration module remains at its original path because Vite and Tuna also consume its HOST/PORT and origin helpers.
 
@@ -42,6 +42,6 @@ The Python agent runner owns each configured check's process tree, including the
 
 ## Boundaries and verification
 
-In-memory room membership and authorization belong to the [lobby owner](lobby-sessions.md). App creates one instance and passes it to Socket.IO. The entry generates and intentionally prints the per-launch organizer code locally, alongside the panel URL; public readiness IPC remains credential-free. Private assignment projections are described in [dealing design](dealing.md); disk persistence remains future work.
+In-memory room membership and authorization belong to the [lobby owner](lobby-sessions.md). App creates one instance and passes it to Socket.IO. The entry generates and intentionally prints the per-launch organizer code locally, alongside the panel URL; public readiness IPC remains credential-free. Private assignment projections are described in [dealing design](dealing.md); [round design](rounds.md) owns server timing and browser recovery. Disk persistence remains future work.
 
 [Integration tests](../../tests/integration/server.test.ts) use the real server and built browser assets. [Runtime](../../tests/integration/runtime.test.ts), [compiled-process](../../tests/integration/bootstrap.test.ts) and [HTTP-error](../../tests/integration/http-errors.test.ts) tests exercise lifecycle and failure behavior. [Startup tests](../../src/server/config.test.ts) establish input validation. These tests do not prove native Windows process behavior, browser rendering, tunnel reachability or future game correctness.
