@@ -207,6 +207,24 @@
         "id": "foundation-page-interface-source",
         "operation": "source",
         "value": "src/client/pages/foundation/index.ts"
+      },
+      {
+        "id": "server-runtime-query",
+        "operation": "query",
+        "query": "createServerRuntime",
+        "expectedSources": [
+          "src/server/runtime.ts"
+        ],
+        "budget": 1500
+      },
+      {
+        "id": "http-error-policy-query",
+        "operation": "query",
+        "query": "createHttpErrorHandler",
+        "expectedSources": [
+          "src/server/transport/http.ts"
+        ],
+        "budget": 1500
       }
     ],
     "contextRoots": [

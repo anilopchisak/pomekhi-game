@@ -26,6 +26,12 @@ describe('production import restrictions', () => {
     ['contracts cannot import server types', 'src/shared/protocol.ts', "export type { ServerConfig } from '../server/config.js';", true],
     ['contracts stay independent of Node', 'src/shared/protocol.ts', "export { createServer } from 'node:http';", true],
     ['integration tests may compose runtimes', 'tests/integration/server.test.ts', "export { createAppServer } from '../../src/server/app.js';", false],
+    ['HTTP transport cannot import assembly', 'src/server/transport/http.ts', "import '../app.js';", true],
+    ['socket transport cannot import runtime', 'src/server/transport/socket.ts', "export { createServerRuntime } from '../runtime.js';", true],
+    ['transport cannot import process bootstrap', 'src/server/transport/http.ts', "import '../index.js';", true],
+    ['transport retains browser restrictions', 'src/server/transport/socket.ts', "import '../../client/app/main.js';", true],
+    ['transport can use Node types', 'src/server/transport/socket.ts', "export type { Server } from 'node:http';", false],
+    ['transport can use shared contracts', 'src/server/transport/http.ts', "export type { HealthResponse } from '../../shared/protocol.js';", false],
   ];
 
   it.each(cases)('%s', async (_name, filePath, source, restricted) => {

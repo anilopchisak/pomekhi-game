@@ -53,6 +53,15 @@ export default [
     rules: { 'no-restricted-imports': ['error', { patterns: [clientDependency] }] },
   },
   {
+    files: ['src/server/transport/**/*.{ts,js,mjs}'],
+    rules: {
+      'no-restricted-imports': ['error', { patterns: [clientDependency, {
+        regex: '(^|/)(app|runtime|index)\\.(js|ts|mjs)$',
+        message: 'Transport modules receive dependencies; they cannot import server assembly or bootstrap.',
+      }] }],
+    },
+  },
+  {
     files: ['src/shared/**/*.{ts,js,mjs}'],
     rules: {
       'no-restricted-imports': ['error', {

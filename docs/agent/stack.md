@@ -12,7 +12,7 @@ See [README](../../README.md) for setup and current script names. `dev` runs the
 
 [scripts/runtime.mjs](../../scripts/runtime.mjs) resolves local or installed Node and prepends the matching runtime directory. npm commands are launched through npm-cli.js rather than executing npm.cmd without a shell. This keeps the agent command arrays portable.
 
-The API factory uses Express; [shared protocol](../../src/shared/protocol.ts) defines health and Socket.IO readiness payloads. No game command protocol or data-access abstraction exists yet. Vite handles page CSS Modules and App's global CSS without an additional styling dependency. Client placement and static import checks are defined in [architecture](architecture.md).
+The server factory composes separate Express HTTP and Socket.IO transports. A process-independent runtime owns start/stop; the executable entry owns environment, signals, console diagnostics and IPC. [Shared protocol](../../src/shared/protocol.ts) defines health and Socket.IO readiness payloads. No game command protocol or data-access abstraction exists yet. Vite handles page CSS Modules and App's global CSS without an additional styling dependency. Placement and static import checks are defined in [architecture](architecture.md).
 
 ## Tool environment
 

@@ -25,7 +25,8 @@
         "transport or shared wire contract",
         "build layout",
         "state or recovery semantics",
-        "client composition, public interface or import restrictions"
+        "client composition, public interface or import restrictions",
+        "HTTP error policy or server startup cancellation"
       ]
     }
   ]

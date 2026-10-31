@@ -91,7 +91,11 @@ describe('built client and actual HTTP / Socket.IO server', () => {
     } finally {
       const exit = once(child, 'exit');
       child.kill('SIGTERM');
-      await exit;
+      const [code, signal] = await exit;
+      if (process.platform !== 'win32') {
+        expect(code).toBe(0);
+        expect(signal).toBeNull();
+      }
     }
   });
 

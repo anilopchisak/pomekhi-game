@@ -8,8 +8,11 @@ Status: implemented runtime foundation. The game requirements in [the product do
 | --- | --- | --- |
 | Browser entry | Mount the page in StrictMode and load document styles | [main.tsx](../../src/client/app/main.tsx) |
 | Foundation page | Render connection states; create and clean up its socket | [public interface](../../src/client/pages/foundation/index.ts), [FoundationPage](../../src/client/pages/foundation/ui/FoundationPage.tsx) |
-| Server factory | Compose HTTP, static delivery and Socket.IO without binding a port on import | [createAppServer](../../src/server/app.ts) |
-| Process entry | Read configuration, listen and stop the server | [index.ts](../../src/server/index.ts) |
+| Server factory | Build shared health, compose transports and own bounded transport cleanup | [createAppServer](../../src/server/app.ts) |
+| HTTP transport | Serve health/assets and normalize HTTP errors | [http.ts](../../src/server/transport/http.ts) |
+| Socket.IO transport | Attach typed sockets and send readiness | [socket.ts](../../src/server/transport/socket.ts) |
+| Runtime | Start once, report the bound address, cancel startup and stop once | [createServerRuntime](../../src/server/runtime.ts) |
+| Process entry | Read environment/build paths, handle signals, log and announce IPC readiness | [index.ts](../../src/server/index.ts) |
 | Startup validation | Parse HOST and PORT before listening | [getServerConfig](../../src/server/config.ts) |
 | Shared protocol | App identity, health response and typed readiness event | [protocol.ts](../../src/shared/protocol.ts) |
 | Tool launchers | Select the pinned runtime and execute project/agent commands | [runtime.mjs](../../scripts/runtime.mjs) |
@@ -19,7 +22,7 @@ Status: implemented runtime foundation. The game requirements in [the product do
 
 Client and server may import shared protocol definitions. Shared production code is environment-neutral and imports neither client, server nor Node.js built-ins. Client production code imports neither server code nor Node.js built-ins; server production code does not import browser modules. Tests may compose these boundaries to observe integration. Tooling may inspect configuration and source but is not imported into production modules.
 
-[ESLint](../../eslint.config.mjs) enforces these directions for static imports and re-exports. Within the client it also rejects Pages-to-App imports and App imports of page internals. [Restriction tests](../../tests/tools/architecture.test.mjs) exercise the actual configuration, including inherited restrictions in scoped overrides. The checks inspect written module specifiers; they do not resolve a complete dependency graph or inspect dynamic imports. Update rules and their tests when introducing aliases, layers or slices.
+[ESLint](../../eslint.config.mjs) enforces these directions for static imports and re-exports. Within the client it also rejects Pages-to-App imports and App imports of page internals. Server transport modules receive dependencies and cannot import app, runtime or index. [Restriction tests](../../tests/tools/architecture.test.mjs) exercise the actual configuration, including inherited restrictions in scoped overrides. The checks inspect written module specifiers; they do not resolve a complete dependency graph or inspect dynamic imports. Update rules and their tests when introducing aliases, layers or slices.
 
 ## Client organization
 
@@ -31,10 +34,10 @@ Add Features, Entities, Widgets or client Shared only when an implemented respon
 
 ## State and lifecycle
 
-The current browser owns connection presentation only. The server owns live transport connections. There is no game state, task bank, authorization model or persistence implementation yet.
+The current browser owns connection presentation only. The server owns live transport connections. App composes transports without listening; runtime owns the listening lifecycle without reading process globals. The process entry owns signals, environment and IPC. See [runtime foundation design](../design/runtime-foundation.md) for cancellation, bounded cleanup and HTTP error behavior.
 
-For gameplay, introduce one authoritative server owner for phase transitions, assignments, deadlines, infection groups and scoring. Randomness and time must be injectable at the pure-rule boundary. Transport handlers validate commands and return authorized projections; they must not independently reimplement game rules.
+One process is intended to host one active party, with later parties started sequentially. Keep runtime instances independent for tests. There is no game state, task bank, authorization model or persistence implementation yet; add their modules with their first implemented behavior.
 
-Keep private task storage and organizer capability validation server-side. Shared types describe payloads; importing shared code must not deliver the task database to the browser. Keep one-consumer logic local until a real second consumer needs it.
+For gameplay, introduce one authoritative server owner for phase transitions, assignments, deadlines, infection groups and scoring. Randomness and time must be injectable at the pure-rule boundary. HTTP and Socket.IO call that module's interface. Validate incoming commands at runtime before changing state; TypeScript payload types do not validate network input.
 
-See [runtime foundation design](../design/runtime-foundation.md) for startup, build and shutdown behavior.
+Build public and personal projections explicitly. Keep private task storage and organizer capability validation server-side. Shared types describe payloads; importing shared code must not deliver the task database to the browser. Implement local saves, paused restart recovery and duplicate-command protection with the behavior they protect. Keep one-consumer logic local until a real second consumer needs it; add storage interfaces when implemented access needs them.

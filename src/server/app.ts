@@ -1,43 +1,61 @@
 import { createServer } from 'node:http';
-import { join } from 'node:path';
-import express from 'express';
-import { Server } from 'socket.io';
+import type { Socket } from 'node:net';
 import { APP_ID } from '../shared/protocol.js';
-import type { ClientToServerEvents, HealthResponse, ServerToClientEvents } from '../shared/protocol.js';
+import type { HealthResponse } from '../shared/protocol.js';
+import { createHttpApp } from './transport/http.js';
+import type { HttpErrorReporter } from './transport/http.js';
+import { createSocketServer } from './transport/socket.js';
+
+export interface AppServerOptions {
+  clientDirectory?: string;
+  reportError?: HttpErrorReporter;
+  shutdownTimeoutMs?: number;
+}
 
 export function buildHealthResponse(): HealthResponse {
   return { app: APP_ID, status: 'ok', stage: 'foundation' };
 }
 
-export function createAppServer(options: { clientDirectory?: string } = {}) {
-  const app = express();
-  app.disable('x-powered-by');
-  app.get('/api/health', (_request, response) => {
-    response.set('Cache-Control', 'no-store').json(buildHealthResponse());
-  });
-  app.use('/api', (_request, response) => {
-    response.status(404).json({ error: 'Not found' });
-  });
-  if (options.clientDirectory) {
-    app.use(express.static(options.clientDirectory));
-    app.get('/', (_request, response) => {
-      response.sendFile(join(options.clientDirectory!, 'index.html'));
-    });
+export function createAppServer(options: AppServerOptions = {}) {
+  const timeoutMs = options.shutdownTimeoutMs ?? 2000;
+  if (!Number.isInteger(timeoutMs) || timeoutMs < 1 || timeoutMs > 2147483647) {
+    throw new Error('shutdownTimeoutMs must be a positive timer-safe integer.');
   }
-  app.use((_request, response) => {
-    response.status(404).json({ error: 'Not found' });
-  });
-
+  const health = buildHealthResponse();
+  const app = createHttpApp({ health, clientDirectory: options.clientDirectory, reportError: options.reportError });
   const server = createServer(app);
-  const io = new Server<ClientToServerEvents, ServerToClientEvents>(server, {
-    serveClient: false,
+  const io = createSocketServer(server, health);
+  const connections = new Set<Socket>();
+  server.on('connection', socket => {
+    connections.add(socket);
+    socket.once('close', () => { connections.delete(socket); });
   });
-  io.on('connection', socket => {
-    socket.emit('server:ready', buildHealthResponse());
-  });
+  let closing: Promise<void> | undefined;
 
-  async function close(): Promise<void> {
-    await new Promise<void>(resolve => io.close(() => resolve()));
+  function forceClose() {
+    for (const socket of connections) socket.destroy();
+    if (server.listening) server.close();
+  }
+
+  function close(): Promise<void> {
+    if (closing) return closing;
+    closing = new Promise<void>((resolve, reject) => {
+      const deadline = setTimeout(() => {
+        forceClose();
+        reject(new Error(`Server shutdown exceeded ${timeoutMs}ms; remaining connections were closed.`));
+      }, timeoutMs);
+      let closeError: Error | undefined;
+      void io.close(error => { closeError = error; }).then(() => {
+        clearTimeout(deadline);
+        if (closeError && (closeError as NodeJS.ErrnoException).code !== 'ERR_SERVER_NOT_RUNNING') reject(closeError);
+        else resolve();
+      }, error => {
+        clearTimeout(deadline);
+        forceClose();
+        reject(error);
+      });
+    });
+    return closing;
   }
 
   return { server, io, close };
