@@ -1,43 +1,40 @@
 # Architecture and ownership
 
-Status: implemented runtime foundation. The game requirements in [the product document](../product/README.md) are the next implementation target, not existing modules.
+Status: runtime foundation and one in-memory lobby. Assignments, rounds and server persistence remain future work in [product requirements](../product/README.md).
 
 ## Current modules
 
 | Owner | Responsibility | Entry or contract |
 | --- | --- | --- |
-| Browser entry | Mount the page in StrictMode and load document styles | [main.tsx](../../src/client/app/main.tsx) |
-| Foundation page | Render connection states; create and clean up its socket | [public interface](../../src/client/pages/foundation/index.ts), [FoundationPage](../../src/client/pages/foundation/ui/FoundationPage.tsx) |
-| Server factory | Build shared health, compose transports and own bounded transport cleanup | [createAppServer](../../src/server/app.ts) |
+| Browser entry | Choose HostPage or PlayerPage, mount StrictMode and load document styles | [main.tsx](../../src/client/app/main.tsx) |
+| Organizer page | Authorize, control membership and construct public invitations | [page interface](../../src/client/pages/host/index.ts) |
+| Player page | Join, restore an identity and present authorized membership | [page interface](../../src/client/pages/player/index.ts) |
+| Client connection | Own socket cleanup, bounded acknowledgements and fresh projections | [Shared API](../../src/client/shared/api/index.ts) |
+| Shared shell | Render the common accessible dark screen with CSS Modules | [Shared UI](../../src/client/shared/ui/index.ts) |
+| Lobby | Own the active room, identities, authorization, revocation and presence | [createLobby](../../src/server/lobby.ts) |
+| Server factory | Compose lobby and transports; own bounded transport cleanup | [createAppServer](../../src/server/app.ts) |
 | HTTP transport | Serve health/assets and normalize HTTP errors | [http.ts](../../src/server/transport/http.ts) |
-| Socket.IO transport | Attach typed sockets and send readiness | [socket.ts](../../src/server/transport/socket.ts) |
-| Runtime | Start once, report the bound address, cancel startup and stop once | [createServerRuntime](../../src/server/runtime.ts) |
-| Process entry | Read environment/build paths, handle signals, log and announce IPC readiness | [index.ts](../../src/server/index.ts) |
-| Startup validation | Parse HOST and PORT before listening | [getServerConfig](../../src/server/config.ts) |
-| Shared protocol | App identity, health response and typed readiness event | [protocol.ts](../../src/shared/protocol.ts) |
-| Tool launchers | Select the pinned runtime and execute project/agent commands | [runtime.mjs](../../scripts/runtime.mjs) |
-| Public launch | Own local application and Tuna lifecycles; expose only after readiness | [start-public.mjs](../../scripts/start-public.mjs), [tuna.mjs](../../scripts/tuna.mjs) |
+| Socket.IO transport | Validate command delivery and publish authorized views | [socket.ts](../../src/server/transport/socket.ts) |
+| Runtime | Start once, cancel startup, observe server errors and stop once | [createServerRuntime](../../src/server/runtime.ts) |
+| Process entry | Read environment/build paths, generate the organizer code, handle signals and announce readiness | [index.ts](../../src/server/index.ts) |
+| Startup configuration | Parse HOST/PORT and construct upstream origins for runtime, Vite and Tuna | [config.ts](../../src/server/config.ts) |
+| Shared protocol | Health, typed commands, replies and explicitly public projections | [protocol.ts](../../src/shared/protocol.ts) |
+| Public launch | Own local application and Tuna lifecycles | [launcher](../../scripts/start-public.mjs), [Tuna](../../scripts/tuna.mjs) |
 
 ## Dependency direction
 
-Client and server may import shared protocol definitions. Shared production code is environment-neutral and imports neither client, server nor Node.js built-ins. Client production code imports neither server code nor Node.js built-ins; server production code does not import browser modules. Tests may compose these boundaries to observe integration. Tooling may inspect configuration and source but is not imported into production modules.
+Client and server may import the environment-neutral cross-runtime protocol in src/shared. That directory imports neither runtime side nor Node built-ins. Client code imports no server code or Node built-ins. Server code imports no browser implementation. Tests can compose these boundaries to observe integration.
 
-[ESLint](../../eslint.config.mjs) enforces these directions for static imports and re-exports. Within the client it also rejects Pages-to-App imports and App imports of page internals. Server transport modules receive dependencies and cannot import app, runtime or index. [Restriction tests](../../tests/tools/architecture.test.mjs) exercise the actual configuration, including inherited restrictions in scoped overrides. The checks inspect written module specifiers; they do not resolve a complete dependency graph or inspect dynamic imports. Update rules and their tests when introducing aliases, layers or slices.
+App imports pages through their index.js interfaces. Page slices cannot import each other or App. Shared imports neither Pages nor App; pages use its API/UI index.js interfaces. Keep direct relative .js references and place one-consumer behavior inside its owner. Features, Entities and Widgets have no implemented responsibility yet.
 
-## Client organization
-
-The client applies Feature-Sliced Design with two populated layers. App owns bootstrap and [global document styles](../../src/client/app/global.css). Pages owns the complete foundation screen, including its socket effect and connection presentation. App imports FoundationPage through the slice's index.js interface; that interface exports only FoundationPage. Within the slice use direct relative imports. Keep the existing .js extension convention for TypeScript module references.
-
-Page appearance belongs to its [CSS Module](../../src/client/pages/foundation/ui/FoundationPage.module.css). Document defaults belong to App. A local connection effect does not require a separate model, provider or store at this size.
-
-Add Features, Entities, Widgets or client Shared only when an implemented responsibility needs that owner. Keep single-page behavior inside its page until a real extraction is justified. The existing src/shared directory is the cross-runtime protocol owner, outside the client's FSD layers; it is not a browser utility directory. Game rules and private data retain their server owner.
+Transport receives the lobby from App and cannot import app, runtime or the process entry. Lobby imports no transport, bootstrap, Express or Socket.IO. [ESLint](../../eslint.config.mjs) and [restriction tests](../../tests/tools/architecture.test.mjs) enforce written static imports and re-exports; they do not resolve aliases or inspect dynamic imports.
 
 ## State and lifecycle
 
-The current browser owns connection presentation only. The server owns live transport connections. App composes transports without listening; runtime owns the listening lifecycle without reading process globals. The process entry owns signals, environment and IPC. See [runtime foundation design](../design/runtime-foundation.md) for cancellation, bounded cleanup and HTTP error behavior.
+App composes without listening; runtime owns start/stop without process globals; the entry owns signals, IPC and intentional local credential output. The factory closes HTTP/Socket.IO once within its deadline. See [runtime design](../design/runtime-foundation.md).
 
-One process is intended to host one active party, with later parties started sequentially. Keep runtime instances independent for tests. There is no game state, task bank, authorization model or persistence implementation yet; add their modules with their first implemented behavior.
+Each server has one independent lobby. Browser storage retains credentials, while authoritative membership lives only in server memory. Organizer actions require server-side authorization. Reconnect recovers identity and a complete projection; it does not create a new participant by name. See [lobby sessions](../design/lobby-sessions.md) for retries, revisions, multiple tabs and revoked credentials.
 
-For gameplay, introduce one authoritative server owner for phase transitions, assignments, deadlines, infection groups and scoring. Randomness and time must be injectable at the pure-rule boundary. HTTP and Socket.IO call that module's interface. Validate incoming commands at runtime before changing state; TypeScript payload types do not validate network input.
+The client uses App, Pages and Shared because both pages now consume the same connection and shell. Pages own their workflows. Shared shell styles use a CSS Module; App owns document defaults. No router, global store or game-rule engine is added.
 
-Build public and personal projections explicitly. Keep private task storage and organizer capability validation server-side. Shared types describe payloads; importing shared code must not deliver the task database to the browser. Implement local saves, paused restart recovery and duplicate-command protection with the behavior they protect. Keep one-consumer logic local until a real second consumer needs it; add storage interfaces when implemented access needs them.
+Future gameplay introduces one authoritative owner for phases, assignments, deadlines, infection groups and scoring. Inject time and randomness for rule tests. Validate incoming commands at runtime. Construct public/personal projections explicitly; task storage and organizer capabilities remain on the server. Implement saves and paused recovery with the first game behavior that needs them.

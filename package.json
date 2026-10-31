@@ -4,7 +4,10 @@
   "private": true,
   "type": "module",
   "description": "A server-authoritative horror party game for a shared display and private phones.",
-  "engines": { "node": "26.13.0", "npm": "11.20.0" },
+  "engines": {
+    "node": "26.13.0",
+    "npm": "11.20.0"
+  },
   "packageManager": "npm@11.20.0",
   "scripts": {
     "env:check": "node scripts/check-environment.mjs",
@@ -34,6 +37,7 @@
   },
   "dependencies": {
     "express": "5.3.0",
+    "qrcode": "1.5.4",
     "react": "19.3.1",
     "react-dom": "19.3.1",
     "socket.io": "4.8.4",
@@ -43,10 +47,12 @@
     "@eslint/js": "10.0.1",
     "@types/express": "5.0.6",
     "@types/node": "26.6.6",
+    "@types/qrcode": "1.5.6",
     "@types/react": "19.3.0",
     "@types/react-dom": "19.3.0",
     "@vitejs/plugin-react": "6.1.2",
     "eslint": "10.14.0",
+    "happy-dom": "21.0.4",
     "tsx": "4.23.15",
     "typescript": "6.0.3",
     "typescript-eslint": "8.72.1",

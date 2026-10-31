@@ -2,6 +2,7 @@ import { fileURLToPath } from 'node:url';
 import { existsSync } from 'node:fs';
 import { getServerConfig } from './config.js';
 import { createServerRuntime } from './runtime.js';
+import { generateOrganizerCode } from './lobby.js';
 
 async function main() {
   const config = getServerConfig(process.env);
@@ -10,7 +11,8 @@ async function main() {
   if (clientDirectory && !existsSync(fileURLToPath(new URL('../client/index.html', import.meta.url)))) {
     throw new Error('Client build is missing. Run npm run build before npm start.');
   }
-  const runtime = createServerRuntime({ config, clientDirectory, onError: () => {
+  const organizerCode = generateOrganizerCode();
+  const runtime = createServerRuntime({ config, clientDirectory, organizerCode, onError: () => {
     console.error('Pomekhi server encountered a transport error.');
     process.exitCode = 1;
     stopServer();
@@ -38,6 +40,9 @@ async function main() {
     const address = await runtime.start();
     if (!stopping) {
       console.log(`Pomekhi foundation: ${address.origin}`);
+      const panelOrigin = clientDirectory ? address.origin : 'http://localhost:5173';
+      console.log(`Organizer panel: ${panelOrigin}/?screen=host`);
+      console.log(`Organizer code (keep private): ${organizerCode}`);
       if (process.connected) process.send?.({ type: 'pomekhi:ready', port: address.port });
     }
   } catch (error) {

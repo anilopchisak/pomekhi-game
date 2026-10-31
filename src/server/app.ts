@@ -5,11 +5,13 @@ import type { HealthResponse } from '../shared/protocol.js';
 import { createHttpApp } from './transport/http.js';
 import type { HttpErrorReporter } from './transport/http.js';
 import { createSocketServer } from './transport/socket.js';
+import { createLobby, generateOrganizerCode } from './lobby.js';
 
 export interface AppServerOptions {
   clientDirectory?: string;
   reportError?: HttpErrorReporter;
   shutdownTimeoutMs?: number;
+  organizerCode?: string;
 }
 
 export function buildHealthResponse(): HealthResponse {
@@ -24,7 +26,8 @@ export function createAppServer(options: AppServerOptions = {}) {
   const health = buildHealthResponse();
   const app = createHttpApp({ health, clientDirectory: options.clientDirectory, reportError: options.reportError });
   const server = createServer(app);
-  const io = createSocketServer(server, health);
+  const lobby = createLobby({ organizerCode: options.organizerCode ?? generateOrganizerCode() });
+  const io = createSocketServer(server, health, lobby);
   const connections = new Set<Socket>();
   server.on('connection', socket => {
     connections.add(socket);

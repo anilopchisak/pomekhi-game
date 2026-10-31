@@ -10,6 +10,7 @@ export interface ListeningServer {
 
 export interface ServerRuntimeOptions extends AppServerOptions {
   config: ServerConfig;
+  onError?: (error: Error) => void;
 }
 
 function cancelledStart() {
@@ -19,13 +20,21 @@ function cancelledStart() {
 }
 
 export function createServerRuntime(options: ServerRuntimeOptions) {
-  const { config, ...appOptions } = options;
+  const { config, onError: reportError, ...appOptions } = options;
   const app = createAppServer(appOptions);
   const controller = new AbortController();
   let state: 'idle' | 'starting' | 'running' | 'stopping' | 'stopped' = 'idle';
   let starting: Promise<ListeningServer> | undefined;
   let stopping: Promise<void> | undefined;
   let pendingListen = false;
+
+  app.server.on('error', error => {
+    if (state !== 'running') return;
+    // Observe cleanup even when the caller has no error callback.
+    void stop().catch(() => {});
+    try { reportError?.(error); }
+    catch { console.error('Pomekhi runtime error reporter failed.'); }
+  });
 
   function stop(): Promise<void> {
     if (stopping) return stopping;

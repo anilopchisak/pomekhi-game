@@ -28,6 +28,27 @@
         "client composition, public interface or import restrictions",
         "HTTP error policy or server startup cancellation"
       ]
+    },
+    {
+      "id": "lobby-sessions",
+      "path": "docs/design/lobby-sessions.md",
+      "sources": [
+        "src/server/lobby.ts",
+        "src/server/transport/socket.ts",
+        "src/shared/protocol.ts",
+        "src/client/pages",
+        "src/client/shared"
+      ],
+      "prefixes": [
+        "src/client/pages/",
+        "src/client/shared/"
+      ],
+      "reviewWhen": [
+        "membership or authorization changes",
+        "command validation, presence or replay behavior",
+        "browser credential storage and reconnect",
+        "invitation construction and client composition"
+      ]
     }
   ]
 }

@@ -4,7 +4,9 @@ Source: the user's game-planning decisions in this chat before the project setup
 
 ## Implemented now
 
-The browser shows connecting, connected and disconnected states. HTTP health and Socket.IO readiness identify the foundation stage. The Node process serves built browser assets. There is no playable room, assignment, round, scoring, editor, authorization, persistence or audio system yet.
+The browser provides an organizer panel and a phone lobby. One in-memory room supports up to 12 participants, code/name entry, HTTPS invitations with locally generated QR, separate organizer authorization, participant removal/leave and identity recovery after reconnect or refresh. The organizer joins from a phone; the laptop does not consume a slot. A full program restart invalidates the lobby and its credentials. HTTP health and Socket.IO readiness retain the foundation-stage contract; the authorized lobby snapshot establishes actual membership.
+
+There are no assignments, rounds, scoring, editor, server persistence or audio yet. See [lobby design](../design/lobby-sessions.md) for current authorization and recovery behavior.
 
 [The shared protocol](../../src/shared/protocol.ts) owns current wire shapes. Add game wire contracts with their implementation owner, rather than treating prose as an already published API.
 
@@ -56,6 +58,6 @@ Save state locally. After restart recover the last saved game on pause rather th
 
 ## Acceptance
 
-Next implementation stages: room membership and private cards, authoritative rules, task bank/editor, atmosphere, persistence and recovery. Each stage adds actual tests and updates implementation status.
+Next implementation stages: private cards, authoritative rules, task bank/editor, atmosphere, persistence and gameplay recovery. Lobby membership and browser credential recovery are implemented. Each stage adds actual tests and updates implementation status.
 
 Required external scenarios include Windows/macOS startup, iOS/Android lock-and-return, dim-light readability, voice audibility in all zones, and actual mobile-carrier/Tuna access. Foundation integration tests do not establish these acceptance results.

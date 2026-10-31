@@ -4,23 +4,23 @@
 
 | Shared behavior | Producer / owner | Consumers and evidence |
 | --- | --- | --- |
-| Health/readiness payload | [server factory](../../src/server/app.ts), [protocol](../../src/shared/protocol.ts) | HTTP health callers, [FoundationPage](../../src/client/pages/foundation/ui/FoundationPage.tsx), [integration tests](../../tests/integration/server.test.ts) |
-| Foundation screen interface | [page index](../../src/client/pages/foundation/index.ts) | [Browser entry](../../src/client/app/main.tsx); page internals remain local |
-| Startup options and upstream URL | [configuration parser](../../src/server/config.ts) | Process entry, runtime, Vite, Tuna and their configuration tests |
-| Start/stop lifecycle | [runtime](../../src/server/runtime.ts), [server factory](../../src/server/app.ts) | Process signals and [real lifecycle tests](../../tests/integration/runtime.test.ts) |
-| Process readiness and exit codes | [process entry](../../src/server/index.ts) | Public launcher and [compiled-process tests](../../tests/integration/bootstrap.test.ts) |
-| Safe HTTP errors | [HTTP transport](../../src/server/transport/http.ts) | HTTP clients and [Express error tests](../../tests/integration/http-errors.test.ts); optional reporter receives unexpected errors |
-| Built browser bundle | Vite build | Production server and real-asset integration test |
-| Tool runtime selection | [runtime helper](../../scripts/runtime.mjs) | npm check launcher, Python agent launcher, development and production launchers |
+| Health/readiness | Server factory and [protocol](../../src/shared/protocol.ts) | HTTP callers, connection hook, transport and bootstrap tests; foundation stage does not claim playable rounds |
+| Lobby commands and projections | [Lobby](../../src/server/lobby.ts) through Socket.IO | Organizer page, independent phone pages and [real-client tests](../../tests/integration/lobby.test.ts) |
+| Organizer authorization | Process-generated code and connection authorization in lobby | Laptop panel; sessionStorage recovery; the terminal intentionally displays the bootstrap code |
+| Player credentials | Phone pre-join key and server membership | Reload, retry and multiple-tab recovery; browser storage is origin-scoped |
+| Page interfaces | Host and Player index.js exports | [Browser entry](../../src/client/app/main.tsx); page internals remain local |
+| Connection and common screen | Client Shared API/UI index.js exports | Both pages; hook owns sockets and the shell owns its CSS Module |
+| Startup configuration | [config.ts](../../src/server/config.ts) | Runtime, Vite, Tuna and configuration tests |
+| Start/stop and readiness | [Runtime](../../src/server/runtime.ts), [entry](../../src/server/index.ts) | Signals, public launcher, lifecycle and compiled-process tests |
+| Safe HTTP errors | [HTTP transport](../../src/server/transport/http.ts) | HTTP consumers and real Express error tests |
+| Built client | Vite | Production HTTP server and real-asset checks |
 
 ## Future consumers
 
-The shared laptop display, organizer controls, private phone screens and task editor are separate future consumers. Changes to game events must review all of them. Organizer controls belong only on the laptop. User-facing ownership and rules are specified in [product requirements](../product/README.md).
+Private cards, gameplay phases, audio, task editor and disk recovery are planned. Changes to game events must review laptop and personal projections together. The organizer participates from a phone while controls stay on the laptop. Rules are owned by [product requirements](../product/README.md).
 
 ## Verification boundaries
 
-Integration tests use a real local HTTP/Socket.IO server, independent client connections and the actual built HTML/JavaScript asset. They establish foundation connectivity, not game isolation or phase recovery.
+Unit tests cross the lobby interface. Integration uses real HTTP/Socket.IO and independent identities for authorization, membership, recovery and credential isolation. Existing startup, production assets, Vite proxy, Tuna launcher and HTTP error checks remain required.
 
-For browser/client changes check loading, connection loss, reconnect and cleanup. Check the client placement and import rules in [architecture](architecture.md). Real-device acceptance additionally checks iOS Safari and Android Chrome after locking/unlocking a phone, readability in dim light and the shared display's audio controls. For launchers check both native operating systems. Remote access requires Tuna and the mobile carriers used at the venue.
-
-Review relevant consumers through the graph and current source before choosing tests. A shared-file unit test does not establish successful composition. Record unperformed native, device and remote scenarios explicitly.
+Browser checks cover input/error states, 320px layout, seven phone sessions, panel/phone refresh, multiple tabs, disconnection/reconnect, removal, leave and closing. Browser profiles on macOS do not establish native iOS/Android behavior or Windows startup. QR camera scanning and carrier/Tuna access need actual devices and networks. Mark unperformed scenarios explicitly.

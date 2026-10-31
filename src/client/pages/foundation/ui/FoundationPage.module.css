@@ -1,7 +1,0 @@
-.screen { width: min(760px, 100%); margin: auto; min-height: 100svh; padding: clamp(28px, 8vw, 88px); display: flex; flex-direction: column; justify-content: center; }
-.frequency { color: #8c947e; letter-spacing: .15em; font-size: 12px; line-height: 1.8; }
-.title { font-size: clamp(46px, 12vw, 100px); letter-spacing: .06em; line-height: 1; margin: 24px 0; font-weight: 500; }
-.intro { font-size: clamp(18px, 3vw, 24px); line-height: 1.6; }
-.status { margin-top: 40px; font-size: 14px; line-height: 1.8; }
-.status span { color: #a9b58c; }
-.note { max-width: 480px; color: #9ba08e; font-size: 13px; line-height: 1.9; }

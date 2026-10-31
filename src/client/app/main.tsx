@@ -1,8 +1,10 @@
 import { StrictMode } from 'react';
 import { createRoot } from 'react-dom/client';
-import { FoundationPage } from '../pages/foundation/index.js';
+import { HostPage } from '../pages/host/index.js';
+import { PlayerPage } from '../pages/player/index.js';
 import './global.css';
 
 const root = document.getElementById('root');
 if (!root) throw new Error('Application root is missing.');
-createRoot(root).render(<StrictMode><FoundationPage /></StrictMode>);
+const isHost = new URLSearchParams(window.location.search).get('screen') === 'host';
+createRoot(root).render(<StrictMode>{isHost ? <HostPage /> : <PlayerPage />}</StrictMode>);

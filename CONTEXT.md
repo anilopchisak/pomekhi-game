@@ -21,6 +21,8 @@ Pomekhi is a cooperative horror party game. The organizer participates while sof
 | Mission | A seeker's additional task; its completion contributes to a separate team count. |
 | Tutorial | An optional simple opening round without infection; separate from normal difficulty progression. |
 | Endless mode | Continued rounds from a finite reusable task bank, not runtime AI generation. |
-| Foundation | The current scaffold: HTTP health, Socket.IO readiness and a connection-status page. It is not gameplay. |
+| Foundation | The runtime transport foundation. Health/readiness retain this stage label even when a lobby exists; it does not assert playable rounds. |
+| Lobby | The gathering state of one logical room, with membership and presence, before assignments or rounds. |
+| Resume key | A private bearer credential saved on a phone before joining; it recovers that participant, independently of name and socket ID. |
 
 See [product requirements](docs/product/README.md) for rules and implementation status. [The shared protocol](src/shared/protocol.ts) owns current HTTP/event payload shapes; domain terms alone do not create wire contracts.

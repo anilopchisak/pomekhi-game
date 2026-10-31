@@ -2,9 +2,9 @@
 
 A cooperative horror party game with a shared laptop display and private phone assignments. Product copy is Russian; project and agent documentation is English.
 
-**Current status: runtime foundation.** The page shows a real Socket.IO connection state. HTTP health, production bundling, tests and agent tooling are configured. Rooms, private assignments, round timing, infection, task editing, persistence and atmosphere audio are planned rather than implemented. See [product requirements](docs/product/README.md).
+**Current status: runtime foundation and lobby.** One in-memory room supports organizer authorization, invitations with QR, up to 12 participants and browser identity recovery. Private assignments, round timing, infection, task editing, server persistence and atmosphere audio remain planned. See [product requirements](docs/product/README.md).
 
-The client uses App and Pages layers from Feature-Sliced Design. The foundation screen exposes one public interface, with page-local behavior and CSS Modules. The server and cross-runtime protocol remain separate. See [architecture](docs/agent/architecture.md) for placement and ESLint import restrictions.
+The client uses App, Pages and Shared layers from Feature-Sliced Design. Organizer and player pages expose public interfaces; Shared owns their common connection and CSS Module shell. The server and cross-runtime protocol remain separate. See [architecture](docs/agent/architecture.md) for placement and ESLint import restrictions.
 
 ## Application setup
 
@@ -18,7 +18,7 @@ npm run dev
 
 Open `http://localhost:5173`. The API/socket server uses port 3000; Vite proxies requests to it. Optional local overrides go in .env using [.env.example](.env.example).
 
-For a production-mode foundation:
+For production mode:
 
 ```sh
 npm run build
@@ -36,6 +36,16 @@ If this machine has ignored `.runtime/node`, the project command wrapper can sel
 ```
 
 The `.runtime` directory is machine-specific; Windows users should install Node normally or provide `.runtime/node/node.exe` from the official portable distribution.
+
+## Open the lobby
+
+1. Start the application. Its terminal prints an organizer panel URL and a private 12-character organizer code. In development the panel uses port 5173; production uses the actual bound application port.
+2. Open the panel on the laptop, enter that code and create a room. The laptop does not count as a participant.
+3. For remote phones, start Tuna as described below and paste its public HTTPS origin into the panel. Use the generated invitation link or QR; a manually opened player page asks for the six-character room code and a name.
+4. Join from one phone per participant, including the organizer. Refresh/reconnect retains membership in the same browser and origin. Closing a tab retains its slot; explicit leave or organizer removal releases it.
+5. Stop with Ctrl+C. This stage stores the room only in memory: restarting requires a new room and invalidates previous credentials. Organizer authorization lasts for its browser tab, while phones store their own recovery key locally. Keep the organizer code separate from the invitation.
+
+The public origin field accepts HTTPS without credentials, additional paths, query parameters or fragments. It generates invitations only; it does not reconfigure Tuna. Browser storage must be available before entering. If clipboard copying is unavailable, select the invitation URL manually.
 
 ## Checks
 

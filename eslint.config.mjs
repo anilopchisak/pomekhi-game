@@ -62,6 +62,27 @@ export default [
     },
   },
   {
+    files: ['src/client/shared/**/*.{ts,tsx,js,jsx,mjs}'],
+    rules: { 'no-restricted-imports': clientImports([{
+      regex: '(^|/)(app|pages)(/|$)', message: 'Client Shared cannot import upper layers.',
+    }]) },
+  },
+  ...['host', 'player'].map(slice => ({
+    files: [`src/client/pages/${slice}/**/*.{ts,tsx,js,jsx,mjs}`],
+    rules: { 'no-restricted-imports': clientImports([
+      { regex: '(^|/)app(/|$)', message: 'Pages are composed by App and cannot import it.' },
+      { regex: `(^|/)${slice === 'host' ? 'player' : 'host'}(/|$)`, message: 'Page slices cannot import each other.' },
+      { regex: '(^|/)shared/(api|ui)/(?!index\\.js$)', message: 'Use the public interface of a client Shared segment.' },
+    ]) },
+  })),
+  {
+    files: ['src/server/lobby.ts'],
+    rules: { 'no-restricted-imports': ['error', {
+      paths: ['express', 'socket.io', 'node:http', 'node:net'],
+      patterns: [clientDependency, { regex: '(^|/)(transport|app|runtime|index)(/|\\.)', message: 'Lobby owns state independently of transport and bootstrap.' }],
+    }] },
+  },
+  {
     files: ['src/shared/**/*.{ts,js,mjs}'],
     rules: {
       'no-restricted-imports': ['error', {
