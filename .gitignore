@@ -1,0 +1,15 @@
+node_modules/
+dist/
+coverage/
+.cache/
+.runtime/
+.agent-runtime/
+.agent-state/
+artifacts/
+data/
+.env
+.env.*
+!.env.example
+*.log
+__pycache__/
+.DS_Store

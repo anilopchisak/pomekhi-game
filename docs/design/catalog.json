@@ -1,0 +1,32 @@
+{
+  "schemaVersion": 1,
+  "documents": [
+    {
+      "id": "runtime-foundation",
+      "path": "docs/design/runtime-foundation.md",
+      "sources": [
+        "src/server",
+        "src/shared",
+        "src/client",
+        "eslint.config.mjs",
+        "scripts/dev.mjs",
+        "scripts/start-server.mjs",
+        "scripts/start-public.mjs",
+        "scripts/tuna.mjs"
+      ],
+      "prefixes": [
+        "src/server/",
+        "src/shared/",
+        "src/client/",
+        "scripts/"
+      ],
+      "reviewWhen": [
+        "startup or shutdown ownership",
+        "transport or shared wire contract",
+        "build layout",
+        "state or recovery semantics",
+        "client composition, public interface or import restrictions"
+      ]
+    }
+  ]
+}

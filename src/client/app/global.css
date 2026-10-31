@@ -1,0 +1,3 @@
+:root { color-scheme: dark; font-family: ui-monospace, "Cascadia Code", monospace; color: #dde0ca; background: #111310; font-synthesis: none; }
+* { box-sizing: border-box; }
+body { margin: 0; min-width: 320px; }

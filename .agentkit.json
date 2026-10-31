@@ -1,0 +1,226 @@
+{
+  "schemaVersion": 1,
+  "profile": "medium",
+  "configured": true,
+  "rootBudgetBytes": 8192,
+  "requiredDocs": [
+    "README.md",
+    "CONTEXT.md",
+    "docs/agent/architecture.md",
+    "docs/agent/stack.md",
+    "docs/agent/ownership.md",
+    "docs/agent/testing.md",
+    "docs/agent/quality-gates.md",
+    "docs/agent/graphify.md",
+    "docs/agent/adaptation.md",
+    "docs/product/README.md",
+    "docs/design/runtime-foundation.md",
+    ".agents/skills/project-graphify/SKILL.md"
+  ],
+  "inputExclude": [
+    "dist/**",
+    "coverage/**",
+    "artifacts/**",
+    ".cache/**",
+    ".runtime/**",
+    "data/**",
+    ".DS_Store"
+  ],
+  "requireFreshGraph": true,
+  "checks": [
+    {
+      "id": "environment",
+      "argv": [
+        "node",
+        "scripts/run-npm.mjs",
+        "env:check"
+      ],
+      "required": true,
+      "quick": true,
+      "timeout": 120,
+      "dependsOn": []
+    },
+    {
+      "id": "docs",
+      "argv": [
+        "node",
+        "scripts/run-npm.mjs",
+        "docs:check"
+      ],
+      "required": true,
+      "quick": true,
+      "timeout": 120,
+      "dependsOn": [
+        "environment"
+      ]
+    },
+    {
+      "id": "agentkit",
+      "argv": [
+        "node",
+        "scripts/run-npm.mjs",
+        "agent:test"
+      ],
+      "required": true,
+      "quick": true,
+      "timeout": 120,
+      "dependsOn": [
+        "environment"
+      ]
+    },
+    {
+      "id": "lint",
+      "argv": [
+        "node",
+        "scripts/run-npm.mjs",
+        "lint"
+      ],
+      "required": true,
+      "quick": true,
+      "timeout": 120,
+      "dependsOn": [
+        "environment"
+      ]
+    },
+    {
+      "id": "types",
+      "argv": [
+        "node",
+        "scripts/run-npm.mjs",
+        "typecheck"
+      ],
+      "required": true,
+      "quick": true,
+      "timeout": 120,
+      "dependsOn": [
+        "environment"
+      ]
+    },
+    {
+      "id": "unit",
+      "argv": [
+        "node",
+        "scripts/run-npm.mjs",
+        "test:ci"
+      ],
+      "required": true,
+      "quick": true,
+      "timeout": 120,
+      "dependsOn": [
+        "environment"
+      ]
+    },
+    {
+      "id": "build",
+      "argv": [
+        "node",
+        "scripts/run-npm.mjs",
+        "build"
+      ],
+      "required": true,
+      "quick": false,
+      "timeout": 120,
+      "dependsOn": [
+        "types"
+      ]
+    },
+    {
+      "id": "integration",
+      "argv": [
+        "node",
+        "scripts/run-npm.mjs",
+        "test:integration"
+      ],
+      "required": true,
+      "quick": false,
+      "timeout": 120,
+      "dependsOn": [
+        "build"
+      ]
+    }
+  ],
+  "graph": {
+    "python": "python",
+    "version": "0.9.55",
+    "timeout": 300,
+    "codeRoots": [
+      "src",
+      "scripts",
+      "vite.config.ts",
+      "vitest.config.ts",
+      "vitest.integration.config.ts",
+      "eslint.config.mjs"
+    ],
+    "documentRoots": [
+      "README.md",
+      "AGENTS.md",
+      "CLAUDE.md",
+      "GUIDES.md",
+      "CONTEXT.md",
+      "docs",
+      ".agents/skills/project-graphify/SKILL.md"
+    ],
+    "exclude": [
+      "**/*.test.ts"
+    ],
+    "cases": [
+      {
+        "id": "server-factory-source",
+        "operation": "source",
+        "value": "src/server/app.ts"
+      },
+      {
+        "id": "configuration-query",
+        "operation": "query",
+        "query": "getServerConfig",
+        "expectedSources": [
+          "src/server/config.ts"
+        ],
+        "budget": 1500
+      },
+      {
+        "id": "server-factory-query",
+        "operation": "query",
+        "query": "createAppServer",
+        "expectedSources": [
+          "src/server/app.ts"
+        ],
+        "budget": 1500
+      },
+      {
+        "id": "server-factory-calls-health-owner",
+        "operation": "edge",
+        "source": "src_server_app_createappserver",
+        "target": "src_server_app_buildhealthresponse",
+        "relation": "calls"
+      },
+      {
+        "id": "foundation-page-query",
+        "operation": "query",
+        "query": "FoundationPage",
+        "expectedSources": [
+          "src/client/pages/foundation/ui/FoundationPage.tsx"
+        ],
+        "budget": 1500
+      },
+      {
+        "id": "foundation-page-interface-source",
+        "operation": "source",
+        "value": "src/client/pages/foundation/index.ts"
+      }
+    ],
+    "contextRoots": [
+      "package.json",
+      "package-lock.json",
+      "tsconfig.json",
+      "tsconfig.server.json",
+      ".nvmrc",
+      ".npmrc",
+      ".env.example",
+      "tools/agentkit/import_boundaries.py",
+      "src/client/app/global.css",
+      "src/client/pages/foundation/ui/FoundationPage.module.css",
+      "src/client/index.html"
+    ]
+  }
+}
