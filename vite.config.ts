@@ -15,6 +15,11 @@ export default defineConfig(({ mode }) => {
       host: '127.0.0.1',
       port: 5173,
       strictPort: true,
+      fs: {
+        allow: ['src/client', 'src/shared', 'node_modules'].map(path => fileURLToPath(new URL(path, import.meta.url))),
+        // Preserve Vite 8 defaults when extending its replacement deny list.
+        deny: ['.env', '.env.*', '*.{crt,pem,key,p12,pfx,cer,der}', '.npmrc', '.yarnrc.yml', '**/.git/**', '**/src/server/**', '**/dist/server/**'],
+      },
       proxy: {
         '/api': target,
         '/socket.io': { target, ws: true },

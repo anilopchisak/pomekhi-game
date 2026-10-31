@@ -1,8 +1,10 @@
 import { useCallback, useEffect, useRef, useState } from 'react';
-import { describeError, useLobbyConnection } from '../../../shared/api/index.js';
+import { dealCommand, describeError, useLobbyConnection } from '../../../shared/api/index.js';
 import { LobbyShell } from '../../../shared/ui/index.js';
 import { clearPlayerSession, createResumeKey, readPlayerSession, savePlayerSession } from '../session.js';
 import type { PlayerSession } from '../session.js';
+import { PersonalCardPanel } from './PersonalCardPanel.js';
+import type { LobbyInputs } from '../../../../shared/protocol.js';
 
 export function PlayerPage() {
   const { connection, generation, view, request } = useLobbyConnection();
@@ -14,6 +16,7 @@ export function PlayerPage() {
   const [name, setName] = useState(saved.current?.name ?? '');
   const [error, setError] = useState('');
   const [busy, setBusy] = useState(false);
+  const [pending, setPending] = useState<{ command: 'card:ready' | 'card:request'; input: LobbyInputs['card:ready'] | LobbyInputs['card:request'] } | null>(null);
   const playerView = view?.kind === 'player' ? view : undefined;
 
   const enter = useCallback(async (session: PlayerSession) => {
@@ -40,8 +43,21 @@ export function PlayerPage() {
     operation.current++;
     setBusy(false);
     saved.current = null; clearPlayerSession();
+    setPending(null);
     setError({ closed: 'Комната закрыта. Для новой встречи потребуется новое приглашение.', removed: 'Организатор удалил ваш вход. При необходимости войдите заново.', left: 'Вы вышли из комнаты.' }[ended]);
   }, [ended]);
+
+  async function cardAction(command: 'card:ready' | 'card:request', input: LobbyInputs['card:ready'] | LobbyInputs['card:request']) {
+    const attempt = ++operation.current;
+    setBusy(true); setError('');
+    const result = await request(command, input);
+    if (attempt !== operation.current) return;
+    setBusy(false);
+    if (!result.ok) {
+      setError(describeError(result.error));
+      setPending(result.error === 'TIMEOUT' || result.error === 'CONNECTION_LOST' ? { command, input } : null);
+    } else setPending(null);
+  }
 
   async function join() {
     const normalizedCode = roomCode.trim().toUpperCase();
@@ -56,16 +72,23 @@ export function PlayerPage() {
   }
 
   return <LobbyShell title={playerView ? 'Вы внутри' : 'Войти в дом'} connection={connection} error={error}>
+    {pending && playerView && <button disabled={busy || connection !== 'online'} onClick={() => void cardAction(pending.command, pending.input)}>Повторить действие</button>}
     {!playerView ? <form onSubmit={event => { event.preventDefault(); void join(); }}>
       <label>Код комнаты<input value={roomCode} autoCapitalize="characters" autoComplete="off" maxLength={6} minLength={6} onChange={event => setRoomCode(event.target.value.toUpperCase())} required /></label>
       <label>Ваше имя<input value={name} autoComplete="nickname" maxLength={48} onChange={event => setName(event.target.value)} required /></label>
       <button disabled={busy || connection !== 'online'}>{busy ? 'Входим…' : 'Войти в комнату'}</button>
-    </form> : <section>
+    </form> : <>
+    {playerView.assignment && <PersonalCardPanel assignment={playerView.assignment} disabled={busy || connection !== 'online'} act={async (action, flag) => {
+      const base = { ...dealCommand(playerView.room), assignmentId: playerView.assignment!.id };
+      await cardAction(action, action === 'card:ready' ? { ...base, ready: flag } : { ...base, requested: flag });
+    }} />}
+    <section>
       <h3>{playerView.room.players.find(player => player.id === playerView.playerId)?.name}, оставайтесь на связи</h3>
       <p>Комната <code>{playerView.room.code}</code></p>
-      <p>Собираемся у экрана. Участников: {playerView.room.players.length} / {playerView.room.capacity}.</p>
+      <p>{playerView.assignment ? 'Читаем карточки, не начиная игру.' : 'Собираемся у экрана.'} Участников: {playerView.room.players.length} / {playerView.room.capacity}.</p>
       <ul>{playerView.room.players.map(player => <li key={player.id}>
         <span>{player.name}{player.id === playerView.playerId ? ' (вы)' : ''}</span><small>{player.online ? 'На связи' : 'Нет связи'}</small>
+        {playerView.room.dealing.assignments.filter(item => item.playerId === player.id).map(item => <small key={item.assignmentId}>{item.replacementRequested ? 'Просит замену' : item.ready ? 'Прочитал' : 'Читает'}</small>)}
       </li>)}</ul>
       <button data-danger disabled={busy || connection !== 'online'} onClick={async () => {
         if (!window.confirm('Выйти из комнаты? Ваше место освободится.')) return;
@@ -76,6 +99,6 @@ export function PlayerPage() {
         setBusy(false);
         if (!result.ok) setError(describeError(result.error));
       }}>Выйти из комнаты</button>
-    </section>}
+    </section></>}
   </LobbyShell>;
 }

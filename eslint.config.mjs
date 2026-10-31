@@ -76,7 +76,7 @@ export default [
     ]) },
   })),
   {
-    files: ['src/server/lobby.ts'],
+    files: ['src/server/lobby.ts', 'src/server/dealing.ts', 'src/server/cards.ts'],
     rules: { 'no-restricted-imports': ['error', {
       paths: ['express', 'socket.io', 'node:http', 'node:net'],
       patterns: [clientDependency, { regex: '(^|/)(transport|app|runtime|index)(/|\\.)', message: 'Lobby owns state independently of transport and bootstrap.' }],

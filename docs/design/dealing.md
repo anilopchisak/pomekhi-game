@@ -1,0 +1,47 @@
+# Private cards and untimed reading
+
+Status: implemented. This stage ends at reading and readiness; no timed round or live rescue/infection actions exist.
+
+## Owners and interfaces
+
+[createDealing](../../src/server/dealing.ts) owns the current deal, assignments, readiness and replacement requests. It receives ID and uniform random-index generators. [The server bank](../../src/server/cards.ts) contains 12 original possessed cards and 12 exorcist missions, all difficulty 1 without infection. The bank is not part of the shared protocol or client dependencies.
+
+[Lobby](../../src/server/lobby.ts) owns authorization, membership, global projection revision and room lifetime. Each room has its own dealing instance and successful-request map. Lobby calls dealing synchronously, including one assignment for a newly accepted member and revocation on leave/removal. A connection change only updates presence. Transport calls lobby; it does not select roles or read the bank.
+
+The dealing interface provides deal, cancel, add, remove, change, publicState and personal. [The protocol](../../src/shared/protocol.ts) defines role/card unions, assignments, public dealing metadata and acknowledged commands. Public projections are detached and contain phase, deal identity/version, the requested initial possessed count, composition validity and per-player assignment IDs/readiness/requests. Only an authorized player's view contains that player's role and card. Neither the organizer nor another player's view contains it. Actual role totals are not published, so adding one participant does not expose their role through a changing counter.
+
+## Assignment lifecycle
+
+New deals accept 4-12 members, including offline members, with 1 through floor(n/2) possessed. The laptop default is min(3, floor(n/2)). Fisher-Yates shuffles participant IDs before selecting the possessed subset. This produces uniform initial role selection. Played-role history is deferred until real rounds exist; previews and reshuffles are not played rounds.
+
+A full shuffle uses the current roster and requested count, creates a fresh deal ID, increments its version, issues fresh assignment IDs and clears all readiness/requests. A preserved role still receives a different card. Each role draws from unused bank entries, excluding that player's previous card. Cards are unique within the active deal; bank entries can be reused across deals.
+
+A late join gets one role and unused card without changing existing IDs, readiness or the deal version. If fewer than two exorcists remain, add an exorcist; otherwise restore a missing possessed role. With both roles present, select uniformly between allowed roles when possessed are fewer than exorcists; otherwise add an exorcist. This keeps at least one spare card per role at the 12-player capacity. A resumed identity or retried join never draws another card.
+
+Leave/removal deletes only that assignment and revokes membership through lobby. Remaining cards/readiness survive even when composition is temporarily invalid. The shared view offers a generic composition warning; it does not publish exact role totals. Cancel clears assignments and replacement requests, advances the deal version, and returns to lobby while retaining membership. Closing the room drops the dealing instance and its request cache.
+
+## Individual actions and repeat delivery
+
+Organizer-only commands are deal:create, deal:shuffle, deal:cancel and deal:replace. Replacement retains the target's role, takes an unused card, changes its assignment ID and clears only that target's readiness/request. Players can set their own card:ready and card:request. Requesting replacement clears readiness; withdrawing does not restore it. Readiness cannot be true while a replacement request is active. All-ready never advances a phase.
+
+Every new command includes roomId, requestId, dealVersion and dealId; card changes also carry assignmentId. Runtime validation and actor authorization precede mutation and replay lookup. Successful commands are cached by room and stable principal (organizer capability or player ID), with SHA-256 fingerprints of only that command's validated fields in canonical order, independent of JSON property order. Unrelated fields are ignored and are never retained in the journal. Repeating the same request returns a current authorized projection without repeating its change. Reusing its ID for a different command or validated payload fails. No old private snapshot is cached or returned.
+
+Each principal can retain at most 1024 successful request IDs, including successful no-op commands. Cached retries still work when the journal is full; fresh requests fail with REQUEST_LIMIT before any state mutation. Both pages describe the limit and ask the organizer to open a new room. Other principals retain their own budgets. Journals never evict entries within the room lifetime, so an old retry cannot execute a second time. Leave/removal releases that player's journal because the identity is revoked; closing the room releases every journal. With at most 12 members and one organizer journal, retained entries are bounded, and each fingerprint has a fixed size. This is a memory-retention limit, not a command rate limit.
+
+The deal version changes on create/shuffle/cancel, independently of presence and readiness. Assignment IDs change on issuance/replacement. Different stale requests cannot act on another room, deal or newer card. Membership recovery remains idempotent through its pre-join key. These mechanisms prevent lost acknowledgements from causing a second shuffle/replacement or marking a new card read. The request map is in memory for the room lifetime.
+
+## Browser behavior and recovery
+
+Pages retain their existing public interfaces. Host-local DealControls selects the count for a new overall deal and confirms shuffle/cancel. The organizer list shows presence, readiness and requests, never private content; its projection carries opaque assignment IDs for targeted actions. Player-local PersonalCardPanel controls reveal state and sends only the current assignment identity with actions. Shared API supplies command identities and the existing typed connection.
+
+Cards start closed. Reveal/hide is local presentation state keyed to the assignment ID, independent of server readiness. New cards, refresh and restored connections start closed; the same role/card/readiness returns from the server. Tabs share readiness and requests but each controls its own reveal state. Only the credential session is stored in localStorage; card data is not persisted there. Phones remain silent and use readable CSS without effects over text.
+
+Actions have acknowledgement deadlines and are never automatically replayed on reconnect. A visible manual retry retains the original request payload/ID. The connection epoch rejects older acknowledgements and the global projection revision prevents older snapshots from overwriting current views. A full server restart still loses the room and invalidates credentials; disk recovery is future work.
+
+## File exposure and verification
+
+Production HTTP serves only dist/client. Development file serving allows client, neutral shared and node_modules directories, keeping project/tool snapshots outside its filesystem roots. Vite's fs.deny also extends the pinned defaults with server source and compiled-server patterns. Both transformed and raw requests are blocked, while neutral shared contracts remain available. The default environment/key/Git/npm configuration restrictions remain present. No bank is stored in a public directory or logged in diagnostics.
+
+[Rule tests](../../src/server/dealing.test.ts) exercise composition, uniqueness, replacements, shuffle and late membership with deterministic generators. [Journal tests](../../src/server/lobby-requests.test.ts) exercise bounded retention, ignored unrelated fields, retries at capacity, independent principals, reconnect and room replacement through the real lobby interface. [Real transport tests](../../tests/integration/dealing.test.ts) verify personal projections, offline cards, recovery, repeated/stale commands, ignored unrelated fields, capability restrictions and bank exclusion from built assets/HTTP. [Vite tests](../../tests/integration/private-files.test.ts) reproduce the previous exposure and assert 403 for source/build requests, with and without raw. [DOM tests](../../tests/tools/cards-ui.test.mjs) use real React, connection and lobby with controlled delivery for concealment, readiness, replacement, lost acknowledgements and the request-limit message.
+
+Browser/Tuna evidence belongs under ignored artifacts/dealing. macOS Chromium/WebKit viewports are separate from native Windows and physical iOS/Android acceptance.

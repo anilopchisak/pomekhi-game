@@ -1,6 +1,6 @@
 # Architecture and ownership
 
-Status: runtime foundation and one in-memory lobby. Assignments, rounds and server persistence remain future work in [product requirements](../product/README.md).
+Status: runtime foundation, one in-memory room and private-card reading. Timed rounds and server persistence remain future work in [product requirements](../product/README.md).
 
 ## Current modules
 
@@ -12,6 +12,8 @@ Status: runtime foundation and one in-memory lobby. Assignments, rounds and serv
 | Client connection | Own socket cleanup, bounded acknowledgements and fresh projections | [Shared API](../../src/client/shared/api/index.ts) |
 | Shared shell | Render the common accessible dark screen with CSS Modules | [Shared UI](../../src/client/shared/ui/index.ts) |
 | Lobby | Own the active room, identities, authorization, revocation and presence | [createLobby](../../src/server/lobby.ts) |
+| Dealing | Own private assignments, readiness and replacements | [createDealing](../../src/server/dealing.ts) |
+| Card bank | Keep original introductory cards on the server | [cards.ts](../../src/server/cards.ts) |
 | Server factory | Compose lobby and transports; own bounded transport cleanup | [createAppServer](../../src/server/app.ts) |
 | HTTP transport | Serve health/assets and normalize HTTP errors | [http.ts](../../src/server/transport/http.ts) |
 | Socket.IO transport | Validate command delivery and publish authorized views | [socket.ts](../../src/server/transport/socket.ts) |
@@ -27,7 +29,7 @@ Client and server may import the environment-neutral cross-runtime protocol in s
 
 App imports pages through their index.js interfaces. Page slices cannot import each other or App. Shared imports neither Pages nor App; pages use its API/UI index.js interfaces. Keep direct relative .js references and place one-consumer behavior inside its owner. Features, Entities and Widgets have no implemented responsibility yet.
 
-Transport receives the lobby from App and cannot import app, runtime or the process entry. Lobby imports no transport, bootstrap, Express or Socket.IO. [ESLint](../../eslint.config.mjs) and [restriction tests](../../tests/tools/architecture.test.mjs) enforce written static imports and re-exports; they do not resolve aliases or inspect dynamic imports.
+Transport receives the lobby from App and cannot import app, runtime or the process entry. Lobby, dealing and the bank import no transport, bootstrap, Express or Socket.IO. [ESLint](../../eslint.config.mjs) and [restriction tests](../../tests/tools/architecture.test.mjs) enforce written static imports and re-exports; they do not resolve aliases or inspect dynamic imports.
 
 ## State and lifecycle
 
@@ -35,6 +37,6 @@ App composes without listening; runtime owns start/stop without process globals;
 
 Each server has one independent lobby. Browser storage retains credentials, while authoritative membership lives only in server memory. Organizer actions require server-side authorization. Reconnect recovers identity and a complete projection; it does not create a new participant by name. See [lobby sessions](../design/lobby-sessions.md) for retries, revisions, multiple tabs and revoked credentials.
 
-The client uses App, Pages and Shared because both pages now consume the same connection and shell. Pages own their workflows. Shared shell styles use a CSS Module; App owns document defaults. No router, global store or game-rule engine is added.
+The client uses App, Pages and Shared because both pages now consume the same connection and shell. Pages own their workflows. Shared shell styles use a CSS Module; App owns document defaults. No router or global store is added. Dealing rules stay on the server.
 
-Future gameplay introduces one authoritative owner for phases, assignments, deadlines, infection groups and scoring. Inject time and randomness for rule tests. Validate incoming commands at runtime. Construct public/personal projections explicitly; task storage and organizer capabilities remain on the server. Implement saves and paused recovery with the first game behavior that needs them.
+The [dealing owner](../design/dealing.md) manages untimed reading and private projections inside each room; lobby retains authorization and membership. Client pages keep DealControls and PersonalCardPanel local. Future timed gameplay extends this state owner with deadlines, infection groups and scoring. Inject time and randomness for rule tests. Validate incoming commands at runtime. Construct public/personal projections explicitly; task storage and organizer capabilities remain on the server. Implement saves and paused recovery with the first game behavior that needs them.

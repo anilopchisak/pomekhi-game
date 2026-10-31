@@ -16,7 +16,8 @@
     "docs/product/README.md",
     "docs/design/runtime-foundation.md",
     ".agents/skills/project-graphify/SKILL.md",
-    "docs/design/lobby-sessions.md"
+    "docs/design/lobby-sessions.md",
+    "docs/design/dealing.md"
   ],
   "inputExclude": [
     "dist/**",
@@ -244,6 +245,29 @@
         "id": "player-interface-source",
         "operation": "source",
         "value": "src/client/pages/player/index.ts"
+      },
+      {
+        "id": "dealing-owner-query",
+        "operation": "query",
+        "query": "createDealing",
+        "expectedSources": [
+          "src/server/dealing.ts"
+        ],
+        "budget": 1500
+      },
+      {
+        "id": "personal-card-ui-query",
+        "operation": "query",
+        "query": "PersonalCardPanel",
+        "expectedSources": [
+          "src/client/pages/player/ui/PersonalCardPanel.tsx"
+        ],
+        "budget": 1500
+      },
+      {
+        "id": "private-card-bank-source",
+        "operation": "source",
+        "value": "src/server/cards.ts"
       }
     ],
     "contextRoots": [

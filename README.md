@@ -2,7 +2,7 @@
 
 A cooperative horror party game with a shared laptop display and private phone assignments. Product copy is Russian; project and agent documentation is English.
 
-**Current status: runtime foundation and lobby.** One in-memory room supports organizer authorization, invitations with QR, up to 12 participants and browser identity recovery. Private assignments, round timing, infection, task editing, server persistence and atmosphere audio remain planned. See [product requirements](docs/product/README.md).
+**Current status: runtime, lobby and private-card reading.** One in-memory room supports organizer authorization, invitations with QR, up to 12 participants and browser identity recovery. Private cards, readiness, individual replacement and overall reshuffle/cancellation are implemented. Round timing, infection, task editing, server persistence and atmosphere audio remain planned. See [product requirements](docs/product/README.md).
 
 The client uses App, Pages and Shared layers from Feature-Sliced Design. Organizer and player pages expose public interfaces; Shared owns their common connection and CSS Module shell. The server and cross-runtime protocol remain separate. See [architecture](docs/agent/architecture.md) for placement and ESLint import restrictions.
 
@@ -46,6 +46,14 @@ The `.runtime` directory is machine-specific; Windows users should install Node 
 5. Stop with Ctrl+C. This stage stores the room only in memory: restarting requires a new room and invalidates previous credentials. Organizer authorization lasts for its browser tab, while phones store their own recovery key locally. Keep the organizer code separate from the invitation.
 
 The public origin field accepts HTTPS without credentials, additional paths, query parameters or fragments. It generates invitations only; it does not reconfigure Tuna. Browser storage must be available before entering. If clipboard copying is unavailable, select the invitation URL manually.
+
+## Deal and read cards
+
+After 4-12 participants join, select the possessed count on the laptop (default three, limited to half the roster) and deal. Offline participants also receive cards. Phones open cards privately, mark readiness and request replacement; only the organizer can issue a different card. Readiness never starts a timer.
+
+A single replacement preserves its role and all other participants. A full confirmed reshuffle redistributes roles/cards and clears readiness/requests. Late joiners get one assignment without affecting existing cards. Departure removes only that participant; the laptop warns about an unsuitable composition. Cancel returns everyone to lobby without removing membership. Phones recover the same card and readiness on refresh/reconnect, initially concealed. The original 24 introductory cards contain no infection.
+
+If a command times out, inspect current state before using the visible manual retry. The retry retains its original identity and cannot issue a second card change. A complete server restart still clears all room/card state. No task-bank editor or timed gameplay is present yet.
 
 ## Checks
 

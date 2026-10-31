@@ -1,9 +1,10 @@
 import { useCallback, useEffect, useRef, useState } from 'react';
 import QRCode from 'qrcode';
-import { describeError, useLobbyConnection } from '../../../shared/api/index.js';
+import { dealCommand, describeError, useLobbyConnection } from '../../../shared/api/index.js';
 import { LobbyShell } from '../../../shared/ui/index.js';
 import { invitationUrl } from '../invitation.js';
 import type { LobbyInputs, LobbyCommand } from '../../../../shared/protocol.js';
+import { DealControls } from './DealControls.js';
 
 const storageKey = 'pomekhi.organizer';
 function storedCode() { try { return sessionStorage.getItem(storageKey) ?? ''; } catch { return ''; } }
@@ -19,6 +20,7 @@ export function HostPage() {
   const [publicAddress, setPublicAddress] = useState('');
   const [qr, setQr] = useState('');
   const [copied, setCopied] = useState(false);
+  const [pending, setPending] = useState<{ command: LobbyCommand; input: LobbyInputs[LobbyCommand] } | null>(null);
   const room = view?.kind === 'organizer' ? view.room : null;
   const joinUrl = room && publicAddress ? invitationUrl(publicAddress, room.code) : '';
 
@@ -56,10 +58,14 @@ export function HostPage() {
     const result = await request(command, input);
     if (attempt !== operation.current) return;
     setBusy(false);
-    if (!result.ok) setError(describeError(result.error));
+    if (!result.ok) {
+      setError(describeError(result.error));
+      setPending(result.error === 'TIMEOUT' || result.error === 'CONNECTION_LOST' ? { command, input } : null);
+    } else setPending(null);
   }
 
   return <LobbyShell title="Сбор у экрана" connection={connection} error={error}>
+    {pending && <button disabled={busy || connection !== 'online'} onClick={() => void run(pending.command, pending.input)}>Повторить действие</button>}
     {view?.kind !== 'organizer' ? <form onSubmit={event => { event.preventDefault(); void authorize(code.trim().toUpperCase()); }}>
       <h3>Вход организатора</h3>
       <p>Код находится в окне запуска программы на ноутбуке. Участникам нужен только код комнаты.</p>
@@ -89,11 +95,18 @@ export function HostPage() {
           <p>Отсканируйте QR или откройте ссылку. Если вводите адрес сайта вручную, используйте код комнаты.</p>
         </>}
       </section>
+      <DealControls room={room} disabled={busy || connection !== 'online'} run={run} />
       <section>
         <h3>Участники: {room.players.length} / {room.capacity}</h3>
         <p>Организатор тоже входит с телефона. Этот экран не занимает место.</p>
         {room.players.length ? <ul>{room.players.map(player => <li key={player.id}>
           <span>{player.name}</span><small>{player.online ? 'На связи' : 'Нет связи'}</small>
+          {room.dealing.assignments.filter(item => item.playerId === player.id).map(item => <span key={item.assignmentId}>
+            <small>{item.replacementRequested ? 'Просит замену' : item.ready ? 'Прочитал' : 'Читает'}</small>
+            <button disabled={busy || connection !== 'online'} onClick={() => void run('deal:replace', {
+              ...dealCommand(room), playerId: player.id, assignmentId: item.assignmentId,
+            })} aria-label={`Заменить карточку ${player.name}`}>Заменить карточку</button>
+          </span>)}
           <button data-danger disabled={busy || connection !== 'online'} onClick={() => {
             if (window.confirm(`Удалить участника «${player.name}»? Его прежний вход перестанет действовать.`)) void run('player:remove', { roomId: room.id, playerId: player.id });
           }} aria-label={`Удалить участника ${player.name}`}>Удалить</button>

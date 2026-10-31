@@ -49,6 +49,28 @@
         "browser credential storage and reconnect",
         "invitation construction and client composition"
       ]
+    },
+    {
+      "id": "dealing",
+      "path": "docs/design/dealing.md",
+      "sources": [
+        "src/server/dealing.ts",
+        "src/server/cards.ts",
+        "src/server/lobby.ts",
+        "src/shared/protocol.ts",
+        "vite.config.ts"
+      ],
+      "prefixes": [
+        "src/client/pages/host/",
+        "src/client/pages/player/",
+        "src/client/shared/api/"
+      ],
+      "reviewWhen": [
+        "role assignment, bank, readiness or replacement behavior",
+        "late membership during reading",
+        "private projections and stale/repeated commands",
+        "server file exposure or browser recovery"
+      ]
     }
   ]
 }

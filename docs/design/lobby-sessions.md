@@ -1,12 +1,12 @@
 # Lobby membership and recovery
 
-Status: implemented in-memory lobby; no assignments or round lifecycle yet.
+Status: implemented in-memory room with private-card reading. Timed rounds remain future work.
 
 ## Ownership and contract
 
-[createLobby](../../src/server/lobby.ts) owns one active room, participant identities, revoked keys, organizer authorization and connection presence. App creates one instance per server and injects it into [Socket.IO](../../src/server/transport/socket.ts). Its interface is execute, disconnect and viewFor; it imports no transport or bootstrap. Identifier and room-code generators can be injected for deterministic tests. No database or repository abstraction is required.
+[createLobby](../../src/server/lobby.ts) owns one active room, participant identities, revoked keys, organizer authorization and connection presence. App creates one instance per server and injects it into [Socket.IO](../../src/server/transport/socket.ts). Its interface is execute, disconnect and viewFor; it imports no transport or bootstrap. Identifier and room-code generators can be injected for deterministic tests. The room also owns a dealing instance and replay fingerprints; [dealing design](dealing.md) owns assignment/readiness semantics. No database or repository abstraction is required.
 
-[The protocol](../../src/shared/protocol.ts) defines seven acknowledged commands and the lobby:state event. Runtime validation happens inside the lobby before changes. Anonymous connections receive server:ready only. Authorized organizers and joined players receive explicitly constructed projections; snapshots contain IDs, names, presence, room code, capacity and a monotonic revision, never resume keys or organizer credentials. Snapshots are detached copies. There are no private cards in this stage.
+[The protocol](../../src/shared/protocol.ts) defines membership and dealing commands with acknowledged results and the lobby:state event. Runtime validation happens inside the lobby before changes. Anonymous connections receive server:ready only. Authorized organizers and joined players receive explicitly constructed projections; snapshots contain IDs, names, presence, room code, capacity and a monotonic revision, never resume keys or organizer credentials. Snapshots are detached copies. Private cards are added only to their authorized player projection by the [dealing owner](dealing.md).
 
 Organizer authorization belongs to a connection and is checked on every control command. The process entry generates a random 12-character code for each launch, passes it into the server and intentionally prints it once in the local startup terminal. This bootstrap display is the sole credential-output exception; request/error diagnostics and the public readiness IPC contain no credentials. The panel stores its code in sessionStorage and authorizes again after each connection. A page URL alone grants no permissions. A new process invalidates the former code.
 

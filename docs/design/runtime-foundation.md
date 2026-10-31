@@ -42,6 +42,6 @@ The Python agent runner owns each configured check's process tree, including the
 
 ## Boundaries and verification
 
-In-memory room membership and authorization belong to the [lobby owner](lobby-sessions.md). App creates one instance and passes it to Socket.IO. The entry generates and intentionally prints the per-launch organizer code locally, alongside the panel URL; public readiness IPC remains credential-free. No assignment serialization or game persistence exists yet.
+In-memory room membership and authorization belong to the [lobby owner](lobby-sessions.md). App creates one instance and passes it to Socket.IO. The entry generates and intentionally prints the per-launch organizer code locally, alongside the panel URL; public readiness IPC remains credential-free. Private assignment projections are described in [dealing design](dealing.md); disk persistence remains future work.
 
 [Integration tests](../../tests/integration/server.test.ts) use the real server and built browser assets. [Runtime](../../tests/integration/runtime.test.ts), [compiled-process](../../tests/integration/bootstrap.test.ts) and [HTTP-error](../../tests/integration/http-errors.test.ts) tests exercise lifecycle and failure behavior. [Startup tests](../../src/server/config.test.ts) establish input validation. These tests do not prove native Windows process behavior, browser rendering, tunnel reachability or future game correctness.

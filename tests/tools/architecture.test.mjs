@@ -6,6 +6,11 @@ const eslint = new ESLint({ cwd: fileURLToPath(new URL('../..', import.meta.url)
 
 describe('production import restrictions', () => {
   const cases = [
+    ['dealing cannot import transport', 'src/server/dealing.ts', "import './transport/socket.js';", true],
+    ['card bank cannot import bootstrap', 'src/server/cards.ts', "import './index.js';", true],
+    ['browser cannot import the card bank', 'src/client/pages/player/ui/PlayerPage.tsx', "import '../../../../server/cards.js';", true],
+    ['protocol cannot import the card bank', 'src/shared/protocol.ts', "import '../server/cards.js';", true],
+    ['dealing can import the server card bank', 'src/server/dealing.ts', "import './cards.js';", false],
     ['App imports the page interface', 'src/client/app/main.tsx', "export { PlayerPage } from '../pages/player/index.js';", false],
     ['App cannot import page internals', 'src/client/app/main.tsx', "export { PlayerPage } from '../pages/player/ui/PlayerPage.js';", true],
     ['App cannot re-export page internals', 'src/client/app/main.tsx', "export * from '../pages/player/ui/PlayerPage.js';", true],
