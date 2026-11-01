@@ -9,6 +9,7 @@ type Reply = LobbyReply | { ok: false; error: RequestError };
 type ClientSocket = Socket<ServerToClientEvents, ClientToServerEvents>;
 
 const messages: Record<RequestError, string> = {
+  STORAGE_UNAVAILABLE: 'Не удалось сохранить партию. Игра остановлена. Организатор может восстановить запись с ноутбука.',
   INVALID_INPUT: 'Проверьте данные: имя — от 1 до 24 символов, код комнаты — 6 символов.',
   INVALID_ORGANIZER_CODE: 'Код организатора не подошёл. Возьмите актуальный код из окна запуска.',
   FORBIDDEN: 'Для этого действия нужен вход организатора.',

@@ -6,6 +6,7 @@ type Action = { kind: 'infect'; actor: string; target: string; group: string }
   | { kind: 'depart'; actor: string };
 interface Event { id: string; action: Action; touches: Set<string>; undone: boolean }
 interface State { group: string | null; released: boolean; left: boolean; captured: boolean; mission: boolean; cardKey: string }
+export interface SavedSearch { roundId: string; roster: [string, Assignment][]; events: { id: string; action: Action; touches: string[]; undone: boolean }[]; version: number; finalized: boolean }
 
 /** A round-local action ledger. Rebuild once per mutation; projections are detached reads. */
 export function createSearch(roundId: string, initial: ReadonlyMap<string, Assignment>, generateId: () => string) {
@@ -87,10 +88,15 @@ export function createSearch(roundId: string, initial: ReadonlyMap<string, Assig
     const live = [...states.values()].filter(s => !s.left);
     return live.some(s => !s.group && !s.released) && live.some(s => s.group && !s.released);
   }
-  function result(number: number, status: RoundResult['status'], activeMs: number): RoundResult {
+  function result(number: number, status: RoundResult['status'], activeMs: number): Omit<RoundResult, 'kind' | 'difficulty' | 'infectionEnabled'> {
     return { roundId, number, status, activeMs, rescuedGroups: released.size, totalGroups: groups.length,
       missions: [...states].filter(([id, s]) => roster.get(id)!.card.role === 'exorcist' && s.mission && !s.captured).length,
       totalMissions: roster.size - groups.length, infectedPlayers: [...states.values()].filter(s => s.captured).length };
   }
-  return { personal, act, undo, depart, canSearch, result, seal: () => { finalized = true; }, version: () => version };
+  function exportState(): SavedSearch { return structuredClone({ roundId, roster: [...roster], events: events.map(e => ({ ...e, touches: [...e.touches] })), version, finalized }); }
+  function restore(state: SavedSearch, bump = true) {
+    events.splice(0, events.length, ...structuredClone(state.events).map(e => ({ ...e, touches: new Set(e.touches) })));
+    version = state.version + Number(bump); finalized = state.finalized; rebuild();
+  }
+  return { personal, act, undo, depart, canSearch, result, exportState, restore, seal: () => { finalized = true; }, version: () => version };
 }

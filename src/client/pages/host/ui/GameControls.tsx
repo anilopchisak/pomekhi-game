@@ -7,28 +7,40 @@ export function GameControls({ room, disabled, run }: {
   run: <C extends LobbyCommand>(command: C, input: LobbyInputs[C]) => Promise<void>;
 }) {
   const game = room.game;
-  const { roundLimit, placementSeconds, searchSeconds, returnSeconds, infectionEnabled } = game.settings;
+  const { roundLimit, placementSeconds, searchSeconds, returnSeconds, tutorialEnabled, initialDifficulty, maximumDifficulty, infectionMode } = game.settings;
   const [draft, setDraft] = useState<GameSettings>(game.settings);
-  useEffect(() => setDraft({ roundLimit, placementSeconds, searchSeconds, returnSeconds, infectionEnabled }), [roundLimit, placementSeconds, searchSeconds, returnSeconds, infectionEnabled]);
+  useEffect(() => setDraft({ roundLimit, placementSeconds, searchSeconds, returnSeconds, tutorialEnabled, initialDifficulty, maximumDifficulty, infectionMode }), [roundLimit, placementSeconds, searchSeconds, returnSeconds, tutorialEnabled, initialDifficulty, maximumDifficulty, infectionMode]);
   const timed = ['placement', 'search', 'return'].includes(game.phase);
   const editable = ['lobby', 'reading', 'between_rounds'].includes(game.phase);
+  const progressionLocked = disabled || game.started || game.phase === 'reading';
   const dirty = JSON.stringify(draft) !== JSON.stringify(game.settings);
   const hasWarnings = room.players.some(player => !player.online) || room.dealing.assignments.some(item => !item.ready);
   const pendingReplacement = room.dealing.assignments.some(item => item.replacementRequested);
   return <section aria-label="Управление раундом">
     <h3>Управление раундом</h3>
     {editable && <details>
-      <summary>Настройки партии и времени</summary>
+      <summary>Настройки партии, сложности и времени</summary>
       <form onSubmit={event => { event.preventDefault(); void run('game:configure', { ...gameCommand(room), settings: draft }); }}>
-        <label><input type="checkbox" checked={draft.infectionEnabled} disabled={disabled} onChange={event => setDraft({ ...draft, infectionEnabled: event.target.checked })} /> Заражение в следующем раунде</label>
-        <label><input type="checkbox" checked={draft.roundLimit === null} disabled={disabled || game.started}
+        <label><input type="checkbox" checked={draft.tutorialEnabled} disabled={progressionLocked} onChange={event => setDraft({ ...draft, tutorialEnabled: event.target.checked })} /> Учебный раунд перед основной партией</label>
+        <label>Начальная сложность<select value={draft.initialDifficulty} disabled={progressionLocked} onChange={event => {
+          const level = Number(event.target.value) as GameSettings['initialDifficulty'];
+          setDraft({ ...draft, initialDifficulty: level, maximumDifficulty: Math.max(level, draft.maximumDifficulty) as GameSettings['maximumDifficulty'] });
+        }}>{[1, 2, 3].map(level => <option key={level} value={level}>Уровень {level}</option>)}</select></label>
+        <label>Максимальная сложность<select value={draft.maximumDifficulty} disabled={progressionLocked} onChange={event => setDraft({ ...draft, maximumDifficulty: Number(event.target.value) as GameSettings['maximumDifficulty'] })}>
+          {[1, 2, 3].filter(level => level >= draft.initialDifficulty).map(level => <option key={level} value={level}>Уровень {level}</option>)}
+        </select></label>
+        <label>Заражение<select value={draft.infectionMode} disabled={disabled} onChange={event => setDraft({ ...draft, infectionMode: event.target.value as GameSettings['infectionMode'] })}>
+          <option value="auto">Автоматически</option><option value="on">Включено</option><option value="off">Выключено</option>
+        </select></label>
+        <p>Режим заражения действует до следующего изменения. В обучении заражение всегда выключено.</p>
+        <label><input type="checkbox" checked={draft.roundLimit === null} disabled={progressionLocked}
           onChange={event => setDraft({ ...draft, roundLimit: event.target.checked ? null : 5 })} /> Без ограничения раундов</label>
-        {draft.roundLimit !== null && <label>Количество раундов<input type="number" min={1} max={99} value={draft.roundLimit} disabled={disabled || game.started}
+        {draft.roundLimit !== null && <label>Количество раундов<input type="number" min={1} max={99} value={draft.roundLimit} disabled={progressionLocked}
           onChange={event => setDraft({ ...draft, roundLimit: Number(event.target.value) })} required /></label>}
         {([['placementSeconds', 'Расстановка'], ['searchSeconds', 'Поиск'], ['returnSeconds', 'Возвращение']] as const).map(([key, label]) =>
           <label key={key}>{label}, секунд<input type="number" min={1} max={3600} step={1} value={draft[key]} disabled={disabled}
             onChange={event => setDraft({ ...draft, [key]: Number(event.target.value) })} required /></label>)}
-        <p>Количество раундов фиксируется при первом старте. Время можно менять перед следующим раундом.</p>
+        <p>Обучение не входит в количество раундов. Длина и сложность фиксируются при первом старте; для их изменения до старта отмените раздачу. Время и режим заражения можно менять перед следующим стартом.</p>
         <button disabled={disabled || !dirty}>Сохранить настройки</button>
       </form>
     </details>}

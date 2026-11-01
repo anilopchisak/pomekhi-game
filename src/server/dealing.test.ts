@@ -13,13 +13,14 @@ function issued(dealing: ReturnType<typeof createDealing>) {
   return dealing.publicState().assignments.map(item => ({ playerId: item.playerId, ...dealing.personal(item.playerId)! }));
 }
 
-it('ships 12 original introductory cards for each role with complete fields', () => {
-  expect(CARD_BANK).toHaveLength(24);
-  expect(new Set(CARD_BANK.map(card => card.id)).size).toBe(24);
-  expect(new Set(CARD_BANK.map(card => card.title)).size).toBe(24);
-  for (const role of ['possessed', 'exorcist']) expect(CARD_BANK.filter(card => card.role === role)).toHaveLength(12);
+it('ships 90 original cards across three levels with complete fields', () => {
+  expect(CARD_BANK).toHaveLength(90);
+  expect(new Set(CARD_BANK.map(card => card.id)).size).toBe(90);
+  expect(new Set(CARD_BANK.map(card => card.title)).size).toBe(90);
+  for (const [role, counts] of [['possessed', [20, 20, 20]], ['exorcist', [12, 9, 9]]] as const)
+    counts.forEach((count, index) => expect(CARD_BANK.filter(card => card.role === role && card.difficulty === index + 1)).toHaveLength(count));
   for (const card of CARD_BANK) {
-    expect(card.difficulty).toBe(1);
+    expect([1, 2, 3]).toContain(card.difficulty);
     const fields = card.role === 'possessed' ? [card.behavior, card.clue, card.releaseCondition] : [card.mission];
     for (const field of fields) expect(field.trim().length).toBeGreaterThan(10);
     expect(card).not.toHaveProperty('infectionTrigger');
@@ -130,4 +131,29 @@ describe('dealing rules', () => {
     for (const player of players) expect(dealing.personal(player)).toBeNull();
     dealing.add('late'); expect(dealing.personal('late')).toBeNull();
   });
+});
+
+it.each([1, 2, 3] as const)('deals, replaces and admits late readers without duplicates at level %s', difficulty => {
+  for (let count = 4; count <= 12; count++) {
+    let id = 0;
+    const dealing = createDealing({ generateId: () => `level-${++id}`, randomIndex: () => 0 });
+    const players = Array.from({ length: count }, (_, i) => `player-${i}`);
+    expect(dealing.deal(players.slice(0, -1), 1, new Map(), difficulty)).toBe(count === 4 ? 'INVALID_COMPOSITION' : undefined);
+    expect(dealing.deal(players, 1, new Map(), difficulty)).toBeUndefined();
+    const cards = issued(dealing).map(a => a.card);
+    expect(new Set(cards.map(card => card.id)).size).toBe(count);
+    expect(cards.every(card => card.difficulty <= difficulty)).toBe(true);
+    expect(cards.filter(card => card.role === 'exorcist' && card.difficulty < difficulty).every(card => card.difficulty === difficulty - 1)).toBe(true);
+    expect(cards.filter(card => card.role === 'exorcist' && card.difficulty === difficulty)).toHaveLength(difficulty === 1 ? count - 1 : Math.min(count - 1, 9));
+    for (const player of players) {
+      const before = dealing.personal(player)!;
+      expect(dealing.change(player, before.id, 'replace')).toBeUndefined();
+      expect(dealing.personal(player)!.card.id).not.toBe(before.card.id);
+      expect(dealing.personal(player)!.card.role).toBe(before.card.role);
+      expect(new Set(issued(dealing).map(a => a.card.id)).size).toBe(count);
+    }
+    const last = players.at(-1)!; dealing.remove(last); dealing.add(last);
+    expect(dealing.personal(last)!.card.difficulty).toBeLessThanOrEqual(difficulty);
+    expect(new Set(issued(dealing).map(a => a.card.id)).size).toBe(count);
+  }
 });

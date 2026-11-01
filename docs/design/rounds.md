@@ -1,10 +1,10 @@
 # Timed rounds and party lifecycle
 
-Status: implemented. Timers coordinate physical play; [search actions and results](search-actions.md) extend these phases. Difficulty progression, music and disk recovery remain future work.
+Status: implemented. Timers coordinate physical play; [search actions and results](search-actions.md) extend these phases. Tutorial and difficulty progression are implemented; music remains future work. [Paused disk recovery](session-persistence.md) is implemented.
 
 ## Ownership and state
 
-[createGame](../../src/server/game.ts) owns the authoritative phase, settings, round identity/version, deadlines, paused remainder, active roster, completed-round count and private role history. It composes [dealing](../../src/server/dealing.ts), which owns cards/readiness but no independent phase. Lobby retains authorization, membership, command journals, sound ownership and room lifetime. Neither game nor dealing imports transport or bootstrap.
+[createGame](../../src/server/game.ts) owns the authoritative phase, settings, round identity/version, deadlines, paused remainder, active roster, completed normal-round count, tutorial completion, frozen round plan, original progression horizon and private role history. It composes [dealing](../../src/server/dealing.ts), which owns cards/readiness but no independent phase. Lobby retains authorization, membership, command journals, sound ownership and room lifetime. Neither game nor dealing imports transport or bootstrap.
 
 The lifecycle is lobby -> reading -> placement -> search -> return -> between_rounds or finished. Reading and breaks are untimed. Starting is always manual; automatic transitions only connect the three timed phases and their completion. A new deal and its start are separate actions. Canceling reading restores its preceding waiting phase without resetting party progress.
 
@@ -34,7 +34,7 @@ A control gap over five seconds, or a wall/monotonic discrepancy over five secon
 
 Organizer controls are game:configure, round:start/pause/resume/return/abort and party:finish/extend. Each carries roomId, gameVersion, roundId and requestId; start/resume also carry explicit warning confirmation. Runtime validation precedes mutation. Existing canonical SHA-256 request journals prevent repeated actions, with per-principal limits and stale version checks. Cached successful retries return the current projection without repeating a transition, completion or cue. Server clock checks and read-only lobby:sync do not consume journal entries.
 
-Lobby exposes subscribe and dispose in addition to execute/disconnect/viewFor. Synchronous commands notify after mutation; automatic game callbacks notify without a network command. Socket transport subscribes once, publishes authorized projections and releases its subscription on engine close. The server factory disposes the lobby before transport shutdown, preserving its bounded close contract.
+Lobby exposes subscribe and dispose in addition to execute/disconnect/viewFor. Domain commands notify after mutation; the session coordinator holds notifications until the checkpoint commits. Automatic callbacks enter the same queue and publish without a network command. Socket transport subscribes once, publishes authorized projections and releases its subscription on engine close. The server factory drains/checkpoints the session and closes transports within its bounded close contract.
 
 ## Browser clocks and sound
 
@@ -48,4 +48,16 @@ Organizer-only organizer:audio selects one connected sound panel, independently 
 
 [Game rules](../../src/server/game.test.ts) use controlled monotonic/wall time and schedulers for phase boundaries, pauses, suspension, membership, fairness, abort/finish and callback disposal. [Real Socket.IO tests](../../tests/integration/rounds.test.ts) exercise independent clients, spontaneous publications, host/phone disconnections, recovery, waiting entrants, permissions, request replay and sound ownership. [DOM checks](../../tests/tools/cards-ui.test.mjs) retain real React/connection/lobby with controlled delivery, including audio API calls and lost acknowledgements.
 
-Browser/Tuna evidence is kept under ignored artifacts/rounds. Desktop Chromium/WebKit and 320px layouts do not establish native Windows, physical iOS/Android, QR camera scanning, actual speaker audibility or separate carrier-network behavior. State remains in process memory: a full restart invalidates the room and cards rather than recovering a paused game.
+Browser/Tuna evidence is kept under ignored artifacts/rounds. Desktop Chromium/WebKit and 320px layouts do not establish native Windows, physical iOS/Android, QR camera scanning, actual speaker audibility or separate carrier-network behavior. A full restart restores the last successful disk checkpoint. Active phases are paused with server_restarted; reading, breaks and finished states remain untimed. Downtime and old sound cues are excluded.
+
+## Tutorial and progression
+
+Game owns planRound and freezes a RoundPlan when dealing: kind, number (0 for tutorial, 1-based for normal rounds), target difficulty and effective infection. Shuffle, replacement and reading newcomers retain the level. Changing infection mode during reading updates only the effective infection flag; starts lock all timed-round settings. Public projections expose the frozen plan or the next plan when no deal exists, never another participant's role/card.
+
+The default optional tutorial precedes five normal rounds. Shared status provides a briefing and role-specific practice guidance; phases, manual start, readiness and actions use their existing boundaries. Tutorial always uses level 1 without infection. Normal return completion marks tutorialCompleted without incrementing completedRounds or private role history. Its result is separately labeled and excluded from team totals and normal active time. Aborting either kind preserves progression position; aborted tutorial is retried.
+
+Settings default to initialDifficulty=1, maximumDifficulty=3 and infectionMode=auto. The original finite length, or five for endless, is the progressionRounds horizon. Normal level is initial + round((maximum-initial)*(number-1)/(horizon-1)); the single-round case uses initial, and rounds after the horizon use maximum. Default levels are 1,2,2,3,3. Auto infection starts at max(2,ceil(0.75*horizon)). Persistent on/off overrides affect normal rounds only. Extension changes the round limit but never the horizon. Normal completion alone advances both progression and role history.
+
+Progression settings lock while reading and after first start, including a tutorial start. Before first start, cancel reading to reconfigure. Durations and infection mode remain editable in existing waiting/reading phases. Server validation, not client controls, enforces these rules. Provisional tutorial results have the same mission/undo/finalization window as normal results.
+
+[Progression tests](../../src/server/progression.test.ts) cover short/long/endless parties, fixed levels, aborted attempts, settings locks, infection overrides, extensions and frozen restoration. Real transport tests exercise a tutorial followed by normal rounds with seven independent phones.

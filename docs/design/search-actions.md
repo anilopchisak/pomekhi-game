@@ -1,6 +1,6 @@
 # Search actions, undo and round results
 
-Status: implemented. Players judge physical conditions on trust; software authorizes state changes, not physical performance. All state is in server memory.
+Status: implemented. Players judge physical conditions on trust; software authorizes state changes, not physical performance. State is checkpointed locally by the [session coordinator](session-persistence.md).
 
 ## Owners and lifecycle
 
@@ -8,7 +8,7 @@ Status: implemented. Players judge physical conditions on trust; software author
 
 At start, each original possessed identity creates one group. Any active member can capture a still-active exorcist into that group when infection is enabled. Captured players receive the group's card, stay in the same physical zone and can continue spreading capture. Any active group member can report release; it releases the entire group and credits that original group once. Released players return to base and cannot act again during that search.
 
-GameSettings.infectionEnabled defaults to false and is editable only before a round. All 12 original possessed cards have original infection conditions, separate from their release conditions. The phone displays those conditions only when enabled. No extra bank, difficulty progression or editor is added.
+GameSettings.infectionMode defaults to auto and remains editable before starts. Game resolves it into the issued RoundPlan.infectionEnabled; tutorial always disables infection, including when mode is on. All 60 possessed cards have original infection conditions, separate from release. Phones and server actions use the effective flag. Tutorial outcomes use the same ledger/finalization window but are excluded from normal team totals and role history.
 
 Capture and release require unpaused search. Original exorcists can mark/unmark missions during unpaused search, return, or a provisional result period. Any effective capture invalidates their mission credit, even if completed earlier; later release does not restore credit. Undoing that capture can restore eligibility and the earlier mission flag.
 

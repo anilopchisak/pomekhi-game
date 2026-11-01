@@ -7,7 +7,7 @@ function setup(roundLimit: number | null = 5) {
   const onChange = vi.fn();
   const game = createGame({ generateId: () => `id-${++id}`, randomIndex: () => 0, clock: timer.clock, onChange });
   const players = Array.from({ length: 7 }, (_, i) => ({ id: `p${i}`, online: true }));
-  game.configure({ roundLimit, placementSeconds: 2, searchSeconds: 3, returnSeconds: 2 , infectionEnabled: false});
+  game.configure({ ...game.publicState().settings, tutorialEnabled: false, roundLimit, placementSeconds: 2, searchSeconds: 3, returnSeconds: 2 , infectionMode: 'off'});
   function deal() { expect(game.deal(players.map(player => player.id), 3, false)).toBeUndefined(); }
   function start() { expect(game.start(players, true)).toBeUndefined(); }
   deal();

@@ -13,7 +13,7 @@
 .screen summary { cursor: pointer; padding: .7rem 0; }
 .screen button { min-height: 2.8rem; padding: .7rem 1rem; margin: .3rem .5rem .3rem 0; border: 1px solid #9fae7f; border-radius: .25rem; background: #c5d49e; color: #14170d; font: inherit; cursor: pointer; }
 .screen button[data-danger] { background: transparent; color: #edbdb3; border-color: #9f675d; }
-.screen :is(button, input):focus-visible { outline: 3px solid #ebd59a; outline-offset: 3px; }
+.screen :is(button, input, select):focus-visible { outline: 3px solid #ebd59a; outline-offset: 3px; }
 .screen button:disabled { opacity: .5; cursor: wait; }
 .screen [role=alert] { border-left: 3px solid #e6b08d; padding: .8rem; background: #30231e; color: #ffe3cf; }
 .screen [data-connection=offline] { color: #e2b9a4; }

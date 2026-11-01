@@ -42,13 +42,13 @@ function state(socket: Client, predicate: (room: RoomSnapshot) => boolean) {
     socket.on('lobby:state', listener);
   });
 }
-async function setup() {
+async function setup(tutorialEnabled = false) {
   const host = await connect(); value(await send(host, 'organizer:authorize', { code: 'TESTHOSTCODE' }));
   const room = roomOf(value(await send(host, 'room:create', {})));
   const phones = await Promise.all(Array.from({ length: 7 }, () => connect()));
   const sessions = phones.map((_, i) => ({ roomCode: room.code, name: `Player ${i}`, resumeKey: (i + 1).toString(16).padStart(64, '0') }));
   for (const [i, phone] of phones.entries()) value(await send(phone, 'player:join', sessions[i]));
-  value(await send(host, 'game:configure', { ...base(await current(host)), settings: { roundLimit: 2, placementSeconds: 2, searchSeconds: 3, returnSeconds: 2 , infectionEnabled: false} }));
+  value(await send(host, 'game:configure', { ...base(await current(host)), settings: { ...room.game.settings, tutorialEnabled, roundLimit: 2, placementSeconds: 2, searchSeconds: 3, returnSeconds: 2 , infectionMode: 'off'} }));
   value(await send(host, 'deal:create', { ...dealBase(await current(host)), possessedCount: 3 }));
   return { host, room, phones, sessions };
 }
@@ -124,7 +124,7 @@ it('authorizes every control, canonicalizes retries and does not charge clock sy
   expect(await send(phones[0], 'game:configure', command)).toEqual({ ok: false, error: 'FORBIDDEN' });
   const anonymous = await connect(); expect(await send(anonymous, 'lobby:sync', {})).toEqual({ ok: false, error: 'FORBIDDEN' });
   value(await send(host, 'game:configure', command));
-  value(await send(host, 'game:configure', { ...command, settings: { infectionEnabled: false, returnSeconds: 2, searchSeconds: 10, placementSeconds: 2, roundLimit: 2 } }));
+  value(await send(host, 'game:configure', { ...command, settings: { ...command.settings, infectionMode: 'off', returnSeconds: 2, searchSeconds: 10, placementSeconds: 2, roundLimit: 2 } }));
   expect(await send(host, 'game:configure', { ...command, settings: { ...command.settings, searchSeconds: 11 } })).toEqual({ ok: false, error: 'INVALID_INPUT' });
   for (let i = 0; i < 1030; i++) value(await send(host, 'lobby:sync', {}));
   await start(host); expect((await current(host)).game.phase).toBe('placement');
@@ -161,7 +161,7 @@ async function action(socket: Client, command: 'play:infect' | 'play:release' | 
 async function searching() {
   const fixture = await setup();
   const settings = (await current(fixture.host)).game.settings;
-  value(await send(fixture.host, 'game:configure', { ...base(await current(fixture.host)), settings: { ...settings, infectionEnabled: true } }));
+  value(await send(fixture.host, 'game:configure', { ...base(await current(fixture.host)), settings: { ...settings, infectionMode: 'on' } }));
   await start(fixture.host);
   const views = await Promise.all(fixture.phones.map(async socket => { const own = value(await send(socket, 'lobby:sync', {})); if (own.kind !== 'player') throw new Error('Missing player'); return { socket, own }; }));
   timer.advance(2000);
@@ -218,4 +218,40 @@ it('automatically returns on the last capture and never reopens after undo', asy
   const own = value(await send(roots[0].socket, 'lobby:sync', {})); if (own.kind !== 'player') throw new Error('Missing root');
   value(await action(roots[0].socket, 'play:undo', { actionId: own.play!.undo!.id }));
   expect((await current(host)).game.phase).toBe('return');
+});
+
+it('runs tutorial and progression for seven independent phones with private cards and stable retries', async () => {
+  const { host, phones } = await setup(true);
+  for (const [index, kind, difficulty] of [[0, 'tutorial', 1], [1, 'regular', 1], [2, 'regular', 3]] as const) {
+    if (index) value(await send(host, 'deal:create', { ...dealBase(await current(host)), possessedCount: 3 }));
+    const room = await current(host);
+    expect(room.game.roundPlan).toMatchObject({ kind, number: index, difficulty, infectionEnabled: index === 2 });
+    const views = await Promise.all(phones.map(async phone => value(await send(phone, 'lobby:sync', {}))));
+    for (const view of views) {
+      if (view.kind !== 'player') throw new Error('Missing player');
+      expect(view.assignment!.card.difficulty).toBe(difficulty);
+      expect(JSON.stringify(view.room)).not.toMatch(/releaseCondition|infectionCondition|"card"/);
+      const others = views.filter(v => v.kind === 'player' && v.playerId !== view.playerId);
+      for (const other of others) if (other.kind === 'player') expect(JSON.stringify(view)).not.toContain(other.assignment!.card.title);
+    }
+    if (!index) {
+      const rootIndex = views.findIndex(v => v.kind === 'player' && v.assignment!.card.role === 'possessed');
+      const target = views.find(v => v.kind === 'player' && v.assignment!.card.role === 'exorcist');
+      value(await send(host, 'game:configure', { ...base(await current(host)), settings: { ...room.game.settings, infectionMode: 'on' } }));
+      expect((await current(host)).game.roundPlan.infectionEnabled).toBe(false);
+      await start(host);
+      const search = state(host, r => r.game.phase === 'search'); timer.advance(2000); await search;
+      expect(await action(phones[rootIndex], 'play:infect', { targetId: target?.kind === 'player' ? target.playerId : '' })).toEqual({ ok: false, error: 'ACTION_UNAVAILABLE' });
+    } else {
+      value(await send(host, 'game:configure', { ...base(await current(host)), settings: { ...(await current(host)).game.settings, infectionMode: 'auto' } }));
+      await start(host);
+      const search = state(host, r => r.game.phase === 'search'); timer.advance(2000); await search;
+    }
+    const returning = state(host, r => r.game.phase === 'return'); timer.advance(3000); await returning;
+    const expected = index === 2 ? 'finished' : 'between_rounds';
+    const end = state(host, r => r.game.phase === expected); timer.advance(2000);
+    expect((await end).game.completedRounds).toBe(index);
+    if (!index) value(await send(host, 'game:configure', { ...base(await current(host)), settings: { ...(await current(host)).game.settings, infectionMode: 'auto' } }));
+  }
+  expect((await current(host)).game.results.map(r => r.kind)).toEqual(['tutorial', 'regular', 'regular']);
 });

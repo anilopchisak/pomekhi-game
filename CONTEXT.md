@@ -23,7 +23,9 @@ Pomekhi is a cooperative horror party game. The organizer participates while sof
 | Release | A trusted participant report that the condition was physically satisfied. Software does not judge the live action. |
 | Task | A private possessed-player card. |
 | Mission | A exorcist's additional task; its completion contributes to a separate team count. |
-| Tutorial | An optional simple opening round without infection; separate from normal difficulty progression. |
+| Tutorial | An optional practice round before normal rounds, at level 1 without infection; excluded from team totals, normal count and role history. |
+| Difficulty | A level from 1 to 3 controlling card complexity. The server selects the round level; individual cards may fall back to simpler levels when needed for uniqueness. |
+| Infection mode | Persistent organizer choice of auto, on or off. Each issued round exposes an effective flag; tutorials always disable infection. |
 | Endless mode | Continued rounds from a finite reusable task bank, not runtime AI generation. |
 | Foundation | The runtime transport foundation. Health/readiness retain this stage label even when a lobby exists; it does not assert playable rounds. |
 | Lobby | The gathering state of one logical room before a deal; membership and presence continue during reading. |
@@ -31,6 +33,8 @@ Pomekhi is a cooperative horror party game. The organizer participates while sof
 | Infection group | A round-local original possessed identity and its captured exorcists; any member can spread capture or release the group. |
 | Provisional result | A completed round outcome that accepts mission reports and valid undo until sealed. |
 | Final result | An immutable scored round outcome. |
+| Checkpoint | A complete private server snapshot committed before publication; timed phases checkpoint about once per second. |
+| Restart recovery | Loading the last checkpoint with fresh organizer authorization and active play paused; downtime is excluded. |
 | Resume key | A private bearer credential saved on a phone before joining; it recovers that participant, independently of name and socket ID. |
 
 See [product requirements](docs/product/README.md) for rules and implementation status. [The shared protocol](src/shared/protocol.ts) owns current HTTP/event payload shapes; domain terms alone do not create wire contracts.

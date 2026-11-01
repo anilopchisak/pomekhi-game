@@ -2,7 +2,7 @@
 
 A cooperative horror party game with a shared laptop display and private phone assignments. Product copy is Russian; project and agent documentation is English.
 
-**Current status: runtime, lobby, private cards and timed rounds.** One in-memory room supports organizer authorization, invitations with QR, up to 12 participants and browser identity recovery. Private cards, readiness, individual replacement and overall reshuffle/cancellation are implemented. Timed placement/search/return, pause and short laptop signals are implemented. Release/infection, dependency-aware undo and team results are implemented. Task editing, server persistence and atmosphere music remain planned. See [product requirements](docs/product/README.md).
+**Current status: runtime, lobby, private cards and timed rounds.** One locally saved room supports organizer authorization, invitations with QR, up to 12 participants and browser identity recovery. Private cards, readiness, individual replacement and overall reshuffle/cancellation are implemented. Timed placement/search/return, pause and short laptop signals are implemented. Release/infection, dependency-aware undo and team results are implemented. Paused restart recovery, a separate tutorial and three-level difficulty progression are implemented. Task editing and atmosphere music remain planned. See [product requirements](docs/product/README.md).
 
 The client uses App, Pages and Shared layers from Feature-Sliced Design. Organizer and player pages expose public interfaces; Shared owns their common connection and CSS Module shell. The server and cross-runtime protocol remain separate. See [architecture](docs/agent/architecture.md) for placement and ESLint import restrictions.
 
@@ -43,7 +43,7 @@ The `.runtime` directory is machine-specific; Windows users should install Node 
 2. Open the panel on the laptop, enter that code and create a room. The laptop does not count as a participant.
 3. For remote phones, start Tuna as described below and paste its public HTTPS origin into the panel. Use the generated invitation link or QR; a manually opened player page asks for the six-character room code and a name.
 4. Join from one phone per participant, including the organizer. Refresh/reconnect retains membership in the same browser and origin. Closing a tab retains its slot; explicit leave or organizer removal releases it.
-5. Stop with Ctrl+C. This stage stores the room only in memory: restarting requires a new room and invalidates previous credentials. Organizer authorization lasts for its browser tab, while phones store their own recovery key locally. Keep the organizer code separate from the invitation.
+5. Stop with Ctrl+C. The program saves to data/session.json and restores the room on restart; active phases return paused. Enter the new organizer code from the startup terminal. Organizer authorization lasts for its browser tab, while phones store their own recovery key locally. Keep the organizer code separate from the invitation.
 
 The public origin field accepts HTTPS without credentials, additional paths, query parameters or fragments. It generates invitations only; it does not reconfigure Tuna. Browser storage must be available before entering. If clipboard copying is unavailable, select the invitation URL manually.
 
@@ -51,17 +51,25 @@ The public origin field accepts HTTPS without credentials, additional paths, que
 
 After 4-12 participants join, select the possessed count on the laptop (default three, limited to half the roster) and deal. Offline participants also receive cards. Phones open cards privately, mark readiness and request replacement; only the organizer can issue a different card. Readiness never starts a timer.
 
-A single replacement preserves its role and all other participants. A full confirmed reshuffle redistributes roles/cards and clears readiness/requests. Late joiners during reading get one assignment without affecting existing cards. During timed phases they wait for the next deal. Departure removes only that participant; the laptop warns about an unsuitable composition. Cancel restores the previous waiting phase without removing membership or completed-round progress. Phones recover the same card and readiness on refresh/reconnect, initially concealed. The 24 introductory cards support optional infection, enabled manually before a round.
+A single replacement preserves its role and all other participants. A full confirmed reshuffle redistributes roles/cards and clears readiness/requests. Late joiners during reading get one assignment without affecting existing cards. During timed phases they wait for the next deal. Departure removes only that participant; the laptop warns about an unsuitable composition. Cancel restores the previous waiting phase without removing membership or completed-round progress. Phones recover the same card and readiness on refresh/reconnect, initially concealed. The 90 original cards cover three levels. Selection prefers the round level and falls back to simpler cards when needed for uniqueness.
 
-If a command times out, inspect current state before using the visible manual retry. The retry retains its original identity and cannot issue a second card change. A complete server restart still clears all room/card state. The task-bank editor remains future work. See [search actions](docs/design/search-actions.md) for infection and results.
+If a command times out, inspect current state before using the visible manual retry. The retry retains its original identity and cannot issue a second card change. A complete restart restores room/card state from the last successful checkpoint. The task-bank editor remains future work. See [search actions](docs/design/search-actions.md) for infection and results.
 
 ## Run rounds
 
-Open the round settings on the laptop. Defaults are five rounds, 45-second placement, 180-second search and 45-second return; endless mode is available. Save changes, deal cards, then manually start. Unready/offline members require confirmation; replacement requests and an unsuitable composition block start. Readiness never starts the timer.
+Open the round settings on the laptop. Defaults are a separate tutorial followed by five normal rounds, 45-second placement, 180-second search and 45-second return; endless mode is available. Normal difficulty progresses 1 → 2 → 2 → 3 → 3, with automatic infection from normal round four. The tutorial stays at level 1 without infection and does not count toward team totals or role history. Before dealing, you can disable the tutorial and choose initial/maximum levels. Progression settings lock on issued cards and after the first start; before starting, cancel the deal to change them. Infection can use auto/on/off, retaining your choice until changed. Save changes, deal cards, then manually start. Unready/offline members require confirmation; replacement requests and an unsuitable composition block start. Readiness never starts the timer.
 
 The server advances placement, search and return automatically, then waits for a manual next deal/start. Pause preserves the phase/remainder and instructs players to stop safely. Loss of the last organizer panel or explicit active-player departure pauses; a phone connection loss does not. Resume stays manual. Early search finish starts return; abort returns everyone to base without credit. A finished finite party can add another round.
 
-Use the explicit sound button to select one laptop panel, then test volume before play. Phones remain silent. Refresh restores current phase/card; laptop sleep causes a conservative pause rather than replaying missed phases. Full program restart still loses state. See [round design](docs/design/rounds.md).
+Use the explicit sound button to select one laptop panel, then test volume before play. Phones remain silent. Refresh restores current phase/card; laptop sleep causes a conservative pause rather than replaying missed phases. Full restart restores the last saved state, with active play paused. See [round design](docs/design/rounds.md).
+
+## Saved party and recovery
+
+Normal development/production launch uses one private data/session.json under the working directory (the supplied launchers use the project root). Keep data on local disk. Start one instance per directory; a second writer fails startup. A killed process leaves a uniquely named claim that a later launch removes after confirming its owner has exited. Do not copy data into a public directory or send it to players: it contains bearer keys and private cards. Programmatic test servers default to memory; disk tests use temporary directories.
+
+After restarting, use the new organizer code printed in the terminal. Phones recover on the same address and browser. Only active placement/search/return phases restore paused; continue manually after checking everyone. Sound ownership must be selected again. Closing the room saves an empty checkpoint, so it stays closed after restart.
+
+The laptop panel reports storage errors. Fix disk access/free space, then use the retry button. A damaged/incompatible save is retained; the confirmed reset button first keeps a diagnostic copy, then clears the party. No automatic fallback, cloud copy or save catalogue is provided. See [persistence design](docs/design/session-persistence.md) for commit and failure behavior.
 
 ## Checks
 

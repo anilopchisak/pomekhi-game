@@ -1,17 +1,21 @@
-import type { Assignment, DealingSnapshot, LobbyError, Role } from '../shared/protocol.js';
+import type { Assignment, DealingSnapshot, Difficulty, LobbyError, Role } from '../shared/protocol.js';
 import { CARD_BANK } from './cards.js';
 
 interface Options { generateId: () => string; randomIndex: (limit: number) => number }
+export interface SavedDealing { difficulty: Difficulty; version: number; dealId: string | null; initialPossessedCount: number | null; assignments: [string, Assignment][] }
 export function createDealing({ generateId, randomIndex }: Options) {
+  let difficulty: Difficulty = 1;
   let version = 0;
   let dealId: string | null = null;
   let initialPossessedCount: number | null = null;
   let assignments = new Map<string, Assignment>();
 
   function select(role: Role, used: Set<string>, previous?: string) {
-    const available = CARD_BANK.filter(card => card.role === role && !used.has(card.id) && card.id !== previous);
-    if (!available.length) throw new Error('No unused introductory card remains for this role.');
-    return structuredClone(available[randomIndex(available.length)]);
+    for (let level = difficulty; level >= 1; level--) {
+      const available = CARD_BANK.filter(card => card.role === role && card.difficulty === level && !used.has(card.id) && card.id !== previous);
+      if (available.length) return structuredClone(available[randomIndex(available.length)]);
+    }
+    throw new Error('No unused card remains at or below this difficulty.');
   }
   function counts() {
     const possessed = [...assignments.values()].filter(item => item.card.role === 'possessed').length;
@@ -29,8 +33,9 @@ export function createDealing({ generateId, randomIndex }: Options) {
     const assignment = assignments.get(playerId);
     return assignment ? structuredClone(assignment) : null;
   }
-  function deal(players: string[], possessedCount: number, history: ReadonlyMap<string, number> = new Map()): LobbyError | undefined {
+  function deal(players: string[], possessedCount: number, history: ReadonlyMap<string, number> = new Map(), level: Difficulty = 1): LobbyError | undefined {
     if (players.length < 4 || players.length > 12 || !Number.isInteger(possessedCount) || possessedCount < 1 || possessedCount > Math.floor(players.length / 2)) return 'INVALID_COMPOSITION';
+    difficulty = level;
     const shuffled = [...players];
     for (let i = shuffled.length - 1; i > 0; i--) {
       const j = randomIndex(i + 1);
@@ -74,5 +79,11 @@ export function createDealing({ generateId, randomIndex }: Options) {
       if (flag) current.ready = false;
     }
   }
-  return { publicState, personal, deal, cancel, add, remove, change };
+  function exportState(): SavedDealing { return structuredClone({ difficulty, version, dealId, initialPossessedCount, assignments: [...assignments] }); }
+  function restore(state: SavedDealing, bump = true) {
+    difficulty = state.difficulty;
+    version = state.version + Number(bump); dealId = state.dealId; initialPossessedCount = state.initialPossessedCount;
+    assignments = new Map(structuredClone(state.assignments));
+  }
+  return { publicState, personal, deal, cancel, add, remove, change, exportState, restore };
 }

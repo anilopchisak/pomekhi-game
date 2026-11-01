@@ -78,8 +78,8 @@ export default [
   {
     files: ['src/server/lobby.ts', 'src/server/game.ts', 'src/server/search.ts', 'src/server/dealing.ts', 'src/server/cards.ts'],
     rules: { 'no-restricted-imports': ['error', {
-      paths: ['express', 'socket.io', 'node:http', 'node:net'],
-      patterns: [clientDependency, { regex: '(^|/)(transport|app|runtime|index)(/|\\.)', message: 'Lobby owns state independently of transport and bootstrap.' }],
+      paths: ['express', 'socket.io', 'node:http', 'node:net', 'node:fs', 'node:fs/promises', 'fs', 'fs/promises'],
+      patterns: [clientDependency, { regex: '(^|/)(transport|app|runtime|index|session|session-store|session-format)(/|\\.)', message: 'Lobby owns state independently of transport and bootstrap.' }],
     }] },
   },
   {

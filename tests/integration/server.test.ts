@@ -79,8 +79,9 @@ describe('built client and actual HTTP / Socket.IO server', () => {
   });
 
   it('announces readiness only after the production process actually listens', async () => {
+    const directory = await mkdtemp(join(tmpdir(), 'pomekhi-entry-'));
     const child = spawn(process.execPath, ['dist/server/index.js'], {
-      env: { ...process.env, HOST: '127.0.0.1', PORT: '0', NODE_ENV: 'production' },
+      env: { ...process.env, HOST: '127.0.0.1', PORT: '0', NODE_ENV: 'production', POMEKHI_TEST_DIRECTORY: directory, NODE_OPTIONS: `--import=${new URL('./fixtures/isolated-data.mjs', import.meta.url).href}` },
       stdio: ['ignore', 'ignore', 'ignore', 'ipc'],
     });
     try {
@@ -92,6 +93,7 @@ describe('built client and actual HTTP / Socket.IO server', () => {
       const exit = once(child, 'exit');
       child.kill('SIGTERM');
       const [code, signal] = await exit;
+      await rm(directory, { recursive: true, force: true });
       if (process.platform !== 'win32') {
         expect(code).toBe(0);
         expect(signal).toBeNull();
@@ -108,7 +110,7 @@ describe('built client and actual HTTP / Socket.IO server', () => {
     await new Promise<void>(resolve => reservation.close(() => resolve()));
     const directory = await mkdtemp(join(tmpdir(), 'pomekhi-tuna-'));
     const child = spawn(process.execPath, ['scripts/start-public.mjs'], {
-      env: { ...process.env, HOST: '127.0.0.1', PORT: String(port), TUNA_BIN: join(directory, 'missing-tuna') },
+      env: { ...process.env, HOST: '127.0.0.1', PORT: String(port), TUNA_BIN: join(directory, 'missing-tuna'), POMEKHI_TEST_DIRECTORY: directory, NODE_OPTIONS: `--import=${new URL('./fixtures/isolated-data.mjs', import.meta.url).href}` },
       stdio: ['ignore', 'pipe', 'pipe'],
     });
     let output = '';

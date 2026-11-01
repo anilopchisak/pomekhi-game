@@ -114,6 +114,31 @@
         "causal undo, scoring, frozen roster and provisional results",
         "personal projection and reconnect"
       ]
+    },
+    {
+      "id": "session-persistence",
+      "path": "docs/design/session-persistence.md",
+      "sources": [
+        "src/server/session.ts",
+        "src/server/session-store.ts",
+        "src/server/session-format.ts",
+        "src/server/lobby.ts",
+        "src/server/game.ts",
+        "src/server/dealing.ts",
+        "src/server/search.ts",
+        "src/server/runtime.ts",
+        "src/server/app.ts",
+        "src/shared/protocol.ts",
+        "vite.config.ts"
+      ],
+      "prefixes": [
+        "src/client/pages/"
+      ],
+      "reviewWhen": [
+        "commit ordering and disk failure",
+        "private snapshot validation and paused restart",
+        "writer ownership and startup cancellation"
+      ]
     }
   ]
 }

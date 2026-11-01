@@ -65,6 +65,7 @@ beforeEach(() => {
     if (i === 0) { saved = session; phoneId = view.playerId; }
     lobby.disconnect(`p${i}`);
   }
+  value(lobby.execute('host', 'game:configure', { ...gameBase(), settings: { ...lobby.viewFor('host').room.game.settings, tutorialEnabled: false } }));
   value(lobby.execute('host', 'deal:create', { ...base(), possessedCount: 3 }));
   savePlayerSession(saved);
   container = globalThis.document.createElement('div'); globalThis.document.body.append(container); root = createRoot(container);
@@ -283,7 +284,7 @@ it('updates the phone to a concealed group card, releases the group and undoes t
   const targetIndex = sessionViews.indexOf(target);
   savePlayerSession({ roomCode: room.code, name: `Player ${targetIndex}`, resumeKey: String(targetIndex + 1).repeat(64), pending: false });
   const current = lobby.viewFor('host').room;
-  value(lobby.execute('host', 'game:configure', { ...gameBase(), settings: { ...current.game.settings, infectionEnabled: true } }));
+  value(lobby.execute('host', 'game:configure', { ...gameBase(), settings: { ...current.game.settings, infectionMode: 'on' } }));
   value(lobby.execute('host', 'round:start', { ...gameBase(), confirmWarnings: true }));
   clock.advance(45000);
   io.mockReturnValue(socket('phone')); await act(async () => root.render(createElement(PlayerPage)));
@@ -303,6 +304,9 @@ it('updates the phone to a concealed group card, releases the group and undoes t
   expect(lobby.viewFor('host').room.game.results).toEqual([]);
 });
 async function startSearchOnExorcistPhone(roundLimit = 5) {
+  value(lobby.execute('host', 'deal:cancel', base()));
+  value(lobby.execute('host', 'game:configure', { ...gameBase(), settings: { ...lobby.viewFor('host').room.game.settings, infectionMode: 'on', roundLimit } }));
+  value(lobby.execute('host', 'deal:create', { ...base(), possessedCount: 3 }));
   const players = [];
   for (let i = 0; i < 7; i++) {
     const connection = `inspect${i}`;
@@ -313,7 +317,6 @@ async function startSearchOnExorcistPhone(roundLimit = 5) {
   const exorcists = players.filter(player => player.view.assignment.card.role === 'exorcist');
   const target = exorcists.at(-1);
   savePlayerSession({ roomCode: room.code, name: `Player ${target.index}`, resumeKey: String(target.index + 1).repeat(64), pending: false });
-  value(lobby.execute('host', 'game:configure', { ...gameBase(), settings: { ...lobby.viewFor('host').room.game.settings, infectionEnabled: true, roundLimit } }));
   value(lobby.execute('host', 'round:start', { ...gameBase(), confirmWarnings: true }));
   clock.advance(45000);
   io.mockReturnValue(socket('phone'));
@@ -380,4 +383,25 @@ it('renders provisional totals and freezes them on the organizer panel', async (
   await click('Зафиксировать результаты');
   expect(container.textContent).toContain('Результат зафиксирован');
   expect([...container.querySelectorAll('button')].some(button => button.textContent === 'Зафиксировать результаты')).toBe(false);
+});
+
+it('shows tutorial guidance without revealing the closed card and excludes its outcome from team totals', async () => {
+  value(lobby.execute('host', 'deal:cancel', base()));
+  value(lobby.execute('host', 'game:configure', { ...gameBase(), settings: { ...lobby.viewFor('host').room.game.settings,
+    tutorialEnabled: true, placementSeconds: 1, searchSeconds: 1, returnSeconds: 1, infectionMode: 'on' } }));
+  value(lobby.execute('host', 'deal:create', { ...base(), possessedCount: 3 }));
+  io.mockReturnValue(socket('phone'));
+  await act(async () => root.render(createElement(PlayerPage)));
+  const own = lobby.viewFor('phone');
+  expect(container.textContent).toContain('Пробный раунд');
+  expect(container.textContent).toContain('Обучение · перед основной партией');
+  expect(container.textContent).not.toContain(own.assignment.card.title);
+  expect(container.textContent).not.toContain('Обучение:');
+  await click('Открыть карточку');
+  expect(container.textContent).toContain('Обучение:');
+  expect(container.textContent).not.toContain('Условие заражения:');
+  await act(async () => { value(lobby.execute('host', 'round:start', { ...gameBase(), confirmWarnings: true })); clock.advance(3000); });
+  expect(container.textContent).toContain('Обучение · без общего зачёта');
+  expect(container.textContent).toContain('Спасено групп: 0 / 0. Миссии: 0 / 0. Активное время: 0 мин 0 с.');
+  expect(container.textContent).toContain('завершено обычных: 0');
 });

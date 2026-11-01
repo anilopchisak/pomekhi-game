@@ -1,8 +1,8 @@
 import { useState } from 'react';
 import type { Assignment } from '../../../../shared/protocol.js';
 
-export function PersonalCardPanel({ assignment, disabled, readOnly = false, infectionEnabled = false, act }: {
-  assignment: Assignment; disabled: boolean; readOnly?: boolean; infectionEnabled?: boolean;
+export function PersonalCardPanel({ assignment, disabled, readOnly = false, infectionEnabled = false, tutorial = false, act }: {
+  assignment: Assignment; disabled: boolean; readOnly?: boolean; infectionEnabled?: boolean; tutorial?: boolean;
   act: (action: 'card:ready' | 'card:request', flag: boolean) => Promise<void>;
 }) {
   const [revealed, setRevealed] = useState<string | null>(null);
@@ -14,6 +14,10 @@ export function PersonalCardPanel({ assignment, disabled, readOnly = false, infe
     {open && <div>
       <h3>{card.role === 'possessed' ? 'Вы — одержимый' : 'Вы — экзорцист'}</h3>
       <h4>{card.title}</h4>
+      <p>Сложность карточки: {card.difficulty}</p>
+      {tutorial && <p>{card.role === 'possessed'
+        ? 'Обучение: изображайте поведение и помогайте подсказкой. Когда условие выполнено, нажмите «Нас освободили» и возвращайтесь на базу.'
+        : 'Обучение: дождитесь поиска, затем помогайте одержимым по их подсказкам. Если выполните необязательную миссию, нажмите «Миссия выполнена». Заражения нет.'}</p>}
       {card.role === 'possessed' ? <>
         <p><strong>Поведение:</strong> {card.behavior}</p>
         <p><strong>Подсказка:</strong> {card.clue} Её можно произнести, если экзорцисту нужна помощь.</p>

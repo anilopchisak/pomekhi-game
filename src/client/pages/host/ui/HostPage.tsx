@@ -25,6 +25,8 @@ export function HostPage() {
   const [copied, setCopied] = useState(false);
   const [pending, setPending] = useState<{ command: LobbyCommand; input: LobbyInputs[LobbyCommand] } | null>(null);
   const room = view?.kind === 'organizer' ? view.room : null;
+  const persistence = view?.persistence;
+  const disabled = busy || connection !== 'online' || persistence?.state !== undefined && persistence.state !== 'ready';
   const joinUrl = room && publicAddress ? invitationUrl(publicAddress, room.code) : '';
 
   const authorize = useCallback(async (value: string) => {
@@ -70,7 +72,19 @@ export function HostPage() {
   }
 
   return <LobbyShell title="Пульт дома" connection={connection} error={error}>
-    {pending && <button disabled={busy || connection !== 'online'} onClick={() => void run(pending.command, pending.input)}>Повторить действие</button>}
+    {view?.kind === 'organizer' && <section aria-label="Сохранение партии">
+      <h3>Сохранение партии</h3>
+      <p role="status">{persistence?.mode === 'disk' ? persistence.state === 'ready' ? 'Автосохранение включено.' : 'Ошибка сохранения. Продвижение игры остановлено.' : 'Тестовый режим: партия хранится только в памяти.'}</p>
+      {persistence?.recovered && <p>Партия восстановлена. {room?.game.paused && room.game.pauseReason === 'server_restarted' ? 'Начатый раунд на паузе; продолжите его вручную после проверки участников.' : 'Карточки и итоги сохранены.'}</p>}
+      {persistence && persistence.state !== 'ready' && <>
+        <p role="alert">{persistence.state === 'load_error' ? 'Не удалось загрузить сохранение. Файл не заменён. Проверьте доступ к диску и повторите загрузку.' : 'Изменение не подтверждено. Проверьте текущее состояние после восстановления записи.'}</p>
+        <button disabled={busy || connection !== 'online'} onClick={() => void run('storage:retry', {})}>Повторить загрузку и запись</button>
+        <button data-danger disabled={busy || connection !== 'online'} onClick={() => {
+          if (window.confirm('Сбросить сохранённую партию? Участники и карточки будут удалены. Исходный файл останется на диске для диагностики.')) void run('storage:reset', { confirm: true });
+        }}>Сбросить сохранение</button>
+      </>}
+    </section>}
+    {pending && <button disabled={disabled} onClick={() => void run(pending.command, pending.input)}>Повторить действие</button>}
     {view?.kind !== 'organizer' ? <form onSubmit={event => { event.preventDefault(); void authorize(code.trim().toUpperCase()); }}>
       <h3>Вход организатора</h3>
       <p>Код находится в окне запуска программы на ноутбуке. Участникам нужен только код комнаты.</p>
@@ -78,7 +92,7 @@ export function HostPage() {
       <button disabled={busy || connection !== 'online'}>{busy ? 'Проверяем…' : 'Войти'}</button>
     </form> : !room ? <section>
       <p>Соберите всех у экрана. Создайте комнату и пригласите участников с телефонов.</p>
-      <button disabled={busy || connection !== 'online'} onClick={() => void run('room:create', {})}>Создать комнату</button>
+      <button disabled={disabled} onClick={() => void run('room:create', {})}>Создать комнату</button>
     </section> : <>
       <RoundStatus game={room.game} clockOffset={clockOffset} connection={connection} />
       <section>
@@ -101,9 +115,9 @@ export function HostPage() {
           <p>Отсканируйте QR или откройте ссылку. Если вводите адрес сайта вручную, используйте код комнаты.</p>
         </>}
       </section>
-      <DealControls room={room} disabled={busy || connection !== 'online'} run={run} />
-      <GameControls key={room.id} room={room} disabled={busy || connection !== 'online'} run={run} />
-      <SoundControls enabled={view.audioEnabled} disabled={busy || connection !== 'online'} cue={cue} prepareRef={prepareSound} gameVersion={room.game.version} clockOffset={clockOffset} claim={async enabled => {
+      <DealControls room={room} disabled={disabled} run={run} />
+      <GameControls key={room.id} room={room} disabled={disabled} run={run} />
+      <SoundControls enabled={view.audioEnabled} disabled={disabled} cue={cue} prepareRef={prepareSound} gameVersion={room.game.version} clockOffset={clockOffset} claim={async enabled => {
         const result = await request('organizer:audio', { enabled });
         if (!result.ok) setError(describeError(result.error));
         return result.ok;
@@ -115,16 +129,16 @@ export function HostPage() {
           <span>{player.name}</span><small>{player.online ? 'На связи' : 'Нет связи'}</small>
           {room.dealing.assignments.filter(item => item.playerId === player.id).map(item => <span key={item.assignmentId}>
             <small>{room.game.phase === 'reading' ? item.replacementRequested ? 'Просит замену' : item.ready ? 'Прочитал' : 'Читает' : room.game.activePlayerIds.includes(player.id) ? 'В составе раунда' : 'Ждёт раздачи'}</small>
-            {room.game.phase === 'reading' && <button disabled={busy || connection !== 'online'} onClick={() => void run('deal:replace', {
+            {room.game.phase === 'reading' && <button disabled={disabled} onClick={() => void run('deal:replace', {
               ...dealCommand(room), playerId: player.id, assignmentId: item.assignmentId,
             })} aria-label={`Заменить карточку ${player.name}`}>Заменить карточку</button>}
           </span>)}
           {!room.dealing.assignments.some(item => item.playerId === player.id) && <small>Ждёт следующей раздачи</small>}
-          <button data-danger disabled={busy || connection !== 'online'} onClick={() => {
+          <button data-danger disabled={disabled} onClick={() => {
             if (window.confirm(`Удалить участника «${player.name}»? Его прежний вход перестанет действовать.`)) void run('player:remove', { roomId: room.id, playerId: player.id });
           }} aria-label={`Удалить участника ${player.name}`}>Удалить</button>
         </li>)}</ul> : <p>Пока здесь тихо. Ждём первого участника.</p>}
-        <button data-danger disabled={busy || connection !== 'online'} onClick={() => {
+        <button data-danger disabled={disabled} onClick={() => {
           if (window.confirm('Закрыть комнату? Все участники выйдут, прежнее приглашение перестанет действовать.')) void run('room:close', { roomId: room.id });
         }}>Закрыть комнату</button>
       </section>

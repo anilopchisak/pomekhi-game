@@ -5,7 +5,9 @@ import type { HealthResponse } from '../shared/protocol.js';
 import { createHttpApp } from './transport/http.js';
 import type { HttpErrorReporter } from './transport/http.js';
 import { createSocketServer } from './transport/socket.js';
-import { createLobby, generateOrganizerCode } from './lobby.js';
+import { generateOrganizerCode } from './lobby.js';
+import { createSession } from './session.js';
+import type { SessionStore } from './session-store.js';
 import type { GameClock } from './game.js';
 
 export interface AppServerOptions {
@@ -14,6 +16,7 @@ export interface AppServerOptions {
   shutdownTimeoutMs?: number;
   organizerCode?: string;
   clock?: GameClock;
+  sessionStore?: SessionStore;
 }
 
 export function buildHealthResponse(): HealthResponse {
@@ -28,7 +31,7 @@ export function createAppServer(options: AppServerOptions = {}) {
   const health = buildHealthResponse();
   const app = createHttpApp({ health, clientDirectory: options.clientDirectory, reportError: options.reportError });
   const server = createServer(app);
-  const lobby = createLobby({ organizerCode: options.organizerCode ?? generateOrganizerCode(), clock: options.clock });
+  const lobby = createSession({ organizerCode: options.organizerCode ?? generateOrganizerCode(), clock: options.clock, store: options.sessionStore });
   const io = createSocketServer(server, health, lobby);
   const connections = new Set<Socket>();
   server.on('connection', socket => {
@@ -44,14 +47,13 @@ export function createAppServer(options: AppServerOptions = {}) {
 
   function close(): Promise<void> {
     if (closing) return closing;
-    lobby.dispose();
     closing = new Promise<void>((resolve, reject) => {
       const deadline = setTimeout(() => {
         forceClose();
         reject(new Error(`Server shutdown exceeded ${timeoutMs}ms; remaining connections were closed.`));
       }, timeoutMs);
       let closeError: Error | undefined;
-      void io.close(error => { closeError = error; }).then(() => {
+      void Promise.all([lobby.close(), io.close(error => { closeError = error; })]).then(() => {
         clearTimeout(deadline);
         if (closeError && (closeError as NodeJS.ErrnoException).code !== 'ERR_SERVER_NOT_RUNNING') reject(closeError);
         else resolve();
@@ -64,5 +66,5 @@ export function createAppServer(options: AppServerOptions = {}) {
     return closing;
   }
 
-  return { server, io, close };
+  return { server, io, close, initialize: lobby.initialize };
 }

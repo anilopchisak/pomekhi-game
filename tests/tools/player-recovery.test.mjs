@@ -30,7 +30,7 @@ afterEach(async () => {
 });
 
 describe('player recovery form', () => {
-  it.each([false, true])('retains the existing identity after a timeout (pending=%s)', async pending => {
+  it.each([[false, 'TIMEOUT'], [true, 'TIMEOUT'], [false, 'STORAGE_UNAVAILABLE'], [true, 'STORAGE_UNAVAILABLE']])('retains identity after an uncertain response (pending=%s, error=%s)', async (pending, error) => {
     const lobby = createLobby({ organizerCode: 'HOST', generateRoomCode: () => 'ABCDEF' });
     lobby.execute('host', 'organizer:authorize', { code: 'HOST' });
     lobby.execute('host', 'room:create', {});
@@ -54,14 +54,15 @@ describe('player recovery form', () => {
       emit(command, input, acknowledge) {
         if (!dropped) {
           dropped = true;
-          acknowledge(new Error('Packet was not delivered before the acknowledgement deadline.'));
+          if (error === 'TIMEOUT') acknowledge(new Error('Packet was not delivered before the acknowledgement deadline.'));
+          else acknowledge(null, { ok: false, error });
         } else acknowledge(null, lobby.execute('reloaded-phone', command, input));
       },
     };
     io.mockReturnValue(socket);
 
     await act(async () => root.render(createElement(PlayerPage)));
-    expect(container.textContent).toContain('Ответ задерживается');
+    expect(container.textContent).toContain(error === 'TIMEOUT' ? 'Ответ задерживается' : 'Не удалось сохранить партию');
     expect(readPlayerSession()).toEqual(session);
     expect(container.querySelector('button').disabled).toBe(false);
 

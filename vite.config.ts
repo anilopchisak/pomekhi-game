@@ -18,7 +18,7 @@ export default defineConfig(({ mode }) => {
       fs: {
         allow: ['src/client', 'src/shared', 'node_modules'].map(path => fileURLToPath(new URL(path, import.meta.url))),
         // Preserve Vite 8 defaults when extending its replacement deny list.
-        deny: ['.env', '.env.*', '*.{crt,pem,key,p12,pfx,cer,der}', '.npmrc', '.yarnrc.yml', '**/.git/**', '**/src/server/**', '**/dist/server/**'],
+        deny: ['.env', '.env.*', '*.{crt,pem,key,p12,pfx,cer,der}', '.npmrc', '.yarnrc.yml', '**/.git/**', '**/src/server/**', '**/dist/server/**', '**/data/**'],
       },
       proxy: {
         '/api': target,

@@ -24,9 +24,16 @@ export interface RoomSnapshot {
 
 export type GamePhase = 'lobby' | 'reading' | 'placement' | 'search' | 'return' | 'between_rounds' | 'finished';
 export type TimedPhase = 'placement' | 'search' | 'return';
-export type PauseReason = 'organizer' | 'organizer_disconnected' | 'participant_left' | 'clock_gap';
-export interface GameSettings { roundLimit: number | null; placementSeconds: number; searchSeconds: number; returnSeconds: number; infectionEnabled: boolean }
-export interface RoundResult {
+export type PauseReason = 'organizer' | 'organizer_disconnected' | 'participant_left' | 'clock_gap' | 'server_restarted' | 'storage_error';
+export type Difficulty = 1 | 2 | 3;
+export type InfectionMode = 'auto' | 'on' | 'off';
+export interface GameSettings {
+  roundLimit: number | null; placementSeconds: number; searchSeconds: number; returnSeconds: number;
+  tutorialEnabled: boolean; initialDifficulty: Difficulty; maximumDifficulty: Difficulty; infectionMode: InfectionMode;
+}
+export interface RoundPlan { kind: 'tutorial' | 'regular'; number: number; difficulty: Difficulty; infectionEnabled: boolean }
+export interface RoundResult extends Omit<RoundPlan, 'infectionEnabled'> {
+  infectionEnabled: boolean | null;
   roundId: string; number: number; status: 'provisional' | 'final' | 'aborted';
   rescuedGroups: number; totalGroups: number; missions: number; totalMissions: number; infectedPlayers: number; activeMs: number;
 }
@@ -42,6 +49,8 @@ export interface GameSnapshot {
   roundId: string | null;
   roundNumber: number;
   completedRounds: number;
+  tutorialCompleted: boolean;
+  roundPlan: RoundPlan;
   settings: GameSettings;
   started: boolean;
   paused: boolean;
@@ -58,7 +67,7 @@ export interface GameCue { roomId: string; version: number; phase: GamePhase; ki
 interface GameCommand { roomId: string; requestId: string; gameVersion: number; roundId: string | null }
 
 export type Role = 'possessed' | 'exorcist';
-export type PersonalCard = { id: string; title: string; difficulty: 1 } & (
+export type PersonalCard = { id: string; title: string; difficulty: Difficulty } & (
   | { role: 'possessed'; behavior: string; clue: string; releaseCondition: string; infectionCondition: string }
   | { role: 'exorcist'; mission: string }
 );
@@ -78,7 +87,10 @@ export interface DealingSnapshot {
 interface DealCommand { roomId: string; requestId: string; dealVersion: number; dealId: string | null }
 interface CardCommand extends DealCommand { assignmentId: string }
 
-export type LobbyView = { revision: number } & (
+export interface PersistenceStatus {
+  mode: 'memory' | 'disk'; state: 'ready' | 'load_error' | 'write_error'; recovered: boolean;
+}
+export type LobbyView = { revision: number; persistence?: PersistenceStatus } & (
   | { kind: 'organizer'; room: RoomSnapshot | null; audioEnabled: boolean }
   | { kind: 'player'; room: RoomSnapshot; playerId: string; assignment: Assignment | null; play: PersonalPlay | null }
   | { kind: 'ended'; reason: 'closed' | 'removed' | 'left' }
@@ -88,7 +100,7 @@ export type LobbyError = 'INVALID_INPUT' | 'INVALID_ORGANIZER_CODE' | 'FORBIDDEN
   | 'ROOM_NOT_FOUND' | 'ROOM_FULL' | 'NAME_TAKEN' | 'SESSION_EXPIRED'
   | 'INVALID_COMPOSITION' | 'STALE_DEAL' | 'STALE_CARD' | 'REPLACEMENT_PENDING' | 'REQUEST_LIMIT'
   | 'INVALID_PHASE' | 'STALE_GAME' | 'START_WARNING' | 'RESUME_WARNING' | 'SETTINGS_LOCKED'
-  | 'STALE_PLAY' | 'ACTION_UNAVAILABLE' | 'UNDO_DEPENDENCY' | 'RESULTS_FINAL';
+  | 'STALE_PLAY' | 'ACTION_UNAVAILABLE' | 'UNDO_DEPENDENCY' | 'RESULTS_FINAL' | 'STORAGE_UNAVAILABLE';
 export type LobbyReply = { ok: true; view: LobbyView } | { ok: false; error: LobbyError };
 
 export interface LobbyInputs {
@@ -120,6 +132,8 @@ export interface LobbyInputs {
   'play:mission': PlayCommand & { completed: boolean };
   'play:undo': PlayCommand & { actionId: string };
   'results:finalize': GameCommand;
+  'storage:retry': Record<string, never>;
+  'storage:reset': { confirm: true };
 }
 
 export type LobbyCommand = keyof LobbyInputs;

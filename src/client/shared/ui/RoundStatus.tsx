@@ -5,7 +5,7 @@ import { ResultsSummary } from './ResultsSummary.js';
 import styles from './RoundStatus.module.css';
 
 const labels: Record<GamePhase, string> = { lobby: 'Сбор участников', reading: 'Чтение карточек', placement: 'Расстановка', search: 'Поиск', return: 'Возвращение на базу', between_rounds: 'Перерыв', finished: 'Партия завершена' };
-const reasons: Record<PauseReason, string> = { organizer: 'Пауза организатора.', organizer_disconnected: 'Панель организатора отключилась.', participant_left: 'Участник покинул раунд.', clock_gap: 'Ноутбук был недоступен или часы изменились.' };
+const reasons: Record<PauseReason, string> = { organizer: 'Пауза организатора.', organizer_disconnected: 'Панель организатора отключилась.', participant_left: 'Участник покинул раунд.', clock_gap: 'Ноутбук был недоступен или часы изменились.', server_restarted: 'Программа перезапущена.', storage_error: 'Ошибка сохранения. Ждите восстановления записи с ноутбука.' };
 export function RoundStatus({ game, clockOffset, connection, role, playStatus, waiting = false }: {
   game: GameSnapshot; clockOffset: number | null; connection: ConnectionState; role?: Role; playStatus?: 'exorcist' | 'possessed' | 'captured' | 'released'; waiting?: boolean;
 }) {
@@ -27,7 +27,14 @@ export function RoundStatus({ game, clockOffset, connection, role, playStatus, w
   if (game.phase === 'search' && playStatus === 'released') instruction = 'Вы освобождены. Возвращайтесь на базу и не участвуйте в поиске до следующего раунда.';
   if (game.paused) instruction = 'Прекратите действия и ждите в безопасном месте. Продолжение объявит ноутбук.';
   return <section className={styles.panel} aria-label="Состояние раунда">
-    <p>Раунд {game.roundNumber || 1} {game.settings.roundLimit === null ? '· без ограничения' : `из ${game.settings.roundLimit}`} · завершено: {game.completedRounds}</p>
+    <p>{game.roundPlan.kind === 'tutorial' ? 'Обучение · перед основной партией' : `Раунд ${game.roundPlan.number} ${game.settings.roundLimit === null ? '· без ограничения' : `из ${game.settings.roundLimit}`}`} · завершено обычных: {game.completedRounds}</p>
+    <p>Уровень {game.roundPlan.difficulty} · {game.roundPlan.infectionEnabled ? 'заражение включено' : 'без заражения'}</p>
+    {game.roundPlan.kind === 'tutorial' && ['lobby', 'reading'].includes(game.phase) && <aside aria-label="Правила обучения">
+      <h4>Пробный раунд</h4>
+      <p>Попробуйте роли и кнопки без общего зачёта. Откройте личную карточку на телефоне и отметьте готовность; раунд запускается вручную с ноутбука.</p>
+      <p>Одержимые занимают места и изображают поведение карточки. Экзорцисты ждут сигнала поиска, затем помогают по подсказкам. Освобождение и необязательные миссии отмечаются на телефонах.</p>
+      <p>Ходите шагом только в разрешённых зонах. Заражения нет. По сигналу возвращения все идут на базу; при паузе остановитесь в безопасном месте.</p>
+    </aside>}
     <div role="status"><h3>{game.paused ? `Пауза · ${labels[game.phase]}` : labels[game.phase]}</h3></div>
     {(game.deadline !== null || game.paused) && <>
       <div className={styles.timer} role="timer" aria-label="Осталось времени" aria-live="off">{seconds === null ? '—:—' : `${Math.floor(seconds / 60).toString().padStart(2, '0')}:${(seconds % 60).toString().padStart(2, '0')}`}</div>

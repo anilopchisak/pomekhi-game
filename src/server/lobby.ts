@@ -1,7 +1,7 @@
 import { createHash, randomInt, randomUUID, timingSafeEqual } from 'node:crypto';
 import type { GameCue, GameSettings, LobbyCommand, LobbyError, LobbyReply, LobbyView, RoomSnapshot } from '../shared/protocol.js';
 import { createGame, validSettings } from './game.js';
-import type { GameClock } from './game.js';
+import type { GameClock, SavedGame } from './game.js';
 
 const alphabet = 'ABCDEFGHJKLMNPQRSTUVWXYZ23456789';
 const maximumRequestsPerPrincipal = 1024;
@@ -18,7 +18,12 @@ interface Room {
   game: ReturnType<typeof createGame>;
   requests: Map<string, Map<string, string>>;
 }
-interface LobbyOptions {
+export interface SavedLobby {
+  revision: number; usedCodes: string[];
+  room: null | { id: string; code: string; players: { id: string; name: string; key: string }[]; revoked: string[];
+    game: SavedGame; requests: [string, [string, string][]][] };
+}
+export interface LobbyOptions {
   organizerCode: string;
   generateId?: () => string;
   generateRoomCode?: () => string;
@@ -188,7 +193,7 @@ export function createLobby({ organizerCode, generateId = randomUUID, generateRo
       const fields: unknown[] = [command, data.roomId, gameAction ? data.gameVersion : data.dealVersion, gameAction ? data.roundId : data.dealId];
       if (command === 'game:configure') {
         const settings = data.settings as GameSettings;
-        fields.push(settings.infectionEnabled, settings.roundLimit, settings.placementSeconds, settings.searchSeconds, settings.returnSeconds);
+        fields.push(settings.tutorialEnabled, settings.initialDifficulty, settings.maximumDifficulty, settings.infectionMode, settings.roundLimit, settings.placementSeconds, settings.searchSeconds, settings.returnSeconds);
       }
       if (playAction) fields.push(data.playVersion);
       if (command === 'play:infect') fields.push(data.targetId);
@@ -234,8 +239,41 @@ export function createLobby({ organizerCode, generateId = randomUUID, generateRo
   }
 
   function subscribe(listener: (cue?: GameCue) => void) { listeners.add(listener); return () => { listeners.delete(listener); }; }
+  function exportState(): SavedLobby {
+    return structuredClone({ revision, usedCodes: [...usedCodes], room: room ? { id: room.id, code: room.code,
+      players: [...room.players.values()].map(({ id, name, key }) => ({ id, name, key })), revoked: [...room.revoked],
+      game: room.game.exportState(), requests: [...room.requests].map(([id, entries]) => [id, [...entries]]) } : null });
+  }
+  function liveState() { return { actors: new Map(structuredClone([...actors])), audioOwner }; }
+  function restore(state: SavedLobby, reason: 'server_restarted' | 'storage_error' = 'server_restarted', live?: ReturnType<typeof liveState>) {
+    const previousGame = room?.id === state.room?.id ? room?.game.exportState() : undefined;
+    room?.game.dispose(); room = undefined; audioOwner = null; actors.clear();
+    revision = Math.max(revision, state.revision) + 1; usedCodes.clear(); for (const code of state.usedCodes) usedCodes.add(code);
+    if (state.room) {
+      const saved = state.room;
+      const game = createGame({ generateId, randomIndex, clock, onChange: notify });
+      const restored = structuredClone(saved.game);
+      restored.version = Math.max(restored.version, previousGame?.version ?? 0);
+      restored.dealing.version = Math.max(restored.dealing.version, previousGame?.dealing.version ?? 0);
+      if (restored.search && previousGame?.search?.roundId === restored.search.roundId) restored.search.version = Math.max(restored.search.version, previousGame.search.version);
+      game.restore(restored, reason);
+      room = { id: saved.id, code: saved.code, players: new Map(saved.players.map(p => [p.id, { ...p, connections: new Set<string>() }])),
+        revoked: new Set(saved.revoked), game, requests: new Map(saved.requests.map(([id, entries]) => [id, new Map(entries)])) };
+    }
+    if (live) {
+      for (const [connection, actor] of live.actors) {
+        if (actor.kind === 'player') {
+          const player = room?.players.get(actor.playerId);
+          if (player) { actors.set(connection, actor); player.connections.add(connection); }
+          else actors.set(connection, { kind: 'ended', reason: 'closed' });
+        } else actors.set(connection, actor);
+      }
+      audioOwner = room ? live.audioOwner : null;
+    }
+  }
+  function checkpoint() { if (room?.game.synchronize()) notify(); }
   function dispose() { room?.game.dispose(); room = undefined; listeners.clear(); actors.clear(); audioOwner = null; }
-  return { execute, disconnect, viewFor, subscribe, dispose };
+  return { execute, disconnect, viewFor, subscribe, dispose, exportState, restore, liveState, checkpoint };
 }
 
 export type Lobby = ReturnType<typeof createLobby>;

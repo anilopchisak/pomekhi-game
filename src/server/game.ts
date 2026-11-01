@@ -1,25 +1,48 @@
 import { performance } from 'node:perf_hooks';
-import type { GameCue, GamePhase, GameSettings, GameSnapshot, LobbyError, PauseReason, RoundResult, TimedPhase } from '../shared/protocol.js';
+import type { Difficulty, GameCue, GamePhase, GameSettings, GameSnapshot, LobbyError, PauseReason, RoundPlan, RoundResult, TimedPhase } from '../shared/protocol.js';
 import { createDealing } from './dealing.js';
 import { createSearch } from './search.js';
+import type { SavedDealing } from './dealing.js';
+import type { SavedSearch } from './search.js';
 
 export interface GameClock {
   now: () => number;
   wallNow: () => number;
   schedule: (callback: () => void, delayMs: number) => () => void;
 }
-const defaultClock: GameClock = {
+export const defaultClock: GameClock = {
   now: () => performance.now(), wallNow: () => Date.now(),
   schedule: (callback, delay) => { const timer = setTimeout(callback, delay); return () => clearTimeout(timer); },
 };
+export interface SavedGame {
+  tutorialCompleted: boolean; progressionRounds: number; roundPlan: RoundPlan | null;
+  dealing: SavedDealing; settings: GameSettings; phase: GamePhase; waitingPhase: 'lobby' | 'between_rounds'; version: number;
+  roundId: string | null; completedRounds: number; started: boolean; paused: boolean; pauseReason: PauseReason | null;
+  remainingMs: number | null; activePlayerIds: string[]; rosterChanged: boolean; lastRoundAborted: boolean;
+  history: [string, number][]; originalPossessed: string[]; search: SavedSearch | null; results: RoundResult[]; activeMs: number;
+}
 export function isTimedPhase(phase: GamePhase): phase is TimedPhase {
   return phase === 'placement' || phase === 'search' || phase === 'return';
 }
 export function validSettings(value: unknown, maximumRounds = 99): value is GameSettings {
   if (!value || typeof value !== 'object' || Array.isArray(value)) return false;
   const data = value as GameSettings;
-  return typeof data.infectionEnabled === 'boolean' && (data.roundLimit === null || Number.isInteger(data.roundLimit) && data.roundLimit >= 1 && data.roundLimit <= maximumRounds)
+  return typeof data.tutorialEnabled === 'boolean' && ['auto', 'on', 'off'].includes(data.infectionMode)
+    && validDifficulty(data.initialDifficulty) && validDifficulty(data.maximumDifficulty) && data.initialDifficulty <= data.maximumDifficulty
+    && (data.roundLimit === null || Number.isInteger(data.roundLimit) && data.roundLimit >= 1 && data.roundLimit <= maximumRounds)
     && [data.placementSeconds, data.searchSeconds, data.returnSeconds].every(item => Number.isInteger(item) && item >= 1 && item <= 3600);
+}
+
+export function validDifficulty(value: unknown): value is Difficulty { return value === 1 || value === 2 || value === 3; }
+
+/** Resolve only the next deal. Issued rounds retain their saved plan. */
+export function planRound(settings: GameSettings, completedRounds: number, tutorialCompleted: boolean, horizon: number): RoundPlan {
+  if (settings.tutorialEnabled && !tutorialCompleted) return { kind: 'tutorial', number: 0, difficulty: 1, infectionEnabled: false };
+  const number = completedRounds + 1;
+  const difficulty = number > horizon ? settings.maximumDifficulty : horizon === 1 ? settings.initialDifficulty
+    : settings.initialDifficulty + Math.round((settings.maximumDifficulty - settings.initialDifficulty) * (number - 1) / (horizon - 1));
+  return { kind: 'regular', number, difficulty: difficulty as Difficulty,
+    infectionEnabled: settings.infectionMode === 'on' || settings.infectionMode === 'auto' && number >= Math.max(2, Math.ceil(0.75 * horizon)) };
 }
 
 /** Owns the party lifecycle; membership, authorization and publication belong to lobby. */
@@ -27,12 +50,16 @@ export function createGame({ generateId, randomIndex, clock = defaultClock, onCh
   generateId: () => string; randomIndex: (limit: number) => number; clock?: GameClock; onChange: () => void;
 }) {
   const dealing = createDealing({ generateId, randomIndex });
-  let settings: GameSettings = { roundLimit: 5, placementSeconds: 45, searchSeconds: 180, returnSeconds: 45, infectionEnabled: false };
+  let settings: GameSettings = { roundLimit: 5, placementSeconds: 45, searchSeconds: 180, returnSeconds: 45, tutorialEnabled: true, initialDifficulty: 1, maximumDifficulty: 3, infectionMode: 'auto' };
   let phase: GamePhase = 'lobby';
   let waitingPhase: 'lobby' | 'between_rounds' = 'lobby';
   let version = 0;
   let roundId: string | null = null;
   let completedRounds = 0;
+  let tutorialCompleted = false;
+  let progressionRounds = 5;
+  let roundPlan: RoundPlan | null = null;
+  const nextPlan = () => planRound(settings, completedRounds, tutorialCompleted, progressionRounds);
   let started = false;
   let paused = false;
   let pauseReason: PauseReason | null = null;
@@ -92,9 +119,13 @@ export function createGame({ generateId, randomIndex, clock = defaultClock, onCh
     clearTimer(); bump('pause');
   }
   function finishRound() {
-    account(); clearTimer(); completedRounds++;
-    results.push(search!.result(completedRounds, 'provisional', activeMs));
-    for (const player of originalPossessed) history.set(player, (history.get(player) ?? 0) + 1);
+    account(); clearTimer();
+    if (roundPlan!.kind === 'tutorial') tutorialCompleted = true;
+    else {
+      completedRounds++;
+      for (const player of originalPossessed) history.set(player, (history.get(player) ?? 0) + 1);
+    }
+    results.push({ ...search!.result(roundPlan!.number, 'provisional', activeMs), ...roundPlan! });
     phase = settings.roundLimit !== null && completedRounds >= settings.roundLimit ? 'finished' : 'between_rounds';
     deadline = null; remainingMs = null; paused = false; pauseReason = null;
     bump('finish');
@@ -119,7 +150,8 @@ export function createGame({ generateId, randomIndex, clock = defaultClock, onCh
   function publicState(): GameSnapshot {
     updateResult();
     return {
-      phase, version, roundId, roundNumber: isTimedPhase(phase) || phase === 'reading' ? completedRounds + 1 : completedRounds,
+      phase, version, roundId, roundNumber: (roundPlan ?? nextPlan()).number,
+      tutorialCompleted, roundPlan: { ...(roundPlan ?? nextPlan()) },
       completedRounds, settings: { ...settings }, started, paused, pauseReason, deadline, remainingMs,
       results: structuredClone(results), serverNow: clock.now(), activePlayerIds: [...activePlayerIds], rosterChanged, lastRoundAborted,
     };
@@ -127,22 +159,28 @@ export function createGame({ generateId, randomIndex, clock = defaultClock, onCh
   function configure(next: GameSettings): LobbyError | undefined {
     if (!['lobby', 'reading', 'between_rounds'].includes(phase)) return 'INVALID_PHASE';
     if (!validSettings(next, Math.max(99, settings.roundLimit ?? 99))) return 'INVALID_INPUT';
-    if (started && settings.roundLimit !== next.roundLimit) return 'SETTINGS_LOCKED';
-    settings = { roundLimit: next.roundLimit, placementSeconds: next.placementSeconds, searchSeconds: next.searchSeconds, returnSeconds: next.returnSeconds, infectionEnabled: next.infectionEnabled };
+    const progressionChanged = (['roundLimit', 'tutorialEnabled', 'initialDifficulty', 'maximumDifficulty'] as const).some(key => settings[key] !== next[key]);
+    if (progressionChanged && (started || phase === 'reading')) return 'SETTINGS_LOCKED';
+    settings = { roundLimit: next.roundLimit, placementSeconds: next.placementSeconds, searchSeconds: next.searchSeconds, returnSeconds: next.returnSeconds,
+      tutorialEnabled: next.tutorialEnabled, initialDifficulty: next.initialDifficulty, maximumDifficulty: next.maximumDifficulty, infectionMode: next.infectionMode };
+    if (!started) progressionRounds = settings.roundLimit ?? 5;
+    if (phase === 'reading') roundPlan!.infectionEnabled = nextPlan().infectionEnabled;
     bump();
   }
   function deal(players: string[], count: number, shuffle: boolean): LobbyError | undefined {
     if (shuffle ? phase !== 'reading' : phase !== 'lobby' && phase !== 'between_rounds') return 'INVALID_PHASE';
-    const error = dealing.deal(players, count, history);
+    const plan = phase === 'reading' ? roundPlan! : nextPlan();
+    const error = dealing.deal(players, count, history, plan.difficulty);
     if (error) return error;
     if (phase !== 'reading') { sealResult(); search = undefined; }
+    roundPlan = { ...plan };
     if (phase !== 'reading') waitingPhase = phase as 'lobby' | 'between_rounds';
     phase = 'reading'; activePlayerIds = []; roundId = null; rosterChanged = false; lastRoundAborted = false;
     bump();
   }
   function cancelDeal(): LobbyError | undefined {
     if (phase !== 'reading') return 'INVALID_PHASE';
-    dealing.cancel(); phase = waitingPhase; bump();
+    dealing.cancel(); roundPlan = null; phase = waitingPhase; bump();
   }
   function start(players: { id: string; online: boolean }[], confirmWarnings: boolean): LobbyError | undefined {
     if (phase !== 'reading') return 'INVALID_PHASE';
@@ -171,7 +209,7 @@ export function createGame({ generateId, randomIndex, clock = defaultClock, onCh
   }
   function abort(): LobbyError | undefined {
     if (!isTimedPhase(phase)) return 'INVALID_PHASE';
-    account(); results.push(search!.result(completedRounds + 1, 'aborted', activeMs)); search!.seal();
+    account(); results.push({ ...search!.result(roundPlan!.number, 'aborted', activeMs), ...roundPlan! }); search!.seal();
     clearTimer(); phase = 'between_rounds'; lastRoundAborted = true;
     paused = false; pauseReason = null; deadline = null; remainingMs = null; bump('abort');
   }
@@ -201,7 +239,7 @@ export function createGame({ generateId, randomIndex, clock = defaultClock, onCh
     if (!search || phase === 'reading' || phase === 'lobby' || phase === 'placement') return 'INVALID_PHASE';
     if (lastRoundAborted || results.at(-1)?.roundId === roundId && results.at(-1)?.status === 'final') return 'RESULTS_FINAL';
     if (action !== 'undo' && (paused || action !== 'mission' && phase !== 'search')) return 'INVALID_PHASE';
-    if (action === 'infect' && !settings.infectionEnabled) return 'ACTION_UNAVAILABLE';
+    if (action === 'infect' && !roundPlan!.infectionEnabled) return 'ACTION_UNAVAILABLE';
     const error = action === 'undo' ? search.undo(playerId, target!) : search.act(playerId, action, target, completed);
     if (error) return error;
     bump(); updateResult(); finishSearchIfNeeded();
@@ -213,6 +251,26 @@ export function createGame({ generateId, randomIndex, clock = defaultClock, onCh
   function personalPlay(playerId: string) { return search?.personal(playerId) ?? null; }
   function takeCue() { const result = cue; cue = undefined; return result; }
   function dispose() { disposed = true; clearTimer(); cue = undefined; }
+  function exportState(): SavedGame {
+    updateResult();
+    // lastNow/remainingMs are the last healthy clock checkpoint, including clock-gap protection.
+    return structuredClone({ tutorialCompleted, progressionRounds, roundPlan, dealing: dealing.exportState(), settings, phase, waitingPhase, version, roundId, completedRounds, started,
+      paused, pauseReason, remainingMs, activePlayerIds, rosterChanged, lastRoundAborted, history: [...history], originalPossessed,
+      search: search?.exportState() ?? null, results, activeMs: activeMs + (runStarted === null ? 0 : Math.max(0, lastNow - runStarted)) });
+  }
+  function restore(state: SavedGame, reason: PauseReason = 'server_restarted', bumpVersion = true) {
+    clearTimer(); cue = undefined;
+    tutorialCompleted = state.tutorialCompleted; progressionRounds = state.progressionRounds; roundPlan = structuredClone(state.roundPlan);
+    dealing.restore(state.dealing, bumpVersion); settings = { ...state.settings }; phase = state.phase; waitingPhase = state.waitingPhase;
+    version = state.version + Number(bumpVersion); roundId = state.roundId; completedRounds = state.completedRounds; started = state.started;
+    paused = isTimedPhase(phase) ? true : state.paused; pauseReason = isTimedPhase(phase) ? reason : state.pauseReason;
+    remainingMs = state.remainingMs; deadline = null; activePlayerIds = [...state.activePlayerIds]; rosterChanged = state.rosterChanged;
+    lastRoundAborted = state.lastRoundAborted; history.clear(); for (const [id, count] of state.history) history.set(id, count);
+    originalPossessed = [...state.originalPossessed]; results.splice(0, results.length, ...structuredClone(state.results));
+    activeMs = state.activeMs; runStarted = null; lastNow = clock.now(); lastWall = clock.wallNow();
+    search = state.search ? createSearch(state.search.roundId, new Map(state.search.roster), generateId) : undefined;
+    if (state.search) search!.restore(state.search, bumpVersion);
+  }
   return { publicState, dealingState: dealing.publicState, personal: dealing.personal, configure, deal, cancelDeal,
-    start, pause, resume, beginReturn, abort, finishParty, extend, add, remove, change, synchronize, takeCue, dispose, playAction, personalPlay, finalize };
+    start, pause, resume, beginReturn, abort, finishParty, extend, add, remove, change, synchronize, takeCue, dispose, playAction, personalPlay, finalize, exportState, restore };
 }

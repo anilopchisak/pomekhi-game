@@ -1,3 +1,6 @@
+import { mkdtempSync, rmSync } from 'node:fs';
+import { tmpdir } from 'node:os';
+import { join } from 'node:path';
 import { spawn } from 'node:child_process';
 import type { ChildProcess } from 'node:child_process';
 import { once } from 'node:events';
@@ -8,8 +11,10 @@ import { expect, it } from 'vitest';
 
 function launch(port: string, fixture?: string, development = false) {
   const preload = fixture ? ['--import', fileURLToPath(new URL(`./fixtures/${fixture}`, import.meta.url))] : [];
-  const entry = development ? ['--import', 'tsx', 'src/server/index.ts'] : ['dist/server/index.js'];
+  const entry = development ? ['--import', import.meta.resolve('tsx'), fileURLToPath(new URL('../../src/server/index.ts', import.meta.url))] : [fileURLToPath(new URL('../../dist/server/index.js', import.meta.url))];
+  const directory = mkdtempSync(join(tmpdir(), 'pomekhi-bootstrap-'));
   const child = spawn(process.execPath, [...preload, ...entry], {
+    cwd: directory,
     env: { ...process.env, NODE_ENV: development ? 'development' : 'production', HOST: '127.0.0.1', PORT: port },
     stdio: ['ignore', 'pipe', 'pipe', 'ipc'],
   });
@@ -18,7 +23,7 @@ function launch(port: string, fixture?: string, development = false) {
   child.stdout!.on('data', chunk => { output.stdout += String(chunk); });
   child.stderr!.on('data', chunk => { output.stderr += String(chunk); });
   child.on('message', message => { messages.push(message); });
-  const exited = once(child, 'exit');
+  const exited = once(child, 'exit').then(result => { rmSync(directory, { recursive: true, force: true }); return result; });
   return { child, messages, output, exited };
 }
 

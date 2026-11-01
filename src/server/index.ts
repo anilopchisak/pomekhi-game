@@ -1,8 +1,10 @@
 import { fileURLToPath } from 'node:url';
+import { resolve } from 'node:path';
 import { existsSync } from 'node:fs';
 import { getServerConfig } from './config.js';
 import { createServerRuntime } from './runtime.js';
 import { generateOrganizerCode } from './lobby.js';
+import { createFileSessionStore } from './session-store.js';
 
 async function main() {
   const config = getServerConfig(process.env);
@@ -12,7 +14,8 @@ async function main() {
     throw new Error('Client build is missing. Run npm run build before npm start.');
   }
   const organizerCode = generateOrganizerCode();
-  const runtime = createServerRuntime({ config, clientDirectory, organizerCode, onError: () => {
+  const sessionStore = createFileSessionStore(resolve('data'));
+  const runtime = createServerRuntime({ config, clientDirectory, organizerCode, sessionStore, onError: () => {
     console.error('Pomekhi server encountered a transport error.');
     process.exitCode = 1;
     stopServer();
@@ -52,6 +55,6 @@ async function main() {
 }
 
 void main().catch(() => {
-  console.error('Cannot start the server. Check HOST, PORT, the client build and whether the port is already in use.');
+  console.error('Cannot start the server. Check HOST, PORT, the client build, write access to data, another running instance and whether the port is already in use.');
   process.exitCode = 1;
 });

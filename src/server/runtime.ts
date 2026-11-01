@@ -26,7 +26,6 @@ export function createServerRuntime(options: ServerRuntimeOptions) {
   let state: 'idle' | 'starting' | 'running' | 'stopping' | 'stopped' = 'idle';
   let starting: Promise<ListeningServer> | undefined;
   let stopping: Promise<void> | undefined;
-  let pendingListen = false;
 
   app.server.on('error', error => {
     if (state !== 'running') return;
@@ -39,7 +38,7 @@ export function createServerRuntime(options: ServerRuntimeOptions) {
   function stop(): Promise<void> {
     if (stopping) return stopping;
     state = 'stopping';
-    if (pendingListen) controller.abort();
+    controller.abort();
     stopping = app.close().finally(() => { state = 'stopped'; });
     return stopping;
   }
@@ -48,32 +47,38 @@ export function createServerRuntime(options: ServerRuntimeOptions) {
     if (state === 'stopping' || state === 'stopped') return Promise.reject(cancelledStart());
     if (starting) return starting;
     state = 'starting';
-    starting = new Promise<ListeningServer>((resolve, reject) => {
-      function cleanup() {
-        pendingListen = false;
-        app.server.off('listening', onListening);
-        app.server.off('error', onError);
-        controller.signal.removeEventListener('abort', onAbort);
-      }
-      function onError(error: Error) { cleanup(); reject(error); }
-      function onAbort() { cleanup(); reject(cancelledStart()); }
-      function onListening() {
-        cleanup();
-        if (state !== 'starting') { reject(cancelledStart()); return; }
-        const address = app.server.address();
-        if (!address || typeof address === 'string') {
-          reject(new Error('The server did not report a TCP listening address.'));
-          return;
+    const loaded = new Promise<void>((resolve, reject) => {
+      const abort = () => reject(cancelledStart());
+      controller.signal.addEventListener('abort', abort, { once: true });
+      void app.initialize().then(resolve, reject).finally(() => controller.signal.removeEventListener('abort', abort));
+    });
+    starting = loaded.then(() => {
+      if (state !== 'starting') throw cancelledStart();
+      return new Promise<ListeningServer>((resolve, reject) => {
+        function cleanup() {
+          app.server.off('listening', onListening);
+          app.server.off('error', onError);
+          controller.signal.removeEventListener('abort', onAbort);
         }
-        state = 'running';
-        resolve({ port: address.port, origin: getServerOrigin({ host: config.host, port: address.port }) });
-      }
-      app.server.once('error', onError);
-      app.server.once('listening', onListening);
-      controller.signal.addEventListener('abort', onAbort, { once: true });
-      pendingListen = true;
-      try { app.server.listen({ ...config, signal: controller.signal }); }
-      catch (error) { onError(error as Error); }
+        function onError(error: Error) { cleanup(); reject(error); }
+        function onAbort() { cleanup(); reject(cancelledStart()); }
+        function onListening() {
+          cleanup();
+          if (state !== 'starting') { reject(cancelledStart()); return; }
+          const address = app.server.address();
+          if (!address || typeof address === 'string') {
+            reject(new Error('The server did not report a TCP listening address.'));
+            return;
+          }
+          state = 'running';
+          resolve({ port: address.port, origin: getServerOrigin({ host: config.host, port: address.port }) });
+        }
+        app.server.once('error', onError);
+        app.server.once('listening', onListening);
+        controller.signal.addEventListener('abort', onAbort, { once: true });
+        try { app.server.listen({ ...config, signal: controller.signal }); }
+        catch (error) { onError(error as Error); }
+      });
     }).catch(async error => {
       try { await stop(); }
       catch (cleanupError) { throw new AggregateError([error, cleanupError], 'Server startup and cleanup failed.', { cause: cleanupError }); }

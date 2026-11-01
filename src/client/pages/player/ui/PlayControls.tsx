@@ -24,7 +24,7 @@ export function PlayControls({ view, disabled, run }: {
       <button disabled={disabled || !searching} onClick={() => {
         if (window.confirm('Условие освобождения выполнено? Вся ваша группа будет освобождена и вернётся на базу.')) void run('play:release', base);
       }}>Нас освободили</button>
-      {game.settings.infectionEnabled && <>
+      {game.roundPlan.infectionEnabled && <>
         <label>Кого заразить<select value={target} disabled={disabled || !searching} onChange={event => setTarget(event.target.value)}>
           <option value="">Выберите имя</option>
           {room.players.filter(p => p.id !== view.playerId && game.activePlayerIds.includes(p.id)).map(p => <option key={p.id} value={p.id}>{p.name}</option>)}

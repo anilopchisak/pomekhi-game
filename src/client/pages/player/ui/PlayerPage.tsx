@@ -33,7 +33,7 @@ export function PlayerPage() {
       try { savePlayerSession(completed); } catch { /* The pre-join key is already stored. */ }
     } else {
       setError(describeError(result.error));
-      if (result.error !== 'TIMEOUT' && result.error !== 'CONNECTION_LOST') { saved.current = null; clearPlayerSession(); }
+      if (result.error !== 'TIMEOUT' && result.error !== 'CONNECTION_LOST' && result.error !== 'STORAGE_UNAVAILABLE') { saved.current = null; clearPlayerSession(); }
     }
   }, [request]);
 
@@ -73,6 +73,7 @@ export function PlayerPage() {
   }
 
   return <LobbyShell title={playerView ? 'Вы внутри' : 'Войти в дом'} connection={connection} error={error}>
+    {view?.persistence && view.persistence.state !== 'ready' && <p role="alert">Сохранение недоступно. Игра остановлена; ждите восстановления с ноутбука. Ваш вход сохранён.</p>}
     {pending && playerView && <button disabled={busy || connection !== 'online'} onClick={() => void cardAction(pending.command, pending.input)}>Повторить действие</button>}
     {!playerView ? <form onSubmit={event => { event.preventDefault(); void join(); }}>
       <label>Код комнаты<input value={roomCode} autoCapitalize="characters" autoComplete="off" maxLength={6} minLength={6} onChange={event => setRoomCode(event.target.value.toUpperCase())} required /></label>
@@ -82,7 +83,7 @@ export function PlayerPage() {
     <RoundStatus game={playerView.room.game} clockOffset={clockOffset} connection={connection}
       role={playerView.play?.card.role ?? playerView.assignment?.card.role} playStatus={playerView.play?.status} waiting={!playerView.assignment} />
     {playerView.play && <PlayControls view={playerView} disabled={busy || connection !== 'online'} run={cardAction} />}
-    {playerView.assignment && <PersonalCardPanel infectionEnabled={playerView.room.game.settings.infectionEnabled} assignment={playerView.play ? { ...playerView.assignment, id: playerView.play.cardKey, card: playerView.play.card } : playerView.assignment} disabled={busy || connection !== 'online'} readOnly={playerView.room.game.phase !== 'reading'} act={async (action, flag) => {
+    {playerView.assignment && <PersonalCardPanel tutorial={playerView.room.game.roundPlan.kind === 'tutorial'} infectionEnabled={playerView.room.game.roundPlan.infectionEnabled} assignment={playerView.play ? { ...playerView.assignment, id: playerView.play.cardKey, card: playerView.play.card } : playerView.assignment} disabled={busy || connection !== 'online'} readOnly={playerView.room.game.phase !== 'reading'} act={async (action, flag) => {
       const base = { ...dealCommand(playerView.room), assignmentId: playerView.assignment!.id };
       await cardAction(action, action === 'card:ready' ? { ...base, ready: flag } : { ...base, requested: flag });
     }} />}
