@@ -1,10 +1,10 @@
 # Private cards and untimed reading
 
-Status: implemented. [Game session](rounds.md) now owns timed phases; live rescue/infection actions remain future work.
+Status: implemented. [Game session](rounds.md) now owns timed phases; [search actions](search-actions.md) own effective roles, capture and team results.
 
 ## Owners and interfaces
 
-[createDealing](../../src/server/dealing.ts) owns the current deal, assignments, readiness and replacement requests. It receives ID and uniform random-index generators. [The server bank](../../src/server/cards.ts) contains 12 original possessed cards and 12 exorcist missions, all difficulty 1 without infection. The bank is not part of the shared protocol or client dependencies.
+[createDealing](../../src/server/dealing.ts) owns the current deal, assignments, readiness and replacement requests. It receives ID and uniform random-index generators. [The server bank](../../src/server/cards.ts) contains 12 original possessed cards and 12 exorcist missions, all difficulty 1, with optional infection conditions on possessed cards. The bank is not part of the shared protocol or client dependencies.
 
 [Lobby](../../src/server/lobby.ts) owns authorization, membership, global projection revision and room lifetime. Each room has a game session composing dealing, plus its successful-request map. Lobby delegates card changes through game, which limits them to reading. New members receive a card during reading; timed-phase/break arrivals wait for the next deal. Explicit active-player departure revokes that assignment and pauses; ordinary phone disconnect only updates presence. Transport calls lobby; it does not select roles or read the bank.
 

@@ -1,12 +1,13 @@
 import type { GamePhase, GameSnapshot, PauseReason, Role } from '../../../shared/protocol.js';
 import { useRoundClock } from './useRoundClock.js';
 import type { ConnectionState } from '../api/index.js';
+import { ResultsSummary } from './ResultsSummary.js';
 import styles from './RoundStatus.module.css';
 
 const labels: Record<GamePhase, string> = { lobby: 'Сбор участников', reading: 'Чтение карточек', placement: 'Расстановка', search: 'Поиск', return: 'Возвращение на базу', between_rounds: 'Перерыв', finished: 'Партия завершена' };
 const reasons: Record<PauseReason, string> = { organizer: 'Пауза организатора.', organizer_disconnected: 'Панель организатора отключилась.', participant_left: 'Участник покинул раунд.', clock_gap: 'Ноутбук был недоступен или часы изменились.' };
-export function RoundStatus({ game, clockOffset, connection, role, waiting = false }: {
-  game: GameSnapshot; clockOffset: number | null; connection: ConnectionState; role?: Role; waiting?: boolean;
+export function RoundStatus({ game, clockOffset, connection, role, playStatus, waiting = false }: {
+  game: GameSnapshot; clockOffset: number | null; connection: ConnectionState; role?: Role; playStatus?: 'exorcist' | 'possessed' | 'captured' | 'released'; waiting?: boolean;
 }) {
   const remaining = useRoundClock(game, clockOffset);
   const seconds = remaining === null ? null : Math.ceil(remaining / 1000);
@@ -16,12 +17,14 @@ export function RoundStatus({ game, clockOffset, connection, role, waiting = fal
     : role === 'possessed' ? 'Спокойно займите место в разрешённой зоне. Не бегите.'
     : role === 'exorcist' ? 'Ждите на базе до начала поиска.' : 'Одержимые занимают места. Экзорцисты ждут на базе.';
   else if (game.phase === 'search') instruction = waiting ? 'Ждите следующего раунда на базе.'
+    : playStatus === 'captured' ? 'Оставайтесь в той же зоне и повторяйте поведение группы.'
     : role === 'possessed' ? 'Оставайтесь в выбранной зоне и следуйте поведению на карточке.'
     : 'Поиск начался. Ищите одержимых и помогайте им. Передвигайтесь шагом, только в разрешённых зонах.';
   else if (game.phase === 'return') instruction = 'Все возвращаются на базу. Передвигайтесь шагом.';
   else if (game.phase === 'between_rounds') instruction = game.lastRoundAborted ? 'Раунд отменён. Все возвращаются на базу. Ждите новой раздачи.' : 'Раунд окончен. Отдыхайте на базе и ждите новой раздачи.';
   else if (game.phase === 'finished') instruction = `Завершено раундов: ${game.completedRounds}. Все возвращаются на базу.`;
   else instruction = 'Собираемся у экрана. Ждите раздачи карточек.';
+  if (game.phase === 'search' && playStatus === 'released') instruction = 'Вы освобождены. Возвращайтесь на базу и не участвуйте в поиске до следующего раунда.';
   if (game.paused) instruction = 'Прекратите действия и ждите в безопасном месте. Продолжение объявит ноутбук.';
   return <section className={styles.panel} aria-label="Состояние раунда">
     <p>Раунд {game.roundNumber || 1} {game.settings.roundLimit === null ? '· без ограничения' : `из ${game.settings.roundLimit}`} · завершено: {game.completedRounds}</p>
@@ -33,5 +36,6 @@ export function RoundStatus({ game, clockOffset, connection, role, waiting = fal
     {game.paused && <p>{game.pauseReason && reasons[game.pauseReason]} Время сохранено.</p>}
     <p>{instruction}</p>
     {connection !== 'online' && <p role="alert">Нет связи. Фаза и таймер не подтверждены. Сверьтесь с общим экраном.</p>}
+    <ResultsSummary results={game.results} />
   </section>;
 }

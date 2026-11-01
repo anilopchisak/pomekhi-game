@@ -7,7 +7,7 @@ function setup(roundLimit: number | null = 5) {
   const onChange = vi.fn();
   const game = createGame({ generateId: () => `id-${++id}`, randomIndex: () => 0, clock: timer.clock, onChange });
   const players = Array.from({ length: 7 }, (_, i) => ({ id: `p${i}`, online: true }));
-  game.configure({ roundLimit, placementSeconds: 2, searchSeconds: 3, returnSeconds: 2 });
+  game.configure({ roundLimit, placementSeconds: 2, searchSeconds: 3, returnSeconds: 2 , infectionEnabled: false});
   function deal() { expect(game.deal(players.map(player => player.id), 3, false)).toBeUndefined(); }
   function start() { expect(game.start(players, true)).toBeUndefined(); }
   deal();
@@ -139,4 +139,31 @@ it('uses only completed possessed history for fairness, leaving canceled preview
   start(); advance(7000); deal();
   expect(possessed().filter(id => first.includes(id))).toHaveLength(0);
   const publicJson = JSON.stringify(game.publicState()); expect(publicJson).not.toContain('history'); expect(publicJson).not.toContain('possessed');
+});
+
+it('keeps a provisional result editable after a failed next deal, then seals it on a successful deal', () => {
+  const { game, players, start, advance } = setup(); start(); advance(7000);
+  const exorcist = players.find(p => game.personal(p.id)!.card.role === 'exorcist')!.id;
+  expect(game.deal(['too-few'], 1, false)).toBe('INVALID_COMPOSITION');
+  expect(game.playAction(exorcist, 'mission', undefined, true)).toBeUndefined();
+  expect(game.publicState().results[0]).toMatchObject({ status: 'provisional', missions: 1 });
+  expect(game.deal(players.map(p => p.id), 3, false)).toBeUndefined();
+  expect(game.publicState().results[0]).toMatchObject({ status: 'final', missions: 1 });
+});
+it('keeps infection off by default and includes only actual timed activity, excluding a pause', () => {
+  const { game, players, start, advance } = setup(); start(); advance(2000);
+  const root = players.find(p => game.personal(p.id)!.card.role === 'possessed')!.id;
+  const exorcist = players.find(p => game.personal(p.id)!.card.role === 'exorcist')!.id;
+  expect(game.playAction(root, 'infect', exorcist)).toBe('ACTION_UNAVAILABLE');
+  game.pause(); advance(60000); expect(game.playAction(exorcist, 'mission', undefined, true)).toBe('INVALID_PHASE');
+  game.resume(false); advance(5000);
+  expect(game.publicState().results[0].activeMs).toBe(7000);
+});
+it('records aborted attempts separately and never permits their mission or undo edits', () => {
+  const { game, players, start, advance } = setup(); start(); advance(2000);
+  const root = players.find(p => game.personal(p.id)!.card.role === 'possessed')!.id;
+  game.playAction(root, 'release'); const actionId = game.personalPlay(root)!.undo!.id;
+  game.abort(); expect(game.publicState().results[0].status).toBe('aborted');
+  expect(game.playAction(root, 'undo', actionId)).toBe('RESULTS_FINAL');
+  expect(game.publicState().completedRounds).toBe(0);
 });

@@ -1,6 +1,6 @@
 # Timed rounds and party lifecycle
 
-Status: implemented. Timers coordinate physical play; release, infection, scoring, difficulty progression, music and disk recovery are future work.
+Status: implemented. Timers coordinate physical play; [search actions and results](search-actions.md) extend these phases. Difficulty progression, music and disk recovery remain future work.
 
 ## Ownership and state
 

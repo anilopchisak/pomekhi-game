@@ -58,7 +58,7 @@ export function createLobby({ organizerCode, generateId = randomUUID, generateRo
     if (actor.kind === 'ended') return { revision, ...actor };
     const state = snapshot();
     if (!state) return undefined;
-    return { revision, kind: 'player', room: state, playerId: actor.playerId, assignment: room!.game.personal(actor.playerId) };
+    return { revision, kind: 'player', room: state, playerId: actor.playerId, assignment: room!.game.personal(actor.playerId), play: room!.game.personalPlay(actor.playerId) };
   }
 
   function disconnect(connection: string) {
@@ -161,9 +161,10 @@ export function createLobby({ organizerCode, generateId = randomUUID, generateRo
       if (!player) return fail('SESSION_EXPIRED');
       remove(player, 'left');
     } else if (['deal:create', 'deal:shuffle', 'deal:cancel', 'deal:replace', 'card:ready', 'card:request',
-      'game:configure', 'round:start', 'round:pause', 'round:resume', 'round:return', 'round:abort', 'party:finish', 'party:extend'].includes(command)) {
-      const gameAction = command.startsWith('game:') || command.startsWith('round:') || command.startsWith('party:');
-      const organizerAction = command.startsWith('deal:') || gameAction;
+      'game:configure', 'round:start', 'round:pause', 'round:resume', 'round:return', 'round:abort', 'party:finish', 'party:extend', 'play:infect', 'play:release', 'play:mission', 'play:undo', 'results:finalize'].includes(command)) {
+      const playAction = command.startsWith('play:');
+      const gameAction = command.startsWith('game:') || command.startsWith('round:') || command.startsWith('party:') || playAction || command === 'results:finalize';
+      const organizerAction = command.startsWith('deal:') || gameAction && !playAction;
       if (organizerAction ? actor?.kind !== 'organizer' : actor?.kind !== 'player') return fail('FORBIDDEN');
       if (!room || room.id !== data.roomId) return fail('ROOM_NOT_FOUND');
       if (typeof data.requestId !== 'string' || !/^[a-zA-Z0-9_-]{8,80}$/.test(data.requestId)) return fail('INVALID_INPUT');
@@ -174,6 +175,10 @@ export function createLobby({ organizerCode, generateId = randomUUID, generateRo
         if ((command === 'round:start' || command === 'round:resume') && typeof data.confirmWarnings !== 'boolean') return fail('INVALID_INPUT');
       } else if (!Number.isInteger(data.dealVersion) || (data.dealVersion as number) < 0
         || !(data.dealId === null || typeof data.dealId === 'string')) return fail('INVALID_INPUT');
+      if (playAction && (!Number.isInteger(data.playVersion) || (data.playVersion as number) < 0)) return fail('INVALID_INPUT');
+      if (command === 'play:infect' && typeof data.targetId !== 'string') return fail('INVALID_INPUT');
+      if (command === 'play:undo' && typeof data.actionId !== 'string') return fail('INVALID_INPUT');
+      if (command === 'play:mission' && typeof data.completed !== 'boolean') return fail('INVALID_INPUT');
       if ((command === 'deal:create' || command === 'deal:shuffle') && !Number.isInteger(data.possessedCount)) return fail('INVALID_INPUT');
       if (command === 'deal:replace' && typeof data.playerId !== 'string') return fail('INVALID_INPUT');
       if (['deal:replace', 'card:ready', 'card:request'].includes(command) && typeof data.assignmentId !== 'string') return fail('INVALID_INPUT');
@@ -183,8 +188,12 @@ export function createLobby({ organizerCode, generateId = randomUUID, generateRo
       const fields: unknown[] = [command, data.roomId, gameAction ? data.gameVersion : data.dealVersion, gameAction ? data.roundId : data.dealId];
       if (command === 'game:configure') {
         const settings = data.settings as GameSettings;
-        fields.push(settings.roundLimit, settings.placementSeconds, settings.searchSeconds, settings.returnSeconds);
+        fields.push(settings.infectionEnabled, settings.roundLimit, settings.placementSeconds, settings.searchSeconds, settings.returnSeconds);
       }
+      if (playAction) fields.push(data.playVersion);
+      if (command === 'play:infect') fields.push(data.targetId);
+      if (command === 'play:undo') fields.push(data.actionId);
+      if (command === 'play:mission') fields.push(data.completed);
       if (command === 'round:start' || command === 'round:resume') fields.push(data.confirmWarnings);
       if (command === 'deal:create' || command === 'deal:shuffle') fields.push(data.possessedCount);
       if (command === 'deal:replace') fields.push(data.playerId, data.assignmentId);
@@ -199,6 +208,7 @@ export function createLobby({ organizerCode, generateId = randomUUID, generateRo
       if (gameAction) {
         if (data.gameVersion !== gameState.version || data.roundId !== gameState.roundId) return fail('STALE_GAME');
       } else if (data.dealVersion !== state.version || data.dealId !== state.dealId) return fail('STALE_DEAL');
+      if (playAction && actor?.kind === 'player' && data.playVersion !== room.game.personalPlay(actor.playerId)?.version) return fail('STALE_PLAY');
       if (requests && requests.size >= maximumRequestsPerPrincipal) return fail('REQUEST_LIMIT');
       let error: LobbyError | undefined;
       if (command === 'deal:create' || command === 'deal:shuffle') error = room.game.deal([...room.players.keys()], data.possessedCount as number, command === 'deal:shuffle');
@@ -212,6 +222,8 @@ export function createLobby({ organizerCode, generateId = randomUUID, generateRo
       else if (command === 'round:abort') error = room.game.abort();
       else if (command === 'party:finish') error = room.game.finishParty();
       else if (command === 'party:extend') error = room.game.extend();
+      else if (command === 'results:finalize') error = room.game.finalize();
+      else if (playAction && actor!.kind === 'player') error = room.game.playAction(actor!.playerId, command.slice(5) as 'infect' | 'release' | 'mission' | 'undo', (command === 'play:undo' ? data.actionId : data.targetId) as string, data.completed as boolean);
       else if (actor!.kind === 'player') error = room.game.change(actor!.playerId, data.assignmentId as string, command === 'card:ready' ? 'ready' : 'request', (command === 'card:ready' ? data.ready : data.requested) as boolean);
       if (error) return fail(error);
       if (requests) requests.set(data.requestId, fingerprint);

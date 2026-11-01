@@ -7,9 +7,9 @@ export function GameControls({ room, disabled, run }: {
   run: <C extends LobbyCommand>(command: C, input: LobbyInputs[C]) => Promise<void>;
 }) {
   const game = room.game;
-  const { roundLimit, placementSeconds, searchSeconds, returnSeconds } = game.settings;
+  const { roundLimit, placementSeconds, searchSeconds, returnSeconds, infectionEnabled } = game.settings;
   const [draft, setDraft] = useState<GameSettings>(game.settings);
-  useEffect(() => setDraft({ roundLimit, placementSeconds, searchSeconds, returnSeconds }), [roundLimit, placementSeconds, searchSeconds, returnSeconds]);
+  useEffect(() => setDraft({ roundLimit, placementSeconds, searchSeconds, returnSeconds, infectionEnabled }), [roundLimit, placementSeconds, searchSeconds, returnSeconds, infectionEnabled]);
   const timed = ['placement', 'search', 'return'].includes(game.phase);
   const editable = ['lobby', 'reading', 'between_rounds'].includes(game.phase);
   const dirty = JSON.stringify(draft) !== JSON.stringify(game.settings);
@@ -20,6 +20,7 @@ export function GameControls({ room, disabled, run }: {
     {editable && <details>
       <summary>Настройки партии и времени</summary>
       <form onSubmit={event => { event.preventDefault(); void run('game:configure', { ...gameCommand(room), settings: draft }); }}>
+        <label><input type="checkbox" checked={draft.infectionEnabled} disabled={disabled} onChange={event => setDraft({ ...draft, infectionEnabled: event.target.checked })} /> Заражение в следующем раунде</label>
         <label><input type="checkbox" checked={draft.roundLimit === null} disabled={disabled || game.started}
           onChange={event => setDraft({ ...draft, roundLimit: event.target.checked ? null : 5 })} /> Без ограничения раундов</label>
         {draft.roundLimit !== null && <label>Количество раундов<input type="number" min={1} max={99} value={draft.roundLimit} disabled={disabled || game.started}
@@ -56,6 +57,9 @@ export function GameControls({ room, disabled, run }: {
       if (window.confirm('Завершить партию сейчас?')) void run('party:finish', gameCommand(room));
     }}>Завершить партию</button>}
     {game.phase === 'finished' && game.settings.roundLimit !== null && <button disabled={disabled} onClick={() => void run('party:extend', gameCommand(room))}>Добавить ещё раунд</button>}
+    {game.results.at(-1)?.status === 'provisional' && <button disabled={disabled} onClick={() => {
+      if (window.confirm('Зафиксировать результаты? Отметки миссий и отмена действий этого раунда станут недоступны.')) void run('results:finalize', gameCommand(room));
+    }}>Зафиксировать результаты</button>}
     <button disabled={disabled} onClick={() => void run('lobby:sync', {})}>Обновить состояние</button>
   </section>;
 }

@@ -94,6 +94,26 @@
         "clock synchronization, sound ownership or recovered state",
         "timer and subscription disposal"
       ]
+    },
+    {
+      "id": "search-actions",
+      "path": "docs/design/search-actions.md",
+      "sources": [
+        "src/server/search.ts",
+        "src/server/game.ts",
+        "src/server/lobby.ts",
+        "src/shared/protocol.ts",
+        "src/server/cards.ts"
+      ],
+      "prefixes": [
+        "src/client/pages/",
+        "src/client/shared/"
+      ],
+      "reviewWhen": [
+        "infection groups and release",
+        "causal undo, scoring, frozen roster and provisional results",
+        "personal projection and reconnect"
+      ]
     }
   ]
 }

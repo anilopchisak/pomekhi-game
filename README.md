@@ -2,7 +2,7 @@
 
 A cooperative horror party game with a shared laptop display and private phone assignments. Product copy is Russian; project and agent documentation is English.
 
-**Current status: runtime, lobby, private cards and timed rounds.** One in-memory room supports organizer authorization, invitations with QR, up to 12 participants and browser identity recovery. Private cards, readiness, individual replacement and overall reshuffle/cancellation are implemented. Timed placement/search/return, pause and short laptop signals are implemented. Release/infection, results, task editing, server persistence and atmosphere music remain planned. See [product requirements](docs/product/README.md).
+**Current status: runtime, lobby, private cards and timed rounds.** One in-memory room supports organizer authorization, invitations with QR, up to 12 participants and browser identity recovery. Private cards, readiness, individual replacement and overall reshuffle/cancellation are implemented. Timed placement/search/return, pause and short laptop signals are implemented. Release/infection, dependency-aware undo and team results are implemented. Task editing, server persistence and atmosphere music remain planned. See [product requirements](docs/product/README.md).
 
 The client uses App, Pages and Shared layers from Feature-Sliced Design. Organizer and player pages expose public interfaces; Shared owns their common connection and CSS Module shell. The server and cross-runtime protocol remain separate. See [architecture](docs/agent/architecture.md) for placement and ESLint import restrictions.
 
@@ -51,9 +51,9 @@ The public origin field accepts HTTPS without credentials, additional paths, que
 
 After 4-12 participants join, select the possessed count on the laptop (default three, limited to half the roster) and deal. Offline participants also receive cards. Phones open cards privately, mark readiness and request replacement; only the organizer can issue a different card. Readiness never starts a timer.
 
-A single replacement preserves its role and all other participants. A full confirmed reshuffle redistributes roles/cards and clears readiness/requests. Late joiners during reading get one assignment without affecting existing cards. During timed phases they wait for the next deal. Departure removes only that participant; the laptop warns about an unsuitable composition. Cancel restores the previous waiting phase without removing membership or completed-round progress. Phones recover the same card and readiness on refresh/reconnect, initially concealed. The original 24 introductory cards contain no infection.
+A single replacement preserves its role and all other participants. A full confirmed reshuffle redistributes roles/cards and clears readiness/requests. Late joiners during reading get one assignment without affecting existing cards. During timed phases they wait for the next deal. Departure removes only that participant; the laptop warns about an unsuitable composition. Cancel restores the previous waiting phase without removing membership or completed-round progress. Phones recover the same card and readiness on refresh/reconnect, initially concealed. The 24 introductory cards support optional infection, enabled manually before a round.
 
-If a command times out, inspect current state before using the visible manual retry. The retry retains its original identity and cannot issue a second card change. A complete server restart still clears all room/card state. The task-bank editor and release/infection actions remain future work.
+If a command times out, inspect current state before using the visible manual retry. The retry retains its original identity and cannot issue a second card change. A complete server restart still clears all room/card state. The task-bank editor remains future work. See [search actions](docs/design/search-actions.md) for infection and results.
 
 ## Run rounds
 

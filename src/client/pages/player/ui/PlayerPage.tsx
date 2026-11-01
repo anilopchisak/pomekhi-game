@@ -4,7 +4,8 @@ import { LobbyShell, RoundStatus } from '../../../shared/ui/index.js';
 import { clearPlayerSession, createResumeKey, readPlayerSession, savePlayerSession } from '../session.js';
 import type { PlayerSession } from '../session.js';
 import { PersonalCardPanel } from './PersonalCardPanel.js';
-import type { LobbyInputs } from '../../../../shared/protocol.js';
+import { PlayControls } from './PlayControls.js';
+import type { LobbyCommand, LobbyInputs } from '../../../../shared/protocol.js';
 
 export function PlayerPage() {
   const { connection, generation, view, request, clockOffset } = useLobbyConnection();
@@ -16,7 +17,7 @@ export function PlayerPage() {
   const [name, setName] = useState(saved.current?.name ?? '');
   const [error, setError] = useState('');
   const [busy, setBusy] = useState(false);
-  const [pending, setPending] = useState<{ command: 'card:ready' | 'card:request'; input: LobbyInputs['card:ready'] | LobbyInputs['card:request'] } | null>(null);
+  const [pending, setPending] = useState<{ command: LobbyCommand; input: LobbyInputs[LobbyCommand] } | null>(null);
   const playerView = view?.kind === 'player' ? view : undefined;
 
   const enter = useCallback(async (session: PlayerSession) => {
@@ -47,7 +48,7 @@ export function PlayerPage() {
     setError({ closed: 'Комната закрыта. Для новой встречи потребуется новое приглашение.', removed: 'Организатор удалил ваш вход. При необходимости войдите заново.', left: 'Вы вышли из комнаты.' }[ended]);
   }, [ended]);
 
-  async function cardAction(command: 'card:ready' | 'card:request', input: LobbyInputs['card:ready'] | LobbyInputs['card:request']) {
+  async function cardAction<C extends LobbyCommand>(command: C, input: LobbyInputs[C]) {
     const attempt = ++operation.current;
     setBusy(true); setError('');
     const result = await request(command, input);
@@ -79,8 +80,9 @@ export function PlayerPage() {
       <button disabled={busy || connection !== 'online'}>{busy ? 'Входим…' : 'Войти в комнату'}</button>
     </form> : <>
     <RoundStatus game={playerView.room.game} clockOffset={clockOffset} connection={connection}
-      role={playerView.assignment?.card.role} waiting={!playerView.assignment} />
-    {playerView.assignment && <PersonalCardPanel assignment={playerView.assignment} disabled={busy || connection !== 'online'} readOnly={playerView.room.game.phase !== 'reading'} act={async (action, flag) => {
+      role={playerView.play?.card.role ?? playerView.assignment?.card.role} playStatus={playerView.play?.status} waiting={!playerView.assignment} />
+    {playerView.play && <PlayControls view={playerView} disabled={busy || connection !== 'online'} run={cardAction} />}
+    {playerView.assignment && <PersonalCardPanel infectionEnabled={playerView.room.game.settings.infectionEnabled} assignment={playerView.play ? { ...playerView.assignment, id: playerView.play.cardKey, card: playerView.play.card } : playerView.assignment} disabled={busy || connection !== 'online'} readOnly={playerView.room.game.phase !== 'reading'} act={async (action, flag) => {
       const base = { ...dealCommand(playerView.room), assignmentId: playerView.assignment!.id };
       await cardAction(action, action === 'card:ready' ? { ...base, ready: flag } : { ...base, requested: flag });
     }} />}

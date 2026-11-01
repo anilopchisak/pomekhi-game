@@ -48,7 +48,7 @@ async function setup() {
   const phones = await Promise.all(Array.from({ length: 7 }, () => connect()));
   const sessions = phones.map((_, i) => ({ roomCode: room.code, name: `Player ${i}`, resumeKey: (i + 1).toString(16).padStart(64, '0') }));
   for (const [i, phone] of phones.entries()) value(await send(phone, 'player:join', sessions[i]));
-  value(await send(host, 'game:configure', { ...base(await current(host)), settings: { roundLimit: 2, placementSeconds: 2, searchSeconds: 3, returnSeconds: 2 } }));
+  value(await send(host, 'game:configure', { ...base(await current(host)), settings: { roundLimit: 2, placementSeconds: 2, searchSeconds: 3, returnSeconds: 2 , infectionEnabled: false} }));
   value(await send(host, 'deal:create', { ...dealBase(await current(host)), possessedCount: 3 }));
   return { host, room, phones, sessions };
 }
@@ -124,7 +124,7 @@ it('authorizes every control, canonicalizes retries and does not charge clock sy
   expect(await send(phones[0], 'game:configure', command)).toEqual({ ok: false, error: 'FORBIDDEN' });
   const anonymous = await connect(); expect(await send(anonymous, 'lobby:sync', {})).toEqual({ ok: false, error: 'FORBIDDEN' });
   value(await send(host, 'game:configure', command));
-  value(await send(host, 'game:configure', { ...command, settings: { returnSeconds: 2, searchSeconds: 10, placementSeconds: 2, roundLimit: 2 } }));
+  value(await send(host, 'game:configure', { ...command, settings: { infectionEnabled: false, returnSeconds: 2, searchSeconds: 10, placementSeconds: 2, roundLimit: 2 } }));
   expect(await send(host, 'game:configure', { ...command, settings: { ...command.settings, searchSeconds: 11 } })).toEqual({ ok: false, error: 'INVALID_INPUT' });
   for (let i = 0; i < 1030; i++) value(await send(host, 'lobby:sync', {}));
   await start(host); expect((await current(host)).game.phase).toBe('placement');
@@ -151,4 +151,71 @@ it('closes a timed room and its server without leaving callbacks or publishing i
   const room = roomOf(value(await send(host, 'room:create', {}))); lateCallback();
   expect((await current(host)).game).toMatchObject({ phase: 'lobby', completedRounds: 0 });
   expect((await current(host)).id).toBe(room.id); await app.close(); expect(timer.pending()).toBe(0);
+});
+
+async function action(socket: Client, command: 'play:infect' | 'play:release' | 'play:mission' | 'play:undo', extra: Record<string, unknown> = {}) {
+  const own = value(await send(socket, 'lobby:sync', {}));
+  if (own.kind !== 'player' || !own.play) throw new Error('Missing personal play');
+  return send(socket, command, { ...base(own.room), playVersion: own.play.version, ...extra } as LobbyInputs[typeof command]);
+}
+async function searching() {
+  const fixture = await setup();
+  const settings = (await current(fixture.host)).game.settings;
+  value(await send(fixture.host, 'game:configure', { ...base(await current(fixture.host)), settings: { ...settings, infectionEnabled: true } }));
+  await start(fixture.host);
+  const views = await Promise.all(fixture.phones.map(async socket => { const own = value(await send(socket, 'lobby:sync', {})); if (own.kind !== 'player') throw new Error('Missing player'); return { socket, own }; }));
+  timer.advance(2000);
+  return { ...fixture, roots: views.filter(v => v.own.assignment!.card.role === 'possessed'), exorcists: views.filter(v => v.own.assignment!.card.role === 'exorcist') };
+}
+it('runs chained infections, group rescue, late missions and final results without exposing live progress', async () => {
+  const { host, roots, exorcists } = await searching();
+  value(await action(exorcists[0].socket, 'play:mission', { completed: true }));
+  value(await action(roots[0].socket, 'play:infect', { targetId: exorcists[0].own.playerId }));
+  const captured = value(await send(exorcists[0].socket, 'lobby:sync', {}));
+  expect(captured).toMatchObject({ play: { status: 'captured', missionEligible: false } });
+  value(await action(exorcists[0].socket, 'play:infect', { targetId: exorcists[1].own.playerId }));
+  const root = value(await send(roots[0].socket, 'lobby:sync', {})); if (root.kind !== 'player') throw new Error('Missing root');
+  expect(await action(roots[0].socket, 'play:undo', { actionId: root.play!.undo!.id })).toEqual({ ok: false, error: 'UNDO_DEPENDENCY' });
+  const shared = await current(host); expect(shared.game.results).toEqual([]);
+  expect(JSON.stringify(shared)).not.toMatch(/"(captured|missionCompleted|rescuedGroups|infectionCondition|cardKey)"/);
+  value(await action(exorcists[1].socket, 'play:release'));
+  value(await action(roots[1].socket, 'play:release')); value(await action(roots[2].socket, 'play:release'));
+  expect((await current(host)).game).toMatchObject({ phase: 'return', results: [] });
+  timer.advance(2000);
+  expect((await current(host)).game.results[0]).toMatchObject({ status: 'provisional', rescuedGroups: 3, totalGroups: 3, missions: 0, totalMissions: 4, infectedPlayers: 2, activeMs: 4000 });
+  value(await action(exorcists[2].socket, 'play:mission', { completed: true }));
+  const released = value(await send(roots[2].socket, 'lobby:sync', {})); if (released.kind !== 'player') throw new Error('Missing release');
+  value(await action(roots[2].socket, 'play:undo', { actionId: released.play!.undo!.id }));
+  expect((await current(host)).game).toMatchObject({ phase: 'between_rounds', results: [{ rescuedGroups: 2, missions: 1 }] });
+  value(await send(host, 'results:finalize', base(await current(host))));
+  expect(await action(exorcists[2].socket, 'play:mission', { completed: false })).toEqual({ ok: false, error: 'RESULTS_FINAL' });
+  expect((await current(host)).game.results[0].status).toBe('final');
+});
+it('restores effective cards across tabs and deduplicates lost acknowledgements and stale commands', async () => {
+  const { host, roots, exorcists, sessions } = await searching();
+  const own = value(await send(roots[0].socket, 'lobby:sync', {})); if (own.kind !== 'player') throw new Error('Missing root');
+  const input = { ...base(own.room), playVersion: own.play!.version, targetId: exorcists[0].own.playerId };
+  value(await send(roots[0].socket, 'play:infect', input));
+  const captured = value(await send(exorcists[0].socket, 'lobby:sync', {})); if (captured.kind !== 'player') throw new Error('Missing captured');
+  const index = Number(exorcists[0].own.room.players.find(p => p.id === captured.playerId)!.name.split(' ')[1]);
+  const tab = await connect(); const restored = value(await send(tab, 'player:resume', sessions[index]));
+  expect(restored).toMatchObject({ play: captured.play });
+  const extended = { ...input, extraIgnored: 'not retained' };
+  value(await send(roots[0].socket, 'play:infect', extended));
+  expect((value(await send(tab, 'lobby:sync', {})) as typeof captured).play).toEqual(captured.play);
+  expect(await send(roots[0].socket, 'play:infect', { ...input, requestId: 'late-capture-intent' })).toEqual({ ok: false, error: 'STALE_GAME' });
+  expect(await send(host, 'play:infect', input)).toEqual({ ok: false, error: 'FORBIDDEN' });
+  value(await send(host, 'round:pause', base(await current(host))));
+  expect(await action(tab, 'play:release')).toEqual({ ok: false, error: 'INVALID_PHASE' });
+  const currentRoot = value(await send(roots[0].socket, 'lobby:sync', {})); if (currentRoot.kind !== 'player') throw new Error('Missing root');
+  value(await action(roots[0].socket, 'play:undo', { actionId: currentRoot.play!.undo!.id }));
+  expect(value(await send(tab, 'lobby:sync', {}))).toMatchObject({ play: { status: 'exorcist', missionEligible: true } });
+});
+it('automatically returns on the last capture and never reopens after undo', async () => {
+  const { host, roots, exorcists } = await searching();
+  for (const target of exorcists) value(await action(roots[0].socket, 'play:infect', { targetId: target.own.playerId }));
+  expect((await current(host)).game.phase).toBe('return');
+  const own = value(await send(roots[0].socket, 'lobby:sync', {})); if (own.kind !== 'player') throw new Error('Missing root');
+  value(await action(roots[0].socket, 'play:undo', { actionId: own.play!.undo!.id }));
+  expect((await current(host)).game.phase).toBe('return');
 });

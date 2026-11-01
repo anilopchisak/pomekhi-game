@@ -30,6 +30,10 @@ Player recovery is scoped to the same browser and origin. A new process has no s
 
 The organizer pastes a public HTTPS origin into the panel; credentials, paths, queries and fragments are rejected. The panel constructs a code-bearing invitation and generates its QR locally using qrcode. This address is presentation state and never changes server/Tuna configuration. Clipboard failure retains a selectable URL. The organizer can join that invitation on a phone without sharing the organizer credential.
 
+## Search recovery
+
+The per-room game also supplies [PersonalPlay](search-actions.md): only the authorized participant receives its effective group card, capture/release state, mission eligibility and last undo identity. Reconnect restores that state without repeating physical actions. Public snapshots contain aggregate outcomes only after return finishes. Player play commands share the existing per-principal journal and validate round/game/play versions; result finalization requires organizer authorization.
+
 ## Verification
 
 [Lobby rule tests](../../src/server/lobby.test.ts) cover authorization, normalization and capacity, idempotent joins, multiple tabs, revocation, stale room actions, isolated instances and credential-free detached projections. [Transport tests](../../tests/integration/lobby.test.ts) exercise independent real clients, seven participants, recovery, privacy, removal and replacement server state. [Player form tests](../../tests/tools/player-recovery.test.mjs) use React, DOM emulation, the real connection hook and lobby with controlled packet delivery to verify manual retries after a timeout retain the saved identity for both pending and acknowledged sessions. URL validation has focused tests. Browser evidence is recorded under ignored artifacts/lobby; native phones, QR camera scanning, Windows and mobile-carrier access require their actual environments.

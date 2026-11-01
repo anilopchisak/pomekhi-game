@@ -182,7 +182,7 @@ it('restores a private card during a round, freezes pause time and marks offline
   expect(container.querySelector('[role="timer"]').textContent).toBe('00:43');
   await act(async () => root.unmount()); root = createRoot(container); io.mockReturnValue(socket('refreshed'));
   await act(async () => root.render(createElement(PlayerPage)));
-  expect(container.textContent).toContain('Пауза'); expect(container.querySelector('h4')).toBeNull();
+  expect(container.textContent).toContain('Пауза'); expect(container.querySelector('[aria-label="Личная карточка"] h4')).toBeNull();
   await click('Открыть карточку'); expect(container.textContent).toContain(original.card.title);
   expect(lobby.viewFor('refreshed').assignment.id).toBe(original.id);
   await act(async () => clients.get('refreshed').disconnect());
@@ -200,7 +200,7 @@ it('shows a late player waiting without a card until the next manual deal', asyn
     value(lobby.execute('host', 'round:abort', gameBase()));
     value(lobby.execute('host', 'deal:create', { ...base(), possessedCount: 3 }));
   });
-  expect(button('Открыть карточку')).toBeDefined(); expect(container.querySelector('h4')).toBeNull();
+  expect(button('Открыть карточку')).toBeDefined(); expect(container.querySelector('[aria-label="Личная карточка"] h4')).toBeNull();
 });
 
 it('unlocks audio explicitly, plays live cues once and does not replay when volume or mute changes', async () => {
@@ -273,4 +273,111 @@ it.each([
   if (expectedTones) expect(ramps[0]).toBeCloseTo(.1 * .35);
   await act(async () => mute.click());
   expect(tones).toHaveLength(expectedTones);
+});
+
+it('updates the phone to a concealed group card, releases the group and undoes the release', async () => {
+  const sessionViews = [];
+  for (let i = 0; i < 7; i++) sessionViews.push(value(lobby.execute(`inspect${i}`, 'player:resume', { roomCode: room.code, resumeKey: String(i + 1).repeat(64) })));
+  const rootPlayer = sessionViews.find(view => view.assignment.card.role === 'possessed');
+  const target = sessionViews.find(view => view.assignment.card.role === 'exorcist');
+  const targetIndex = sessionViews.indexOf(target);
+  savePlayerSession({ roomCode: room.code, name: `Player ${targetIndex}`, resumeKey: String(targetIndex + 1).repeat(64), pending: false });
+  const current = lobby.viewFor('host').room;
+  value(lobby.execute('host', 'game:configure', { ...gameBase(), settings: { ...current.game.settings, infectionEnabled: true } }));
+  value(lobby.execute('host', 'round:start', { ...gameBase(), confirmWarnings: true }));
+  clock.advance(45000);
+  io.mockReturnValue(socket('phone')); await act(async () => root.render(createElement(PlayerPage)));
+  await click('Открыть карточку'); expect(container.textContent).toContain(target.assignment.card.title);
+  await click('Миссия выполнена');
+  await act(async () => {
+    const own = lobby.viewFor(`inspect${sessionViews.indexOf(rootPlayer)}`);
+    value(lobby.execute(`inspect${sessionViews.indexOf(rootPlayer)}`, 'play:infect', { ...gameBase(), playVersion: own.play.version, targetId: target.playerId }));
+  });
+  expect(container.textContent).toContain('Вы заражены');
+  expect(container.querySelector('[aria-label="Личная карточка"] h4')).toBeNull();
+  await click('Открыть карточку'); expect(container.textContent).toContain(rootPlayer.assignment.card.title);
+  expect(container.textContent).not.toContain(target.assignment.card.title);
+  await click('Нас освободили'); expect(container.textContent).toContain('Вы освобождены');
+  expect(container.textContent).toContain('не засчитывается');
+  await click('Отменить моё последнее действие'); expect(container.textContent).toContain('Вы заражены');
+  expect(lobby.viewFor('host').room.game.results).toEqual([]);
+});
+async function startSearchOnExorcistPhone(roundLimit = 5) {
+  const players = [];
+  for (let i = 0; i < 7; i++) {
+    const connection = `inspect${i}`;
+    const view = value(lobby.execute(connection, 'player:resume', { roomCode: room.code, resumeKey: String(i + 1).repeat(64) }));
+    players.push({ connection, view, index: i });
+  }
+  const possessed = players.find(player => player.view.assignment.card.role === 'possessed');
+  const exorcists = players.filter(player => player.view.assignment.card.role === 'exorcist');
+  const target = exorcists.at(-1);
+  savePlayerSession({ roomCode: room.code, name: `Player ${target.index}`, resumeKey: String(target.index + 1).repeat(64), pending: false });
+  value(lobby.execute('host', 'game:configure', { ...gameBase(), settings: { ...lobby.viewFor('host').room.game.settings, infectionEnabled: true, roundLimit } }));
+  value(lobby.execute('host', 'round:start', { ...gameBase(), confirmWarnings: true }));
+  clock.advance(45000);
+  io.mockReturnValue(socket('phone'));
+  await act(async () => root.render(createElement(PlayerPage)));
+  return { possessed, exorcists, target };
+}
+async function infectFromPhone(possessed, target) {
+  await act(async () => {
+    const own = lobby.viewFor(possessed.connection);
+    value(lobby.execute(possessed.connection, 'play:infect', { ...gameBase(), playVersion: own.play.version, targetId: target.view.playerId }));
+  });
+}
+
+it.each([['between_rounds', 5], ['finished', 1]])('prioritizes return and %s instructions after the last capture', async (phase, limit) => {
+  const { possessed, exorcists } = await startSearchOnExorcistPhone(limit);
+  for (const target of exorcists) await infectFromPhone(possessed, target);
+  expect(lobby.viewFor('phone').play.status).toBe('captured');
+  expect(lobby.viewFor('phone').room.game.phase).toBe('return');
+  expect(container.textContent).toContain('Все возвращаются на базу');
+  expect(container.textContent).not.toContain('Оставайтесь в той же зоне и повторяйте поведение группы');
+  expect(container.textContent).toContain('не засчитывается');
+  await act(async () => clock.advance(45000));
+  expect(lobby.viewFor('phone').room.game.phase).toBe(phase);
+  expect(container.textContent).not.toContain('Оставайтесь в той же зоне и повторяйте поведение группы');
+});
+
+it('stops captured-player behavior on pause, restores it on resume and clears it on abort', async () => {
+  const { possessed, target } = await startSearchOnExorcistPhone();
+  await infectFromPhone(possessed, target);
+  expect(container.textContent).toContain('Оставайтесь в той же зоне и повторяйте поведение группы');
+  await act(async () => value(lobby.execute('host', 'round:pause', gameBase())));
+  expect(lobby.viewFor('phone').room.game.paused).toBe(true);
+  expect(container.textContent).toContain('Прекратите действия и ждите в безопасном месте');
+  expect(container.textContent).not.toContain('Оставайтесь в той же зоне и повторяйте поведение группы');
+  expect(container.textContent).toContain('не засчитывается');
+  await act(async () => value(lobby.execute('host', 'round:resume', { ...gameBase(), confirmWarnings: true })));
+  expect(container.textContent).toContain('Оставайтесь в той же зоне и повторяйте поведение группы');
+  await act(async () => value(lobby.execute('host', 'round:abort', gameBase())));
+  expect(container.textContent).toContain('Раунд отменён. Все возвращаются на базу');
+  expect(container.textContent).not.toContain('Оставайтесь в той же зоне и повторяйте поведение группы');
+});
+
+it('stops released-player movement on pause and restores return instructions on resume', async () => {
+  const { possessed, target } = await startSearchOnExorcistPhone();
+  await infectFromPhone(possessed, target);
+  await click('Нас освободили');
+  expect(lobby.viewFor('phone').play.status).toBe('released');
+  expect(container.textContent).toContain('Вы освобождены. Возвращайтесь на базу');
+  await act(async () => value(lobby.execute('host', 'round:pause', gameBase())));
+  expect(lobby.viewFor('phone').room.game.paused).toBe(true);
+  expect(container.textContent).toContain('Прекратите действия и ждите в безопасном месте');
+  expect(container.textContent).not.toContain('Вернитесь на базу. До следующего раунда');
+  expect(container.textContent).not.toContain('Вы освобождены. Возвращайтесь на базу');
+  await act(async () => value(lobby.execute('host', 'round:resume', { ...gameBase(), confirmWarnings: true })));
+  expect(container.textContent).toContain('Вы освобождены. Возвращайтесь на базу');
+});
+
+it('renders provisional totals and freezes them on the organizer panel', async () => {
+  globalThis.sessionStorage.setItem('pomekhi.organizer', 'HOST');
+  io.mockReturnValue(socket('panel')); await act(async () => root.render(createElement(HostPage)));
+  await click('Начать раунд');
+  await act(async () => clock.advance(270000));
+  expect(container.textContent).toContain('Предварительный итог');
+  await click('Зафиксировать результаты');
+  expect(container.textContent).toContain('Результат зафиксирован');
+  expect([...container.querySelectorAll('button')].some(button => button.textContent === 'Зафиксировать результаты')).toBe(false);
 });

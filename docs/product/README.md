@@ -6,7 +6,7 @@ Source: the user's game-planning decisions in this chat before the project setup
 
 The browser provides an organizer panel and a phone lobby. One in-memory room supports up to 12 participants, code/name entry, HTTPS invitations with locally generated QR, separate organizer authorization, participant removal/leave and identity recovery after reconnect or refresh. The organizer joins from a phone; the laptop does not consume a slot. A full program restart invalidates the lobby and its credentials. HTTP health and Socket.IO readiness retain the foundation-stage contract; the authorized lobby snapshot establishes actual membership.
 
-Private-card dealing and untimed reading are implemented with a 24-card introductory bank. Players reveal/hide cards, mark readiness and request replacements; the organizer replaces one card, reshuffles all roles/cards or cancels. Timed rounds, pause, finite/endless parties and short laptop signals are implemented. Scoring, release/infection, editor, server persistence, music and voice remain future work. See [lobby design](../design/lobby-sessions.md) for current authorization and recovery behavior.
+Private-card dealing and untimed reading are implemented with a 24-card introductory bank. Players reveal/hide cards, mark readiness and request replacements; the organizer replaces one card, reshuffles all roles/cards or cancels. Timed rounds, pause, finite/endless parties and short laptop signals are implemented. Release/infection, mission scoring, undo and team results are implemented. Editor, server persistence, music and voice remain future work. See [lobby design](../design/lobby-sessions.md) for current authorization and recovery behavior.
 
 [The shared protocol](../../src/shared/protocol.ts) owns current wire shapes. Add game wire contracts with their implementation owner, rather than treating prose as an already published API.
 
@@ -50,15 +50,23 @@ Cards are initially closed and become closed again after refresh, reconnect or r
 
 ## Implemented round controls
 
-The lifecycle is lobby, reading, placement, search, return, break and finished. Only the three timed phases advance automatically. Each new deal and start is manual. Defaults are five rounds and 45/180/45 seconds. Initial finite count accepts 1-99 or endless; length/mode lock at first start. Durations accept 1-3600 seconds and remain editable before later rounds. A finite finished party can add one extra round, while endless mode can finish manually in a break. The current final display reports completed rounds only.
+The lifecycle is lobby, reading, placement, search, return, break and finished. Only the three timed phases advance automatically. Each new deal and start is manual. Defaults are five rounds and 45/180/45 seconds. Initial finite count accepts 1-99 or endless; length/mode lock at first start. Durations accept 1-3600 seconds and remain editable before later rounds. A finite finished party can add one extra round, while endless mode can finish manually in a break. The final display shows team rescues, missions, captured-player counts and active time.
 
 Start requires valid assignments and no replacement requests; unready/offline members require confirmation. Pause freezes the phase and exact remainder, directing players to stop and wait safely. The last organizer-panel disconnect, explicit active-player departure and a long laptop clock/control gap pause automatically. Phone disconnect alone does not. Resume remains manual; a changed roster requires confirmation, and an empty active roster can only abort. Early search finish starts the full return timer. Return completion credits the round; confirmed abort enters a break without credit and instructs everyone to return to base.
 
 New timed-phase arrivals wait for the next deal, including during pause. Existing participants restore their card/current phase. Card/readiness changes and reshuffles are available only during reading. Previous cards remain readable during breaks until new cards are dealt. Short quiet signals play only on an explicitly selected laptop panel with volume/mute; browser recovery does not replay them. Phones stay silent. Full restart still clears the party. See [round design](../design/rounds.md) for ownership and time recovery.
 
+## Implemented search actions and results
+
+Before each round, the organizer can manually enable infection (default off). Each possessed card has an original infection condition. Any active possessed/captured group member can capture a still-active exorcist, after selecting their name and confirming. Any group member can report group release. Released players return to base without acting again. Capture removes mission credit even if the mission was already completed; release does not restore it.
+
+Players can undo their latest effective action only without dependent subsequent events. Undo never reopens search. All new gameplay stops on pause; bookkeeping undo remains possible. Search returns automatically when no active exorcist or no active possessed group remains. Public screens reveal no current progress before return finishes.
+
+Return completion creates provisional team results with fixed starting denominators and time excluding pauses. Missions may be reported until a successful next deal, manual party finish or explicit result finalization seals the row. The last finite round stays provisional until sealed. Aborted attempts are displayed separately and excluded from team totals. Departures retain history/denominators, and remaining captured members can continue their group. See [search design](../design/search-actions.md).
+
 ## Task bank and editor
 
-Ship original tasks rather than copying commercial card text. The current bank has 12 possessed cards and 12 exorcist missions at difficulty 1 without infection. The target bank has 60 possessed tasks and 30 exorcist missions across three difficulty levels. Release conditions need actionable clues. Extra missions must not sabotage the main rescue goal.
+Ship original tasks rather than copying commercial card text. The current bank has 12 possessed cards and 12 exorcist missions at difficulty 1 with optional infection conditions. The target bank has 60 possessed tasks and 30 exorcist missions across three difficulty levels. Release conditions need actionable clues. Extra missions must not sabotage the main rescue goal.
 
 A separate laptop editor adds, edits, disables, imports and exports tasks. Organizers can launch without opening the bank and spoiling themselves. Edits apply to later deals, not issued cards. Cards can be replaced before start. Participants may opt out during search; this is not a successful rescue, and the affected group returns to base until the next round.
 
@@ -74,6 +82,6 @@ Save state locally. After restart recover the last saved game on pause rather th
 
 ## Acceptance
 
-Next implementation stages: release/infection and results, expanded task bank/editor, atmosphere music/voice, persistence and gameplay recovery. Lobby membership, private cards, untimed reading, timed rounds and browser credential recovery are implemented. Each stage adds actual tests and updates implementation status.
+Next implementation stages: expanded task bank/editor, atmosphere music/voice, persistence and gameplay recovery. Lobby membership, private cards, untimed reading, timed rounds and browser credential recovery are implemented. Each stage adds actual tests and updates implementation status.
 
 Required external scenarios include Windows/macOS startup, iOS/Android lock-and-return, dim-light readability, voice audibility in all zones, and actual mobile-carrier/Tuna access. Foundation integration tests do not establish these acceptance results.

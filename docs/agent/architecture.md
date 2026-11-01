@@ -1,6 +1,6 @@
 # Architecture and ownership
 
-Status: runtime foundation, one in-memory room, private cards and timed rounds. Physical game actions and server persistence remain future work in [product requirements](../product/README.md).
+Status: runtime foundation, one in-memory room, private cards and timed rounds. Search actions and results are implemented; server persistence remains future work in [product requirements](../product/README.md).
 
 ## Current modules
 
@@ -13,6 +13,7 @@ Status: runtime foundation, one in-memory room, private cards and timed rounds. 
 | Shared shell | Render the common accessible dark screen with CSS Modules | [Shared UI](../../src/client/shared/ui/index.ts) |
 | Lobby | Own the active room, identities, authorization, revocation and presence | [createLobby](../../src/server/lobby.ts) |
 | Game session | Own phases, deadlines, settings, round roster/count and private role history; compose dealing | [createGame](../../src/server/game.ts) |
+| Search ledger | Own infection groups, missions, causal undo and frozen round outcomes | [createSearch](../../src/server/search.ts) |
 | Dealing | Own private assignments, readiness and replacements | [createDealing](../../src/server/dealing.ts) |
 | Card bank | Keep original introductory cards on the server | [cards.ts](../../src/server/cards.ts) |
 | Server factory | Compose lobby and transports; own bounded transport cleanup | [createAppServer](../../src/server/app.ts) |
@@ -40,4 +41,4 @@ Each server has one independent lobby. Browser storage retains credentials, whil
 
 The client uses App, Pages and Shared because both pages now consume the same connection and shell. Pages own their workflows. Shared shell styles use a CSS Module; App owns document defaults. No router or global store is added. Dealing rules stay on the server.
 
-The [game session](../design/rounds.md) owns one lifecycle and composes the [dealing owner](../design/dealing.md) inside each room; lobby retains authorization and membership. Client pages keep DealControls, GameControls, SoundControls and PersonalCardPanel local; Shared owns the common clock/status presentation. Server-driven transitions publish through the lobby subscription. Factory cleanup disposes game timers before transports. Infection groups and scoring remain future work. Inject time and randomness for rule tests. Validate incoming commands at runtime. Construct public/personal projections explicitly; task storage and organizer capabilities remain on the server. Implement saves and paused recovery with the first game behavior that needs them.
+The [game session](../design/rounds.md) owns one lifecycle and composes the [dealing owner](../design/dealing.md) inside each room; lobby retains authorization and membership. Client pages keep DealControls, GameControls, SoundControls and PersonalCardPanel local; Shared owns the common clock/status presentation. Server-driven transitions publish through the lobby subscription. Factory cleanup disposes game timers before transports. The [search ledger](../design/search-actions.md) owns infection groups, mission credit and undo dependencies; game owns result history and finalization. Inject time and randomness for rule tests. Validate incoming commands at runtime. Construct public/personal projections explicitly; task storage and organizer capabilities remain on the server. Implement saves and paused recovery with the first game behavior that needs them.

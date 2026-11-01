@@ -6,6 +6,7 @@ const eslint = new ESLint({ cwd: fileURLToPath(new URL('../..', import.meta.url)
 
 describe('production import restrictions', () => {
   const cases = [
+    ['search cannot import transport', 'src/server/search.ts', "import './transport/socket.js';", true],
     ['game cannot import transport', 'src/server/game.ts', "import './transport/socket.js';", true],
     ['game cannot import runtime', 'src/server/game.ts', "export { createServerRuntime } from './runtime.js';", true],
     ['game can compose dealing', 'src/server/game.ts', "export { createDealing } from './dealing.js';", false],

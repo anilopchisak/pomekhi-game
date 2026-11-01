@@ -18,7 +18,8 @@
     ".agents/skills/project-graphify/SKILL.md",
     "docs/design/lobby-sessions.md",
     "docs/design/dealing.md",
-    "docs/design/rounds.md"
+    "docs/design/rounds.md",
+    "docs/design/search-actions.md"
   ],
   "inputExclude": [
     "dist/**",
@@ -285,6 +286,15 @@
         "query": "RoundStatus",
         "expectedSources": [
           "src/client/shared/ui/RoundStatus.tsx"
+        ],
+        "budget": 1500
+      },
+      {
+        "id": "search-owner-query",
+        "operation": "query",
+        "query": "createSearch",
+        "expectedSources": [
+          "src/server/search.ts"
         ],
         "budget": 1500
       }
