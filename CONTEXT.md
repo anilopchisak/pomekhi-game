@@ -33,6 +33,10 @@ Pomekhi is a cooperative horror party game. The organizer participates while sof
 | Infection group | A round-local original possessed identity and its captured exorcists; any member can spread capture or release the group. |
 | Provisional result | A completed round outcome that accepts mission reports and valid undo until sealed. |
 | Final result | An immutable scored round outcome. |
+| Ritual | A cooperative candle objective advanced only by confirmed normal-round rescues and missions. |
+| Prophecy | An original base-only public rule revealed by ritual progress; unrevealed content stays server-side. |
+| Ritual outcome | Immutable won, lost or stopped result; freeplay cannot reopen it. |
+| Freeplay continuation | Additional rounds after a closed ritual, with separate results and the former outcome retained. |
 | Checkpoint | A complete private server snapshot committed before publication; timed phases checkpoint about once per second. |
 | Restart recovery | Loading the last checkpoint with fresh organizer authorization and active play paused; downtime is excluded. |
 | Round withdrawal | A confirmed opt-out from the current round that retains room membership, prior achievements and group continuity. |

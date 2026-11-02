@@ -16,6 +16,7 @@ Status: runtime foundation, one locally saved room, private cards and timed roun
 | Search ledger | Own infection groups, missions, causal undo and frozen round outcomes | [createSearch](../../src/server/search.ts) |
 | Round inbox | Reconcile durable player events, receipts, review and completion barriers | [createRoundSync](../../src/server/round-sync.ts) |
 | Player offline model | Persist own authorized view and queue; project provisional effects | [model](../../src/client/pages/player/model/useOfflinePlayer.ts) |
+| Ritual | Own confirmed candles, revealed rules, penalties and immutable outcomes | [createRitual](../../src/server/ritual.ts) |
 | Dealing | Own private assignments, readiness and replacements | [createDealing](../../src/server/dealing.ts) |
 | Card bank | Keep original three-level cards on the server | [cards.ts](../../src/server/cards.ts) |
 | Session coordinator | Serialize commands/timers and publish only after durable commit | [createSession](../../src/server/session.ts) |
@@ -35,7 +36,7 @@ Client and server may import the environment-neutral cross-runtime protocol in s
 
 App imports pages through their index.js interfaces. Page slices cannot import each other or App. Shared imports neither Pages nor App; pages use its API/UI index.js interfaces. Keep direct relative .js references and place one-consumer behavior inside its owner. Features, Entities and Widgets have no implemented responsibility yet.
 
-Transport receives the session coordinator from App and cannot import app, runtime or the process entry. Lobby, game, search, round inbox, dealing and the bank import no transport, bootstrap, Express or Socket.IO. [ESLint](../../eslint.config.mjs) and [restriction tests](../../tests/tools/architecture.test.mjs) enforce written static imports and re-exports; they do not resolve aliases or inspect dynamic imports.
+Transport receives the session coordinator from App and cannot import app, runtime or the process entry. Lobby, game, search, round inbox, dealing, ritual and the banks import no transport, bootstrap, Express or Socket.IO. [ESLint](../../eslint.config.mjs) and [restriction tests](../../tests/tools/architecture.test.mjs) enforce written static imports and re-exports; they do not resolve aliases or inspect dynamic imports.
 
 ## State and lifecycle
 
@@ -46,3 +47,5 @@ Each server has one independent lobby. Browser storage retains credentials and a
 The client uses App, Pages and Shared because both pages now consume the same connection and shell. Pages own their workflows. Shared shell styles use a CSS Module; App owns document defaults. No router or global store is added. Dealing rules stay on the server.
 
 The [game session](../design/rounds.md) owns one lifecycle and composes the [dealing owner](../design/dealing.md) inside each room; lobby retains authorization and membership. Client pages keep DealControls, GameControls, SoundControls and PersonalCardPanel local; Shared owns the common clock/status presentation. Server-driven transitions publish through the lobby subscription. Factory cleanup drains the session and cancels timers within the shared transport shutdown deadline. The [search ledger](../design/search-actions.md) owns infection groups, mission credit and undo dependencies; game owns result history and finalization. Inject time and randomness for rule tests. Validate incoming commands at runtime. Construct public/personal projections explicitly; task storage and organizer capabilities remain on the server. The session coordinator serializes commands and timers, commits private snapshots, then publishes. See [persistence design](../design/session-persistence.md) and [offline reconciliation](../design/offline-play.md).
+
+The [ritual](../design/ritual.md) consumes sealed normal results after the offline completion barrier. Game retains lifecycle ownership; it decides when explicit confirmation ends a party or permits the next deal. Shared RitualBoard renders only the authorized public projection.

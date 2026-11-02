@@ -22,7 +22,8 @@
     "docs/design/search-actions.md",
     "docs/design/session-persistence.md",
     "docs/design/offline-play.md",
-    "docs/testing/device-acceptance.md"
+    "docs/testing/device-acceptance.md",
+    "docs/design/ritual.md"
   ],
   "inputExclude": [
     "dist/**",
@@ -341,6 +342,29 @@
         "id": "local-launch-source",
         "operation": "source",
         "value": "scripts/start-lan.mjs"
+      },
+      {
+        "id": "ritual-owner-query",
+        "operation": "query",
+        "query": "createRitual",
+        "expectedSources": [
+          "src/server/ritual.ts"
+        ],
+        "budget": 1500
+      },
+      {
+        "id": "ritual-ui-query",
+        "operation": "query",
+        "query": "RitualBoard",
+        "expectedSources": [
+          "src/client/shared/ui/RitualBoard.tsx"
+        ],
+        "budget": 1500
+      },
+      {
+        "id": "private-prophecy-source",
+        "operation": "source",
+        "value": "src/server/prophecies.ts"
       }
     ],
     "contextRoots": [
@@ -355,7 +379,8 @@
       "src/client/app/global.css",
       "src/client/index.html",
       "src/client/shared/ui/LobbyShell.module.css",
-      "src/client/shared/ui/RoundStatus.module.css"
+      "src/client/shared/ui/RoundStatus.module.css",
+      "src/client/shared/ui/RitualBoard.module.css"
     ]
   }
 }

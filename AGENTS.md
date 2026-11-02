@@ -1,6 +1,6 @@
 # Pomekhi agent guide
 
-Pomekhi is a horror party game with a shared laptop display and private phone cards. This checkout implements the runtime, lobby, private-card reading, timed rounds, search actions, round results, paused disk recovery and durable offline participation. [Product requirements](docs/product/README.md) distinguish the agreed target from implemented behavior.
+Pomekhi is a horror party game with a shared laptop display and private phone cards. This checkout implements the runtime, lobby, private-card reading, timed rounds, search actions, round results, paused disk recovery, durable offline participation and a shared ritual. [Product requirements](docs/product/README.md) distinguish the agreed target from implemented behavior.
 
 ## Sources and scope
 

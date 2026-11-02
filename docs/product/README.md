@@ -6,7 +6,7 @@ Source: the user's game-planning decisions in this chat before the project setup
 
 The browser provides an organizer panel and a phone lobby. One locally saved room supports up to 12 participants, code/name entry, HTTPS invitations with locally generated QR, separate organizer authorization, participant removal/leave and identity recovery after reconnect or refresh. The organizer joins from a phone; the laptop does not consume a slot. A full restart restores the last saved lobby and phone credentials; the organizer code changes. HTTP health and Socket.IO readiness retain the foundation-stage contract; the authorized lobby snapshot establishes actual membership.
 
-Private-card dealing and untimed reading are implemented with a 90-card three-level bank. Players reveal/hide cards, mark readiness and request replacements; the organizer replaces one card, reshuffles all roles/cards or cancels. Timed rounds, pause, finite/endless parties and short laptop signals are implemented. Release/infection, mission scoring, undo and team results are implemented. Paused disk recovery, durable offline actions, synchronization review, named zones and local invitations are implemented. Editor, music and voice remain future work. See [lobby design](../design/lobby-sessions.md) for current authorization and recovery behavior.
+Private-card dealing and untimed reading are implemented with a 90-card three-level bank. Players reveal/hide cards, mark readiness and request replacements; the organizer replaces one card, reshuffles all roles/cards or cancels. Timed rounds, pause, finite/endless parties and short laptop signals are implemented. Release/infection, mission scoring, undo and team results are implemented. Paused disk recovery, durable offline actions, synchronization review, named zones and local invitations are implemented. Shared candles, revealed prophecies and ritual victory/defeat are implemented. Editor, music and voice remain future work. See [lobby design](../design/lobby-sessions.md) for current authorization and recovery behavior.
 
 [The shared protocol](../../src/shared/protocol.ts) owns current wire shapes. Add game wire contracts with their implementation owner, rather than treating prose as an already published API.
 
@@ -32,17 +32,17 @@ Exorcists report mission completion themselves. Count missions separately from r
 
 ## Settings and progression
 
-Five normal rounds are the default, with configurable count and endless mode. An optional tutorial precedes these rounds, uses level 1 and never enables infection. It includes role instructions and a full manually started practice round. Tutorial outcomes remain visible but contribute neither normal round count, team totals/active time nor possessed-role history. Aborted attempts repeat the same progression position.
+Seven normal rounds are the default, with configurable count and endless mode. An optional tutorial precedes these rounds, uses level 1 and enables infection in on mode. It includes role instructions and a full manually started practice round. Tutorial outcomes remain visible but contribute neither normal round count, team totals/active time nor possessed-role history. Aborted attempts repeat the same progression position.
 
-Initial and maximum difficulty are configurable from 1 to 3, initially 1 and 3. For normal round i within the original horizon N, use initial + round((maximum - initial) * (i - 1) / (N - 1)); a one-round party starts at the initial level. Default levels are 1, 2, 2, 3, 3. Tutorial, difficulty range and length cannot change while cards are issued or after the first start. Before that start, cancel reading to reconfigure.
+Initial and maximum difficulty are configurable from 1 to 3, initially 1 and 3. For normal round i within the original horizon N, use initial + round((maximum - initial) * (i - 1) / (N - 1)); a one-round party starts at the initial level. Default levels are 1, 1, 2, 2, 2, 3, 3. Tutorial, difficulty range and length cannot change while cards are issued or after the first start. Before that start, cancel reading to reconfigure.
 
-Infection defaults to automatic, starting at normal round max(2, ceil(0.75 * N)): round 4 of the default five. The organizer may select on or off instead; that choice persists until changed. Infection mode and durations remain editable before starts. Tutorial infection is always prohibited by the server, including in on mode.
+Infection defaults to on, including tutorial and the first normal round. Off disables it throughout. Auto is an explicit alternative: tutorial has no infection, then infection begins at normal round max(2, ceil(0.75 * N)), round six for seven rounds. The choice persists until changed. Infection mode and durations remain editable before starts; changing durations alone preserves an already issued effective infection flag.
 
-In endless mode the opening five rounds provide progression, then the selected ceiling remains. A finite bank is reused after exhaustion; endless mode does not mean infinitely unique or AI-generated tasks. A finished finite party can continue with extra rounds at its selected ceiling, without recalculating the original horizon.
+In endless mode the opening seven rounds provide progression, then the selected ceiling remains. A finite bank is reused after exhaustion; endless mode does not mean infinitely unique or AI-generated tasks. A finished finite party can continue with extra rounds at its selected ceiling, without recalculating the original horizon.
 
 Implemented defaults: 45-second placement head start, three-minute search, 45-second return, tutorial enabled, low initial difficulty and high maximum difficulty. The primary party has seven players and three original possessed players. The current dealing range is 4-12 players, including offline members, with at least two exorcists and no more original possessed players than exorcists at an overall deal. Its default possessed count is min(3, floor(n/2)). Phase durations are implemented; see [timed-round design](../design/rounds.md). This initial balance does not constrain future infection.
 
-The final summary shows team rescues, completed additional missions, results per round and active time excluding breaks. Do not introduce a personal leaderboard or mandatory victory threshold without a product decision.
+The final summary shows team rescues, completed additional missions, results per round and active time excluding breaks. There is no personal leaderboard. The confirmed ritual adds a shared victory/defeat objective for new finite parties.
 
 ## Current reading behavior
 
@@ -54,7 +54,7 @@ Cards are initially closed and become closed again after refresh or replacement.
 
 ## Implemented round controls
 
-The lifecycle is lobby, reading, placement, search, return, break and finished. Only the three timed phases advance automatically. Each new deal and start is manual. Defaults are five rounds and 45/180/45 seconds. Initial finite count accepts 1-99 or endless; length/mode lock at first start. Durations accept 1-3600 seconds and remain editable before later rounds. A finite finished party can add one extra round, while endless mode can finish manually in a break. The final display shows team rescues, missions, captured-player counts and active time.
+The lifecycle is lobby, reading, placement, search, return, break and finished. Only the three timed phases advance automatically. Each new deal and start is manual. Defaults are seven rounds and 45/180/45 seconds. Initial finite count accepts 1-99 or endless; length/mode lock at first start. Durations accept 1-3600 seconds and remain editable before later rounds. A finite finished party can add one extra round, while endless mode can finish manually in a break. The final display shows team rescues, missions, captured-player counts and active time.
 
 Start requires valid assignments and no replacement requests; unready/offline members require confirmation. Pause freezes the phase and exact remainder, directing players to stop and wait safely. The last organizer-panel disconnect, a storage failure and a long laptop clock/control gap pause automatically. Player departure, removal, withdrawal and phone disconnect do not pause. Resume remains manual; a changed roster requires confirmation, and an empty active roster can only abort. Early search finish starts the full return timer. Return completion credits the round; confirmed abort enters a break without credit and instructs everyone to return to base.
 
@@ -67,6 +67,14 @@ Before each start, the organizer can choose automatic, on or off infection mode;
 Players can undo their latest effective action only without dependent subsequent events. Undo never reopens search. All new gameplay stops on pause; bookkeeping undo remains possible. Search returns automatically when no active exorcist or no active possessed group remains. Public screens reveal no current progress before return finishes.
 
 Return completion creates provisional team results with fixed starting denominators and time excluding pauses. Missions may be reported until a successful next deal, manual party finish or explicit result finalization seals the row. The last finite round stays provisional until sealed. Aborted attempts are displayed separately and excluded from team totals. Departures retain history/denominators, and remaining captured members can continue their group. See [search design](../design/search-actions.md).
+
+## Shared ritual
+
+New finite parties enable the ritual by default; it can be disabled before the first deal. Endless mode is freeplay without a ritual. At the first normal start freeze the goal using the actual roster, including offline players. Seven players/seven rounds start with 7/2/3 candles on A/B/C, requiring 28 steps. Other lengths and rosters use the scaling formula in [ritual design](../design/ritual.md). This initial balance requires a live rehearsal.
+
+One confirmed rescued original group or eligible mission moves one candle one position: A, then B, then C, then out. The program opens two distinct original base-only prophecy rules and a final release card in order. Open rules accumulate and remain open after penalties. Players report violations at base; an authorized panel applies one backward step from the largest eligible pile, breaking ties toward the farthest. The latest penalty can be corrected until another start or confirmation. Required announcements, rules, technical recovery and safety communication are exempt.
+
+After return, synchronize phones and resolve conflicts or force-close waiting. Then explicitly confirm the round before a new deal or party finish. Preview reveals no hidden prophecy. Confirmation seals the result, advances once and checks immediate victory before last-round defeat. Tutorial/aborted attempts earn no progress. Full capture does not end the party. Early manual finish is stopped. A confirmed continuation allows separate freeplay results while retaining the immutable ritual outcome. See [ritual design](../design/ritual.md).
 
 ## Task bank and editor
 
@@ -88,10 +96,10 @@ Save state locally. After restart recover the last saved game on pause rather th
 
 Players can record release, infection, received-infection notices, missions, withdrawal and causal undo without a connection. IndexedDB commits before showing a provisional effect. The phone keeps its own authorized view only; other participants and the timer are marked unconfirmed. Read a source card physically after a received infection; the full new card arrives after synchronization. Reconnect restores identity before sending stable event IDs and obtaining receipts.
 
-After return all frozen participants, including withdrawn members, must confirm synchronization before the next deal or finalization. Conflicts go to organizer review without card content. The organizer may explicitly close waiting with a warning; later actions cannot change a closed score. The server persists accepted events, review decisions and waiting confirmations in schema version 3. See [offline design](../design/offline-play.md) for timing, ordering and recovery rules.
+After return all frozen participants, including withdrawn members, must confirm synchronization before the next deal or finalization. Conflicts go to organizer review without card content. The organizer may explicitly close waiting with a warning; later actions cannot change a closed score. The server persists accepted events, review decisions and waiting confirmations in schema version 4. See [offline design](../design/offline-play.md) for timing, ordering and recovery rules.
 
 ## Acceptance
 
-Next implementation stages: task editor, atmosphere music/voice and the separately planned ritual system. Lobby membership, private cards, untimed reading, timed rounds and browser credential recovery are implemented. Each stage adds actual tests and updates implementation status.
+Next implementation stages: task editor, atmosphere music/voice and the optional spirit-box extension. Lobby membership, private cards, untimed reading, timed rounds and browser credential recovery are implemented. Each stage adds actual tests and updates implementation status.
 
 Required external scenarios include Windows/macOS startup, iOS/Android lock-and-return, dim-light readability, voice audibility in all zones, and actual mobile-carrier/Tuna access. Foundation integration tests do not establish these acceptance results.

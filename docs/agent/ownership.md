@@ -11,6 +11,7 @@
 | Tutorial and progression | Game session and frozen round plan | Host settings/briefing, phone guidance, level-aware dealing, result filtering and versioned recovery |
 | Search actions and results | [Search ledger](../../src/server/search.ts), [search design](../design/search-actions.md) | Personal effective cards/actions/undo, public post-return team results and result finalization |
 | Offline journal and participation | [Round inbox](../../src/server/round-sync.ts), player IndexedDB and [offline design](../design/offline-play.md) | Own pending/confirmed/review receipts, host review, durable replay and completion barrier |
+| Shared ritual and freeplay | [Ritual](../../src/server/ritual.ts), game and shared protocol | Host review/penalty controls, phone board, sealed result split and schema-4 recovery |
 | Live sound cues | Game transitions, lobby sound ownership and socket transport | One explicitly selected host panel; phones receive no cues, and recovery replays none |
 | Original three-level bank | [Server bank](../../src/server/cards.ts) | Server dealing only; production bundle and Vite/HTTP privacy tests |
 | Organizer authorization | Process-generated code and connection authorization in lobby | Laptop panel; sessionStorage recovery; the terminal intentionally displays the bootstrap code |

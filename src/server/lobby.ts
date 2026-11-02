@@ -181,9 +181,9 @@ export function createLobby({ organizerCode, generateId = randomUUID, generateRo
       if (!player) return fail('SESSION_EXPIRED');
       remove(player, 'left');
     } else if (['deal:create', 'deal:shuffle', 'deal:cancel', 'deal:replace', 'card:ready', 'card:request',
-      'game:configure', 'round:start', 'round:pause', 'round:resume', 'round:return', 'round:abort', 'party:finish', 'party:extend', 'play:infect', 'play:release', 'play:mission', 'play:undo', 'results:finalize', 'venue:configure', 'play:withdraw', 'sync:resolve', 'sync:close'].includes(command)) {
+      'game:configure', 'round:start', 'round:pause', 'round:resume', 'round:return', 'round:abort', 'party:finish', 'party:extend', 'play:infect', 'play:release', 'play:mission', 'play:undo', 'results:finalize', 'venue:configure', 'play:withdraw', 'sync:resolve', 'sync:close', 'ritual:penalty', 'ritual:undo-penalty', 'party:freeplay'].includes(command)) {
       const playAction = command.startsWith('play:');
-      const gameAction = command.startsWith('game:') || command.startsWith('round:') || command.startsWith('party:') || playAction || command === 'results:finalize' || command === 'venue:configure' || command.startsWith('sync:');
+      const gameAction = command.startsWith('game:') || command.startsWith('round:') || command.startsWith('party:') || playAction || command === 'results:finalize' || command === 'venue:configure' || command.startsWith('sync:') || command.startsWith('ritual:');
       const organizerAction = command.startsWith('deal:') || gameAction && !playAction;
       if (organizerAction ? actor?.kind !== 'organizer' : actor?.kind !== 'player') return fail('FORBIDDEN');
       if (!room || room.id !== data.roomId) return fail('ROOM_NOT_FOUND');
@@ -210,7 +210,7 @@ export function createLobby({ organizerCode, generateId = randomUUID, generateRo
       const fields: unknown[] = [command, data.roomId, gameAction ? data.gameVersion : data.dealVersion, gameAction ? data.roundId : data.dealId];
       if (command === 'game:configure') {
         const settings = data.settings as GameSettings;
-        fields.push(settings.tutorialEnabled, settings.initialDifficulty, settings.maximumDifficulty, settings.infectionMode, settings.roundLimit, settings.placementSeconds, settings.searchSeconds, settings.returnSeconds);
+        fields.push(settings.ritualEnabled, settings.tutorialEnabled, settings.initialDifficulty, settings.maximumDifficulty, settings.infectionMode, settings.roundLimit, settings.placementSeconds, settings.searchSeconds, settings.returnSeconds);
       }
       if (command === 'venue:configure') fields.push(data.venue);
       if (command === 'sync:resolve') fields.push(data.eventId, data.decision, data.beforeId);
@@ -249,6 +249,8 @@ export function createLobby({ organizerCode, generateId = randomUUID, generateRo
       else if (command === 'round:return') error = room.game.beginReturn();
       else if (command === 'round:abort') error = room.game.abort();
       else if (command === 'party:finish') error = room.game.finishParty();
+      else if (command === 'ritual:penalty' || command === 'ritual:undo-penalty') error = room.game.ritualAction(command === 'ritual:penalty' ? 'penalty' : 'undoPenalty');
+      else if (command === 'party:freeplay') error = room.game.freeplay();
       else if (command === 'party:extend') error = room.game.extend();
       else if (command === 'results:finalize') error = room.game.finalize();
       else if (playAction && actor!.kind === 'player') error = room.game.playAction(actor!.playerId, command.slice(5) as 'infect' | 'release' | 'mission' | 'undo', (command === 'play:undo' ? data.actionId : data.targetId) as string, data.completed as boolean);

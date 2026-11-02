@@ -2,11 +2,12 @@ import type { Assignment } from '../shared/protocol.js';
 import type { SavedLobby } from './lobby.js';
 import { createSearch } from './search.js';
 import type { SavedSearch } from './search.js';
+import { createRitual, validateRitual } from './ritual.js';
 import { createRoundSync, validateRoundSync } from './round-sync.js';
 import { validDifficulty, validSettings, isTimedPhase } from './game.js';
 
 /** Private disk contract. Never import this module from the browser or wire protocol. */
-export interface SavedSession { schemaVersion: 3; lobby: SavedLobby }
+export interface SavedSession { schemaVersion: 4; lobby: SavedLobby }
 function requireValue(condition: unknown): asserts condition { if (!condition) throw new Error('Invalid or incompatible session file.'); }
 function object(value: unknown): Record<string, unknown> { requireValue(value && typeof value === 'object' && !Array.isArray(value)); return value as Record<string, unknown>; }
 function array(value: unknown, limit = 100000): unknown[] { requireValue(Array.isArray(value) && value.length <= limit); return value; }
@@ -33,7 +34,7 @@ function assignment(value: unknown): Assignment {
 function validatePlan(value: unknown, historical = false) {
   const plan = object(value);
   requireValue(validDifficulty(plan.difficulty) && (typeof plan.infectionEnabled === 'boolean' || historical && plan.infectionEnabled === null));
-  requireValue(plan.kind === 'tutorial' ? plan.number === 0 && plan.difficulty === 1 && plan.infectionEnabled === false
+  requireValue(plan.kind === 'tutorial' ? plan.number === 0 && plan.difficulty === 1 && typeof plan.infectionEnabled === 'boolean'
     : plan.kind === 'regular' && integer(plan.number) && plan.number >= 1);
   return plan;
 }
@@ -67,7 +68,12 @@ export function validateSession(value: unknown): SavedSession {
   let saved = object(value);
   if (saved.schemaVersion === 1) saved = migrateLegacy(saved);
   if (saved.schemaVersion === 2) { saved = structuredClone(saved); saved.schemaVersion = 3; const oldLobby = object(saved.lobby); if (oldLobby.room !== null) { const g = object(object(oldLobby.room).game); g.venue = { base: 'База', zones: [] }; g.roundSync = null; } }
-  requireValue(saved.schemaVersion === 3);
+  if (saved.schemaVersion === 3) {
+    saved = structuredClone(saved); saved.schemaVersion = 4;
+    const oldLobby = object(saved.lobby);
+    if (oldLobby.room !== null) { const g = object(object(oldLobby.room).game); object(g.settings).ritualEnabled = false; g.ritual = null; g.freeplayFrom = null; }
+  }
+  requireValue(saved.schemaVersion === 4);
   const lobby = object(saved.lobby); requireValue(integer(lobby.revision));
   const codes = strings(lobby.usedCodes); requireValue(codes.every(v => /^[A-Z2-9]{6}$/.test(v)));
   if (lobby.room === null) return saved as unknown as SavedSession;
@@ -173,6 +179,22 @@ export function validateSession(value: unknown): SavedSession {
       const derived = replay.result(current.number as number, current.status as 'provisional' | 'final' | 'aborted', game.activeMs as number);
       for (const key of ['rescuedGroups', 'totalGroups', 'missions', 'totalMissions', 'infectedPlayers', 'activeMs'] as const) requireValue(current[key] === derived[key]);
     }
+  }
+  requireValue(game.freeplayFrom === null || integer(game.freeplayFrom) && game.freeplayFrom <= results.length && settings.roundLimit === null && settings.ritualEnabled === false);
+  if (game.ritual !== null) {
+    validateRitual(game.ritual);
+    const ritual = game.ritual, projection = createRitual(ritual, () => 'validation').snapshot();
+    requireValue(ritual.roundLimit === game.progressionRounds);
+    const expected = results.slice(0, game.freeplayFrom === null ? results.length : game.freeplayFrom as number).filter(r => r.kind === 'regular' && r.status === 'final');
+    const applied = ritual.events.filter(e => e.kind === 'round');
+    requireValue(applied.length === expected.length && applied.every((e, i) => e.id === expected[i].roundId && e.number === expected[i].number && e.successes === Number(expected[i].rescuedGroups) + Number(expected[i].missions)));
+    const initial = results.find(r => r.kind === 'regular');
+    if (initial) requireValue(ritual.players === Number(initial.totalGroups) + Number(initial.totalMissions));
+    requireValue(projection.outcome === 'playing' ? settings.ritualEnabled === true && game.freeplayFrom === null && game.phase !== 'finished'
+      : game.freeplayFrom !== null || game.phase === 'finished' && settings.ritualEnabled === true);
+  } else {
+    requireValue(game.freeplayFrom === null);
+    requireValue(!settings.ritualEnabled || !results.some(r => r.kind === 'regular') && !(timed && plan?.kind === 'regular'));
   }
   return saved as unknown as SavedSession;
 }

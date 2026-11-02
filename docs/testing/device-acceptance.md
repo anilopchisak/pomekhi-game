@@ -21,3 +21,9 @@ These scenarios require actual equipment. Mac Chromium/WebKit, loopback and simu
 Run on real Safari/iPhone and Chrome/Android: initial join, private-card conceal/reveal, IndexedDB permission/failure, offline recording of every action, several tabs, a lost acknowledgement, screen lock, tab restoration and background suspension. For HTTPS, wait for confirmed offline preparation before testing airplane-mode reload. For HTTP, retain the open tab.
 
 Restart the Windows server during a disposable search. The organizer must enter the new terminal code; phones retain identities, cards and queued IDs. Play restores paused and resumes only manually. Verify the sound source is reselected and old cues are not replayed. Confirm the QR/clipboard, dim-light readability and battery behavior before the party.
+
+## Ritual rehearsal and balance
+
+With seven real participants, try the tutorial with infection and verify that its successes do not move candles. New finite parties default to seven normal rounds and a 28-step goal. Confirm synchronized results explicitly, read each newly revealed base rule aloud, and exercise one penalty and its correction. A fully captured group ends only its search. Verify victory or final-round defeat, then continue freeplay with the original outcome unchanged.
+
+Record actual successes, penalties and elapsed time including reading and breaks. The 36-minute default timer total includes the tutorial, but is not a party-duration estimate. The mathematical budget and automated perfect-score scenarios do not establish a suitable human win rate; use this rehearsal to assess the initial balance.

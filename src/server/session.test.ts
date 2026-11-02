@@ -30,7 +30,7 @@ async function fixture(tutorialEnabled = false) {
   const playCommand = (id: string) => { const v = session.viewFor(id); if (v?.kind !== 'player') throw new Error('No player'); return { ...gameCommand(), playVersion: v.play!.version }; };
   await session.initialize(); value(await send('host', 'organizer:authorize', { code })); value(await send('host', 'room:create', {}));
   for (let n = 1; n <= 7; n++) value(await send(`p${n}`, 'player:join', { roomCode: room().code, name: `Игрок ${n}`, resumeKey: key(n) }));
-  value(await send('host', 'game:configure', { ...gameCommand(), settings: { ...room().game.settings, tutorialEnabled } }));
+  value(await send('host', 'game:configure', { ...gameCommand(), settings: { ...room().game.settings, ritualEnabled: false, roundLimit: 5, infectionMode: 'auto', tutorialEnabled } }));
   const phones = Array.from({ length: 7 }, (_, i) => `p${i + 1}`);
   async function restart() {
     const roomCode = room().code;

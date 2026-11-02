@@ -1,6 +1,7 @@
 import type { GamePhase, GameSnapshot, PauseReason, Role } from '../../../shared/protocol.js';
 import { useRoundClock } from './useRoundClock.js';
 import type { ConnectionState } from '../api/index.js';
+import { RitualBoard } from './RitualBoard.js';
 import { ResultsSummary } from './ResultsSummary.js';
 import styles from './RoundStatus.module.css';
 
@@ -34,7 +35,7 @@ export function RoundStatus({ game, clockOffset, connection, role, playStatus, w
       <h4>Пробный раунд</h4>
       <p>Попробуйте роли и кнопки без общего зачёта. Откройте личную карточку на телефоне и отметьте готовность; раунд запускается вручную с ноутбука.</p>
       <p>Одержимые занимают места и изображают поведение карточки. Экзорцисты ждут сигнала поиска, затем помогают по подсказкам. Освобождение и необязательные миссии отмечаются на телефонах.</p>
-      <p>Ходите шагом только в разрешённых зонах. Заражения нет. По сигналу возвращения все идут на базу; при паузе остановитесь в безопасном месте.</p>
+      <p>Ходите шагом только в разрешённых зонах. {game.roundPlan.infectionEnabled ? 'При заражении прочитайте поведение группы; освободиться может вся группа. Зачёт миссии при заражении теряется.' : 'Заражения нет.'} По сигналу возвращения все идут на базу; при паузе остановитесь в безопасном месте.</p>
     </aside>}
     <div role="status"><h3>{game.paused ? `Пауза · ${labels[game.phase]}` : labels[game.phase]}</h3></div>
     {(game.deadline !== null || game.paused) && <>
@@ -44,6 +45,7 @@ export function RoundStatus({ game, clockOffset, connection, role, playStatus, w
     {game.paused && <p>{game.pauseReason && reasons[game.pauseReason]} Время сохранено.</p>}
     <p>{instruction}</p>
     {connection !== 'online' && <p role="alert">Нет связи. Фаза и таймер не подтверждены. Сверьтесь с общим экраном.</p>}
-    <ResultsSummary results={game.results} />
+    <RitualBoard game={game} />
+    <ResultsSummary results={game.results} freeplayFrom={game.freeplayFrom} />
   </section>;
 }

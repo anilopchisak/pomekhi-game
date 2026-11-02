@@ -1,9 +1,9 @@
 import { useCallback, useEffect, useRef, useState } from 'react';
-import type { LobbyCommand, LobbyInputs, LobbyReply, OfflineAction } from '../../../../shared/protocol.js';
+import type { LobbyCommand, LobbyInputs, LobbyReply, LobbyError, OfflineAction } from '../../../../shared/protocol.js';
 import { appendOffline, projectOffline, purgeOffline, updateOffline } from './offline-store.js';
 import type { OfflineRecord, PlayerView } from './offline-store.js';
 
-type Request = <C extends LobbyCommand>(command: C, input: LobbyInputs[C]) => Promise<LobbyReply | { ok: false; error: 'CONNECTION_LOST' | 'TIMEOUT' }>;
+type Request = <C extends LobbyCommand>(command: C, input: LobbyInputs[C]) => Promise<Extract<LobbyReply, { ok: true }> | { ok: false; error: LobbyError | 'CONNECTION_LOST' | 'TIMEOUT' }>;
 export function useOfflinePlayer(scope: string | null, live: PlayerView | undefined, online: boolean, authorized: boolean, generation: number, request: Request, clockOffset: number | null) {
   const [storedRecord, setRecord] = useState<OfflineRecord>();
   const record = storedRecord?.scope === scope ? storedRecord : undefined;

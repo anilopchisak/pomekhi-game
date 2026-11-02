@@ -12,39 +12,40 @@ function fixture() {
   const deal = () => {
     const state = game.publicState();
     if (state.synchronization) for (const player of players) expect(game.completeSync(player.id, state.roundId!, state.synchronization.revision)).toBeUndefined();
+    if (state.settings.ritualEnabled && game.publicState().results.at(-1)?.status === 'provisional') expect(game.finalize()).toBeUndefined();
     expect(game.deal(players.map(p => p.id), 3, false)).toBeUndefined();
   };
   const start = () => expect(game.start(players, true)).toBeUndefined();
-  const complete = () => { start(); time.advance(3000); };
+  const complete = () => { start(); time.advance(3000); if (game.publicState().settings.ritualEnabled) { const state = game.publicState(); for (const p of players) game.completeSync(p.id, state.roundId!, state.synchronization!.revision); expect(game.finalize()).toBeUndefined(); } };
   return { game, time, players, configure, deal, start, complete };
 }
 
-it('opens with a separate tutorial, then progresses through five scored rounds and infection', () => {
+it('opens with a separate tutorial, then progresses through seven scored rounds and infection', () => {
   const f = fixture();
   try {
-    expect(f.game.publicState().settings).toMatchObject({ tutorialEnabled: true, initialDifficulty: 1, maximumDifficulty: 3, infectionMode: 'auto' });
-    f.deal(); expect(f.game.publicState().roundPlan).toEqual({ kind: 'tutorial', number: 0, difficulty: 1, infectionEnabled: false });
+    expect(f.game.publicState().settings).toMatchObject({ tutorialEnabled: true, initialDifficulty: 1, maximumDifficulty: 3, infectionMode: 'on', roundLimit: 7, ritualEnabled: true });
+    f.deal(); expect(f.game.publicState().roundPlan).toEqual({ kind: 'tutorial', number: 0, difficulty: 1, infectionEnabled: true });
     f.complete();
     expect(f.game.publicState()).toMatchObject({ phase: 'between_rounds', completedRounds: 0, tutorialCompleted: true });
     expect(f.game.exportState().history).toEqual([]);
-    for (const [index, difficulty] of [1, 2, 2, 3, 3].entries()) {
+    for (const [index, difficulty] of [1, 1, 2, 2, 2, 3, 3].entries()) {
       f.deal();
-      expect(f.game.publicState().roundPlan).toEqual({ kind: 'regular', number: index + 1, difficulty, infectionEnabled: index >= 3 });
+      expect(f.game.publicState().roundPlan).toEqual({ kind: 'regular', number: index + 1, difficulty, infectionEnabled: true });
       f.complete();
     }
-    expect(f.game.publicState()).toMatchObject({ phase: 'finished', completedRounds: 5 });
-    expect(f.game.publicState().results.map(r => r.kind)).toEqual(['tutorial', ...Array(5).fill('regular')]);
-    expect(f.game.exportState().history.reduce((total, [, count]) => total + count, 0)).toBe(15);
+    expect(f.game.publicState()).toMatchObject({ phase: 'finished', completedRounds: 7 });
+    expect(f.game.publicState().results.map(r => r.kind)).toEqual(['tutorial', ...Array(7).fill('regular')]);
+    expect(f.game.exportState().history.reduce((total, [, count]) => total + count, 0)).toBe(21);
   } finally { f.game.dispose(); }
 });
 
-it('retries aborted tutorials and rounds without advancing progress and refuses tutorial infection even in on mode', () => {
+it('retries aborted tutorials and rounds without advancing progress and supports tutorial infection in on mode', () => {
   const f = fixture();
   try {
     expect(f.configure({ infectionMode: 'on' })).toBeUndefined(); f.deal(); f.start(); f.time.advance(1000);
     const root = f.players.find(p => f.game.personal(p.id)!.card.role === 'possessed')!.id;
     const target = f.players.find(p => f.game.personal(p.id)!.card.role === 'exorcist')!.id;
-    expect(f.game.playAction(root, 'infect', target)).toBe('ACTION_UNAVAILABLE');
+    expect(f.game.playAction(root, 'infect', target)).toBeUndefined();
     expect(f.game.abort()).toBeUndefined(); f.deal();
     expect(f.game.publicState().roundPlan.kind).toBe('tutorial'); f.complete();
     f.deal(); const plan = f.game.publicState().roundPlan; f.start(); f.game.abort(); f.deal();
@@ -56,8 +57,8 @@ it('retries aborted tutorials and rounds without advancing progress and refuses 
 it.each([1, 2, 5, 99, null])('keeps progression monotonic and bounded for a horizon of %s', roundLimit => {
   const f = fixture();
   try {
-    const settings = { ...f.game.publicState().settings, tutorialEnabled: false, roundLimit };
-    const horizon = roundLimit ?? 5;
+    const settings = { ...f.game.publicState().settings, tutorialEnabled: false, roundLimit, infectionMode: 'auto' as const };
+    const horizon = roundLimit ?? 7;
     const plans = Array.from({ length: horizon + 2 }, (_, i) => planRound(settings, i, false, horizon));
     expect(plans[0].difficulty).toBe(1);
     expect(plans.at(-1)!.difficulty).toBe(3);
@@ -71,7 +72,7 @@ it.each([1, 2, 5, 99, null])('keeps progression monotonic and bounded for a hori
 it.each([1, 2, 3] as Difficulty[])('supports a fixed difficulty %s and rejects invalid settings', difficulty => {
   const f = fixture();
   try {
-    expect(f.configure({ tutorialEnabled: false, initialDifficulty: difficulty, maximumDifficulty: difficulty })).toBeUndefined();
+    expect(f.configure({ ritualEnabled: false, roundLimit: 5, tutorialEnabled: false, initialDifficulty: difficulty, maximumDifficulty: difficulty })).toBeUndefined();
     for (let i = 0; i < 5; i++) { f.deal(); expect(f.game.publicState().roundPlan.difficulty).toBe(difficulty); f.complete(); }
     expect(f.configure({ initialDifficulty: 3, maximumDifficulty: 1 })).toBe('INVALID_PHASE');
     expect(f.game.publicState().settings.initialDifficulty).toBe(difficulty);
@@ -87,8 +88,8 @@ it('locks progression on issued cards and on first start while keeping durations
     for (const changes of [{ tutorialEnabled: false }, { roundLimit: 2 }, { initialDifficulty: 2 }, { maximumDifficulty: 2 }] as const)
       expect(f.configure(changes)).toBe('SETTINGS_LOCKED');
     expect(f.configure({ infectionMode: 'on', searchSeconds: 2 })).toBeUndefined();
-    expect(f.game.publicState().roundPlan.infectionEnabled).toBe(false);
-    f.game.cancelDeal(); expect(f.configure({ tutorialEnabled: false, roundLimit: 2 })).toBeUndefined();
+    expect(f.game.publicState().roundPlan.infectionEnabled).toBe(true);
+    f.game.cancelDeal(); expect(f.configure({ ritualEnabled: false, tutorialEnabled: false, roundLimit: 2 })).toBeUndefined();
     f.deal(); expect(f.game.publicState().roundPlan.infectionEnabled).toBe(true);
     f.start(); expect(f.configure({ infectionMode: 'off' })).toBe('INVALID_PHASE');
     f.time.advance(4000);
@@ -103,12 +104,12 @@ it('retains the original progression horizon after extensions and keeps endless 
   for (const roundLimit of [2, null]) {
     const f = fixture();
     try {
-      expect(f.configure({ tutorialEnabled: false, roundLimit })).toBeUndefined();
+      expect(f.configure({ ritualEnabled: false, tutorialEnabled: false, roundLimit })).toBeUndefined();
       const count = roundLimit ?? 7;
       for (let i = 0; i < count; i++) { f.deal(); f.complete(); }
       if (roundLimit !== null) expect(f.game.extend()).toBeUndefined();
       f.deal(); expect(f.game.publicState().roundPlan).toMatchObject({ difficulty: 3, infectionEnabled: true });
-      expect(f.game.exportState().progressionRounds).toBe(roundLimit ?? 5);
+      expect(f.game.exportState().progressionRounds).toBe(roundLimit ?? 7);
     } finally { f.game.dispose(); }
   }
 });

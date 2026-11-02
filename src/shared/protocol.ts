@@ -1,4 +1,5 @@
 export const APP_ID = 'pomekhi';
+export const DEFAULT_ROUND_LIMIT = 7;
 
 export interface HealthResponse {
   app: typeof APP_ID;
@@ -28,7 +29,7 @@ export type PauseReason = 'organizer' | 'organizer_disconnected' | 'participant_
 export type Difficulty = 1 | 2 | 3;
 export type InfectionMode = 'auto' | 'on' | 'off';
 export interface GameSettings {
-  roundLimit: number | null; placementSeconds: number; searchSeconds: number; returnSeconds: number;
+  ritualEnabled: boolean; roundLimit: number | null; placementSeconds: number; searchSeconds: number; returnSeconds: number;
   tutorialEnabled: boolean; initialDifficulty: Difficulty; maximumDifficulty: Difficulty; infectionMode: InfectionMode;
 }
 export interface RoundPlan { kind: 'tutorial' | 'regular'; number: number; difficulty: Difficulty; infectionEnabled: boolean }
@@ -59,7 +60,18 @@ export interface EventReceipt { id: string; status: 'accepted' | 'review' | 'rej
 export interface ReviewEvent extends EventReceipt { actor: string; actorName?: string; targetName?: string; dependsOn?: string[]; action: OfflineAction }
 export interface RoundSyncSnapshot { waitingPlayerIds: string[]; waitingPlayers?: { id: string; name: string }[]; conflicts: number; closed: boolean; revision: number }
 export interface PersonalSync { roundId: string; receipts: EventReceipt[]; complete: boolean; withdrawn: boolean }
+export type RitualOutcome = 'playing' | 'won' | 'lost' | 'stopped';
+export interface Prophecy { id: string; title: string; rule: string }
+export interface RitualSnapshot {
+  players: number; roundLimit: number; target: number; positions: [number, number, number, number];
+  remainingSteps: number; outcome: RitualOutcome;
+  cards: ({ slot: 'A' | 'B' | 'C'; revealed: false } | { slot: 'A' | 'B' | 'C'; revealed: true; card: Prophecy })[];
+  canPenalize: boolean; canUndoPenalty: boolean;
+  preview: { successes: number; positions: [number, number, number, number]; remainingSteps: number } | null;
+}
 export interface GameSnapshot {
+  ritual: RitualSnapshot | null;
+  freeplayFrom: number | null;
   phase: GamePhase;
   version: number;
   roundId: string | null;
@@ -118,7 +130,7 @@ export type LobbyError = 'INVALID_INPUT' | 'INVALID_ORGANIZER_CODE' | 'FORBIDDEN
   | 'ROOM_NOT_FOUND' | 'ROOM_FULL' | 'NAME_TAKEN' | 'SESSION_EXPIRED'
   | 'INVALID_COMPOSITION' | 'STALE_DEAL' | 'STALE_CARD' | 'REPLACEMENT_PENDING' | 'REQUEST_LIMIT'
   | 'INVALID_PHASE' | 'STALE_GAME' | 'START_WARNING' | 'RESUME_WARNING' | 'SETTINGS_LOCKED'
-  | 'STALE_PLAY' | 'ACTION_UNAVAILABLE' | 'UNDO_DEPENDENCY' | 'RESULTS_FINAL' | 'STORAGE_UNAVAILABLE' | 'SYNC_PENDING';
+  | 'STALE_PLAY' | 'ACTION_UNAVAILABLE' | 'UNDO_DEPENDENCY' | 'RESULTS_FINAL' | 'STORAGE_UNAVAILABLE' | 'SYNC_PENDING' | 'RITUAL_REVIEW_PENDING';
 export type LobbyReply = { ok: true; view: LobbyView } | { ok: false; error: LobbyError };
 
 export interface LobbyInputs {
@@ -150,6 +162,9 @@ export interface LobbyInputs {
   'play:mission': PlayCommand & { completed: boolean };
   'play:undo': PlayCommand & { actionId: string };
   'results:finalize': GameCommand;
+  'ritual:penalty': GameCommand;
+  'ritual:undo-penalty': GameCommand;
+  'party:freeplay': GameCommand;
   'venue:configure': GameCommand & { venue: Venue };
   'play:withdraw': PlayCommand;
   'play:sync': { roomId: string; roundId: string; events: OfflineEvent[] };

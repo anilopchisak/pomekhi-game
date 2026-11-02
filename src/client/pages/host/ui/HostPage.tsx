@@ -123,7 +123,7 @@ export function HostPage() {
         </>}
       </section>
       <RecoveryControls room={room} review={view.review ?? []} disabled={disabled} run={run} />
-      <DealControls room={room} disabled={disabled || Boolean(waitingForSync)} run={run} />
+      <DealControls room={room} disabled={disabled || Boolean(waitingForSync) || room.game.settings.ritualEnabled && room.game.results.at(-1)?.status === 'provisional'} run={run} />
       <GameControls key={room.id} room={room} disabled={disabled} run={run} />
       <SoundControls enabled={view.audioEnabled} disabled={disabled} cue={cue} prepareRef={prepareSound} gameVersion={room.game.version} clockOffset={clockOffset} claim={async enabled => {
         const result = await request('organizer:audio', { enabled });

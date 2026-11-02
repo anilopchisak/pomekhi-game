@@ -6,6 +6,9 @@ const eslint = new ESLint({ cwd: fileURLToPath(new URL('../..', import.meta.url)
 
 describe('production import restrictions', () => {
   const cases = [
+    ['ritual cannot import transport', 'src/server/ritual.ts', "import './transport/socket.js';", true],
+    ['ritual cannot read disk', 'src/server/ritual.ts', "import 'node:fs/promises';", true],
+    ['browser cannot import prophecies', 'src/client/app/main.tsx', "import '../../server/prophecies.js';", true],
     ['round inbox cannot import transport', 'src/server/round-sync.ts', "import './transport/socket.js';", true],
     ['round inbox cannot read disk', 'src/server/round-sync.ts', "import 'node:fs/promises';", true],
     ['search cannot import transport', 'src/server/search.ts', "import './transport/socket.js';", true],

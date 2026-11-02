@@ -14,7 +14,7 @@ function legacyFixture(phase: 'lobby' | 'reading' | 'placement' | 'between_round
   value(lobby.execute('host', 'organizer:authorize', { code: 'HOST' })); value(lobby.execute('host', 'room:create', {}));
   const room = () => { const v = lobby.viewFor('host'); if (v?.kind !== 'organizer' || !v.room) throw new Error('No room'); return v.room; };
   const base = () => ({ roomId: room().id, gameVersion: room().game.version, roundId: room().game.roundId, requestId: `migration-${++sequence}` });
-  value(lobby.execute('host', 'game:configure', { ...base(), settings: { ...room().game.settings, tutorialEnabled: false, maximumDifficulty: 1,
+  value(lobby.execute('host', 'game:configure', { ...base(), settings: { ...room().game.settings, ritualEnabled: false, tutorialEnabled: false, maximumDifficulty: 1,
     roundLimit: phase === 'finished' ? 1 : 5, placementSeconds: 1, searchSeconds: 1, returnSeconds: 1, infectionMode: infectionEnabled ? 'on' : 'off' } }));
   for (let i = 1; i <= 7; i++) value(lobby.execute(`p${i}`, 'player:join', { roomCode: room().code, name: `Player ${i}`, resumeKey: String(i).repeat(64) }));
   if (phase !== 'lobby') value(lobby.execute('host', 'deal:create', { roomId: room().id, dealVersion: room().dealing.version, dealId: null, requestId: `migration-${++sequence}`, possessedCount: 3 }));
@@ -47,7 +47,7 @@ it.each(['lobby', 'reading', 'placement', 'between_rounds', 'finished'] as const
   for (const enabled of [false, true]) {
     const { current, legacy } = legacyFixture(phase, enabled), original = structuredClone(legacy);
     const saved = validateSession(legacy), game = saved.lobby.room!.game;
-    expect(saved.schemaVersion).toBe(3);
+    expect(saved.schemaVersion).toBe(4);
     expect(legacy).toEqual(original);
     expect(game.settings).toMatchObject({ tutorialEnabled: false, initialDifficulty: 1, maximumDifficulty: 1, infectionMode: enabled ? 'on' : 'off' });
     expect(game.dealing.assignments).toEqual(current.lobby.room!.game.dealing.assignments);
@@ -61,7 +61,7 @@ it.each(['lobby', 'reading', 'placement', 'between_rounds', 'finished'] as const
 });
 
 it('migrates an empty version-1 save and rejects unsupported schemas and malformed legacy cards', () => {
-  expect(validateSession({ schemaVersion: 1, lobby: { revision: 0, usedCodes: [], room: null } }).schemaVersion).toBe(3);
+  expect(validateSession({ schemaVersion: 1, lobby: { revision: 0, usedCodes: [], room: null } }).schemaVersion).toBe(4);
   const { legacy } = legacyFixture('reading', false);
   legacy.lobby.room.game.dealing.assignments[0][1].card.difficulty = 2;
   expect(() => validateSession(legacy)).toThrow();
@@ -89,11 +89,11 @@ it('loads a legacy file through the real store and commits version 3 without los
     expect(migrated!.lobby.room!.game.dealing.assignments).toEqual(current.lobby.room!.game.dealing.assignments);
     expect(JSON.parse(await readFile(join(directory, 'session.json'), 'utf8')).schemaVersion).toBe(1);
     await store.write(migrated!);
-    expect(JSON.parse(await readFile(join(directory, 'session.json'), 'utf8')).schemaVersion).toBe(3);
+    expect(JSON.parse(await readFile(join(directory, 'session.json'), 'utf8')).schemaVersion).toBe(4);
     const lobby = createLobby({ organizerCode: 'NEWCODE' });
     try {
       lobby.restore(migrated!.lobby);
-      expect(lobby.exportState().room!.game.settings).toMatchObject({ tutorialEnabled: false, maximumDifficulty: 1, infectionMode: 'on' });
+      expect(lobby.exportState().room!.game.settings).toMatchObject({ ritualEnabled: false, tutorialEnabled: false, maximumDifficulty: 1, infectionMode: 'on' });
       expect(lobby.exportState().room!.game.dealing.assignments).toEqual(current.lobby.room!.game.dealing.assignments);
     } finally { lobby.dispose(); }
   } finally { await store.close(); await rm(directory, { recursive: true, force: true }); }
@@ -113,9 +113,27 @@ it.each(['reading', 'placement', 'between_rounds', 'finished'] as const)('upgrad
   const previous = JSON.parse(JSON.stringify(current));
   delete previous.lobby.room.game.roundSync; delete previous.lobby.room.game.venue; delete previous.lobby.room.game.playerNames;
   const saved = validateSession(previous), original = current.lobby.room!.game;
-  expect(saved.schemaVersion).toBe(3); expect(saved.lobby.room!.game.venue).toEqual({ base: 'База', zones: [] });
+  expect(saved.schemaVersion).toBe(4); expect(saved.lobby.room!.game.venue).toEqual({ base: 'База', zones: [] });
   expect(saved.lobby.room!.game.search).toEqual(original.search); expect(saved.lobby.room!.game.results).toEqual(original.results);
   const restored = createLobby({ organizerCode: 'NEWCODE' });
-  try { restored.restore(saved.lobby); expect(() => validateSession({ schemaVersion: 3, lobby: restored.exportState() })).not.toThrow(); }
+  try { restored.restore(saved.lobby); expect(() => validateSession({ schemaVersion: 4, lobby: restored.exportState() })).not.toThrow(); }
   finally { restored.dispose(); }
+});
+
+it('migrates a version-3 tutorial without enabling infection or a ritual, including a later duration edit', () => {
+  const { current } = legacyFixture('reading', true);
+  const previous = JSON.parse(JSON.stringify(current)); previous.schemaVersion = 3;
+  const g = previous.lobby.room.game; delete g.settings.ritualEnabled; delete g.ritual; delete g.freeplayFrom;
+  g.settings.tutorialEnabled = true; g.roundPlan = { kind: 'tutorial', number: 0, difficulty: 1, infectionEnabled: false };
+  const saved = validateSession(previous), lobby = createLobby({ organizerCode: 'HOST' });
+  try {
+    lobby.restore(saved.lobby); lobby.execute('h', 'organizer:authorize', { code: 'HOST' });
+    const v = lobby.viewFor('h'); if (v?.kind !== 'organizer' || !v.room) throw new Error('No room');
+    const before = v.room;
+    expect(lobby.execute('h', 'game:configure', { roomId: before.id, roundId: null, requestId: 'legacy-duration-edit', gameVersion: before.game.version, settings: { ...before.game.settings, searchSeconds: 10 } })).toMatchObject({ ok: true });
+    const after = lobby.exportState().room!.game;
+    expect(after.settings).toMatchObject({ roundLimit: 5, infectionMode: 'on', ritualEnabled: false });
+    expect(after.roundPlan!.infectionEnabled).toBe(false); expect(after.dealing.assignments).toEqual(current.lobby.room!.game.dealing.assignments);
+    expect(() => validateSession({ schemaVersion: 4, lobby: lobby.exportState() })).not.toThrow();
+  } finally { lobby.dispose(); }
 });

@@ -30,7 +30,7 @@ it('persists seven-client offline reconciliation, group departure, review, compl
   try {
     host = await connect(); value(await send(host, 'organizer:authorize', { code: 'TESTHOSTCODE' })); value(await send(host, 'room:create', {})); let room = await current();
     value(await send(host, 'venue:configure', { ...await base(), venue: { base: 'Гостиная', zones: ['Кухня', 'Коридор'] } }));
-    value(await send(host, 'game:configure', { ...await base(), settings: { ...room.game.settings, tutorialEnabled: false, roundLimit: 1, placementSeconds: 1, searchSeconds: 120, returnSeconds: 1, infectionMode: 'on' } }));
+    value(await send(host, 'game:configure', { ...await base(), settings: { ...room.game.settings, ritualEnabled: false, tutorialEnabled: false, roundLimit: 1, placementSeconds: 1, searchSeconds: 120, returnSeconds: 1, infectionMode: 'on' } }));
     for (let i = 1; i <= 7; i++) { const p = await connect(); phones.push(p); value(await send(p, 'player:join', { roomCode: room.code, name: `Offline ${i}`, resumeKey: String(i).padStart(64, '0') })); }
     room = await current(); value(await send(host, 'deal:create', { roomId: room.id, dealId: room.dealing.dealId, dealVersion: room.dealing.version, requestId: `offline-request-${++sequence}`, possessedCount: 3 }));
     value(await send(host, 'round:start', { ...await base(), confirmWarnings: true })); time.advance(1000); room = await current(); const roundId = room.game.roundId!;
@@ -71,7 +71,7 @@ it('persists seven-client offline reconciliation, group departure, review, compl
     const afterClose = event(ids.get(roots[2])!, roundId, { kind: 'release' });
     value(await send(phones[views.findIndex(v => v.playerId === ids.get(roots[2]))], 'play:sync', { roomId: room.id, roundId, events: [afterClose] }));
     expect((await current()).game.results.at(-1)).toMatchObject({ status: 'final', rescuedGroups: 2 });
-    expect(JSON.parse(await readFile(join(dir, 'session.json'), 'utf8')).schemaVersion).toBe(3);
+    expect(JSON.parse(await readFile(join(dir, 'session.json'), 'utf8')).schemaVersion).toBe(4);
     expect(JSON.stringify(value(await send(host, 'lobby:sync', {})))).not.toContain('releaseCondition');
   } finally { await runtime.stop(); await rm(dir, { recursive: true, force: true }); }
 });

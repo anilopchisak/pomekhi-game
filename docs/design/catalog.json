@@ -165,6 +165,27 @@
         "round withdrawal, zones or local invitations",
         "durable inbox migration and replay"
       ]
+    },
+    {
+      "id": "ritual",
+      "path": "docs/design/ritual.md",
+      "sources": [
+        "src/server/ritual.ts",
+        "src/server/prophecies.ts",
+        "src/server/game.ts",
+        "src/server/session-format.ts",
+        "src/shared/protocol.ts"
+      ],
+      "prefixes": [
+        "src/client/pages/host/",
+        "src/client/pages/player/",
+        "src/client/shared/ui/"
+      ],
+      "reviewWhen": [
+        "ritual budget, confirmed progress, penalties or reveal",
+        "tutorial infection, victory/loss and freeplay",
+        "private prophecy snapshots and schema migration"
+      ]
     }
   ]
 }

@@ -7,7 +7,7 @@ function setup(roundLimit: number | null = 5) {
   const onChange = vi.fn();
   const game = createGame({ generateId: () => `id-${++id}`, randomIndex: () => 0, clock: timer.clock, onChange });
   const players = Array.from({ length: 7 }, (_, i) => ({ id: `p${i}`, online: true }));
-  game.configure({ ...game.publicState().settings, tutorialEnabled: false, roundLimit, placementSeconds: 2, searchSeconds: 3, returnSeconds: 2 , infectionMode: 'off'});
+  game.configure({ ...game.publicState().settings, ritualEnabled: false, tutorialEnabled: false, roundLimit, placementSeconds: 2, searchSeconds: 3, returnSeconds: 2 , infectionMode: 'off'});
   function settle() { const s = game.publicState(); if (s.synchronization) for (const player of players) expect(game.completeSync(player.id, s.roundId!, s.synchronization.revision)).toBeUndefined(); }
   function deal() { settle(); expect(game.deal(players.map(player => player.id), 3, false)).toBeUndefined(); }
   function start() { expect(game.start(players, true)).toBeUndefined(); }

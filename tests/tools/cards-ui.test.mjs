@@ -65,7 +65,7 @@ beforeEach(() => {
     if (i === 0) { saved = session; phoneId = view.playerId; }
     lobby.disconnect(`p${i}`);
   }
-  value(lobby.execute('host', 'game:configure', { ...gameBase(), settings: { ...lobby.viewFor('host').room.game.settings, tutorialEnabled: false } }));
+  value(lobby.execute('host', 'game:configure', { ...gameBase(), settings: { ...lobby.viewFor('host').room.game.settings, ritualEnabled: false, roundLimit: 5, infectionMode: 'auto', tutorialEnabled: false } }));
   value(lobby.execute('host', 'deal:create', { ...base(), possessedCount: 3 }));
   savePlayerSession(saved);
   container = globalThis.document.createElement('div'); globalThis.document.body.append(container); root = createRoot(container);
@@ -402,7 +402,7 @@ it('shows tutorial guidance without revealing the closed card and excludes its o
   expect(container.textContent).not.toContain('Обучение:');
   await click('Открыть карточку');
   expect(container.textContent).toContain('Обучение:');
-  expect(container.textContent).not.toContain('Условие заражения:');
+  if (lobby.viewFor('phone').assignment.card.role === 'possessed') expect(container.textContent).toContain('Условие заражения:');
   await act(async () => { value(lobby.execute('host', 'round:start', { ...gameBase(), confirmWarnings: true })); clock.advance(3000); });
   expect(container.textContent).toContain('Обучение · без общего зачёта');
   expect(container.textContent).toContain('Спасено групп: 0 / 0. Миссии: 0 / 0. Активное время: 0 мин 0 с.');

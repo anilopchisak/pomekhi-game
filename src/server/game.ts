@@ -1,3 +1,6 @@
+import { DEFAULT_ROUND_LIMIT } from '../shared/protocol.js';
+import { createRitual, newRitual } from './ritual.js';
+import type { SavedRitual } from './ritual.js';
 import { performance } from 'node:perf_hooks';
 import type { Difficulty, GameCue, GamePhase, GameSettings, GameSnapshot, LobbyError, PauseReason, RoundPlan, RoundResult, TimedPhase } from '../shared/protocol.js';
 import { createDealing } from './dealing.js';
@@ -18,6 +21,7 @@ export const defaultClock: GameClock = {
   schedule: (callback, delay) => { const timer = setTimeout(callback, delay); return () => clearTimeout(timer); },
 };
 export interface SavedGame {
+  ritual?: SavedRitual | null; freeplayFrom?: number | null;
   venue?: Venue; roundSync?: SavedRoundSync | null; playerNames?: [string, string][];
   tutorialCompleted: boolean; progressionRounds: number; roundPlan: RoundPlan | null;
   dealing: SavedDealing; settings: GameSettings; phase: GamePhase; waitingPhase: 'lobby' | 'between_rounds'; version: number;
@@ -31,7 +35,7 @@ export function isTimedPhase(phase: GamePhase): phase is TimedPhase {
 export function validSettings(value: unknown, maximumRounds = 99): value is GameSettings {
   if (!value || typeof value !== 'object' || Array.isArray(value)) return false;
   const data = value as GameSettings;
-  return typeof data.tutorialEnabled === 'boolean' && ['auto', 'on', 'off'].includes(data.infectionMode)
+  return typeof data.ritualEnabled === 'boolean' && (!data.ritualEnabled || data.roundLimit !== null) && typeof data.tutorialEnabled === 'boolean' && ['auto', 'on', 'off'].includes(data.infectionMode)
     && validDifficulty(data.initialDifficulty) && validDifficulty(data.maximumDifficulty) && data.initialDifficulty <= data.maximumDifficulty
     && (data.roundLimit === null || Number.isInteger(data.roundLimit) && data.roundLimit >= 1 && data.roundLimit <= maximumRounds)
     && [data.placementSeconds, data.searchSeconds, data.returnSeconds].every(item => Number.isInteger(item) && item >= 1 && item <= 3600);
@@ -41,7 +45,7 @@ export function validDifficulty(value: unknown): value is Difficulty { return va
 
 /** Resolve only the next deal. Issued rounds retain their saved plan. */
 export function planRound(settings: GameSettings, completedRounds: number, tutorialCompleted: boolean, horizon: number): RoundPlan {
-  if (settings.tutorialEnabled && !tutorialCompleted) return { kind: 'tutorial', number: 0, difficulty: 1, infectionEnabled: false };
+  if (settings.tutorialEnabled && !tutorialCompleted) return { kind: 'tutorial', number: 0, difficulty: 1, infectionEnabled: settings.infectionMode === 'on' };
   const number = completedRounds + 1;
   const difficulty = number > horizon ? settings.maximumDifficulty : horizon === 1 ? settings.initialDifficulty
     : settings.initialDifficulty + Math.round((settings.maximumDifficulty - settings.initialDifficulty) * (number - 1) / (horizon - 1));
@@ -54,7 +58,7 @@ export function createGame({ generateId, randomIndex, clock = defaultClock, onCh
   generateId: () => string; randomIndex: (limit: number) => number; clock?: GameClock; onChange: () => void;
 }) {
   const dealing = createDealing({ generateId, randomIndex });
-  let settings: GameSettings = { roundLimit: 5, placementSeconds: 45, searchSeconds: 180, returnSeconds: 45, tutorialEnabled: true, initialDifficulty: 1, maximumDifficulty: 3, infectionMode: 'auto' };
+  let settings: GameSettings = { ritualEnabled: true, roundLimit: DEFAULT_ROUND_LIMIT, placementSeconds: 45, searchSeconds: 180, returnSeconds: 45, tutorialEnabled: true, initialDifficulty: 1, maximumDifficulty: 3, infectionMode: 'on' };
   let playerNames = new Map<string, string>();
   let venue: Venue = { base: 'База', zones: [] };
   let roundSync: ReturnType<typeof createRoundSync> | undefined;
@@ -64,7 +68,12 @@ export function createGame({ generateId, randomIndex, clock = defaultClock, onCh
   let roundId: string | null = null;
   let completedRounds = 0;
   let tutorialCompleted = false;
-  let progressionRounds = 5;
+  let progressionRounds = DEFAULT_ROUND_LIMIT;
+  let ritual: ReturnType<typeof createRitual> | undefined;
+  let freeplayFrom: number | null = null;
+  const ritualActive = () => settings.ritualEnabled && settings.roundLimit !== null && freeplayFrom === null;
+  const reviewPending = () => ritualActive() && results.at(-1)?.status === 'provisional';
+  function ensureRitual(players: number) { if (ritualActive()) ritual ??= newRitual(players, settings.roundLimit!, randomIndex, generateId); }
   let roundPlan: RoundPlan | null = null;
   const nextPlan = () => planRound(settings, completedRounds, tutorialCompleted, progressionRounds);
   let started = false;
@@ -133,7 +142,7 @@ export function createGame({ generateId, randomIndex, clock = defaultClock, onCh
       for (const player of originalPossessed) history.set(player, (history.get(player) ?? 0) + 1);
     }
     results.push({ ...search!.result(roundPlan!.number, 'provisional', activeMs), ...roundPlan! });
-    phase = settings.roundLimit !== null && completedRounds >= settings.roundLimit ? 'finished' : 'between_rounds';
+    phase = !ritualActive() && settings.roundLimit !== null && completedRounds >= settings.roundLimit ? 'finished' : 'between_rounds';
     deadline = null; remainingMs = null; paused = false; pauseReason = null;
     bump('finish');
   }
@@ -158,6 +167,7 @@ export function createGame({ generateId, randomIndex, clock = defaultClock, onCh
     updateResult();
     const sync = roundSync?.publicState();
     return {
+      ritual: ritual?.snapshot(['between_rounds', 'finished'].includes(phase) ? results.at(-1) : undefined) ?? null, freeplayFrom,
       phase, version, roundId, roundNumber: (roundPlan ?? nextPlan()).number,
       venue: structuredClone(venue), synchronization: sync ? { ...sync, waitingPlayers: sync.waitingPlayerIds.map(id => ({ id, name: playerNames.get(id) ?? id })) } : null,
       tutorialCompleted, roundPlan: { ...(roundPlan ?? nextPlan()) },
@@ -168,17 +178,19 @@ export function createGame({ generateId, randomIndex, clock = defaultClock, onCh
   function configure(next: GameSettings): LobbyError | undefined {
     if (!['lobby', 'reading', 'between_rounds'].includes(phase)) return 'INVALID_PHASE';
     if (!validSettings(next, Math.max(99, settings.roundLimit ?? 99))) return 'INVALID_INPUT';
-    const progressionChanged = (['roundLimit', 'tutorialEnabled', 'initialDifficulty', 'maximumDifficulty'] as const).some(key => settings[key] !== next[key]);
+    const progressionChanged = (['ritualEnabled', 'roundLimit', 'tutorialEnabled', 'initialDifficulty', 'maximumDifficulty'] as const).some(key => settings[key] !== next[key]);
     if (progressionChanged && (started || phase === 'reading')) return 'SETTINGS_LOCKED';
-    settings = { roundLimit: next.roundLimit, placementSeconds: next.placementSeconds, searchSeconds: next.searchSeconds, returnSeconds: next.returnSeconds,
+    const infectionChanged = settings.infectionMode !== next.infectionMode;
+    settings = { ritualEnabled: next.ritualEnabled, roundLimit: next.roundLimit, placementSeconds: next.placementSeconds, searchSeconds: next.searchSeconds, returnSeconds: next.returnSeconds,
       tutorialEnabled: next.tutorialEnabled, initialDifficulty: next.initialDifficulty, maximumDifficulty: next.maximumDifficulty, infectionMode: next.infectionMode };
-    if (!started) progressionRounds = settings.roundLimit ?? 5;
-    if (phase === 'reading') roundPlan!.infectionEnabled = nextPlan().infectionEnabled;
+    if (!started) progressionRounds = settings.roundLimit ?? DEFAULT_ROUND_LIMIT;
+    if (phase === 'reading' && infectionChanged) roundPlan!.infectionEnabled = nextPlan().infectionEnabled;
     bump();
   }
   function deal(players: string[], count: number, shuffle: boolean): LobbyError | undefined {
     if (shuffle ? phase !== 'reading' : phase !== 'lobby' && phase !== 'between_rounds') return 'INVALID_PHASE';
     if (!shuffle && roundSync && !roundSync.ready()) return 'SYNC_PENDING';
+    if (!shuffle && reviewPending()) return 'RITUAL_REVIEW_PENDING';
     const plan = phase === 'reading' ? roundPlan! : nextPlan();
     const error = dealing.deal(players, count, history, plan.difficulty);
     if (error) return error;
@@ -198,6 +210,8 @@ export function createGame({ generateId, randomIndex, clock = defaultClock, onCh
     if (!state.compositionValid || state.assignments.length !== players.length) return 'INVALID_COMPOSITION';
     if (state.assignments.some(item => item.replacementRequested)) return 'REPLACEMENT_PENDING';
     if (!confirmWarnings && (state.assignments.some(item => !item.ready) || players.some(item => !item.online))) return 'START_WARNING';
+    if (roundPlan!.kind === 'regular') ensureRitual(players.length);
+    ritual?.lock();
     playerNames = new Map(players.map(item => [item.id, item.name ?? item.id]));
     activePlayerIds = players.map(item => item.id);
     originalPossessed = activePlayerIds.filter(id => dealing.personal(id)?.card.role === 'possessed');
@@ -228,10 +242,12 @@ export function createGame({ generateId, randomIndex, clock = defaultClock, onCh
   function finishParty(): LobbyError | undefined {
     if (phase !== 'between_rounds') return 'INVALID_PHASE';
     if (roundSync && !roundSync.ready()) return 'SYNC_PENDING';
+    if (reviewPending()) return 'RITUAL_REVIEW_PENDING';
+    if (ritualActive()) { ensureRitual(search?.exportState().roster.length ?? playerNames.size); ritual!.stop(); }
     sealResult(); phase = 'finished'; bump('finish');
   }
   function extend(): LobbyError | undefined {
-    if (phase !== 'finished' || settings.roundLimit === null) return 'INVALID_PHASE';
+    if (phase !== 'finished' || settings.roundLimit === null || ritualActive()) return 'INVALID_PHASE';
     settings.roundLimit = completedRounds + 1; phase = 'between_rounds'; bump();
   }
   function add(playerId: string) { if (phase === 'reading') dealing.add(playerId); }
@@ -262,7 +278,20 @@ export function createGame({ generateId, randomIndex, clock = defaultClock, onCh
   function finalize(): LobbyError | undefined {
     if (!['between_rounds', 'finished'].includes(phase) || !results.length) return 'INVALID_PHASE';
     if (roundSync && !roundSync.ready()) return 'SYNC_PENDING';
-    sealResult(); bump();
+    const last = results.at(-1)!;
+    if (ritualActive() && last.status === 'provisional' && last.kind === 'regular') {
+      const error = ritual!.commit({ ...last, status: 'final' }); if (error) return error;
+    }
+    sealResult();
+    if (ritualActive() && ritual && ritual.snapshot().outcome !== 'playing') { phase = 'finished'; bump('finish'); } else bump();
+  }
+  function ritualAction(action: 'penalty' | 'undoPenalty'): LobbyError | undefined {
+    if (!ritualActive() || !ritual || !['reading', 'between_rounds'].includes(phase)) return 'INVALID_PHASE';
+    const error = ritual[action](); if (!error) bump(); return error;
+  }
+  function freeplay(): LobbyError | undefined {
+    if (phase !== 'finished' || !ritual || ritual.snapshot().outcome === 'playing' || freeplayFrom !== null) return 'INVALID_PHASE';
+    freeplayFrom = results.length; settings = { ...settings, ritualEnabled: false, roundLimit: null }; phase = 'between_rounds'; bump();
   }
   function ensureSync() {
     if (!search) return;
@@ -271,6 +300,7 @@ export function createGame({ generateId, randomIndex, clock = defaultClock, onCh
   function syncEvents(actor: string, expectedRound: string, events: OfflineEvent[]): LobbyError | undefined {
     if (!search || roundId !== expectedRound) return 'STALE_GAME';
     ensureSync();
+    const beforeRevision = roundSync!.publicState().revision;
     const closed = lastRoundAborted || results.some(row => row.roundId === roundId && row.status === 'final');
     if (closed) roundSync!.close();
     if (events.some(e => (e.action.kind === 'infect' || e.action.kind === 'captured') && !roundPlan!.infectionEnabled)) return 'ACTION_UNAVAILABLE';
@@ -278,12 +308,13 @@ export function createGame({ generateId, randomIndex, clock = defaultClock, onCh
       !paused && (e.action.kind === 'mission' ? ['search', 'return', 'between_rounds', 'finished'].includes(phase) : phase === 'search' && e.phase === 'search' && !e.paused));
     search = roundSync!.current();
     activePlayerIds = activePlayerIds.filter(id => search!.personal(id) !== null);
-    if (!error) { bump(); updateResult(); finishSearchIfNeeded(); }
+    if (!error && roundSync!.publicState().revision !== beforeRevision) { bump(); updateResult(); finishSearchIfNeeded(); }
     return error;
   }
   function completeSync(actor: string, expectedRound: string, revision: number): LobbyError | undefined {
     if (roundId !== expectedRound || !roundSync || isTimedPhase(phase)) return 'INVALID_PHASE';
-    const error = roundSync.complete(actor, revision); if (!error) bump(); return error;
+    const wasComplete = roundSync.personal(actor).complete;
+    const error = roundSync.complete(actor, revision); if (!error && !wasComplete) bump(); return error;
   }
   function resolveSync(id: string, decision: 'accept' | 'reject', before?: string): LobbyError | undefined {
     if (!roundSync || isTimedPhase(phase) || phase === 'reading') return 'INVALID_PHASE';
@@ -315,12 +346,13 @@ export function createGame({ generateId, randomIndex, clock = defaultClock, onCh
   function exportState(): SavedGame {
     updateResult();
     // lastNow/remainingMs are the last healthy clock checkpoint, including clock-gap protection.
-    return structuredClone({ venue, playerNames: [...playerNames], roundSync: roundSync?.exportState() ?? null, tutorialCompleted, progressionRounds, roundPlan, dealing: dealing.exportState(), settings, phase, waitingPhase, version, roundId, completedRounds, started,
+    return structuredClone({ ritual: ritual?.exportState() ?? null, freeplayFrom, venue, playerNames: [...playerNames], roundSync: roundSync?.exportState() ?? null, tutorialCompleted, progressionRounds, roundPlan, dealing: dealing.exportState(), settings, phase, waitingPhase, version, roundId, completedRounds, started,
       paused, pauseReason, remainingMs, activePlayerIds, rosterChanged, lastRoundAborted, history: [...history], originalPossessed,
       search: search?.exportState() ?? null, results, activeMs: activeMs + (runStarted === null ? 0 : Math.max(0, lastNow - runStarted)) });
   }
   function restore(state: SavedGame, reason: PauseReason = 'server_restarted', bumpVersion = true) {
     clearTimer(); cue = undefined;
+    ritual = state.ritual ? createRitual(state.ritual, generateId) : undefined; freeplayFrom = state.freeplayFrom ?? null;
     playerNames = new Map(state.playerNames ?? []);
     venue = structuredClone(state.venue ?? { base: 'База', zones: [] });
     roundSync = state.roundSync ? createRoundSync(state.roundSync, generateId) : undefined;
@@ -339,5 +371,5 @@ export function createGame({ generateId, randomIndex, clock = defaultClock, onCh
   }
   return { publicState, dealingState: dealing.publicState, personal: dealing.personal, configure, deal, cancelDeal,
     configureVenue, syncEvents, completeSync, resolveSync, closeSync, withdraw, personalSync: (id: string) => roundSync?.personal(id) ?? null, review: () => (roundSync?.review() ?? []).map(entry => ({ ...entry, actorName: playerNames.get(entry.actor), targetName: playerNames.get('targetId' in entry.action ? entry.action.targetId : 'by' in entry.action ? entry.action.by : '') })),
-    start, pause, resume, beginReturn, abort, finishParty, extend, add, remove, change, synchronize, takeCue, dispose, playAction, personalPlay, finalize, exportState, restore };
+    ritualAction, freeplay, start, pause, resume, beginReturn, abort, finishParty, extend, add, remove, change, synchronize, takeCue, dispose, playAction, personalPlay, finalize, exportState, restore };
 }

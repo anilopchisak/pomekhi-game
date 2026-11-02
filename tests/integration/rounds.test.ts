@@ -48,7 +48,7 @@ async function setup(tutorialEnabled = false) {
   const phones = await Promise.all(Array.from({ length: 7 }, () => connect()));
   const sessions = phones.map((_, i) => ({ roomCode: room.code, name: `Player ${i}`, resumeKey: (i + 1).toString(16).padStart(64, '0') }));
   for (const [i, phone] of phones.entries()) value(await send(phone, 'player:join', sessions[i]));
-  value(await send(host, 'game:configure', { ...base(await current(host)), settings: { ...room.game.settings, tutorialEnabled, roundLimit: 2, placementSeconds: 2, searchSeconds: 3, returnSeconds: 2 , infectionMode: 'off'} }));
+  value(await send(host, 'game:configure', { ...base(await current(host)), settings: { ...room.game.settings, ritualEnabled: false, tutorialEnabled, roundLimit: 2, placementSeconds: 2, searchSeconds: 3, returnSeconds: 2 , infectionMode: 'off'} }));
   value(await send(host, 'deal:create', { ...dealBase(await current(host)), possessedCount: 3 }));
   return { host, room, phones, sessions };
 }
@@ -265,10 +265,10 @@ it('runs tutorial and progression for seven independent phones with private card
       const rootIndex = views.findIndex(v => v.kind === 'player' && v.assignment!.card.role === 'possessed');
       const target = views.find(v => v.kind === 'player' && v.assignment!.card.role === 'exorcist');
       value(await send(host, 'game:configure', { ...base(await current(host)), settings: { ...room.game.settings, infectionMode: 'on' } }));
-      expect((await current(host)).game.roundPlan.infectionEnabled).toBe(false);
+      expect((await current(host)).game.roundPlan.infectionEnabled).toBe(true);
       await start(host);
       const search = state(host, r => r.game.phase === 'search'); timer.advance(2000); await search;
-      expect(await action(phones[rootIndex], 'play:infect', { targetId: target?.kind === 'player' ? target.playerId : '' })).toEqual({ ok: false, error: 'ACTION_UNAVAILABLE' });
+      expect(await action(phones[rootIndex], 'play:infect', { targetId: target?.kind === 'player' ? target.playerId : '' })).toMatchObject({ ok: true });
     } else {
       value(await send(host, 'game:configure', { ...base(await current(host)), settings: { ...(await current(host)).game.settings, infectionMode: 'auto' } }));
       await start(host);

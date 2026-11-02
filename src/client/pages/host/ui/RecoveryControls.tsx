@@ -9,7 +9,7 @@ export function RecoveryControls({ room, review, disabled, run }: {
   const [before, setBefore] = useState('');
   useEffect(() => { setBase(room.game.venue?.base ?? 'База'); setZones(room.game.venue?.zones.join('\n') ?? ''); }, [room.game.venue]);
   const sync = room.game.synchronization;
-  const waiting = ['between_rounds', 'finished'].includes(room.game.phase);
+  const waiting = ['between_rounds', 'finished'].includes(room.game.phase) && room.game.results.at(-1)?.status !== 'final';
   const name = (id: string) => room.players.find(p => p.id === id)?.name ?? sync?.waitingPlayers?.find(p => p.id === id)?.name ?? review.find(e => e.actor === id)?.actorName ?? 'Ушедший участник';
   const labels = { infect: 'Заражение', captured: 'Сообщение о заражении', mission: 'Миссия', release: 'Освобождение группы', undo: 'Отмена', withdraw: 'Выход из раунда' };
   return <>

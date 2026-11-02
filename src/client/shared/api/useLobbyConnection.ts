@@ -9,6 +9,7 @@ type Reply = LobbyReply | { ok: false; error: RequestError };
 type ClientSocket = Socket<ServerToClientEvents, ClientToServerEvents>;
 
 const messages: Record<RequestError, string> = {
+  RITUAL_REVIEW_PENDING: 'Сначала подтвердите итоги раунда на базе: затем программа передвинет свечи и проверит исход ритуала.',
   SYNC_PENDING: 'Сначала синхронизируйте телефоны и разберите спорные действия. Можно явно закрыть ожидание с ноутбука.',
   STORAGE_UNAVAILABLE: 'Не удалось сохранить партию. Игра остановлена. Организатор может восстановить запись с ноутбука.',
   INVALID_INPUT: 'Проверьте данные: имя — от 1 до 24 символов, код комнаты — 6 символов.',
