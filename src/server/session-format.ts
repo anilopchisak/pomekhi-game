@@ -1,3 +1,4 @@
+import { standardCatalog, validateSavedCatalog } from './catalog.js';
 import type { Assignment } from '../shared/protocol.js';
 import type { SavedLobby } from './lobby.js';
 import { createSearch } from './search.js';
@@ -7,7 +8,7 @@ import { createRoundSync, validateRoundSync } from './round-sync.js';
 import { validDifficulty, validSettings, isTimedPhase } from './game.js';
 
 /** Private disk contract. Never import this module from the browser or wire protocol. */
-export interface SavedSession { schemaVersion: 4; lobby: SavedLobby }
+export interface SavedSession { schemaVersion: 5; lobby: SavedLobby }
 function requireValue(condition: unknown): asserts condition { if (!condition) throw new Error('Invalid or incompatible session file.'); }
 function object(value: unknown): Record<string, unknown> { requireValue(value && typeof value === 'object' && !Array.isArray(value)); return value as Record<string, unknown>; }
 function array(value: unknown, limit = 100000): unknown[] { requireValue(Array.isArray(value) && value.length <= limit); return value; }
@@ -73,8 +74,20 @@ export function validateSession(value: unknown): SavedSession {
     const oldLobby = object(saved.lobby);
     if (oldLobby.room !== null) { const g = object(object(oldLobby.room).game); object(g.settings).ritualEnabled = false; g.ritual = null; g.freeplayFrom = null; }
   }
-  requireValue(saved.schemaVersion === 4);
+  if (saved.schemaVersion === 4) {
+    saved = structuredClone(saved); saved.schemaVersion = 5;
+    const old = object(saved.lobby); old.catalog = standardCatalog();
+    if (old.room !== null) {
+      const game = object(object(old.room).game), deal = object(game.dealing);
+      const usage = new Map<string, Set<string>>();
+      const issued = [...pairs(deal.assignments, 12), ...(game.search ? pairs(object(game.search).roster, 12) : [])];
+      for (const [, item] of issued) { const card = object(object(item).card), key = `${card.role}:${card.difficulty}`; const seen = usage.get(key) ?? new Set<string>(); seen.add(card.id as string); usage.set(key, seen); }
+      deal.usage ??= [...usage].map(([key, ids]) => [key, [...ids]]);
+    }
+  }
+  requireValue(saved.schemaVersion === 5);
   const lobby = object(saved.lobby); requireValue(integer(lobby.revision));
+  validateSavedCatalog(lobby.catalog);
   const codes = strings(lobby.usedCodes); requireValue(codes.every(v => /^[A-Z2-9]{6}$/.test(v)));
   if (lobby.room === null) return saved as unknown as SavedSession;
   const room = object(lobby.room); requireValue(text(room.id, 256) && codes.includes(room.code as string));
@@ -100,6 +113,7 @@ export function validateSession(value: unknown): SavedSession {
     requireValue(JSON.stringify(rebuilt.roster) === JSON.stringify(actual.roster) && JSON.stringify(rebuilt.events) === JSON.stringify(actual.events) && rebuilt.finalized === actual.finalized);
   }
   const deal = object(game.dealing);
+  for (const [key, ids] of pairs(deal.usage, 6)) { requireValue(/^(possessed|exorcist):[123]$/.test(key)); strings(ids); }
   requireValue(typeof game.tutorialCompleted === 'boolean' && integer(game.progressionRounds) && game.progressionRounds >= 1 && validDifficulty(deal.difficulty));
   const plan = game.roundPlan === null ? null : validatePlan(game.roundPlan);
   if (plan) requireValue(plan.difficulty === deal.difficulty);

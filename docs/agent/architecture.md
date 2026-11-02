@@ -6,7 +6,7 @@ Status: runtime foundation, one locally saved room, private cards and timed roun
 
 | Owner | Responsibility | Entry or contract |
 | --- | --- | --- |
-| Browser entry | Choose HostPage or PlayerPage, mount StrictMode and load document styles | [main.tsx](../../src/client/app/main.tsx) |
+| Browser entry | Choose host control/broadcast mode or PlayerPage, mount StrictMode and load document styles | [main.tsx](../../src/client/app/main.tsx) |
 | Organizer page | Authorize, control membership and construct public invitations | [page interface](../../src/client/pages/host/index.ts) |
 | Player page | Join, restore an identity and present authorized membership | [page interface](../../src/client/pages/player/index.ts) |
 | Client connection | Own socket cleanup, bounded acknowledgements and fresh projections | [Shared API](../../src/client/shared/api/index.ts) |
@@ -49,3 +49,7 @@ The client uses App, Pages and Shared because both pages now consume the same co
 The [game session](../design/rounds.md) owns one lifecycle and composes the [dealing owner](../design/dealing.md) inside each room; lobby retains authorization and membership. Client pages keep DealControls, GameControls, SoundControls and PersonalCardPanel local; Shared owns the common clock/status presentation. Server-driven transitions publish through the lobby subscription. Factory cleanup drains the session and cancels timers within the shared transport shutdown deadline. The [search ledger](../design/search-actions.md) owns infection groups, mission credit and undo dependencies; game owns result history and finalization. Inject time and randomness for rule tests. Validate incoming commands at runtime. Construct public/personal projections explicitly; task storage and organizer capabilities remain on the server. The session coordinator serializes commands and timers, commits private snapshots, then publishes. See [persistence design](../design/session-persistence.md) and [offline reconciliation](../design/offline-play.md).
 
 The [ritual](../design/ritual.md) consumes sealed normal results after the offline completion barrier. Game retains lifecycle ownership; it decides when explicit confirmation ends a party or permits the next deal. Shared RitualBoard renders only the authorized public projection.
+
+[Atmosphere](../design/atmosphere.md) uses a Shared procedural audio engine and page-local consent controls. Transport owns the ephemeral createPhoneScares scheduler over committed session projections; lobby owns transient capabilities. Broadcast is a host-page mode, not a new role or phase machine.
+
+createCatalog owns the laptop-wide editable bank outside room lifetime. Dealing receives enabled cards and owns per-room role/level cycle usage; Session serializes catalog and game commands into one schema-5 checkpoint. Shared catalog validation contains no tasks. The organizer editor is a HostPage mode with separate private replies. See [catalog and cycles](../design/card-catalog.md).

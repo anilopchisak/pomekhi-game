@@ -13,7 +13,7 @@ it('denies server sources and builds through Vite, including raw requests', asyn
     await vite.listen();
     const address = vite.httpServer!.address();
     if (!address || typeof address === 'string') throw new Error('No Vite address');
-    for (const path of ['src/server/lobby.ts', 'dist/server/lobby.js', 'src/server/cards.ts', 'src/server/prophecies.ts', 'dist/server/prophecies.js', 'src/server/ritual.ts', 'dist/server/ritual.js', 'dist/server/cards.js', '.env.example', '.npmrc', '.agentkit.json', diagnostic, 'src/server/session-format.ts', 'dist/server/session-format.js']) {
+    for (const path of ['src/server/catalog.ts', 'dist/server/catalog.js', 'src/server/lobby.ts', 'dist/server/lobby.js', 'src/server/cards.ts', 'src/server/prophecies.ts', 'dist/server/prophecies.js', 'src/server/ritual.ts', 'dist/server/ritual.js', 'dist/server/cards.js', '.env.example', '.npmrc', '.agentkit.json', diagnostic, 'src/server/session-format.ts', 'dist/server/session-format.js']) {
       for (const query of ['', '?raw']) {
         const response = await fetch(`http://127.0.0.1:${address.port}/@fs/${resolve(path)}${query}`);
         expect(response.status, `${path}${query}`).toBe(403);

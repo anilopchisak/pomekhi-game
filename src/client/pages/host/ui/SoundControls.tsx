@@ -1,93 +1,75 @@
 import { useEffect, useLayoutEffect, useRef, useState } from 'react';
 import type { RefObject } from 'react';
-import type { GameCue } from '../../../../shared/protocol.js';
+import type { GameCue, GameSnapshot } from '../../../../shared/protocol.js';
+import { createProceduralAudio, defaultLevels } from '../../../shared/audio/index.js';
+import type { AudioLevels, ProceduralAudio } from '../../../shared/audio/index.js';
 
-export function SoundControls({ enabled, disabled, cue, claim, prepareRef, gameVersion, clockOffset }: {
+function savedLevels(): AudioLevels {
+  try {
+    const saved = JSON.parse(sessionStorage.getItem('pomekhi.sound') ?? 'null');
+    if (saved && ['signals', 'background', 'effects'].every(key => typeof saved[key] === 'number' && saved[key] >= 0 && saved[key] <= 1) && typeof saved.muted === 'boolean') return saved;
+  } catch { /* Use quiet defaults when storage is unavailable. */ }
+  return { ...defaultLevels };
+}
+export function SoundControls({ enabled, disabled, cue, claim, prepareRef, gameVersion, clockOffset, game, online = true }: {
   enabled: boolean; disabled: boolean; cue?: GameCue; claim: (enabled: boolean) => Promise<boolean>;
-  prepareRef: RefObject<(() => Promise<void>) | null>;
-  gameVersion: number; clockOffset: number | null;
+  prepareRef: RefObject<(() => Promise<void>) | null>; gameVersion: number; clockOffset: number | null;
+  game?: GameSnapshot; online?: boolean;
 }) {
-  const context = useRef<AudioContext | null>(null);
-  const consumed = useRef('');
-  const [volume, setVolume] = useState(.2);
-  const [muted, setMuted] = useState(false);
-  const [message, setMessage] = useState('');
-  const preferences = useRef({ volume, muted });
-  useLayoutEffect(() => { preferences.current = { volume, muted }; }, [volume, muted]);
-
-  function play(kind: GameCue['kind'] = 'phase') {
-    const audio = context.current;
-    const { volume, muted } = preferences.current;
-    if (!audio || audio.state !== 'running' || muted || !volume) return;
-    const oscillator = audio.createOscillator(), gain = audio.createGain();
-    const now = audio.currentTime;
-    oscillator.type = 'sine';
-    oscillator.frequency.setValueAtTime(kind === 'pause' || kind === 'abort' ? 100 : 180, now);
-    oscillator.frequency.exponentialRampToValueAtTime(85, now + .45);
-    gain.gain.setValueAtTime(0, now);
-    gain.gain.linearRampToValueAtTime(volume * .35, now + .06);
-    gain.gain.linearRampToValueAtTime(0, now + .5);
-    oscillator.connect(gain); gain.connect(audio.destination);
-    oscillator.onended = () => { oscillator.disconnect(); gain.disconnect(); };
-    oscillator.start(now); oscillator.stop(now + .52);
-  }
+  const engine = useRef<ProceduralAudio | null>(null), consumed = useRef('');
+  const [levels, setLevels] = useState(savedLevels), [message, setMessage] = useState('');
+  const current = useRef({ levels, enabled, online, game });
+  const apply = () => { const v = current.current; engine.current?.update({ levels: v.levels, running: v.enabled && v.online, phase: v.game?.phase ?? 'lobby', paused: v.game?.paused ?? false }); };
+  useLayoutEffect(() => { current.current = { levels, enabled, online, game }; apply(); }, [levels, enabled, online, game]);
+  useEffect(() => { try { sessionStorage.setItem('pomekhi.sound', JSON.stringify(levels)); } catch { /* Audio remains usable. */ } }, [levels]);
+  useEffect(() => {
+    if (!enabled || !online) engine.current?.stop();
+  }, [enabled, online]);
   async function unlock() {
     try {
-      context.current ??= new AudioContext();
-      await context.current.resume();
-      if (context.current.state !== 'running') throw new Error('Audio is suspended.');
-      setMessage(''); return true;
+      engine.current ??= createProceduralAudio(new AudioContext());
+      await engine.current.resume();
+      if (engine.current.state() !== 'running') throw new Error('Audio is suspended.');
+      setMessage(''); apply(); return true;
     } catch { setMessage('Звук недоступен. Проверьте разрешения браузера; таймер продолжает работать.'); return false; }
   }
-  useEffect(() => () => { void context.current?.close().catch(() => {}); }, []);
+  useEffect(() => () => { engine.current?.dispose(); engine.current = null; }, []);
   useEffect(() => {
     let active = true;
     prepareRef.current = async () => {
-      const audio = context.current;
-      if (!enabled || !audio) return;
+      if (!current.current.enabled || !engine.current) return;
       let timer: number | undefined;
       try {
-        // Safari can suspend audio around native dialogs. Resume from the control gesture,
-        // but bound this wait so unavailable audio cannot block a game command.
-        await Promise.race([audio.resume(), new Promise<void>(resolve => { timer = window.setTimeout(resolve, 250); })]);
-        if (active) setMessage(audio.state === 'running' ? '' : 'Нажмите «Проверить звук», чтобы разрешить сигналы в этой вкладке.');
+        await Promise.race([engine.current.resume(), new Promise<void>(resolve => { timer = window.setTimeout(resolve, 250); })]);
+        if (active) setMessage(engine.current.state() === 'running' ? '' : 'Нажмите «Проверить звук», чтобы разрешить сигналы в этой вкладке.');
       } catch { if (active) setMessage('Звук недоступен; таймер продолжает работать.'); }
       finally { window.clearTimeout(timer); }
     };
     return () => { active = false; prepareRef.current = null; };
-  }, [enabled, prepareRef]);
+  }, [prepareRef]);
   useEffect(() => {
     if (!cue || cue.version !== gameVersion) return;
     const identity = `${cue.roomId}:${cue.version}`;
     if (consumed.current === identity) return;
     consumed.current = identity;
-    if (!enabled) return;
-    const audio = context.current;
-    if (!audio) return;
+    if (!enabled || !online || !engine.current) return;
     let canceled = false;
-    const fresh = () => !canceled && clockOffset !== null && Math.abs(performance.now() + clockOffset - cue.serverNow) < 2000;
-    if (audio.state === 'running') { if (fresh()) play(cue.kind); }
-    else {
-      setMessage('Нажмите «Проверить звук», если сигналы не слышны.');
-      // A dialog's suspension can become visible after its click handler finishes.
-      // Resume this live cue only; cleanup/freshness prevent a delayed replay.
-      void audio.resume().then(() => {
-        if (audio.state === 'running' && fresh()) { setMessage(''); play(cue.kind); }
-      }).catch(() => {});
-    }
+    const fresh = () => !canceled && current.current.enabled && current.current.online && clockOffset !== null && Math.abs(performance.now() + clockOffset - cue.serverNow) < 2000;
+    const play = () => { if (fresh()) { apply(); engine.current?.cue(cue.kind, cue.phase, game?.ritual?.outcome); } };
+    if (engine.current.state() === 'running') play();
+    else { setMessage('Нажмите «Проверить звук», если сигналы не слышны.'); void engine.current.resume().then(play).catch(() => {}); }
     return () => { canceled = true; };
-    // A cue is a live event, not a side effect of volume or ownership changes.
-  }, [cue, gameVersion, enabled]);
+  }, [cue, gameVersion, enabled, online]);
   return <section aria-label="Звуковые сигналы">
-    <h3>Звуковые сигналы</h3>
-    <p>{enabled ? 'Сигналы играет эта панель.' : 'Для сигналов выберите одну панель ноутбука.'} Телефоны остаются без звука.</p>
+    <h3>Звук дома</h3>
+    <p>{enabled ? 'Сигналы и фон играет эта панель.' : 'Выберите одну панель ноутбука для звука.'} Телефонные эффекты включаются отдельно.</p>
     <button disabled={disabled} onClick={async () => {
-      if (enabled) { await claim(false); return; }
-      if (await unlock() && await claim(true)) play('start');
+      if (enabled) { engine.current?.stop(); await claim(false); return; }
+      if (await unlock() && await claim(true)) { current.current.enabled = true; apply(); engine.current?.cue('start'); }
     }}>{enabled ? 'Выключить звук здесь' : 'Включить звук здесь'}</button>
-    <button disabled={disabled || !enabled} onClick={async () => { if (await unlock()) play(); }}>Проверить звук</button>
-    <label>Громкость<input type="range" min={0} max={1} step={.05} value={volume} onChange={event => setVolume(Number(event.target.value))} /></label>
-    <label><input type="checkbox" checked={muted} onChange={event => setMuted(event.target.checked)} /> Без звука</label>
+    <button disabled={disabled || !enabled} onClick={async () => { if (await unlock()) engine.current?.cue('phase'); }}>Проверить звук</button>
+    {(['signals', 'background', 'effects'] as const).map((key, i) => <label key={key}>{['Громкость сигналов', 'Громкость фона', 'Громкость эффектов'][i]}<input type="range" min={0} max={1} step={.01} value={levels[key]} onChange={event => setLevels(v => ({ ...v, [key]: Number(event.target.value) }))} /></label>)}
+    <label><input type="checkbox" checked={levels.muted} onChange={event => setLevels(v => ({ ...v, muted: event.target.checked }))} /> Без звука</label>
     {message && <p role="status">{message}</p>}
   </section>;
 }

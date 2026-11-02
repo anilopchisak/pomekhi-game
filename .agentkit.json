@@ -23,7 +23,9 @@
     "docs/design/session-persistence.md",
     "docs/design/offline-play.md",
     "docs/testing/device-acceptance.md",
-    "docs/design/ritual.md"
+    "docs/design/ritual.md",
+    "docs/design/atmosphere.md",
+    "docs/design/card-catalog.md"
   ],
   "inputExclude": [
     "dist/**",
@@ -365,6 +367,60 @@
         "id": "private-prophecy-source",
         "operation": "source",
         "value": "src/server/prophecies.ts"
+      },
+      {
+        "id": "phone-scare-scheduler-query",
+        "operation": "query",
+        "query": "createPhoneScares",
+        "expectedSources": [
+          "src/server/phone-scares.ts"
+        ],
+        "budget": 1500
+      },
+      {
+        "id": "procedural-audio-query",
+        "operation": "query",
+        "query": "createProceduralAudio",
+        "expectedSources": [
+          "src/client/shared/audio/procedural.ts"
+        ],
+        "budget": 1500
+      },
+      {
+        "id": "phone-sound-query",
+        "operation": "query",
+        "query": "PhoneSound",
+        "expectedSources": [
+          "src/client/pages/player/ui/PhoneSound.tsx"
+        ],
+        "budget": 1500
+      },
+      {
+        "id": "catalog-owner-query",
+        "operation": "query",
+        "query": "createCatalog",
+        "expectedSources": [
+          "src/server/catalog.ts"
+        ],
+        "budget": 1500
+      },
+      {
+        "id": "catalog-editor-query",
+        "operation": "query",
+        "query": "CatalogEditor",
+        "expectedSources": [
+          "src/client/pages/host/ui/CatalogEditor.tsx"
+        ],
+        "budget": 1500
+      },
+      {
+        "id": "catalog-validator-query",
+        "operation": "query",
+        "query": "validateCatalogFile",
+        "expectedSources": [
+          "src/shared/catalog.ts"
+        ],
+        "budget": 1500
       }
     ],
     "contextRoots": [
@@ -380,7 +436,8 @@
       "src/client/index.html",
       "src/client/shared/ui/LobbyShell.module.css",
       "src/client/shared/ui/RoundStatus.module.css",
-      "src/client/shared/ui/RitualBoard.module.css"
+      "src/client/shared/ui/RitualBoard.module.css",
+      "src/client/pages/host/ui/Broadcast.module.css"
     ]
   }
 }

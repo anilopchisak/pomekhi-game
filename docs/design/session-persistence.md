@@ -49,3 +49,7 @@ Version 3 adds venue names, frozen review names, inbox entries/receipts, review 
 [Format tests](../../src/server/session-format.test.ts) exercise legacy lobby, reading, active, break and finished snapshots. Coordinator recovery tests retain tutorial results and later level-3 issued cards across restarts.
 
 Version 4 adds the [ritual](ritual.md) and freeplay boundary. Version-3 parties keep their original settings and issued plans with ritualEnabled=false. New defaults affect new rooms only. Ritual replay is cross-checked with sealed normal results; closed outcomes and selected card text are preserved.
+
+Atmosphere capabilities and schedules are transient: no phone consent, sound owner, global phone-effects flag or pending scare enters schema 4. Restored rooms disable phone effects and have no owners. Storage-error rollback retains live capabilities, but unavailable-storage projections cancel scheduled sound. See [atmosphere](atmosphere.md).
+
+Schema 5 adds the laptop-wide catalog outside room plus per-room deck cycles inside dealing. Versions 1-4 seed standard content and known issued IDs without changing issued text or closed results. Catalog edits share the serialized atomic transaction and successful-request recovery. Room closure preserves the catalog; confirmed full recovery reset restores standard content and retains a diagnostic copy. See [catalog design](card-catalog.md).

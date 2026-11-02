@@ -1,3 +1,4 @@
+import { PhoneSound } from './PhoneSound.js';
 import { useCallback, useEffect, useRef, useState } from 'react';
 import { dealCommand, describeError, useLobbyConnection } from '../../../shared/api/index.js';
 import { LobbyShell, RoundStatus } from '../../../shared/ui/index.js';
@@ -10,7 +11,7 @@ import { PlayControls } from './PlayControls.js';
 import type { LobbyCommand, LobbyInputs } from '../../../../shared/protocol.js';
 
 export function PlayerPage() {
-  const { connection, generation, view, request, clockOffset, reconnect, resetView } = useLobbyConnection();
+  const { connection, generation, view, request, clockOffset, scare, reconnect, resetView } = useLobbyConnection();
   const invitationCode = new URLSearchParams(window.location.search).get('room')?.toUpperCase() ?? '';
   const initial = readPlayerSession();
   const saved = useRef(initial && (!invitationCode || initial.roomCode === invitationCode) ? initial : null);
@@ -93,6 +94,10 @@ export function PlayerPage() {
   }
 
   return <LobbyShell title={playerView ? 'Вы внутри' : 'Войти в дом'} connection={connection} error={error}>
+    {playerView && <PhoneSound key={playerView.room.id} view={playerView} scare={scare} online={connection === 'online' && authorizedGeneration === generation} clockOffset={clockOffset} claim={async enabled => {
+      const result = await request('player:audio', { roomId: playerView.room.id, enabled });
+      if (!result.ok) setError(describeError(result.error)); return result.ok;
+    }} />}
     {offline.error && <p role="alert">{offline.error}</p>}
     {connection !== 'online' && <section><p role="alert">{playerView ? offline.available ? 'Нет связи. Карточка доступна; новые отметки сохраняются на телефоне. Состояние остальных участников не подтверждено.' : 'Нет связи. Последний экран сохранён во вкладке, но записать новые действия без хранилища нельзя.' : 'Нет связи. Для первого входа подключитесь к ноутбуку или интернету.'}</p><button onClick={reconnect}>Подключиться снова</button></section>}
     {offline.available && playerView && <section aria-label="Синхронизация телефона">

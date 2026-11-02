@@ -26,6 +26,8 @@ Pomekhi is a cooperative horror party game. The organizer participates while sof
 | Tutorial | An optional practice round before normal rounds, at level 1 without infection; excluded from team totals, normal count and role history. |
 | Difficulty | A level from 1 to 3 controlling card complexity. The server selects the round level; individual cards may fall back to simpler levels when needed for uniqueness. |
 | Infection mode | Persistent organizer choice of auto, on or off. Each issued round exposes an effective flag; tutorials always disable infection. |
+| Card catalog | The editable local collection of enabled and disabled tasks, retained between rooms. |
+| Deck cycle | A pass through admissible cards of one role and difficulty before reuse; every issuance consumes a card. |
 | Endless mode | Continued rounds from a finite reusable task bank, not runtime AI generation. |
 | Foundation | The runtime transport foundation. Health/readiness retain this stage label even when a lobby exists; it does not assert playable rounds. |
 | Lobby | The gathering state of one logical room before a deal; membership and presence continue during reading. |

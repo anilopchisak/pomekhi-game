@@ -11,6 +11,7 @@ export interface ServerToClientEvents {
   'server:ready': (health: HealthResponse) => void;
   'lobby:state': (view: LobbyView) => void;
   'game:cue': (cue: GameCue) => void;
+  'player:scare': (scare: PhoneScare) => void;
 }
 
 export interface RoomSnapshot {
@@ -18,6 +19,7 @@ export interface RoomSnapshot {
   code: string;
   version: number;
   capacity: number;
+  phoneScaresEnabled: boolean;
   players: { id: string; name: string; online: boolean }[];
   dealing: DealingSnapshot;
   game: GameSnapshot;
@@ -93,6 +95,7 @@ export interface GameSnapshot {
   lastRoundAborted: boolean;
   results: RoundResult[];
 }
+export interface PhoneScare { id: string; roomId: string; roundId: string; serverNow: number; variant: 0 | 1 | 2 }
 export interface GameCue { roomId: string; version: number; phase: GamePhase; kind: 'start' | 'phase' | 'pause' | 'resume' | 'abort' | 'finish'; serverNow: number }
 interface GameCommand { roomId: string; requestId: string; gameVersion: number; roundId: string | null }
 
@@ -122,11 +125,11 @@ export interface PersistenceStatus {
 }
 export type LobbyView = { revision: number; persistence?: PersistenceStatus } & (
   | { kind: 'organizer'; room: RoomSnapshot | null; audioEnabled: boolean; review?: ReviewEvent[] }
-  | { kind: 'player'; room: RoomSnapshot; playerId: string; assignment: Assignment | null; play: PersonalPlay | null; synchronization?: PersonalSync | null }
+  | { kind: 'player'; room: RoomSnapshot; playerId: string; audioEnabled?: boolean; assignment: Assignment | null; play: PersonalPlay | null; synchronization?: PersonalSync | null }
   | { kind: 'ended'; reason: 'closed' | 'removed' | 'left' }
 );
 
-export type LobbyError = 'INVALID_INPUT' | 'INVALID_ORGANIZER_CODE' | 'FORBIDDEN'
+export type LobbyError = 'CARD_POOL_INSUFFICIENT' | 'STALE_CATALOG' | 'CATALOG_LOCKED' | 'INVALID_INPUT' | 'INVALID_ORGANIZER_CODE' | 'FORBIDDEN'
   | 'ROOM_NOT_FOUND' | 'ROOM_FULL' | 'NAME_TAKEN' | 'SESSION_EXPIRED'
   | 'INVALID_COMPOSITION' | 'STALE_DEAL' | 'STALE_CARD' | 'REPLACEMENT_PENDING' | 'REQUEST_LIMIT'
   | 'INVALID_PHASE' | 'STALE_GAME' | 'START_WARNING' | 'RESUME_WARNING' | 'SETTINGS_LOCKED'
@@ -136,6 +139,8 @@ export type LobbyReply = { ok: true; view: LobbyView } | { ok: false; error: Lob
 export interface LobbyInputs {
   'organizer:authorize': { code: string };
   'organizer:audio': { enabled: boolean };
+  'organizer:atmosphere': { roomId: string; enabled: boolean };
+  'player:audio': { roomId: string; enabled: boolean };
   'lobby:sync': Record<string, never>;
   'room:create': Record<string, never>;
   'room:close': { roomId: string };
@@ -178,4 +183,14 @@ export interface LobbyInputs {
 export type LobbyCommand = keyof LobbyInputs;
 export type ClientToServerEvents = {
   [Command in LobbyCommand]: (input: LobbyInputs[Command], acknowledge: (reply: LobbyReply) => void) => void;
-};
+} & { 'catalog:command': (input: CatalogInput, acknowledge: (reply: CatalogReply) => void) => void };
+
+export interface CatalogEntry { enabled: boolean; card: PersonalCard }
+export interface CatalogFile { format: 'pomekhi.cards'; version: 1; entries: CatalogEntry[] }
+export type CatalogInput = { action: 'read' } | ({ revision: number; requestId: string } & (
+  | { action: 'save'; entry: CatalogEntry }
+  | { action: 'import'; file: CatalogFile }
+  | { action: 'reset' }
+));
+export interface CatalogSnapshot { revision: number; editable: boolean; file: CatalogFile }
+export type CatalogReply = { ok: true; catalog: CatalogSnapshot } | { ok: false; error: LobbyError | 'CONNECTION_LOST' | 'TIMEOUT' };

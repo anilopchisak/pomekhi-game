@@ -71,7 +71,7 @@ it('persists seven-client offline reconciliation, group departure, review, compl
     const afterClose = event(ids.get(roots[2])!, roundId, { kind: 'release' });
     value(await send(phones[views.findIndex(v => v.playerId === ids.get(roots[2]))], 'play:sync', { roomId: room.id, roundId, events: [afterClose] }));
     expect((await current()).game.results.at(-1)).toMatchObject({ status: 'final', rescuedGroups: 2 });
-    expect(JSON.parse(await readFile(join(dir, 'session.json'), 'utf8')).schemaVersion).toBe(4);
+    expect(JSON.parse(await readFile(join(dir, 'session.json'), 'utf8')).schemaVersion).toBe(5);
     expect(JSON.stringify(value(await send(host, 'lobby:sync', {})))).not.toContain('releaseCondition');
   } finally { await runtime.stop(); await rm(dir, { recursive: true, force: true }); }
 });

@@ -2,7 +2,7 @@ import { DEFAULT_ROUND_LIMIT } from '../shared/protocol.js';
 import { createRitual, newRitual } from './ritual.js';
 import type { SavedRitual } from './ritual.js';
 import { performance } from 'node:perf_hooks';
-import type { Difficulty, GameCue, GamePhase, GameSettings, GameSnapshot, LobbyError, PauseReason, RoundPlan, RoundResult, TimedPhase } from '../shared/protocol.js';
+import type { Difficulty, GameCue, GamePhase, GameSettings, GameSnapshot, LobbyError, PersonalCard, PauseReason, RoundPlan, RoundResult, TimedPhase } from '../shared/protocol.js';
 import { createDealing } from './dealing.js';
 import { createSearch } from './search.js';
 import type { SavedDealing } from './dealing.js';
@@ -54,10 +54,10 @@ export function planRound(settings: GameSettings, completedRounds: number, tutor
 }
 
 /** Owns the party lifecycle; membership, authorization and publication belong to lobby. */
-export function createGame({ generateId, randomIndex, clock = defaultClock, onChange }: {
-  generateId: () => string; randomIndex: (limit: number) => number; clock?: GameClock; onChange: () => void;
+export function createGame({ generateId, randomIndex, clock = defaultClock, onChange, getCards }: {
+  generateId: () => string; randomIndex: (limit: number) => number; clock?: GameClock; onChange: () => void; getCards?: () => readonly PersonalCard[];
 }) {
-  const dealing = createDealing({ generateId, randomIndex });
+  const dealing = createDealing({ generateId, randomIndex, getCards });
   let settings: GameSettings = { ritualEnabled: true, roundLimit: DEFAULT_ROUND_LIMIT, placementSeconds: 45, searchSeconds: 180, returnSeconds: 45, tutorialEnabled: true, initialDifficulty: 1, maximumDifficulty: 3, infectionMode: 'on' };
   let playerNames = new Map<string, string>();
   let venue: Venue = { base: 'База', zones: [] };
@@ -250,7 +250,7 @@ export function createGame({ generateId, randomIndex, clock = defaultClock, onCh
     if (phase !== 'finished' || settings.roundLimit === null || ritualActive()) return 'INVALID_PHASE';
     settings.roundLimit = completedRounds + 1; phase = 'between_rounds'; bump();
   }
-  function add(playerId: string) { if (phase === 'reading') dealing.add(playerId); }
+  function add(playerId: string) { if (phase === 'reading') return dealing.add(playerId); }
   function remove(playerId: string) {
     if (roundSync) { roundSync.legacy(playerId, { kind: 'withdraw' }); search = roundSync.current(); } else search?.depart(playerId);
     dealing.remove(playerId);

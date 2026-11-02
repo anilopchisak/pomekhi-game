@@ -65,7 +65,7 @@ it('reconciles seven phones, seals once after a lost acknowledgement, recovers p
         await restart(); expect((await current()).game.ritual).toEqual(checkpoint);
         value(await send(host, 'ritual:undo-penalty', await base())); expect((await current()).game.ritual?.remainingSteps).toBe(21);
         const view = value(await send(host, 'lobby:sync', {})); expect(JSON.stringify(view)).not.toContain('releaseCondition');
-        const saved = JSON.parse(await readFile(join(dir, 'session.json'), 'utf8')); expect(saved.schemaVersion).toBe(4);
+        const saved = JSON.parse(await readFile(join(dir, 'session.json'), 'utf8')); expect(saved.schemaVersion).toBe(5);
         const hidden = saved.lobby.room.game.ritual.cards[1].title; expect(JSON.stringify(view)).not.toContain(hidden);
       }
     }

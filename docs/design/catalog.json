@@ -186,6 +186,48 @@
         "tutorial infection, victory/loss and freeplay",
         "private prophecy snapshots and schema migration"
       ]
+    },
+    {
+      "id": "atmosphere",
+      "path": "docs/design/atmosphere.md",
+      "sources": [
+        "src/server/phone-scares.ts",
+        "src/server/lobby.ts",
+        "src/server/transport/socket.ts",
+        "src/shared/protocol.ts",
+        "src/client/shared/audio"
+      ],
+      "prefixes": [
+        "src/client/pages/host/",
+        "src/client/pages/player/",
+        "src/client/shared/"
+      ],
+      "reviewWhen": [
+        "audio consent, ownership or ephemeral effect scheduling",
+        "broadcast and visual accessibility",
+        "reconnect, sound failure or node/timer cleanup"
+      ]
+    },
+    {
+      "id": "card-catalog",
+      "path": "docs/design/card-catalog.md",
+      "sources": [
+        "src/server/catalog.ts",
+        "src/server/dealing.ts",
+        "src/server/session-format.ts",
+        "src/server/session.ts",
+        "src/shared/catalog.ts",
+        "src/shared/protocol.ts"
+      ],
+      "prefixes": [
+        "src/client/pages/host/",
+        "src/client/shared/api/"
+      ],
+      "reviewWhen": [
+        "catalog lifetime, privacy and revision changes",
+        "deck usage, capacity and fallback",
+        "bulk import/export and atomic schema migration"
+      ]
     }
   ]
 }

@@ -6,6 +6,13 @@ const eslint = new ESLint({ cwd: fileURLToPath(new URL('../..', import.meta.url)
 
 describe('production import restrictions', () => {
   const cases = [
+    ['catalog cannot import transport', 'src/server/catalog.ts', "import './transport/socket.js';", true],
+    ['shared catalog cannot import bank', 'src/shared/catalog.ts', "import '../server/cards.js';", true],
+    ['shared catalog cannot use Node', 'src/shared/catalog.ts', "import 'node:crypto';", true],
+
+    ['page uses public audio API', 'src/client/pages/host/ui/SoundControls.tsx', "export { createProceduralAudio } from '../../../shared/audio/index.js';", false],
+    ['page rejects audio internals', 'src/client/pages/host/ui/SoundControls.tsx', "export { createProceduralAudio } from '../../../shared/audio/procedural.js';", true],
+    ['scare scheduler cannot import transport', 'src/server/phone-scares.ts', "import './transport/socket.js';", true],
     ['ritual cannot import transport', 'src/server/ritual.ts', "import './transport/socket.js';", true],
     ['ritual cannot read disk', 'src/server/ritual.ts', "import 'node:fs/promises';", true],
     ['browser cannot import prophecies', 'src/client/app/main.tsx', "import '../../server/prophecies.js';", true],

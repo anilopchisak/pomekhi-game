@@ -1,21 +1,32 @@
-import type { Assignment, DealingSnapshot, Difficulty, LobbyError, Role } from '../shared/protocol.js';
+import type { Assignment, DealingSnapshot, Difficulty, LobbyError, PersonalCard, Role } from '../shared/protocol.js';
 import { CARD_BANK } from './cards.js';
 
-interface Options { generateId: () => string; randomIndex: (limit: number) => number }
-export interface SavedDealing { difficulty: Difficulty; version: number; dealId: string | null; initialPossessedCount: number | null; assignments: [string, Assignment][] }
-export function createDealing({ generateId, randomIndex }: Options) {
+interface Options { generateId: () => string; randomIndex: (limit: number) => number; getCards?: () => readonly PersonalCard[] }
+export type DeckUsage = [string, string[]][];
+export interface SavedDealing { usage?: DeckUsage; difficulty: Difficulty; version: number; dealId: string | null; initialPossessedCount: number | null; assignments: [string, Assignment][] }
+export function createDealing({ generateId, randomIndex, getCards = () => CARD_BANK }: Options) {
   let difficulty: Difficulty = 1;
   let version = 0;
   let dealId: string | null = null;
   let initialPossessedCount: number | null = null;
   let assignments = new Map<string, Assignment>();
 
-  function select(role: Role, used: Set<string>, previous?: string) {
-    for (let level = difficulty; level >= 1; level--) {
-      const available = CARD_BANK.filter(card => card.role === role && card.difficulty === level && !used.has(card.id) && card.id !== previous);
-      if (available.length) return structuredClone(available[randomIndex(available.length)]);
+  let usage = new Map<string, Set<string>>();
+  const draftUsage = () => new Map([...usage].map(([key, ids]) => [key, new Set(ids)]));
+  function enough(role: Role, count: number, level = difficulty) { return getCards().filter(c => c.role === role && c.difficulty <= level).length >= count + 1; }
+  function select(role: Role, used: Set<string>, draft: Map<string, Set<string>>, level = difficulty, previous?: string) {
+    for (let tier = level; tier >= 1; tier--) {
+      const pool = getCards().filter(card => card.role === role && card.difficulty === tier);
+      const available = pool.filter(card => !used.has(card.id) && card.id !== previous);
+      if (!available.length) continue;
+      const key = `${role}:${tier}`;
+      let seen = draft.get(key) ?? new Set<string>();
+      let fresh = available.filter(card => !seen.has(card.id));
+      if (!fresh.length) { seen = new Set(pool.filter(card => used.has(card.id)).map(card => card.id)); fresh = available; }
+      const card = fresh[randomIndex(fresh.length)]; seen.add(card.id); draft.set(key, seen);
+      return structuredClone(card);
     }
-    throw new Error('No unused card remains at or below this difficulty.');
+    return undefined;
   }
   function counts() {
     const possessed = [...assignments.values()].filter(item => item.card.role === 'possessed').length;
@@ -35,7 +46,8 @@ export function createDealing({ generateId, randomIndex }: Options) {
   }
   function deal(players: string[], possessedCount: number, history: ReadonlyMap<string, number> = new Map(), level: Difficulty = 1): LobbyError | undefined {
     if (players.length < 4 || players.length > 12 || !Number.isInteger(possessedCount) || possessedCount < 1 || possessedCount > Math.floor(players.length / 2)) return 'INVALID_COMPOSITION';
-    difficulty = level;
+    if (!enough('possessed', possessedCount, level) || !enough('exorcist', players.length - possessedCount, level)) return 'CARD_POOL_INSUFFICIENT';
+    let draft = draftUsage();
     const shuffled = [...players];
     for (let i = shuffled.length - 1; i > 0; i--) {
       const j = randomIndex(i + 1);
@@ -45,12 +57,27 @@ export function createDealing({ generateId, randomIndex }: Options) {
     shuffled.sort((a, b) => (history.get(a) ?? 0) - (history.get(b) ?? 0));
     const next = new Map<string, Assignment>();
     const used = new Set<string>();
-    shuffled.forEach((playerId, index) => {
+    for (const [index, playerId] of shuffled.entries()) {
       const role = index < possessedCount ? 'possessed' : 'exorcist';
-      const card = select(role, used, assignments.get(playerId)?.card.id);
+      const previous = assignments.get(playerId)?.card;
+      const before = new Map([...draft].map(([key, ids]) => [key, new Set(ids)]));
+      let card = select(role, used, draft, level, previous?.id);
+      // A greedy earlier draw can leave only this player's previous high-level card.
+      // Swap within the uncommitted deal instead of unnecessarily lowering difficulty.
+      const blocked = previous && getCards().find(c => c.id === previous.id && c.role === role && c.difficulty <= level);
+      if (blocked && !used.has(blocked.id) && (!card || card.difficulty < blocked.difficulty)) {
+        const donor = [...next].find(([id, item]) => item.card.role === role && item.card.difficulty === blocked.difficulty && assignments.get(id)?.card.id !== blocked.id);
+        if (donor) {
+          card = donor[1].card; donor[1].card = structuredClone(blocked); draft = before;
+          const key = `${role}:${blocked.difficulty}`, seen = draft.get(key) ?? new Set<string>();
+          seen.add(blocked.id); draft.set(key, seen); used.add(blocked.id);
+        }
+      }
+      if (!card) return 'CARD_POOL_INSUFFICIENT';
       used.add(card.id);
       next.set(playerId, { id: generateId(), card, ready: false, replacementRequested: false });
-    });
+    }
+    difficulty = level; usage = draft;
     assignments = next;
     dealId = generateId(); initialPossessedCount = possessedCount; version++;
   }
@@ -58,9 +85,13 @@ export function createDealing({ generateId, randomIndex }: Options) {
   function add(playerId: string) {
     if (!dealId || assignments.has(playerId)) return;
     const { possessed, exorcists } = counts();
-    const role: Role = exorcists < 2 ? 'exorcist' : possessed === 0 ? 'possessed'
-      : possessed >= exorcists ? 'exorcist' : randomIndex(2) === 0 ? 'possessed' : 'exorcist';
-    const card = select(role, new Set([...assignments.values()].map(item => item.card.id)));
+    const legal: Role[] = exorcists < 2 ? ['exorcist'] : possessed === 0 ? ['possessed'] : possessed >= exorcists ? ['exorcist'] : ['possessed', 'exorcist'];
+    const roles = legal.filter(role => enough(role, (role === 'possessed' ? possessed : exorcists) + 1));
+    if (!roles.length) return 'CARD_POOL_INSUFFICIENT';
+    const role = roles[randomIndex(roles.length)], draft = draftUsage();
+    const card = select(role, new Set([...assignments.values()].map(item => item.card.id)), draft);
+    if (!card) return 'CARD_POOL_INSUFFICIENT';
+    usage = draft;
     assignments.set(playerId, { id: generateId(), card, ready: false, replacementRequested: false });
   }
   function remove(playerId: string) { assignments.delete(playerId); }
@@ -69,7 +100,10 @@ export function createDealing({ generateId, randomIndex }: Options) {
     if (!current || current.id !== assignmentId) return 'STALE_CARD';
     if (action === 'replace') {
       const used = new Set([...assignments.values()].map(item => item.card.id));
-      const card = select(current.card.role, used);
+      const draft = draftUsage();
+      const card = select(current.card.role, used, draft);
+      if (!card) return 'CARD_POOL_INSUFFICIENT';
+      usage = draft;
       assignments.set(playerId, { id: generateId(), card, ready: false, replacementRequested: false });
     } else if (action === 'ready') {
       if (flag && current.replacementRequested) return 'REPLACEMENT_PENDING';
@@ -79,9 +113,10 @@ export function createDealing({ generateId, randomIndex }: Options) {
       if (flag) current.ready = false;
     }
   }
-  function exportState(): SavedDealing { return structuredClone({ difficulty, version, dealId, initialPossessedCount, assignments: [...assignments] }); }
+  function exportState(): SavedDealing { return structuredClone({ difficulty, version, dealId, initialPossessedCount, assignments: [...assignments], usage: [...usage].map(([key, ids]) => [key, [...ids]]) }); }
   function restore(state: SavedDealing, bump = true) {
     difficulty = state.difficulty;
+    usage = new Map((state.usage ?? []).map(([key, ids]) => [key, new Set(ids)]));
     version = state.version + Number(bump); dealId = state.dealId; initialPossessedCount = state.initialPossessedCount;
     assignments = new Map(structuredClone(state.assignments));
   }

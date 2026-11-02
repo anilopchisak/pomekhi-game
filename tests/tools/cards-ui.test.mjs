@@ -1,4 +1,5 @@
 // @vitest-environment happy-dom
+import { audioHarness } from '../helpers/audio.mjs';
 import { act, createElement } from 'react';
 import { createRoot } from 'react-dom/client';
 import { afterEach, beforeEach, expect, it, vi } from 'vitest';
@@ -34,7 +35,7 @@ function socket(id, dropCommand) {
     removeAllListeners() { this.listeners.clear(); },
     timeout() { return this; }, get volatile() { return this; },
     emit(command, input, acknowledge) {
-      const reply = lobby.execute(id, command, input);
+      const reply = command === 'catalog:command' ? lobby.catalogExecute(id, input) : lobby.execute(id, command, input);
       if (!dropped && command === dropCommand) { dropped = true; acknowledge(new Error('Acknowledgement lost')); }
       else acknowledge(null, reply);
       publish();
@@ -206,19 +207,7 @@ it('shows a late player waiting without a card until the next manual deal', asyn
 });
 
 it('unlocks audio explicitly, plays live cues once and does not replay when volume or mute changes', async () => {
-  const tones = [];
-  const audios = [];
-  class Audio {
-    state = 'suspended'; currentTime = 0; destination = {};
-    constructor() { audios.push(this); }
-    resume() { this.state = 'running'; return Promise.resolve(); }
-    close() { return Promise.resolve(); }
-    createOscillator() {
-      const tone = { frequency: { setValueAtTime() {}, exponentialRampToValueAtTime() {} }, connect() {}, disconnect() {}, start: vi.fn(), stop() {} };
-      tones.push(tone); return tone;
-    }
-    createGain() { return { gain: { setValueAtTime() {}, linearRampToValueAtTime() {} }, connect() {}, disconnect() {} }; }
-  }
+  const { tones, contexts: audios, Audio } = audioHarness();
   vi.stubGlobal('AudioContext', Audio);
   globalThis.sessionStorage.setItem('pomekhi.organizer', 'HOST'); io.mockReturnValue(socket('panel'));
   globalThis.window.confirm.mockImplementation(() => { if (audios.length) audios.at(-1).state = 'suspended'; return true; });
@@ -236,21 +225,13 @@ it('unlocks audio explicitly, plays live cues once and does not replay when volu
 it.each([
   ['mute', 0], ['zero volume', 0], ['lower volume', 1],
 ])('applies current %s when a live cue finishes resuming audio', async (setting, expectedTones) => {
-  const tones = [], ramps = [], audios = [];
+  const { tones, ramps, contexts: audios, Audio } = audioHarness();
   let completeResume, holdResume = false;
-  class Audio {
-    state = 'suspended'; currentTime = 0; destination = {};
-    constructor() { audios.push(this); }
-    resume() {
-      if (holdResume) return new Promise(resolve => { completeResume = () => { this.state = 'running'; resolve(); }; });
-      this.state = 'running'; return Promise.resolve();
-    }
-    close() { return Promise.resolve(); }
-    createOscillator() {
-      return { frequency: { setValueAtTime() {}, exponentialRampToValueAtTime() {} }, connect() {}, disconnect() {}, start() { tones.push(true); }, stop() {} };
-    }
-    createGain() { return { gain: { setValueAtTime() {}, linearRampToValueAtTime(value) { ramps.push(value); } }, connect() {}, disconnect() {} }; }
-  }
+  const originalResume = Audio.prototype.resume;
+  Audio.prototype.resume = function () {
+    if (holdResume) return new Promise(resolve => { completeResume = () => { this.state = 'running'; resolve(); }; });
+    return originalResume.call(this);
+  };
   vi.stubGlobal('AudioContext', Audio);
   globalThis.sessionStorage.setItem('pomekhi.organizer', 'HOST'); io.mockReturnValue(socket('panel'));
   await act(async () => root.render(createElement(HostPage)));
@@ -272,7 +253,7 @@ it.each([
   else expect(volume.value).toBe(setting === 'zero volume' ? '0' : '0.1');
   await act(async () => completeResume());
   expect(tones).toHaveLength(expectedTones);
-  if (expectedTones) expect(ramps[0]).toBeCloseTo(.1 * .35);
+  if (expectedTones) expect(ramps.some(value => Math.abs(value - .1 * .35) < .00001)).toBe(true);
   await act(async () => mute.click());
   expect(tones).toHaveLength(expectedTones);
 });
@@ -407,4 +388,42 @@ it('shows tutorial guidance without revealing the closed card and excludes its o
   expect(container.textContent).toContain('Обучение · без общего зачёта');
   expect(container.textContent).toContain('Спасено групп: 0 / 0. Миссии: 0 / 0. Активное время: 0 мин 0 с.');
   expect(container.textContent).toContain('завершено обычных: 0');
+});
+
+it('renders the authorized broadcast without organizer mutation controls', async () => {
+  globalThis.sessionStorage.setItem('pomekhi.organizer', 'HOST'); io.mockReturnValue(socket('broadcast'));
+  await act(async () => root.render(createElement(HostPage, { display: true })));
+  expect(container.textContent).toContain('Эфир дома');
+  expect(button('Полноэкранный режим')).toBeDefined();
+  expect([...container.querySelectorAll('button')].some(b => ['Начать раунд', 'Закрыть комнату', 'Раздать карточки'].includes(b.textContent))).toBe(false);
+  expect(container.querySelector('[aria-label="Сохранение партии"]')).toBeNull();
+  expect(container.querySelector('a[href="/?screen=host"]')).not.toBeNull();
+});
+
+it('keeps broadcast read-only before a room exists', async () => {
+  value(lobby.execute('host', 'room:close', { roomId: room.id }));
+  globalThis.sessionStorage.setItem('pomekhi.organizer', 'HOST'); io.mockReturnValue(socket('empty-broadcast'));
+  await act(async () => root.render(createElement(HostPage, { display: true })));
+  expect(container.textContent).toContain('Ожидаем комнату.');
+  expect([...container.querySelectorAll('button')].some(b => b.textContent === 'Создать комнату')).toBe(false);
+  expect(container.querySelector('a[href="/?screen=host"]')).not.toBeNull();
+});
+
+it('opens the catalog explicitly, conceals titles and preserves a draft after a stale save', async () => {
+  value(lobby.execute('host', 'deal:cancel', base()));
+  globalThis.sessionStorage.setItem('pomekhi.organizer', 'HOST'); io.mockReturnValue(socket('editor'));
+  await act(async () => root.render(createElement(HostPage, { editor: true })));
+  const original = lobby.catalogExecute('host', { action: 'read' }).catalog.file.entries[0];
+  expect(container.textContent).not.toContain(original.card.title);
+  await click('Открыть банк заданий'); expect(container.textContent).not.toContain(original.card.title);
+  await click(`Открыть ${original.card.id}`);
+  const field = [...container.querySelectorAll('label')].find(label => label.textContent === 'Название').querySelector('input');
+  expect(field.value).toBe(original.card.title);
+  expect(globalThis.document.activeElement).toBe(field);
+  expect(container.querySelector('[aria-label="Карточка в редакторе"]').compareDocumentPosition(container.querySelector('[aria-label="Карточки банка"]')) & globalThis.Node.DOCUMENT_POSITION_FOLLOWING).toBeTruthy();
+  await act(async () => { Object.getOwnPropertyDescriptor(globalThis.HTMLInputElement.prototype, 'value').set.call(field, 'Мой несохранённый текст'); field.dispatchEvent(new globalThis.Event('input', { bubbles: true })); });
+  lobby.catalogExecute('host', { action: 'save', revision: 0, requestId: 'another-editor-change', entry: { ...original, enabled: false } });
+  await click('Сохранить карточку'); expect(container.textContent).toContain('Банк изменён в другой панели.'); expect(field.value).toBe('Мой несохранённый текст');
+  await click('Перечитать банк'); expect(field.value).toBe('Мой несохранённый текст');
+  await click('Сохранить карточку'); expect(lobby.catalogExecute('host', { action: 'read' }).catalog.file.entries.find(e => e.card.id === original.card.id).card.title).toBe('Мой несохранённый текст');
 });

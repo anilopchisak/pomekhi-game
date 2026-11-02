@@ -1,6 +1,6 @@
 # Timed rounds and party lifecycle
 
-Status: implemented. Timers coordinate physical play; [search actions and results](search-actions.md) extend these phases. Tutorial and difficulty progression are implemented; music remains future work. [Paused disk recovery](session-persistence.md) is implemented.
+Status: implemented. Timers coordinate physical play; [search actions and results](search-actions.md) extend these phases. Tutorial and difficulty progression are implemented; procedural atmosphere is implemented, while recorded music and voice remain future work. [Paused disk recovery](session-persistence.md) is implemented.
 
 ## Ownership and state
 
@@ -42,7 +42,7 @@ Shared API derives an offset between server monotonic time and browser performan
 
 Host-local GameControls owns settings drafts and confirmations. Unsaved settings block start. Player-local cards remain revealable while actions become read-only outside reading. No router, global store or new dependency is needed.
 
-Organizer-only organizer:audio selects one connected sound panel, independently of game controls. Explicit enable/test clicks create/resume Web Audio. Round-control gestures also resume the selected context with a 250ms bound; a dialog can suspend Safari audio after its handler returns, so a still-current live cue can resume that context within its two-second freshness window. A superseded cue is canceled. SoundControls uses a quiet synthesized tone with gain ramps, volume and mute. Playback reads current volume/mute settings even when a live cue waits for audio resume. Phones never create audio contexts. A game:cue is an ephemeral event sent only to the selected panel after its state snapshot; it is not part of recovered state. Client connection epoch, room/version, two-second freshness and consumed-identity checks reject stale/repeated cues. Changing volume, mute or ownership does not replay a cue. Audio failure does not affect server timing. Closing the room clears sound ownership.
+Organizer-only organizer:audio selects one connected sound panel, independently of game controls. Explicit enable/test clicks create/resume Web Audio. Round-control gestures also resume the selected context with a 250ms bound; a dialog can suspend Safari audio after its handler returns, so a still-current live cue can resume that context within its two-second freshness window. A superseded cue is canceled. SoundControls uses a quiet synthesized tone with gain ramps, volume and mute. Playback reads current volume/mute settings even when a live cue waits for audio resume. Phones never receive host cues; optional personal effects use separate explicit consent as described in [atmosphere](atmosphere.md). A game:cue is an ephemeral event sent only to the selected panel after its state snapshot; it is not part of recovered state. Client connection epoch, room/version, two-second freshness and consumed-identity checks reject stale/repeated cues. Changing volume, mute or ownership does not replay a cue. Audio failure does not affect server timing. Closing the room clears sound ownership.
 
 ## Verification and limits
 
@@ -63,3 +63,5 @@ Progression settings lock while reading and after first start, including a tutor
 [Progression tests](../../src/server/progression.test.ts) cover short/long/endless parties, fixed levels, aborted attempts, settings locks, infection overrides, extensions and frozen restoration. Real transport tests exercise a tutorial followed by normal rounds with seven independent phones.
 
 With an active [ritual](ritual.md), all returns enter the base review, including the last round. Explicit synchronized results confirmation decides victory/defeat and permits the next deal. Tutorial is excluded from candle credit. Freeplay continuation preserves the original outcome and horizon.
+
+Atmosphere extends the selected host sound panel with procedural background and ephemeral phone effects; [its design](atmosphere.md) owns the audio and broadcast lifecycle. Game remains the single phase owner.

@@ -1,3 +1,6 @@
+import { createCatalog } from './catalog.js';
+import type { SavedCatalog } from './catalog.js';
+import type { CatalogReply } from '../shared/protocol.js';
 import { createHash, randomInt, randomUUID, timingSafeEqual } from 'node:crypto';
 import type { GameCue, GameSettings, LobbyCommand, LobbyError, LobbyReply, LobbyView, RoomSnapshot } from '../shared/protocol.js';
 import { validOfflineEvent } from './round-sync.js';
@@ -20,6 +23,7 @@ interface Room {
   requests: Map<string, Map<string, string>>;
 }
 export interface SavedLobby {
+  catalog?: SavedCatalog;
   revision: number; usedCodes: string[];
   room: null | { id: string; code: string; players: { id: string; name: string; key: string }[]; revoked: string[];
     game: SavedGame; requests: [string, [string, string][]][] };
@@ -33,12 +37,15 @@ export interface LobbyOptions {
 }
 
 export function createLobby({ organizerCode, generateId = randomUUID, generateRoomCode = () => randomCode(6), randomIndex = randomInt, clock }: LobbyOptions) {
+  const catalog = createCatalog();
   let room: Room | undefined;
   let revision = 0;
   const actors = new Map<string, Actor>();
   const usedCodes = new Set<string>();
   const listeners = new Set<(cue?: GameCue) => void>();
   let audioOwner: string | null = null;
+  let phoneScaresEnabled = true;
+  const phoneOwners = new Map<string, string>();
 
   function notify() {
     revision++;
@@ -49,7 +56,7 @@ export function createLobby({ organizerCode, generateId = randomUUID, generateRo
 
   function snapshot(): RoomSnapshot | null {
     return room ? {
-      id: room.id, code: room.code, version: revision, capacity: 12,
+      id: room.id, code: room.code, version: revision, capacity: 12, phoneScaresEnabled,
       dealing: room.game.dealingState(), game: room.game.publicState(),
       players: [...room.players.values()].map(player => ({
         id: player.id, name: player.name, online: player.connections.size > 0,
@@ -64,7 +71,7 @@ export function createLobby({ organizerCode, generateId = randomUUID, generateRo
     if (actor.kind === 'ended') return { revision, ...actor };
     const state = snapshot();
     if (!state) return undefined;
-    return { revision, kind: 'player', room: state, playerId: actor.playerId, assignment: room!.game.personal(actor.playerId), play: room!.game.personalPlay(actor.playerId), synchronization: room!.game.personalSync(actor.playerId) };
+    return { revision, kind: 'player', room: state, playerId: actor.playerId, audioEnabled: phoneOwners.get(actor.playerId) === connection, assignment: room!.game.personal(actor.playerId), play: room!.game.personalPlay(actor.playerId), synchronization: room!.game.personalSync(actor.playerId) };
   }
 
   function disconnect(connection: string) {
@@ -75,6 +82,7 @@ export function createLobby({ organizerCode, generateId = randomUUID, generateRo
       if (player?.connections.delete(connection) && player.connections.size === 0) changed = true;
     }
     actors.delete(connection);
+    for (const [id, owner] of phoneOwners) if (owner === connection) { phoneOwners.delete(id); changed = true; }
     if (audioOwner === connection) { audioOwner = null; changed = true; }
     if (actor?.kind === 'organizer' && ![...actors.values()].some(item => item.kind === 'organizer')) {
       if (room?.game.synchronize()) changed = true;
@@ -94,6 +102,7 @@ export function createLobby({ organizerCode, generateId = randomUUID, generateRo
   function remove(player: Player, reason: 'left' | 'removed') {
     room!.revoked.add(player.key);
     room!.players.delete(player.id);
+    phoneOwners.delete(player.id);
     room!.game.remove(player.id);
     room!.requests.delete(`player:${player.id}`);
     for (const connection of player.connections) actors.set(connection, { kind: 'ended', reason });
@@ -127,6 +136,15 @@ export function createLobby({ organizerCode, generateId = randomUUID, generateRo
       if (candidate.length !== expected.length || !timingSafeEqual(candidate, expected)) return fail('INVALID_ORGANIZER_CODE');
       if (actor?.kind !== 'organizer') disconnect(connection);
       actors.set(connection, { kind: 'organizer' });
+    } else if (command === 'organizer:atmosphere' || command === 'player:audio') {
+      if (command === 'organizer:atmosphere' ? actor?.kind !== 'organizer' : actor?.kind !== 'player') return fail('FORBIDDEN');
+      if (!room || room.id !== data.roomId) return fail('ROOM_NOT_FOUND');
+      if (typeof data.enabled !== 'boolean') return fail('INVALID_INPUT');
+      if (command === 'organizer:atmosphere') phoneScaresEnabled = data.enabled;
+      else if (actor?.kind === 'player') {
+        if (data.enabled) phoneOwners.set(actor.playerId, connection);
+        else if (phoneOwners.get(actor.playerId) === connection) phoneOwners.delete(actor.playerId);
+      }
     } else if (command === 'organizer:audio') {
       if (actor?.kind !== 'organizer') return fail('FORBIDDEN');
       if (typeof data.enabled !== 'boolean') return fail('INVALID_INPUT');
@@ -136,18 +154,19 @@ export function createLobby({ organizerCode, generateId = randomUUID, generateRo
       if (actor?.kind !== 'organizer') return fail('FORBIDDEN');
       if (command === 'room:create') {
         if (!room) {
+          phoneScaresEnabled = true; phoneOwners.clear();
           let code = generateRoomCode();
           for (let attempts = 0; usedCodes.has(code) && attempts < 32; attempts++) code = generateRoomCode();
           if (usedCodes.has(code)) throw new Error('Room code generator did not provide an unused code.');
           usedCodes.add(code);
-          room = { id: generateId(), code, players: new Map(), revoked: new Set(), game: createGame({ generateId, randomIndex, clock, onChange: notify }), requests: new Map() };
+          room = { id: generateId(), code, players: new Map(), revoked: new Set(), game: createGame({ generateId, randomIndex, clock, onChange: notify, getCards: catalog.cards }), requests: new Map() };
         }
       } else {
         if (typeof data.roomId !== 'string') return fail('INVALID_INPUT');
         if (!room || room.id !== data.roomId) return fail('ROOM_NOT_FOUND');
         if (command === 'room:close') {
           for (const [id, current] of actors) if (current.kind === 'player') actors.set(id, { kind: 'ended', reason: 'closed' });
-          room.game.dispose(); room = undefined; audioOwner = null;
+          room.game.dispose(); room = undefined; audioOwner = null; phoneOwners.clear();
         } else {
           if (typeof data.playerId !== 'string') return fail('INVALID_INPUT');
           const player = room.players.get(data.playerId);
@@ -169,7 +188,8 @@ export function createLobby({ organizerCode, generateId = randomUUID, generateRo
         if ([...room.players.values()].some(item => item.name.toLocaleLowerCase('ru-RU') === name.toLocaleLowerCase('ru-RU'))) return fail('NAME_TAKEN');
         if (room.players.size >= 12) return fail('ROOM_FULL');
         player = { id: generateId(), name, key: data.resumeKey, connections: new Set() };
-        room.game.add(player.id);
+        const error = room.game.add(player.id);
+        if (error) return fail(error);
         room.players.set(player.id, player);
       }
       attach(connection, player);
@@ -265,18 +285,19 @@ export function createLobby({ organizerCode, generateId = randomUUID, generateRo
 
   function subscribe(listener: (cue?: GameCue) => void) { listeners.add(listener); return () => { listeners.delete(listener); }; }
   function exportState(): SavedLobby {
-    return structuredClone({ revision, usedCodes: [...usedCodes], room: room ? { id: room.id, code: room.code,
+    return structuredClone({ catalog: catalog.exportState(), revision, usedCodes: [...usedCodes], room: room ? { id: room.id, code: room.code,
       players: [...room.players.values()].map(({ id, name, key }) => ({ id, name, key })), revoked: [...room.revoked],
       game: room.game.exportState(), requests: [...room.requests].map(([id, entries]) => [id, [...entries]]) } : null });
   }
-  function liveState() { return { actors: new Map(structuredClone([...actors])), audioOwner }; }
+  function liveState() { return { actors: new Map(structuredClone([...actors])), audioOwner, phoneOwners: new Map(phoneOwners), phoneScaresEnabled }; }
   function restore(state: SavedLobby, reason: 'server_restarted' | 'storage_error' = 'server_restarted', live?: ReturnType<typeof liveState>) {
+    catalog.restore(state.catalog ?? createCatalog().exportState());
     const previousGame = room?.id === state.room?.id ? room?.game.exportState() : undefined;
-    room?.game.dispose(); room = undefined; audioOwner = null; actors.clear();
+    room?.game.dispose(); room = undefined; audioOwner = null; actors.clear(); phoneOwners.clear(); phoneScaresEnabled = false;
     revision = Math.max(revision, state.revision) + 1; usedCodes.clear(); for (const code of state.usedCodes) usedCodes.add(code);
     if (state.room) {
       const saved = state.room;
-      const game = createGame({ generateId, randomIndex, clock, onChange: notify });
+      const game = createGame({ generateId, randomIndex, clock, onChange: notify, getCards: catalog.cards });
       const restored = structuredClone(saved.game);
       restored.version = Math.max(restored.version, previousGame?.version ?? 0);
       restored.dealing.version = Math.max(restored.dealing.version, previousGame?.dealing.version ?? 0);
@@ -293,12 +314,25 @@ export function createLobby({ organizerCode, generateId = randomUUID, generateRo
           else actors.set(connection, { kind: 'ended', reason: 'closed' });
         } else actors.set(connection, actor);
       }
-      audioOwner = room ? live.audioOwner : null;
+      if (reason === 'storage_error') {
+        audioOwner = room ? live.audioOwner : null;
+        phoneScaresEnabled = live.phoneScaresEnabled;
+        for (const [id, owner] of live.phoneOwners) if (room?.players.has(id)) phoneOwners.set(id, owner);
+      }
     }
   }
+  function catalogExecute(connection: string, input: unknown): CatalogReply {
+    if (actors.get(connection)?.kind !== 'organizer') return { ok: false, error: 'FORBIDDEN' };
+    const editable = !room || ['lobby', 'between_rounds', 'finished'].includes(room.game.publicState().phase);
+    const before = catalog.exportState().revision;
+    const error = catalog.execute(input, editable);
+    if (error) return { ok: false, error };
+    if (before !== catalog.exportState().revision) notify();
+    return { ok: true, catalog: catalog.snapshot(editable) };
+  }
   function checkpoint() { if (room?.game.synchronize()) notify(); }
-  function dispose() { room?.game.dispose(); room = undefined; listeners.clear(); actors.clear(); audioOwner = null; }
-  return { execute, disconnect, viewFor, subscribe, dispose, exportState, restore, liveState, checkpoint };
+  function dispose() { room?.game.dispose(); room = undefined; listeners.clear(); actors.clear(); audioOwner = null; phoneOwners.clear(); }
+  return { execute, catalogExecute, disconnect, viewFor, subscribe, dispose, exportState, restore, liveState, checkpoint };
 }
 
 export type Lobby = ReturnType<typeof createLobby>;

@@ -53,7 +53,7 @@ After 4-12 participants join, select the possessed count on the laptop (default 
 
 A single replacement preserves its role and all other participants. A full confirmed reshuffle redistributes roles/cards and clears readiness/requests. Late joiners during reading get one assignment without affecting existing cards. During timed phases they wait for the next deal. Departure removes only that participant; the laptop warns about an unsuitable composition. Cancel restores the previous waiting phase without removing membership or completed-round progress. Phones recover the same card and readiness on refresh/reconnect, initially concealed. The 90 original cards cover three levels. Selection prefers the round level and falls back to simpler cards when needed for uniqueness.
 
-If a command times out, inspect current state before using the visible manual retry. The retry retains its original identity and cannot issue a second card change. A complete restart restores room/card state from the last successful checkpoint. The task-bank editor remains future work. See [search actions](docs/design/search-actions.md) for infection and results.
+If a command times out, inspect current state before using the visible manual retry. The retry retains its original identity and cannot issue a second card change. A complete restart restores room/card state from the last successful checkpoint. The organizer can open the separate task-bank editor. See [search actions](docs/design/search-actions.md) for infection and results.
 
 ## Run rounds
 
@@ -61,7 +61,13 @@ Open the round settings on the laptop. Defaults are a separate tutorial followed
 
 The server advances placement, search and return automatically, then waits for a manual next deal/start. Pause preserves the phase/remainder and instructs players to stop safely. Loss of the last organizer panel pauses; player departure, withdrawal and phone connection loss do not. Resume stays manual. Early search finish starts return; abort returns everyone to base without credit. A finished finite party can add another round.
 
-Use the explicit sound button to select one laptop panel, then test volume before play. Phones remain silent. Refresh restores current phase/card; laptop sleep causes a conservative pause rather than replaying missed phases. Full restart restores the last saved state, with active play paused. See [round design](docs/design/rounds.md).
+Use the explicit sound button to select one laptop panel, then test volume before play. Phones receive no laptop signals; they may opt into separate rare effects. Refresh restores current phase/card; laptop sleep causes a conservative pause rather than replaying missed phases. Full restart restores the last saved state, with active play paused. See [round design](docs/design/rounds.md).
+
+## Atmosphere and broadcast
+
+Open the broadcast link from the organizer panel or visit `/?screen=display`. It uses the same private organizer code and shows the public timer, instructions, ritual and results without game controls. Select one sound panel, test the volume, and optionally enable fullscreen. Background, signals, effects, mute and CRT visuals have separate controls. Procedural sound works locally without audio downloads; voice remains future work.
+
+Each player can explicitly enable and test rare phone effects. The default phone level is 15 percent, with a 30-percent maximum. A regular search of at least 40 seconds gives each already-enabled player a 50-percent chance of one short effect; tutorial has none. Hidden tabs, disconnect, pause or release cancel pending effects without replay. Re-enable after hiding or reconnecting. The organizer can disable phone effects globally; that switch is off after server recovery. See [atmosphere design](docs/design/atmosphere.md) and check actual speakers and phones before the party.
 
 ## Local connection and offline phones
 
@@ -134,3 +140,9 @@ For a machine-local Node, use `.runtime/node/bin/node scripts/project.mjs tuna:l
 ## Shared ritual
 
 New finite parties use candles A → B → C → out and six original base-only prophecies. Seven players/seven rounds need 28 successful steps; the goal scales and freezes at the first normal start. Tutorial and canceled rounds earn none. After returning, synchronize phones, resolve disputes, report base penalties and explicitly confirm the round. Only then do candles advance and rules open. Victory is immediate; an incomplete final ritual loses. Full capture only ends search. A confirmed continuation keeps the outcome and shows extra freeplay results separately. Existing saved parties retain their former settings with the ritual disabled. See [ritual design](docs/design/ritual.md).
+
+## Edit and transfer cards
+
+Open /?screen=editor from the laptop panel with the organizer code, then explicitly load the secret bank. Names and task text remain hidden until opened. Save edits or enable/disable cards in lobby, breaks, after the party or without a room. Reading/timed rounds are read-only. Export downloads the full bank JSON; import previews additions/changes/removals and replaces it after confirmation. Issued cards never change.
+
+The edited bank survives room closure and restart. Each room has independent role/level deck cycles; all issued cards consume usage, even tutorial and canceled previews. Reuse starts after the admissible pool is exhausted, without prematurely lowering difficulty. Capacity errors ask you to enable more cards. A confirmed full corrupted-save reset restores the standard bank and retains the original file. See [catalog design](docs/design/card-catalog.md).

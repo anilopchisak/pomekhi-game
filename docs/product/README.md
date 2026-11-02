@@ -6,7 +6,7 @@ Source: the user's game-planning decisions in this chat before the project setup
 
 The browser provides an organizer panel and a phone lobby. One locally saved room supports up to 12 participants, code/name entry, HTTPS invitations with locally generated QR, separate organizer authorization, participant removal/leave and identity recovery after reconnect or refresh. The organizer joins from a phone; the laptop does not consume a slot. A full restart restores the last saved lobby and phone credentials; the organizer code changes. HTTP health and Socket.IO readiness retain the foundation-stage contract; the authorized lobby snapshot establishes actual membership.
 
-Private-card dealing and untimed reading are implemented with a 90-card three-level bank. Players reveal/hide cards, mark readiness and request replacements; the organizer replaces one card, reshuffles all roles/cards or cancels. Timed rounds, pause, finite/endless parties and short laptop signals are implemented. Release/infection, mission scoring, undo and team results are implemented. Paused disk recovery, durable offline actions, synchronization review, named zones and local invitations are implemented. Shared candles, revealed prophecies and ritual victory/defeat are implemented. Editor, music and voice remain future work. See [lobby design](../design/lobby-sessions.md) for current authorization and recovery behavior.
+Private-card dealing and untimed reading are implemented with a 90-card three-level bank. Players reveal/hide cards, mark readiness and request replacements; the organizer replaces one card, reshuffles all roles/cards or cancels. Timed rounds, pause, finite/endless parties and short laptop signals are implemented. Release/infection, mission scoring, undo and team results are implemented. Paused disk recovery, durable offline actions, synchronization review, named zones and local invitations are implemented. Shared candles, revealed prophecies and ritual victory/defeat are implemented. Procedural atmosphere, broadcast and optional phone effects are implemented. The editable persistent catalog and room deck cycles are implemented. Recorded music and voice remain future work. See [lobby design](../design/lobby-sessions.md) for current authorization and recovery behavior.
 
 [The shared protocol](../../src/shared/protocol.ts) owns current wire shapes. Add game wire contracts with their implementation owner, rather than treating prose as an already published API.
 
@@ -58,7 +58,7 @@ The lifecycle is lobby, reading, placement, search, return, break and finished. 
 
 Start requires valid assignments and no replacement requests; unready/offline members require confirmation. Pause freezes the phase and exact remainder, directing players to stop and wait safely. The last organizer-panel disconnect, a storage failure and a long laptop clock/control gap pause automatically. Player departure, removal, withdrawal and phone disconnect do not pause. Resume remains manual; a changed roster requires confirmation, and an empty active roster can only abort. Early search finish starts the full return timer. Return completion credits the round; confirmed abort enters a break without credit and instructs everyone to return to base.
 
-New timed-phase arrivals wait for the next deal, including during pause. Existing participants restore their card/current phase. Card/readiness changes and reshuffles are available only during reading. Previous cards remain readable during breaks until new cards are dealt. Short quiet signals play only on an explicitly selected laptop panel with volume/mute; browser recovery does not replay them. Phones stay silent. Full restart restores the party and pauses active phases. See [round design](../design/rounds.md) for ownership and time recovery.
+New timed-phase arrivals wait for the next deal, including during pause. Existing participants restore their card/current phase. Card/readiness changes and reshuffles are available only during reading. Previous cards remain readable during breaks until new cards are dealt. Short quiet signals play only on an explicitly selected laptop panel with volume/mute; browser recovery does not replay them. Phones play only explicitly enabled rare personal effects during normal search. Full restart restores the party and pauses active phases. See [round design](../design/rounds.md) for ownership and time recovery.
 
 ## Implemented search actions and results
 
@@ -86,7 +86,7 @@ A separate laptop editor adds, edits, disables, imports and exports tasks. Organ
 
 The shared screen resembles an old television and a strange recording: readable text, restrained interference and short unsettling inserts. Phone instructions remain dark and readable without interference over text.
 
-Search uses quiet suspense, whispers, knocks and interference without sharp volume jumps. Gathering may include mild unexpected visual inserts. Effects can be disabled. All sound plays on the laptop; phones stay silent. Voice commands duck the music and clearly announce placement, search and return.
+Search uses quiet suspense, whispers, knocks and interference without sharp volume jumps. Gathering may include mild unexpected visual inserts. Effects can be disabled. Ambient sound and phase signals play on one selected laptop panel; phones may opt into rare short effects. Voice remains planned; implemented short signals distinguish phase transitions and briefly duck the ambient background.
 
 The server owns phases, deadlines, assignments and results. Blocking or refreshing a phone restores its previous assignment and current phase, without re-dealing. Prevent duplicate state changes and scores. Organizer commands and delayed scare events must not replay automatically after reconnecting. Stable player journal entries are resent and reconciled explicitly.
 
@@ -100,6 +100,18 @@ After return all frozen participants, including withdrawn members, must confirm 
 
 ## Acceptance
 
-Next implementation stages: task editor, atmosphere music/voice and the optional spirit-box extension. Lobby membership, private cards, untimed reading, timed rounds and browser credential recovery are implemented. Each stage adds actual tests and updates implementation status.
+Next implementation stages: voice, recorded music and the optional spirit-box extension. Lobby membership, private cards, untimed reading, timed rounds and browser credential recovery are implemented. Each stage adds actual tests and updates implementation status.
 
 Required external scenarios include Windows/macOS startup, iOS/Android lock-and-return, dim-light readability, voice audibility in all zones, and actual mobile-carrier/Tuna access. Foundation integration tests do not establish these acceptance results.
+
+## Implemented atmosphere
+
+Broadcast at /?screen=display uses organizer authorization and shows public phase, timer, ritual and post-return results without game controls. The host can enable CRT edge effects or fullscreen; phones retain readable cards. Reduced motion disables decorative animation. Procedural audio needs no files or Internet: quiet reading/breaks, tense placement/search, calmer return and silence on pause/finish. Separate background/signal/effect levels and mute are local to the selected panel.
+
+Phone effects are optional. Each player explicitly enables and hears a sample, with a 15-percent default and 30-percent maximum slider. A regular search of at least 40 seconds gives each eligible sound owner a 50-percent chance of one 0.3-0.7-second effect between second 20 and the final 10 seconds. Tutorial has none. Hidden tabs, pause, disconnect, release, withdrawal and disabled sound cancel pending effects without replay or a replacement draw. The organizer can disable all phone effects; server recovery leaves that switch off. See [atmosphere design](../design/atmosphere.md).
+
+## Implemented catalog and deck history
+
+The organizer opens /?screen=editor explicitly. Titles/tasks remain concealed until a card is opened. Add/edit role, difficulty, text or enabled state; JSON export/import transfers the whole bank after comparison and confirmation. Changes are allowed without a room, in lobby, breaks and finished state; issued reading/timed cards remain unchanged. The catalog persists between rooms and restarts. Standard reset replaces edits but retains room usage. Full corrupted-save recovery reset also resets the catalog after an explicit warning.
+
+Every issuance consumes the room role/level cycle, including tutorial, reshuffles, replacements and canceled rounds. Exhausted pools cycle at the same difficulty before simpler fallback. Unique current cards, the recipient's previous-card exclusion and one spare per role remain required. Invalid capacity/admission fails without partial state. New rooms reset usage, not the edited bank. Schema 5 preserves catalog, usage and retry identity. See [catalog design](../design/card-catalog.md).

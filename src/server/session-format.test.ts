@@ -47,7 +47,7 @@ it.each(['lobby', 'reading', 'placement', 'between_rounds', 'finished'] as const
   for (const enabled of [false, true]) {
     const { current, legacy } = legacyFixture(phase, enabled), original = structuredClone(legacy);
     const saved = validateSession(legacy), game = saved.lobby.room!.game;
-    expect(saved.schemaVersion).toBe(4);
+    expect(saved.schemaVersion).toBe(5);
     expect(legacy).toEqual(original);
     expect(game.settings).toMatchObject({ tutorialEnabled: false, initialDifficulty: 1, maximumDifficulty: 1, infectionMode: enabled ? 'on' : 'off' });
     expect(game.dealing.assignments).toEqual(current.lobby.room!.game.dealing.assignments);
@@ -61,7 +61,7 @@ it.each(['lobby', 'reading', 'placement', 'between_rounds', 'finished'] as const
 });
 
 it('migrates an empty version-1 save and rejects unsupported schemas and malformed legacy cards', () => {
-  expect(validateSession({ schemaVersion: 1, lobby: { revision: 0, usedCodes: [], room: null } }).schemaVersion).toBe(4);
+  expect(validateSession({ schemaVersion: 1, lobby: { revision: 0, usedCodes: [], room: null } }).schemaVersion).toBe(5);
   const { legacy } = legacyFixture('reading', false);
   legacy.lobby.room.game.dealing.assignments[0][1].card.difficulty = 2;
   expect(() => validateSession(legacy)).toThrow();
@@ -89,7 +89,7 @@ it('loads a legacy file through the real store and commits version 3 without los
     expect(migrated!.lobby.room!.game.dealing.assignments).toEqual(current.lobby.room!.game.dealing.assignments);
     expect(JSON.parse(await readFile(join(directory, 'session.json'), 'utf8')).schemaVersion).toBe(1);
     await store.write(migrated!);
-    expect(JSON.parse(await readFile(join(directory, 'session.json'), 'utf8')).schemaVersion).toBe(4);
+    expect(JSON.parse(await readFile(join(directory, 'session.json'), 'utf8')).schemaVersion).toBe(5);
     const lobby = createLobby({ organizerCode: 'NEWCODE' });
     try {
       lobby.restore(migrated!.lobby);
@@ -113,7 +113,7 @@ it.each(['reading', 'placement', 'between_rounds', 'finished'] as const)('upgrad
   const previous = JSON.parse(JSON.stringify(current));
   delete previous.lobby.room.game.roundSync; delete previous.lobby.room.game.venue; delete previous.lobby.room.game.playerNames;
   const saved = validateSession(previous), original = current.lobby.room!.game;
-  expect(saved.schemaVersion).toBe(4); expect(saved.lobby.room!.game.venue).toEqual({ base: 'База', zones: [] });
+  expect(saved.schemaVersion).toBe(5); expect(saved.lobby.room!.game.venue).toEqual({ base: 'База', zones: [] });
   expect(saved.lobby.room!.game.search).toEqual(original.search); expect(saved.lobby.room!.game.results).toEqual(original.results);
   const restored = createLobby({ organizerCode: 'NEWCODE' });
   try { restored.restore(saved.lobby); expect(() => validateSession({ schemaVersion: 4, lobby: restored.exportState() })).not.toThrow(); }

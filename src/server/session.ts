@@ -1,4 +1,4 @@
-import type { GameCue, LobbyCommand, LobbyReply, LobbyView, PersistenceStatus } from '../shared/protocol.js';
+import type { CatalogReply, GameCue, LobbyCommand, LobbyReply, LobbyView, PersistenceStatus } from '../shared/protocol.js';
 import { createLobby } from './lobby.js';
 import type { LobbyOptions, SavedLobby } from './lobby.js';
 import { defaultClock } from './game.js';
@@ -29,7 +29,7 @@ export function createSession(options: LobbyOptions & { store?: SessionStore }) 
     return () => { cancelled = true; cancel(); };
   } } });
   lobby.subscribe(value => { dirty = true; if (value) cue = value; });
-  const saved = (): SavedSession => ({ schemaVersion: 4, lobby: lobby.exportState() });
+  const saved = (): SavedSession => ({ schemaVersion: 5, lobby: lobby.exportState() });
   const viewFor = (connection: string): LobbyView | undefined => {
     const view = visible.get(connection); return view ? structuredClone(view) : undefined;
   };
@@ -129,6 +129,13 @@ export function createSession(options: LobbyOptions & { store?: SessionStore }) 
       return result.value.ok ? { ok: true, view: viewFor(connection)! } : result.value;
     });
   }
+  function catalogExecute(connection: string, input: unknown): Promise<CatalogReply> {
+    return enqueue(async () => {
+      if (stopping || !initialized || status.state !== 'ready') return { ok: false, error: 'STORAGE_UNAVAILABLE' };
+      const result = await transaction(() => lobby.catalogExecute(connection, input));
+      return result.durable ? result.value : { ok: false, error: 'STORAGE_UNAVAILABLE' };
+    });
+  }
   function disconnect(connection: string): Promise<void> {
     return enqueue(async () => {
       if (stopping) return;
@@ -146,7 +153,7 @@ export function createSession(options: LobbyOptions & { store?: SessionStore }) 
     });
     return closing;
   }
-  return { execute, disconnect, viewFor, initialize, close,
+  return { execute, catalogExecute, disconnect, viewFor, initialize, close,
     subscribe(listener: (cue?: GameCue) => void) { listeners.add(listener); return () => { listeners.delete(listener); }; } };
 }
 export type Session = ReturnType<typeof createSession>;

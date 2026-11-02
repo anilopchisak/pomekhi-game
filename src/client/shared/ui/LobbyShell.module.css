@@ -28,3 +28,8 @@
 @media (prefers-reduced-motion: no-preference) { .screen header { animation: appear .6s ease-out; } }
 @keyframes appear { from { opacity: .4; } to { opacity: 1; } }
 .screen select { box-sizing: border-box; width: 100%; min-width: 0; display: block; margin-top: .4rem; padding: .8rem; color: #eeeee3; background: #0b0e09; border: 1px solid #686e59; font: inherit; }
+
+.screen.wide { width: 100%; max-width: none; }
+
+.screen textarea { width: 100%; min-height: 6rem; padding: .8rem; background: #0b0e09; color: #eeeee3; border: 1px solid #686e59; font: inherit; resize: vertical; }
+.screen textarea:focus-visible { outline: 3px solid #ebd59a; outline-offset: 3px; }

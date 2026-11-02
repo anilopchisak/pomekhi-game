@@ -6,6 +6,7 @@ import { PlayerPage } from '../../src/client/pages/player/index.js';
 import { HostPage } from '../../src/client/pages/host/index.js';
 import { readPlayerSession, savePlayerSession } from '../../src/client/pages/player/session.js';
 import { createLobby } from '../../src/server/lobby.js';
+import { audioHarness } from '../helpers/audio.mjs';
 
 const { io, offlineRecords } = vi.hoisted(() => ({ io: vi.fn(), offlineRecords: new Map() }));
 vi.mock('socket.io-client', () => ({ io }));
@@ -91,6 +92,44 @@ it('shows the new organizer code form after a server restart and accepts it with
   await act(async () => container.querySelector('form').dispatchEvent(new globalThis.Event('submit', { bubbles: true, cancelable: true })));
   expect(container.textContent).toContain('Создать комнату');
   expect(container.querySelector('form')).toBeNull();
+});
+
+it.each([false, true])('keeps host audio stopped until recovery and a new source selection (display=%s)', async display => {
+  const harness = audioHarness();
+  vi.stubGlobal('AudioContext', harness.Audio);
+  const lobby = createLobby({ organizerCode: 'HOST' });
+  lobby.execute('other-panel', 'organizer:authorize', { code: 'HOST' });
+  lobby.execute('other-panel', 'room:create', {});
+  globalThis.sessionStorage.setItem('pomekhi.organizer', 'HOST');
+  const socket = recoveryTransport(() => lobby);
+  const soundButton = () => [...container.querySelectorAll('button')].find(button => button.textContent === 'Включить звук здесь');
+  try {
+    await act(async () => root.render(createElement(HostPage, { display })));
+    await act(async () => soundButton().click());
+    harness.finish();
+    expect(harness.nodes.size).toBeGreaterThan(1);
+    await act(async () => socket.disconnect());
+    expect(harness.nodes.size).toBe(1);
+    expect(lobby.execute('other-panel', 'organizer:audio', { enabled: true }).ok).toBe(true);
+
+    socket.holdNextReply = true;
+    await act(async () => socket.reconnect());
+    expect(socket.deliver).toBeTypeOf('function');
+    expect(harness.nodes.size).toBe(1);
+    expect(lobby.viewFor('other-panel').audioEnabled).toBe(true);
+
+    await act(async () => socket.deliver());
+    expect(harness.nodes.size).toBe(1);
+    expect(soundButton().disabled).toBe(false);
+    await act(async () => soundButton().click());
+    harness.finish();
+    expect(harness.nodes.size).toBeGreaterThan(1);
+    expect(lobby.viewFor('other-panel').audioEnabled).toBe(false);
+  } finally {
+    await act(async () => root.unmount());
+    root = createRoot(container);
+    lobby.dispose();
+  }
 });
 
 it('shows the join form after offline removal and rejoins with a new credential without reload', async () => {

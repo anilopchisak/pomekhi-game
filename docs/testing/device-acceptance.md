@@ -27,3 +27,7 @@ Restart the Windows server during a disposable search. The organizer must enter 
 With seven real participants, try the tutorial with infection and verify that its successes do not move candles. New finite parties default to seven normal rounds and a 28-step goal. Confirm synchronized results explicitly, read each newly revealed base rule aloud, and exercise one penalty and its correction. A fully captured group ends only its search. Verify victory or final-round defeat, then continue freeplay with the original outcome unchanged.
 
 Record actual successes, penalties and elapsed time including reading and breaks. The 36-minute default timer total includes the tutorial, but is not a party-duration estimate. The mathematical budget and automated perfect-score scenarios do not establish a suitable human win rate; use this rehearsal to assess the initial balance.
+
+## Atmosphere acceptance
+
+On Windows and macOS select one host/broadcast sound source, test phase signals and adjust the speaker in all allowed zones. Verify quiet conversations, clear return/pause cues and comfortable phone effects. On real iPhone/Android explicitly enable phone sound, test silent mode, block/unblock, hide/show and lose/recover connectivity; no skipped effect may replay. Test two tabs and opt-out. Reauthorize after a server restart and verify the global phone-effects switch is off. Fullscreen and an actual television connection are separate hardware checks.

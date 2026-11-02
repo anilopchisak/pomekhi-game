@@ -1,3 +1,5 @@
+import { CatalogEditor } from './CatalogEditor.js';
+import broadcast from './Broadcast.module.css';
 import { useCallback, useEffect, useRef, useState } from 'react';
 import QRCode from 'qrcode';
 import { dealCommand, describeError, useLobbyConnection } from '../../../shared/api/index.js';
@@ -12,11 +14,13 @@ import { SoundControls } from './SoundControls.js';
 const storageKey = 'pomekhi.organizer';
 function storedCode() { try { return sessionStorage.getItem(storageKey) ?? ''; } catch { return ''; } }
 
-export function HostPage() {
-  const { connection, generation, view, request, clockOffset, cue, resetView } = useLobbyConnection();
+export function HostPage({ display = false, editor = false }: { display?: boolean; editor?: boolean }) {
+  const { connection, generation, restored, view, request, requestCatalog, clockOffset, cue, resetView } = useLobbyConnection();
   const credential = useRef(storedCode());
   const operation = useRef(0);
   const prepareSound = useRef<(() => Promise<void>) | null>(null);
+  const [effects, setEffects] = useState(() => { try { return sessionStorage.getItem('pomekhi.visuals') !== 'off'; } catch { return true; } });
+  const [fullscreenMessage, setFullscreenMessage] = useState('');
   const [code, setCode] = useState(credential.current);
   const [busy, setBusy] = useState(false);
   const [error, setError] = useState('');
@@ -76,8 +80,9 @@ export function HostPage() {
     } else setPending(null);
   }
 
-  return <LobbyShell title="Пульт дома" connection={connection} error={error}>
-    {view?.kind === 'organizer' && <section aria-label="Сохранение партии">
+  return <div className={broadcast.frame} data-effects={effects} data-display={display}><LobbyShell wide={display} title={editor ? "Редактор карточек" : display ? "Эфир дома" : "Пульт дома"} connection={connection} error={error}>
+    {display && persistence && persistence.state !== 'ready' && <p role="alert">Сохранение недоступно. Игра остановлена; откройте пульт для восстановления.</p>}
+    {!display && view?.kind === 'organizer' && <section aria-label="Сохранение партии">
       <h3>Сохранение партии</h3>
       <p role="status">{persistence?.mode === 'disk' ? persistence.state === 'ready' ? 'Автосохранение включено.' : 'Ошибка сохранения. Продвижение игры остановлено.' : 'Тестовый режим: партия хранится только в памяти.'}</p>
       {persistence?.recovered && <p>Партия восстановлена. {room?.game.paused && room.game.pauseReason === 'server_restarted' ? 'Начатый раунд на паузе; продолжите его вручную после проверки участников.' : 'Карточки и итоги сохранены.'}</p>}
@@ -85,7 +90,7 @@ export function HostPage() {
         <p role="alert">{persistence.state === 'load_error' ? 'Не удалось загрузить сохранение. Файл не заменён. Проверьте доступ к диску и повторите загрузку.' : 'Изменение не подтверждено. Проверьте текущее состояние после восстановления записи.'}</p>
         <button disabled={busy || connection !== 'online'} onClick={() => void run('storage:retry', {})}>Повторить загрузку и запись</button>
         <button data-danger disabled={busy || connection !== 'online'} onClick={() => {
-          if (window.confirm('Сбросить сохранённую партию? Участники и карточки будут удалены. Исходный файл останется на диске для диагностики.')) void run('storage:reset', { confirm: true });
+          if (window.confirm('Сбросить сохранённую партию? Участники и карточки будут удалены; пользовательский банк вернётся к стандартным 90 карточкам. Исходный файл останется на диске для диагностики.')) void run('storage:reset', { confirm: true });
         }}>Сбросить сохранение</button>
       </>}
     </section>}
@@ -95,11 +100,17 @@ export function HostPage() {
       <p>Код находится в окне запуска программы на ноутбуке. Участникам нужен только код комнаты.</p>
       <label>Код организатора<input type="password" autoComplete="off" value={code} maxLength={12} onChange={event => setCode(event.target.value)} required /></label>
       <button disabled={busy || connection !== 'online'}>{busy ? 'Проверяем…' : 'Войти'}</button>
-    </form> : !room ? <section>
-      <p>Соберите всех у экрана. Создайте комнату и пригласите участников с телефонов.</p>
-      <button disabled={disabled} onClick={() => void run('room:create', {})}>Создать комнату</button>
+    </form> : editor ? <CatalogEditor request={requestCatalog} disabled={disabled || !restored} editable={!room || ['lobby', 'between_rounds', 'finished'].includes(room.game.phase)} generation={generation} /> : !room ? <section>
+      <p>{display ? 'Ожидаем комнату. Создайте её с пульта организатора.' : 'Соберите всех у экрана. Создайте комнату и пригласите участников с телефонов.'}</p>
+      {display ? <a href="/?screen=host">Открыть пульт</a> : <button disabled={disabled} onClick={() => void run('room:create', {})}>Создать комнату</button>}
+      {!display && <a href="/?screen=editor" target="_blank" rel="opener">Редактор карточек</a>}
     </section> : <>
+      <div className={display ? broadcast.display : undefined}>
+      <p key={`${room.game.phase}:${room.game.paused}`} className={broadcast.banner}>{room.game.paused ? 'ЗАПИСЬ ПРИОСТАНОВЛЕНА' : ({ lobby: 'ОЖИДАНИЕ СИГНАЛА', reading: 'ЛИЧНЫЕ ЗАПИСИ ПОЛУЧЕНЫ', placement: 'ЗАЙМИТЕ СВОИ МЕСТА', search: 'ДОМ СЛУШАЕТ', return: 'ВОЗВРАЩАЙТЕСЬ НА БАЗУ', between_rounds: 'СВЕРЬТЕ ПОКАЗАНИЯ', finished: 'ЗАПИСЬ ЗАВЕРШЕНА' }[room.game.phase])}</p>
       <RoundStatus game={room.game} clockOffset={clockOffset} connection={connection} />
+      </div>
+      {!display && <>
+      <a href="/?screen=display" target="_blank" rel="opener">Открыть эфир</a> · <a href="/?screen=editor" target="_blank" rel="opener">Редактор карточек</a>
       <section>
         <h3>Комната <code>{room.code}</code></h3>
         <form onSubmit={event => {
@@ -125,12 +136,24 @@ export function HostPage() {
       <RecoveryControls room={room} review={view.review ?? []} disabled={disabled} run={run} />
       <DealControls room={room} disabled={disabled || Boolean(waitingForSync) || room.game.settings.ritualEnabled && room.game.results.at(-1)?.status === 'provisional'} run={run} />
       <GameControls key={room.id} room={room} disabled={disabled} run={run} />
-      <SoundControls enabled={view.audioEnabled} disabled={disabled} cue={cue} prepareRef={prepareSound} gameVersion={room.game.version} clockOffset={clockOffset} claim={async enabled => {
+      </>}
+      <section aria-label="Атмосфера">
+        <h3>Атмосфера</h3>
+        <label><input type="checkbox" checked={effects} onChange={e => { setEffects(e.target.checked); try { sessionStorage.setItem('pomekhi.visuals', e.target.checked ? 'on' : 'off'); } catch { /* Visual effects still work. */ } }} /> Помехи старого телевизора</label>
+        {!display && <label><input type="checkbox" disabled={disabled} checked={room.phoneScaresEnabled} onChange={e => void run('organizer:atmosphere', { roomId: room.id, enabled: e.target.checked })} /> Редкие эффекты на телефонах</label>}
+        {display && <><button onClick={() => {
+          if (document.fullscreenElement) void document.exitFullscreen().catch(() => setFullscreenMessage('Используйте обычное окно браузера.'));
+          else if (document.documentElement.requestFullscreen) void document.documentElement.requestFullscreen().catch(() => setFullscreenMessage('Полноэкранный режим недоступен; эфир работает в окне.'));
+          else setFullscreenMessage('Полноэкранный режим недоступен; эфир работает в окне.');
+        }}>Полноэкранный режим</button><a href="/?screen=host">Открыть пульт</a>{fullscreenMessage && <p role="status">{fullscreenMessage}</p>}</>}
+      </section>
+      <SoundControls game={room.game} online={connection === 'online' && restored && persistence?.state !== 'write_error' && persistence?.state !== 'load_error'} enabled={view.audioEnabled} disabled={disabled} cue={cue} prepareRef={prepareSound} gameVersion={room.game.version} clockOffset={clockOffset} claim={async enabled => {
         const result = await request('organizer:audio', { enabled });
         if (!result.ok) setError(describeError(result.error));
+        if (result.ok && display && enabled) window.scrollTo(0, 0);
         return result.ok;
       }} />
-      <section>
+      {!display && <section>
         <h3>Участники: {room.players.length} / {room.capacity}</h3>
         <p>Организатор тоже входит с телефона. Этот экран не занимает место.</p>
         {room.players.length ? <ul>{room.players.map(player => <li key={player.id}>
@@ -149,7 +172,7 @@ export function HostPage() {
         <button data-danger disabled={disabled} onClick={() => {
           if (window.confirm('Закрыть комнату? Все участники выйдут, прежнее приглашение перестанет действовать.')) void run('room:close', { roomId: room.id });
         }}>Закрыть комнату</button>
-      </section>
+      </section>}
     </>}
-  </LobbyShell>;
+  </LobbyShell></div>;
 }
