@@ -12,13 +12,13 @@ GameSettings.infectionMode defaults to auto and remains editable before starts. 
 
 Capture and release require unpaused search. Original exorcists can mark/unmark missions during unpaused search, return, or a provisional result period. Any effective capture invalidates their mission credit, even if completed earlier; later release does not restore credit. Undoing that capture can restore eligibility and the earlier mission flag.
 
-After an action, game starts the full return phase if no active exorcist or no active possessed group remains. Resume reevaluates the same condition after a departure. Undo never reopens a finished search. On pause, only bookkeeping undo is allowed; new captures, releases and mission reports are blocked.
+After an action, game starts the full return phase if no active exorcist or no active possessed group remains. Room leave/removal reevaluates that condition immediately after updating the ledger and active roster. A paused search stays paused until manual resume, which performs the same completion check. Undo never reopens a finished search. On pause, only bookkeeping undo is allowed; new captures, releases and mission reports are blocked.
 
 ## Dependency-aware undo
 
 The round-local ledger records infection, release, mission and irreversible departure events. Each event has an ID and touched player/group keys. Rebuild occurs once per mutation; personal projections read detached current state. An infection touches its sender, target and group; a release touches the group and all its members. A departure touches the player and its group.
 
-A player can undo its latest non-undone gameplay event only when no later effective event touches the same keys. Independent groups do not block undo. Related chains or later group release block it; undoing those dependent events first can make the earlier event reversible. There is no cascading rollback or organizer correction interface. The client sends the expected action ID, while server authorization determines the actor. Undo itself is deduplicated by the existing request journal.
+A player can undo its latest non-undone gameplay event only when no later effective event touches the same keys. Independent groups do not block undo. Related chains or later group release block it; undoing those dependent events first can make the earlier event reversible. There is no cascading player rollback. The post-return organizer review can explicitly accept, reject and reorder inbox entries through [reconciliation](offline-play.md). The client sends the expected action ID, while server authorization determines the actor. Undo itself is deduplicated by the existing request journal.
 
 Reversing capture restores that player's original card and mission eligibility; the presentation key changes to close the card. Reversing release removes the group's rescue and restores its members' game state, while return/break instructions continue to take precedence over play state. Finalized and aborted attempts reject further edits. Departed identities cannot issue commands; their ledger events cannot be undone.
 
@@ -26,11 +26,11 @@ Reversing capture restores that player's original card and mission eligibility; 
 
 At normal return completion game records a provisional RoundResult. It includes original group/exorcist denominators, rescued group count, valid mission count, distinct captured players and active milliseconds. Active time includes placement/search/return, excludes reading, breaks and pauses, and freezes at the last healthy check on a long clock gap.
 
-Mission reports and permitted undos update a provisional row. A successful next overall deal seals the previous row atomically after validating the new deal. Failed deals leave it editable. Manual party finish or explicit results:finalize also seals it. Automatic finite-party completion leaves its last row provisional, so base-story missions can still be reported. Extend alone does not seal; the next deal does. Final rows are immutable.
+Mission reports and permitted undos update a provisional row. A successful next overall deal seals the previous row atomically after validating the new deal. Failed deals leave it editable. Manual party finish or explicit results:finalize also seals it. Automatic finite-party completion leaves its last row provisional, so base-story missions can still be reported. Extend alone does not seal; the next deal does. Final rows are immutable. The [synchronization barrier](offline-play.md) blocks sealing and new deals until all frozen participants confirm or the organizer explicitly closes waiting.
 
 Aborted attempts are retained as aborted rows, with no contribution to team totals or completed-role history. Result UI excludes them from scored denominators and active-time totals. Attempt IDs remain distinct even when the next attempt uses the same ordinal.
 
-Departure retains frozen denominators, prior captures, mission flags and releases. The existing active-departure pause remains. A group survives its original possessed player's departure when captured members remain; they can spread or release that group. An empty unresolved group yields no rescue. Connection loss alone is presence-only and preserves all game state.
+Departure retains frozen denominators, prior captures, mission flags and releases. Player departure, removal and round-only withdrawal do not pause. A group survives its original possessed player's departure when captured members remain; they can spread or release that group. An empty unresolved group yields no rescue. Connection loss alone is presence-only and preserves all game state.
 
 ## Protocol, privacy and recovery
 
@@ -38,7 +38,7 @@ Departure retains frozen denominators, prior captures, mission flags and release
 
 Public snapshots contain no current-round groups, effective statuses, action ledger, private cards or progress counters during placement, search or return. Only completed/aborted result rows become public. Prior final rows remain visible during subsequent rounds. The organizer has the same public result projection, not private player controls. Public roster names and original opaque assignment metadata do not reveal eligible capture targets: phones list all other current-round participants, and the server rejects ineligible choices generically.
 
-A phone's PersonalPlay contains its own status, effective card, card presentation key, mission eligibility/flag and latest undo identity/availability. It contains no other group's cards or member roles. Reload/reconnect restores this full state through the existing bearer key; reveal remains local and starts closed. Browser storage retains credentials only. Multiple tabs share server state; commands are never automatically retried.
+A phone's PersonalPlay contains its own status, effective card, card presentation key, mission eligibility/flag and latest undo identity/availability. It contains no other group's cards or member roles. Reload/reconnect restores this full state through the existing bearer key; reveal remains local and starts closed. Browser storage retains credentials plus the own authorized view and journal in IndexedDB. Multiple tabs share durable sequence allocation. Stable journal events are automatically resent after identity recovery; organizer controls retain manual retry.
 
 ## Consumers and verification
 

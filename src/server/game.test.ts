@@ -8,10 +8,11 @@ function setup(roundLimit: number | null = 5) {
   const game = createGame({ generateId: () => `id-${++id}`, randomIndex: () => 0, clock: timer.clock, onChange });
   const players = Array.from({ length: 7 }, (_, i) => ({ id: `p${i}`, online: true }));
   game.configure({ ...game.publicState().settings, tutorialEnabled: false, roundLimit, placementSeconds: 2, searchSeconds: 3, returnSeconds: 2 , infectionMode: 'off'});
-  function deal() { expect(game.deal(players.map(player => player.id), 3, false)).toBeUndefined(); }
+  function settle() { const s = game.publicState(); if (s.synchronization) for (const player of players) expect(game.completeSync(player.id, s.roundId!, s.synchronization.revision)).toBeUndefined(); }
+  function deal() { settle(); expect(game.deal(players.map(player => player.id), 3, false)).toBeUndefined(); }
   function start() { expect(game.start(players, true)).toBeUndefined(); }
   deal();
-  return { game, players, ...timer, onChange, deal, start };
+  return { game, players, ...timer, onChange, deal, start, settle };
 }
 
 it('does not start from readiness; requires composition, replacements and explicit warning confirmation', () => {
@@ -76,7 +77,7 @@ it('finishes a finite party, extends it by one, and supports a manually finished
   finite.deal(); finite.start(); finite.advance(7000); expect(finite.game.publicState().phase).toBe('finished');
   const endless = setup(null); endless.start(); endless.advance(7000);
   expect(endless.game.publicState().phase).toBe('between_rounds');
-  endless.game.finishParty(); expect(endless.game.publicState().phase).toBe('finished');
+  endless.settle(); endless.game.finishParty(); expect(endless.game.publicState().phase).toBe('finished');
   expect(endless.game.extend()).toBe('INVALID_PHASE');
 });
 
@@ -91,14 +92,17 @@ it('locks party length after the first start but allows duration changes before 
   expect(game.configure({ ...settings, returnSeconds: 3601 })).toBe('INVALID_INPUT');
 });
 
-it('assigns reading newcomers, waits timed newcomers, pauses on departure and permits explicit reduced-roster continuation', () => {
+it('assigns reading newcomers, waits timed newcomers, continues on departure and still supports organizer pause with a reduced roster', () => {
   const { game, players, start } = setup();
   game.add('late-reading'); expect(game.personal('late-reading')).not.toBeNull(); game.remove('late-reading');
   start(); game.add('late-running'); expect(game.personal('late-running')).toBeNull();
   game.remove(players[0].id);
-  expect(game.publicState()).toMatchObject({ paused: true, pauseReason: 'participant_left', rosterChanged: true });
+  expect(game.publicState()).toMatchObject({ paused: false, pauseReason: null, rosterChanged: true });
+  expect(game.pause()).toBeUndefined();
   expect(game.resume(false)).toBe('RESUME_WARNING'); expect(game.resume(true)).toBeUndefined();
   for (const player of players.slice(1)) game.remove(player.id);
+  expect(game.publicState().paused).toBe(false);
+  game.pause();
   expect(game.resume(true)).toBe('INVALID_COMPOSITION');
   expect(game.abort()).toBeUndefined();
 });
@@ -114,6 +118,26 @@ it('locks card and deal mutations throughout active phases and pauses', () => {
     expect(game.cancelDeal()).toBe('INVALID_PHASE');
   }
   game.resume(false); advance(7000); expect(game.change('p0', card.id, 'ready', false)).toBe('INVALID_PHASE');
+});
+
+it.each(['possessed', 'exorcist'] as const)('starts return immediately when the last active %s leaves the room', role => {
+  const { game, players, start, advance } = setup(); start(); advance(2000);
+  const departing = players.filter(player => game.personal(player.id)!.card.role === role);
+  for (const player of departing.slice(0, -1)) game.remove(player.id);
+  expect(game.publicState()).toMatchObject({ phase: 'search', paused: false });
+  game.remove(departing.at(-1)!.id);
+  expect(game.publicState()).toMatchObject({ phase: 'return', paused: false, remainingMs: 2000, completedRounds: 0 });
+  advance(2000);
+  expect(game.publicState()).toMatchObject({ phase: 'between_rounds', completedRounds: 1 });
+});
+
+it('keeps a search pause after a side departs and starts return only on manual resume', () => {
+  const { game, players, start, advance } = setup(); start(); advance(2000);
+  expect(game.pause()).toBeUndefined();
+  for (const player of players.filter(player => game.personal(player.id)!.card.role === 'possessed')) game.remove(player.id);
+  expect(game.publicState()).toMatchObject({ phase: 'search', paused: true, remainingMs: 3000 });
+  expect(game.resume(true)).toBeUndefined();
+  expect(game.publicState()).toMatchObject({ phase: 'return', paused: false, remainingMs: 2000 });
 });
 
 describe.each([false, true])('clock suspension with wall-only advancement = %s', wallOnly => {
@@ -142,12 +166,12 @@ it('uses only completed possessed history for fairness, leaving canceled preview
 });
 
 it('keeps a provisional result editable after a failed next deal, then seals it on a successful deal', () => {
-  const { game, players, start, advance } = setup(); start(); advance(7000);
+  const { game, players, start, advance, settle } = setup(); start(); advance(7000); settle();
   const exorcist = players.find(p => game.personal(p.id)!.card.role === 'exorcist')!.id;
   expect(game.deal(['too-few'], 1, false)).toBe('INVALID_COMPOSITION');
   expect(game.playAction(exorcist, 'mission', undefined, true)).toBeUndefined();
   expect(game.publicState().results[0]).toMatchObject({ status: 'provisional', missions: 1 });
-  expect(game.deal(players.map(p => p.id), 3, false)).toBeUndefined();
+  settle(); expect(game.deal(players.map(p => p.id), 3, false)).toBeUndefined();
   expect(game.publicState().results[0]).toMatchObject({ status: 'final', missions: 1 });
 });
 it('keeps infection off by default and includes only actual timed activity, excluding a pause', () => {
@@ -166,4 +190,12 @@ it('records aborted attempts separately and never permits their mission or undo 
   game.abort(); expect(game.publicState().results[0].status).toBe('aborted');
   expect(game.playAction(root, 'undo', actionId)).toBe('RESULTS_FINAL');
   expect(game.publicState().completedRounds).toBe(0);
+});
+
+it('waits for every frozen participant even if none contacts the server during the round', () => {
+  const { game, start, advance, players } = setup(); start(); advance(7000);
+  expect(game.publicState().synchronization!.waitingPlayerIds).toEqual(players.map(p => p.id));
+  expect(game.finalize()).toBe('SYNC_PENDING');
+  expect(game.deal(players.map(p => p.id), 3, false)).toBe('SYNC_PENDING');
+  expect(game.closeSync()).toBeUndefined(); expect(game.finalize()).toBeUndefined();
 });

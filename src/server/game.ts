@@ -3,6 +3,9 @@ import type { Difficulty, GameCue, GamePhase, GameSettings, GameSnapshot, LobbyE
 import { createDealing } from './dealing.js';
 import { createSearch } from './search.js';
 import type { SavedDealing } from './dealing.js';
+import { createRoundSync } from './round-sync.js';
+import type { SavedRoundSync } from './round-sync.js';
+import type { OfflineEvent, Venue } from '../shared/protocol.js';
 import type { SavedSearch } from './search.js';
 
 export interface GameClock {
@@ -15,6 +18,7 @@ export const defaultClock: GameClock = {
   schedule: (callback, delay) => { const timer = setTimeout(callback, delay); return () => clearTimeout(timer); },
 };
 export interface SavedGame {
+  venue?: Venue; roundSync?: SavedRoundSync | null; playerNames?: [string, string][];
   tutorialCompleted: boolean; progressionRounds: number; roundPlan: RoundPlan | null;
   dealing: SavedDealing; settings: GameSettings; phase: GamePhase; waitingPhase: 'lobby' | 'between_rounds'; version: number;
   roundId: string | null; completedRounds: number; started: boolean; paused: boolean; pauseReason: PauseReason | null;
@@ -51,6 +55,9 @@ export function createGame({ generateId, randomIndex, clock = defaultClock, onCh
 }) {
   const dealing = createDealing({ generateId, randomIndex });
   let settings: GameSettings = { roundLimit: 5, placementSeconds: 45, searchSeconds: 180, returnSeconds: 45, tutorialEnabled: true, initialDifficulty: 1, maximumDifficulty: 3, infectionMode: 'auto' };
+  let playerNames = new Map<string, string>();
+  let venue: Venue = { base: 'База', zones: [] };
+  let roundSync: ReturnType<typeof createRoundSync> | undefined;
   let phase: GamePhase = 'lobby';
   let waitingPhase: 'lobby' | 'between_rounds' = 'lobby';
   let version = 0;
@@ -80,7 +87,7 @@ export function createGame({ generateId, randomIndex, clock = defaultClock, onCh
     const last = results.at(-1);
     if (search && last?.roundId === roundId && last.status === 'provisional') Object.assign(last, search.result(last.number, last.status, last.activeMs));
   }
-  function sealResult() { updateResult(); const last = results.at(-1); if (last?.status === 'provisional') last.status = 'final'; search?.seal(); }
+  function sealResult() { updateResult(); const last = results.at(-1); if (last?.status === 'provisional') last.status = 'final'; search?.seal(); roundSync?.seal(); }
   function finishSearchIfNeeded() { if (phase === 'search' && !paused && search && !search.canSearch()) { enterTimed('return'); bump('phase'); } }
   let cancelTimer: (() => void) | undefined;
   let timerGeneration = 0;
@@ -149,8 +156,10 @@ export function createGame({ generateId, randomIndex, clock = defaultClock, onCh
   }
   function publicState(): GameSnapshot {
     updateResult();
+    const sync = roundSync?.publicState();
     return {
       phase, version, roundId, roundNumber: (roundPlan ?? nextPlan()).number,
+      venue: structuredClone(venue), synchronization: sync ? { ...sync, waitingPlayers: sync.waitingPlayerIds.map(id => ({ id, name: playerNames.get(id) ?? id })) } : null,
       tutorialCompleted, roundPlan: { ...(roundPlan ?? nextPlan()) },
       completedRounds, settings: { ...settings }, started, paused, pauseReason, deadline, remainingMs,
       results: structuredClone(results), serverNow: clock.now(), activePlayerIds: [...activePlayerIds], rosterChanged, lastRoundAborted,
@@ -169,10 +178,11 @@ export function createGame({ generateId, randomIndex, clock = defaultClock, onCh
   }
   function deal(players: string[], count: number, shuffle: boolean): LobbyError | undefined {
     if (shuffle ? phase !== 'reading' : phase !== 'lobby' && phase !== 'between_rounds') return 'INVALID_PHASE';
+    if (!shuffle && roundSync && !roundSync.ready()) return 'SYNC_PENDING';
     const plan = phase === 'reading' ? roundPlan! : nextPlan();
     const error = dealing.deal(players, count, history, plan.difficulty);
     if (error) return error;
-    if (phase !== 'reading') { sealResult(); search = undefined; }
+    if (phase !== 'reading') { sealResult(); search = undefined; roundSync = undefined; }
     roundPlan = { ...plan };
     if (phase !== 'reading') waitingPhase = phase as 'lobby' | 'between_rounds';
     phase = 'reading'; activePlayerIds = []; roundId = null; rosterChanged = false; lastRoundAborted = false;
@@ -182,16 +192,18 @@ export function createGame({ generateId, randomIndex, clock = defaultClock, onCh
     if (phase !== 'reading') return 'INVALID_PHASE';
     dealing.cancel(); roundPlan = null; phase = waitingPhase; bump();
   }
-  function start(players: { id: string; online: boolean }[], confirmWarnings: boolean): LobbyError | undefined {
+  function start(players: { id: string; online: boolean; name?: string }[], confirmWarnings: boolean): LobbyError | undefined {
     if (phase !== 'reading') return 'INVALID_PHASE';
     const state = dealing.publicState();
     if (!state.compositionValid || state.assignments.length !== players.length) return 'INVALID_COMPOSITION';
     if (state.assignments.some(item => item.replacementRequested)) return 'REPLACEMENT_PENDING';
     if (!confirmWarnings && (state.assignments.some(item => !item.ready) || players.some(item => !item.online))) return 'START_WARNING';
+    playerNames = new Map(players.map(item => [item.id, item.name ?? item.id]));
     activePlayerIds = players.map(item => item.id);
     originalPossessed = activePlayerIds.filter(id => dealing.personal(id)?.card.role === 'possessed');
     rosterChanged = false; lastRoundAborted = false; started = true; roundId = generateId();
     search = createSearch(roundId, new Map(activePlayerIds.map(id => [id, dealing.personal(id)!])), generateId);
+    roundSync = undefined; ensureSync();
     activeMs = 0; runStarted = null;
     enterTimed('placement'); bump('start');
   }
@@ -209,12 +221,13 @@ export function createGame({ generateId, randomIndex, clock = defaultClock, onCh
   }
   function abort(): LobbyError | undefined {
     if (!isTimedPhase(phase)) return 'INVALID_PHASE';
-    account(); results.push({ ...search!.result(roundPlan!.number, 'aborted', activeMs), ...roundPlan! }); search!.seal();
+    account(); results.push({ ...search!.result(roundPlan!.number, 'aborted', activeMs), ...roundPlan! }); search!.seal(); roundSync?.seal();
     clearTimer(); phase = 'between_rounds'; lastRoundAborted = true;
     paused = false; pauseReason = null; deadline = null; remainingMs = null; bump('abort');
   }
   function finishParty(): LobbyError | undefined {
     if (phase !== 'between_rounds') return 'INVALID_PHASE';
+    if (roundSync && !roundSync.ready()) return 'SYNC_PENDING';
     sealResult(); phase = 'finished'; bump('finish');
   }
   function extend(): LobbyError | undefined {
@@ -223,13 +236,13 @@ export function createGame({ generateId, randomIndex, clock = defaultClock, onCh
   }
   function add(playerId: string) { if (phase === 'reading') dealing.add(playerId); }
   function remove(playerId: string) {
-    search?.depart(playerId);
+    if (roundSync) { roundSync.legacy(playerId, { kind: 'withdraw' }); search = roundSync.current(); } else search?.depart(playerId);
     dealing.remove(playerId);
     history.delete(playerId);
     originalPossessed = originalPossessed.filter(id => id !== playerId);
     if (isTimedPhase(phase) && activePlayerIds.includes(playerId)) {
       activePlayerIds = activePlayerIds.filter(id => id !== playerId); rosterChanged = true;
-      if (paused) bump(); else pause('participant_left');
+      bump(); finishSearchIfNeeded();
     }
   }
   function change(...args: Parameters<typeof dealing.change>): LobbyError | undefined {
@@ -240,13 +253,61 @@ export function createGame({ generateId, randomIndex, clock = defaultClock, onCh
     if (lastRoundAborted || results.at(-1)?.roundId === roundId && results.at(-1)?.status === 'final') return 'RESULTS_FINAL';
     if (action !== 'undo' && (paused || action !== 'mission' && phase !== 'search')) return 'INVALID_PHASE';
     if (action === 'infect' && !roundPlan!.infectionEnabled) return 'ACTION_UNAVAILABLE';
-    const error = action === 'undo' ? search.undo(playerId, target!) : search.act(playerId, action, target, completed);
+    const intent = action === 'infect' ? { kind: action, targetId: target! } as const : action === 'undo' ? { kind: action, actionId: target! } as const : action === 'mission' ? { kind: action, completed: completed! } as const : { kind: action } as const;
+    const error = roundSync ? roundSync.legacy(playerId, intent) : action === 'undo' ? search.undo(playerId, target!) : search.act(playerId, action, target, completed);
+    if (roundSync) search = roundSync.current();
     if (error) return error;
     bump(); updateResult(); finishSearchIfNeeded();
   }
   function finalize(): LobbyError | undefined {
     if (!['between_rounds', 'finished'].includes(phase) || !results.length) return 'INVALID_PHASE';
+    if (roundSync && !roundSync.ready()) return 'SYNC_PENDING';
     sealResult(); bump();
+  }
+  function ensureSync() {
+    if (!search) return;
+    roundSync ??= createRoundSync({ base: search.exportState(), entries: [], players: search.exportState().roster.map(([id]) => id), completed: [], closed: false, revision: 0 }, generateId);
+  }
+  function syncEvents(actor: string, expectedRound: string, events: OfflineEvent[]): LobbyError | undefined {
+    if (!search || roundId !== expectedRound) return 'STALE_GAME';
+    ensureSync();
+    const closed = lastRoundAborted || results.some(row => row.roundId === roundId && row.status === 'final');
+    if (closed) roundSync!.close();
+    if (events.some(e => (e.action.kind === 'infect' || e.action.kind === 'captured') && !roundPlan!.infectionEnabled)) return 'ACTION_UNAVAILABLE';
+    const error = roundSync!.ingest(actor, events, e => e.action.kind === 'withdraw' || e.action.kind === 'undo' ||
+      !paused && (e.action.kind === 'mission' ? ['search', 'return', 'between_rounds', 'finished'].includes(phase) : phase === 'search' && e.phase === 'search' && !e.paused));
+    search = roundSync!.current();
+    activePlayerIds = activePlayerIds.filter(id => search!.personal(id) !== null);
+    if (!error) { bump(); updateResult(); finishSearchIfNeeded(); }
+    return error;
+  }
+  function completeSync(actor: string, expectedRound: string, revision: number): LobbyError | undefined {
+    if (roundId !== expectedRound || !roundSync || isTimedPhase(phase)) return 'INVALID_PHASE';
+    const error = roundSync.complete(actor, revision); if (!error) bump(); return error;
+  }
+  function resolveSync(id: string, decision: 'accept' | 'reject', before?: string): LobbyError | undefined {
+    if (!roundSync || isTimedPhase(phase) || phase === 'reading') return 'INVALID_PHASE';
+    const error = roundSync.resolve(id, decision, before); search = roundSync.current(); if (!error) { bump(); updateResult(); } return error;
+  }
+  function closeSync(): LobbyError | undefined {
+    if (!roundSync || isTimedPhase(phase) || phase === 'reading') return 'INVALID_PHASE';
+    roundSync.close(); bump(); return;
+  }
+  function withdraw(actor: string): LobbyError | undefined {
+    if (!search || !isTimedPhase(phase)) return 'INVALID_PHASE';
+    ensureSync(); const error = roundSync!.legacy(actor, { kind: 'withdraw' }); search = roundSync!.current();
+    if (!error) { activePlayerIds = activePlayerIds.filter(id => id !== actor); bump(); finishSearchIfNeeded(); }
+    return error;
+  }
+  function configureVenue(next: unknown): LobbyError | undefined {
+    if (!['lobby', 'between_rounds'].includes(phase)) return 'INVALID_PHASE';
+    if (!next || typeof next !== 'object') return 'INVALID_INPUT';
+    const v = next as Venue;
+    const valid = (name: unknown) => typeof name === 'string' && name.trim().length > 0 && name.length <= 64 && !/\p{Cc}/u.test(name);
+    if (!valid(v.base) || !Array.isArray(v.zones) || v.zones.length > 12 || !v.zones.every(valid)) return 'INVALID_INPUT';
+    const names = [v.base, ...v.zones].map(n => n.trim());
+    if (new Set(names.map(n => n.toLocaleLowerCase('ru'))).size !== names.length) return 'INVALID_INPUT';
+    venue = { base: names[0], zones: names.slice(1) }; bump();
   }
   function personalPlay(playerId: string) { return search?.personal(playerId) ?? null; }
   function takeCue() { const result = cue; cue = undefined; return result; }
@@ -254,12 +315,15 @@ export function createGame({ generateId, randomIndex, clock = defaultClock, onCh
   function exportState(): SavedGame {
     updateResult();
     // lastNow/remainingMs are the last healthy clock checkpoint, including clock-gap protection.
-    return structuredClone({ tutorialCompleted, progressionRounds, roundPlan, dealing: dealing.exportState(), settings, phase, waitingPhase, version, roundId, completedRounds, started,
+    return structuredClone({ venue, playerNames: [...playerNames], roundSync: roundSync?.exportState() ?? null, tutorialCompleted, progressionRounds, roundPlan, dealing: dealing.exportState(), settings, phase, waitingPhase, version, roundId, completedRounds, started,
       paused, pauseReason, remainingMs, activePlayerIds, rosterChanged, lastRoundAborted, history: [...history], originalPossessed,
       search: search?.exportState() ?? null, results, activeMs: activeMs + (runStarted === null ? 0 : Math.max(0, lastNow - runStarted)) });
   }
   function restore(state: SavedGame, reason: PauseReason = 'server_restarted', bumpVersion = true) {
     clearTimer(); cue = undefined;
+    playerNames = new Map(state.playerNames ?? []);
+    venue = structuredClone(state.venue ?? { base: 'База', zones: [] });
+    roundSync = state.roundSync ? createRoundSync(state.roundSync, generateId) : undefined;
     tutorialCompleted = state.tutorialCompleted; progressionRounds = state.progressionRounds; roundPlan = structuredClone(state.roundPlan);
     dealing.restore(state.dealing, bumpVersion); settings = { ...state.settings }; phase = state.phase; waitingPhase = state.waitingPhase;
     version = state.version + Number(bumpVersion); roundId = state.roundId; completedRounds = state.completedRounds; started = state.started;
@@ -270,7 +334,10 @@ export function createGame({ generateId, randomIndex, clock = defaultClock, onCh
     activeMs = state.activeMs; runStarted = null; lastNow = clock.now(); lastWall = clock.wallNow();
     search = state.search ? createSearch(state.search.roundId, new Map(state.search.roster), generateId) : undefined;
     if (state.search) search!.restore(state.search, bumpVersion);
+    if (roundSync) search = roundSync.current();
+    else if (search && !search.exportState().finalized) ensureSync();
   }
   return { publicState, dealingState: dealing.publicState, personal: dealing.personal, configure, deal, cancelDeal,
+    configureVenue, syncEvents, completeSync, resolveSync, closeSync, withdraw, personalSync: (id: string) => roundSync?.personal(id) ?? null, review: () => (roundSync?.review() ?? []).map(entry => ({ ...entry, actorName: playerNames.get(entry.actor), targetName: playerNames.get('targetId' in entry.action ? entry.action.targetId : 'by' in entry.action ? entry.action.by : '') })),
     start, pause, resume, beginReturn, abort, finishParty, extend, add, remove, change, synchronize, takeCue, dispose, playAction, personalPlay, finalize, exportState, restore };
 }

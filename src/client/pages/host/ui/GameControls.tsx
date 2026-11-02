@@ -15,6 +15,8 @@ export function GameControls({ room, disabled, run }: {
   const progressionLocked = disabled || game.started || game.phase === 'reading';
   const dirty = JSON.stringify(draft) !== JSON.stringify(game.settings);
   const hasWarnings = room.players.some(player => !player.online) || room.dealing.assignments.some(item => !item.ready);
+  const synchronization = game.synchronization;
+  const pendingSync = synchronization && !synchronization.closed && (synchronization.conflicts > 0 || synchronization.waitingPlayerIds.length > 0);
   const pendingReplacement = room.dealing.assignments.some(item => item.replacementRequested);
   return <section aria-label="Управление раундом">
     <h3>Управление раундом</h3>
@@ -65,11 +67,11 @@ export function GameControls({ room, disabled, run }: {
         if (window.confirm('Отменить раунд без зачёта? Всем потребуется вернуться на базу.')) void run('round:abort', gameCommand(room));
       }}>Отменить раунд</button>
     </>}
-    {game.phase === 'between_rounds' && <button data-danger disabled={disabled} onClick={() => {
+    {game.phase === 'between_rounds' && <button data-danger disabled={disabled || Boolean(pendingSync)} onClick={() => {
       if (window.confirm('Завершить партию сейчас?')) void run('party:finish', gameCommand(room));
     }}>Завершить партию</button>}
     {game.phase === 'finished' && game.settings.roundLimit !== null && <button disabled={disabled} onClick={() => void run('party:extend', gameCommand(room))}>Добавить ещё раунд</button>}
-    {game.results.at(-1)?.status === 'provisional' && <button disabled={disabled} onClick={() => {
+    {game.results.at(-1)?.status === 'provisional' && <button disabled={disabled || Boolean(pendingSync)} onClick={() => {
       if (window.confirm('Зафиксировать результаты? Отметки миссий и отмена действий этого раунда станут недоступны.')) void run('results:finalize', gameCommand(room));
     }}>Зафиксировать результаты</button>}
     <button disabled={disabled} onClick={() => void run('lobby:sync', {})}>Обновить состояние</button>

@@ -6,6 +6,8 @@ const eslint = new ESLint({ cwd: fileURLToPath(new URL('../..', import.meta.url)
 
 describe('production import restrictions', () => {
   const cases = [
+    ['round inbox cannot import transport', 'src/server/round-sync.ts', "import './transport/socket.js';", true],
+    ['round inbox cannot read disk', 'src/server/round-sync.ts', "import 'node:fs/promises';", true],
     ['search cannot import transport', 'src/server/search.ts', "import './transport/socket.js';", true],
     ['game cannot import transport', 'src/server/game.ts', "import './transport/socket.js';", true],
     ['game cannot import runtime', 'src/server/game.ts', "export { createServerRuntime } from './runtime.js';", true],

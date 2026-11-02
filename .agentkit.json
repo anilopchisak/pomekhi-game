@@ -20,7 +20,9 @@
     "docs/design/dealing.md",
     "docs/design/rounds.md",
     "docs/design/search-actions.md",
-    "docs/design/session-persistence.md"
+    "docs/design/session-persistence.md",
+    "docs/design/offline-play.md",
+    "docs/testing/device-acceptance.md"
   ],
   "inputExclude": [
     "dist/**",
@@ -316,6 +318,29 @@
           "src/server/session-store.ts"
         ],
         "budget": 1500
+      },
+      {
+        "id": "round-inbox-query",
+        "operation": "query",
+        "query": "createRoundSync",
+        "expectedSources": [
+          "src/server/round-sync.ts"
+        ],
+        "budget": 1500
+      },
+      {
+        "id": "offline-phone-query",
+        "operation": "query",
+        "query": "useOfflinePlayer",
+        "expectedSources": [
+          "src/client/pages/player/model/useOfflinePlayer.ts"
+        ],
+        "budget": 1500
+      },
+      {
+        "id": "local-launch-source",
+        "operation": "source",
+        "value": "scripts/start-lan.mjs"
       }
     ],
     "contextRoots": [

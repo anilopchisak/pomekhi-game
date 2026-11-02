@@ -28,6 +28,7 @@ export function RoundStatus({ game, clockOffset, connection, role, playStatus, w
   if (game.paused) instruction = 'Прекратите действия и ждите в безопасном месте. Продолжение объявит ноутбук.';
   return <section className={styles.panel} aria-label="Состояние раунда">
     <p>{game.roundPlan.kind === 'tutorial' ? 'Обучение · перед основной партией' : `Раунд ${game.roundPlan.number} ${game.settings.roundLimit === null ? '· без ограничения' : `из ${game.settings.roundLimit}`}`} · завершено обычных: {game.completedRounds}</p>
+    {game.venue && <p>База: {game.venue.base}. Разрешённые зоны: {game.venue.zones.length ? game.venue.zones.join(', ') : 'уточните у организатора'}. Передвигайтесь шагом.</p>}
     <p>Уровень {game.roundPlan.difficulty} · {game.roundPlan.infectionEnabled ? 'заражение включено' : 'без заражения'}</p>
     {game.roundPlan.kind === 'tutorial' && ['lobby', 'reading'].includes(game.phase) && <aside aria-label="Правила обучения">
       <h4>Пробный раунд</h4>
@@ -38,7 +39,7 @@ export function RoundStatus({ game, clockOffset, connection, role, playStatus, w
     <div role="status"><h3>{game.paused ? `Пауза · ${labels[game.phase]}` : labels[game.phase]}</h3></div>
     {(game.deadline !== null || game.paused) && <>
       <div className={styles.timer} role="timer" aria-label="Осталось времени" aria-live="off">{seconds === null ? '—:—' : `${Math.floor(seconds / 60).toString().padStart(2, '0')}:${(seconds % 60).toString().padStart(2, '0')}`}</div>
-      {remaining === 0 && !game.paused && <p>Ожидаем подтверждения следующей фазы от сервера…</p>}
+      {remaining === 0 && !game.paused && <p>{connection !== 'online' && game.phase === 'search' ? 'Расчётное время поиска истекло. Вернитесь на базу и сверьтесь с общим экраном.' : 'Ожидаем подтверждения следующей фазы от сервера…'}</p>}
     </>}
     {game.paused && <p>{game.pauseReason && reasons[game.pauseReason]} Время сохранено.</p>}
     <p>{instruction}</p>

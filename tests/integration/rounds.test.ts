@@ -54,6 +54,29 @@ async function setup(tutorialEnabled = false) {
 }
 async function start(host: Client) { return value(await send(host, 'round:start', { ...base(await current(host)), confirmWarnings: true })); }
 
+it.each([
+  ['possessed', 'leave'], ['possessed', 'remove'], ['exorcist', 'leave'], ['exorcist', 'remove'],
+] as const)('publishes return after the last %s departs through %s', async (role, method) => {
+  const { host, phones, room } = await setup();
+  const departing: { phone: Client; playerId: string }[] = [];
+  for (const phone of phones) {
+    const own = value(await send(phone, 'lobby:sync', {}));
+    if (own.kind === 'player' && own.assignment?.card.role === role) departing.push({ phone, playerId: own.playerId });
+  }
+  await start(host);
+  const search = state(host, snapshot => snapshot.game.phase === 'search'); timer.advance(2000); await search;
+  const survivor = phones.find(phone => !departing.some(p => p.phone === phone))!;
+  for (const [index, player] of departing.entries()) {
+    const remaining = departing.length - index - 1;
+    if (method === 'leave') value(await send(player.phone, 'player:leave', { roomId: room.id }));
+    else value(await send(host, 'player:remove', { roomId: room.id, playerId: player.playerId }));
+    expect((await current(survivor)).game).toMatchObject({ phase: remaining ? 'search' : 'return', paused: false });
+  }
+  expect((await current(host)).game).toMatchObject({ phase: 'return', remainingMs: 2000, completedRounds: 0 });
+  const end = state(survivor, snapshot => snapshot.game.phase === 'between_rounds'); timer.advance(2000);
+  expect((await end).game).toMatchObject({ completedRounds: 1, results: [{ totalGroups: 3, totalMissions: 4 }] });
+});
+
 it('broadcasts timed transitions to seven clients without further commands and credits only completed rounds', async () => {
   const { host, phones } = await setup();
   expect(await send(host, 'round:start', { ...base(await current(host)), confirmWarnings: false })).toEqual({ ok: false, error: 'START_WARNING' });
@@ -69,6 +92,7 @@ it('broadcasts timed transitions to seven clients without further commands and c
   const resumed = roomOf(value(await send(host, 'round:start', startInput)));
   expect(resumed.game.completedRounds).toBe(1); expect(resumed.game.phase).toBe('between_rounds');
   expect(await send(host, 'round:start', { ...startInput, requestId: 'stale-start-command' })).toEqual({ ok: false, error: 'STALE_GAME' });
+  await complete(phones, host);
   value(await send(host, 'deal:create', { ...dealBase(await current(host)), possessedCount: 3 }));
   const expectedOrder = started.players.map(player => player.id).sort();
   for (const phone of phones) {
@@ -98,7 +122,7 @@ it('keeps phone disconnections separate from host loss, restores the same card a
   const search = state(phone, room => room.game.phase === 'search'); timer.advance(1200); await search;
 });
 
-it('waits newcomers, locks card actions, pauses an active departure and deals the next roster manually', async () => {
+it('waits newcomers, locks card actions, continues after an active departure and deals the next roster manually', async () => {
   const { host, phones, room } = await setup(); await start(host);
   const first = value(await send(phones[0], 'lobby:sync', {})); if (first.kind !== 'player' || !first.assignment) throw new Error('Missing card');
   const late = await connect(); const session = { roomCode: room.code, name: 'Late', resumeKey: 'a'.repeat(64) };
@@ -106,7 +130,8 @@ it('waits newcomers, locks card actions, pauses an active departure and deals th
   expect(await send(phones[0], 'card:request', { ...dealBase(await current(host)), assignmentId: first.assignment.id, requested: true })).toEqual({ ok: false, error: 'INVALID_PHASE' });
   expect(await send(host, 'deal:shuffle', { ...dealBase(await current(host)), possessedCount: 3 })).toEqual({ ok: false, error: 'INVALID_PHASE' });
   value(await send(phones[1], 'player:leave', { roomId: room.id }));
-  expect((await current(host)).game).toMatchObject({ paused: true, pauseReason: 'participant_left', activePlayerIds: expect.any(Array) });
+  expect((await current(host)).game).toMatchObject({ paused: false, pauseReason: null, activePlayerIds: expect.any(Array) });
+  value(await send(host, 'round:pause', base(await current(host))));
   expect(await send(host, 'round:resume', { ...base(await current(host)), confirmWarnings: false })).toEqual({ ok: false, error: 'RESUME_WARNING' });
   value(await send(host, 'round:resume', { ...base(await current(host)), confirmWarnings: true }));
   const search = state(host, room => room.game.phase === 'search'); timer.advance(2000); await search;
@@ -114,6 +139,7 @@ it('waits newcomers, locks card actions, pauses an active departure and deals th
   value(await send(host, 'round:return', base(await current(host))));
   const end = state(host, room => room.game.phase === 'between_rounds'); timer.advance(2000); await end;
   expect(value(await send(late, 'player:resume', session))).toMatchObject({ assignment: null });
+  value(await send(host, 'sync:close', { ...base(await current(host)), confirm: true }));
   value(await send(host, 'deal:create', { ...dealBase(await current(host)), possessedCount: 3 }));
   expect(value(await send(late, 'player:resume', session))).toMatchObject({ assignment: { ready: false } });
 });
@@ -187,6 +213,7 @@ it('runs chained infections, group rescue, late missions and final results witho
   const released = value(await send(roots[2].socket, 'lobby:sync', {})); if (released.kind !== 'player') throw new Error('Missing release');
   value(await action(roots[2].socket, 'play:undo', { actionId: released.play!.undo!.id }));
   expect((await current(host)).game).toMatchObject({ phase: 'between_rounds', results: [{ rescuedGroups: 2, missions: 1 }] });
+  await complete([...roots, ...exorcists].map(v => v.socket), host);
   value(await send(host, 'results:finalize', base(await current(host))));
   expect(await action(exorcists[2].socket, 'play:mission', { completed: false })).toEqual({ ok: false, error: 'RESULTS_FINAL' });
   expect((await current(host)).game.results[0].status).toBe('final');
@@ -251,7 +278,13 @@ it('runs tutorial and progression for seven independent phones with private card
     const expected = index === 2 ? 'finished' : 'between_rounds';
     const end = state(host, r => r.game.phase === expected); timer.advance(2000);
     expect((await end).game.completedRounds).toBe(index);
+    await complete(phones, host);
     if (!index) value(await send(host, 'game:configure', { ...base(await current(host)), settings: { ...(await current(host)).game.settings, infectionMode: 'auto' } }));
   }
   expect((await current(host)).game.results.map(r => r.kind)).toEqual(['tutorial', 'regular', 'regular']);
 });
+
+async function complete(phones: Client[], host: Client) {
+  const room = await current(host);
+  for (const phone of phones) value(await send(phone, 'play:complete', { roomId: room.id, roundId: room.game.roundId!, syncRevision: room.game.synchronization!.revision }));
+}

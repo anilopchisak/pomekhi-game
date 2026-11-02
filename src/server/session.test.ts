@@ -41,10 +41,14 @@ async function fixture(tutorialEnabled = false) {
     value(await send('host', 'organizer:authorize', { code: 'NEWCODEABCDE' }));
     for (let n = 1; n <= 7; n++) value(await send(`p${n}`, 'player:resume', { roomCode, resumeKey: key(n) }));
   }
-  const deal = async () => value(await send('host', 'deal:create', { ...dealCommand(), possessedCount: 3 }));
+  async function settle() {
+    const state = room().game;
+    if (state.synchronization) for (const phone of phones) value(await send(phone, 'play:complete', { roomId: room().id, roundId: state.roundId!, syncRevision: state.synchronization.revision }));
+  }
+  const deal = async () => { await settle(); return value(await send('host', 'deal:create', { ...dealCommand(), possessedCount: 3 })); };
   const start = async () => value(await send('host', 'round:start', { ...gameCommand(), confirmWarnings: true }));
   const advance = async (ms: number) => { while (ms > 0) { const step = Math.min(ms, 1000); time.advance(step); value(await send('host', 'lobby:sync', {})); ms -= step; } };
-  return { disk, time, room, send, gameCommand, dealCommand, playCommand, phones, deal, start, advance, restart, view: (id: string) => session.viewFor(id), close: () => session.close() };
+  return { disk, time, room, send, gameCommand, dealCommand, playCommand, phones, deal, settle, start, advance, restart, view: (id: string) => session.viewFor(id), close: () => session.close() };
 }
 
 it('restores full cards, readiness, pending requests and journal retries without using the bank', async () => {
@@ -115,7 +119,7 @@ it('keeps provisional/final results, role history, mission changes and break/fin
     value(await f.send('host', 'round:return', f.gameCommand())); await f.advance(45000);
     expect(f.room().game.phase).toBe('between_rounds'); const result = f.room().game.results;
     await f.restart(); expect(f.room().game.results).toEqual(result); expect(f.room().game.paused).toBe(false);
-    value(await f.send('host', 'party:finish', f.gameCommand()));
+    await f.settle(); value(await f.send('host', 'party:finish', f.gameCommand()));
     const final = f.room().game.results; expect(final[0].status).toBe('final');
     await f.restart(); expect(f.room().game).toMatchObject({ phase: 'finished', results: final });
     expect(f.disk.read().lobby.room!.game.history.some(([, count]) => count === 1)).toBe(true);

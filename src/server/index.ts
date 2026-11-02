@@ -1,3 +1,4 @@
+import { networkInterfaces } from 'node:os';
 import { fileURLToPath } from 'node:url';
 import { resolve } from 'node:path';
 import { existsSync } from 'node:fs';
@@ -44,6 +45,7 @@ async function main() {
     if (!stopping) {
       console.log(`Pomekhi foundation: ${address.origin}`);
       const panelOrigin = clientDirectory ? address.origin : 'http://localhost:5173';
+      if (config.host === '0.0.0.0' || config.host === '::') for (const entries of Object.values(networkInterfaces())) for (const entry of entries ?? []) if (!entry.internal && entry.family === 'IPv4') console.log(`Local player address: http://${entry.address}:${address.port}`);
       console.log(`Organizer panel: ${panelOrigin}/?screen=host`);
       console.log(`Organizer code (keep private): ${organizerCode}`);
       if (process.connected) process.send?.({ type: 'pomekhi:ready', port: address.port });

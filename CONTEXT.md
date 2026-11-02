@@ -35,6 +35,10 @@ Pomekhi is a cooperative horror party game. The organizer participates while sof
 | Final result | An immutable scored round outcome. |
 | Checkpoint | A complete private server snapshot committed before publication; timed phases checkpoint about once per second. |
 | Restart recovery | Loading the last checkpoint with fresh organizer authorization and active play paused; downtime is excluded. |
+| Round withdrawal | A confirmed opt-out from the current round that retains room membership, prior achievements and group continuity. |
+| Offline event | A durable own-phone action envelope with stable identity and local ordering, pending authoritative reconciliation. |
+| Reconciliation | Server replay and explicit organizer review of disputed actions before sealing a result. |
+| Synchronization barrier | Waiting for every frozen participant to confirm a drained journal, unless the organizer explicitly closes waiting. |
 | Resume key | A private bearer credential saved on a phone before joining; it recovers that participant, independently of name and socket ID. |
 
 See [product requirements](docs/product/README.md) for rules and implementation status. [The shared protocol](src/shared/protocol.ts) owns current HTTP/event payload shapes; domain terms alone do not create wire contracts.

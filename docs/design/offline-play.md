@@ -1,0 +1,43 @@
+# Offline participation and reconciliation
+
+Status: implemented. The server confirms game rules; a phone can retain its private view and record provisional actions while disconnected. Physical performance remains trust-based. [Product requirements](../product/README.md) own participation rules.
+
+## Owners and storage
+
+[createRoundSync](../../src/server/round-sync.ts) owns the round inbox, stable receipts, review decisions and completion barrier. It composes the real search ledger and receives identifiers as a dependency. [createGame](../../src/server/game.ts) owns phases, result updates, zones and frozen participation. Lobby authenticates each sender and validates wire input. The existing session queue commits inbox mutations before publication and acknowledgement.
+
+The [player store](../../src/client/pages/player/model/offline-store.ts) owns one origin-local IndexedDB database. Its read/modify/write transaction allocates a client ID, sequence and predecessor across tabs and commits before the UI shows a provisional effect. The record contains that identity's authorized projection, own effective card, action envelopes, receipts and limited undo snapshots. It contains no bank or other player's private card. BroadcastChannel refreshes other same-origin tabs after a local append. Reveal state remains transient and cards start closed after reload.
+
+[useOfflinePlayer](../../src/client/pages/player/model/useOfflinePlayer.ts) caches authorized projections, restores the saved screen, projects pending own actions, and drains batches of at most 24 after identity recovery. A storage failure is visible and prevents an offline action from appearing saved. If IndexedDB is unavailable, online legacy commands remain available; offline recording is explicitly unavailable. Confirmed removal, leave, closure or expired recovery clears the private cache. A new round replaces the cached card and clears old undo snapshots; event metadata retains processing outcomes.
+
+## Connection and shell
+
+The shared connection retains the last authorized screen across reconnect, restores identity before synchronization, rejects obsolete acknowledgements and offers a manual reconnect button. Socket.IO continues automatic retries. Only identity recovery and the stable player journal are automatically resent; organizer controls retain manual retry with their original request ID. A phone timer extrapolates the last server clock, labels disconnected state unconfirmed and never advances the authoritative phase. After an estimated search deadline it directs the player to base.
+
+The production build emits a service worker that caches the public HTML/JS/CSS shell. Socket.IO, API responses and private projections are excluded. Cache names include asset hashes and activation removes obsolete shell caches. A production HTTPS/localhost browser can reload offline after initial installation; the phone reports when preparation is confirmed. Development has no service worker. Ordinary LAN HTTP supports the already-open page and IndexedDB, but closing or reloading it offline requires returning to coverage. No local certificate installation is provided.
+
+[start:lan](../../scripts/start-lan.mjs) serves the production build on all IPv4 interfaces and prints detected local addresses. The host panel stays on loopback. Explicit local invitation mode accepts private/loopback IPv4 HTTP origins; public invitations retain HTTPS. Both reject credentials, paths, queries and fragments. A hotspot must permit phone-to-laptop traffic; discovery cannot determine client isolation, firewall permission or hotspot connection limits. Tuna remains the primary HTTPS option. Origins have independent sessions and queues; switching addresses is a deliberate pre-join choice, never an automatic failover.
+
+## Actions and ordering
+
+Offline envelopes contain a stable event ID, client ID, positive sequence, preceding local event ID, room/round identity, action and observed phase/pause. Estimated server time is contextual only and does not prove physical order. The inbox authenticates the actor from the connection, rejects changed replays and sequence collisions, and retains one receipt per event. Each round has a 12,000-entry ceiling, reported visibly instead of evicting deduplication evidence. Phone storage uses the same ceiling across its retained metadata.
+
+Release, infection, mission, undo and round withdrawal can be recorded offline. For a received infection, the participant selects the source and reads its phone physically; this creates a corroborating capture notice, not a second capture. Until reconciliation the phone shows a provisional captured status and conceals its old assignment. The full effective group card arrives from the server. A notice alone cannot infect someone on the server or supply another player's private card.
+
+The inbox replays through createSearch, retrying unresolved dependencies as other phones arrive. A corroborating notice is accepted only when the recorded source and recipient belong to the same group, including a source that subsequently withdrew. Competing groups, unresolved dependencies and late search actions become visible review entries. Normal unpaused search actions can apply immediately; late release/infection and actions observed outside search require review. Missions may be reported during unpaused search, return and the provisional result window. Undo references a specific own gameplay event and retains the existing dependency check; it never reopens search. Withdrawal is irreversible until a new deal.
+
+An organizer can review only after return. Its separate authorized projection contains action names, participant names, dependencies and receipts, never card content. The organizer can reject an accepted competing event, accept a disputed event, and place it before another event. Replay recomputes groups and provisional scores. An approval that still violates rules stays in review; accepting a decision does not bypass search invariants. There is no silent conflict discard or clock-based tie-break.
+
+## Participation and results
+
+At every round start the inbox freezes all participants, including offline phones, before any phone handshake. Leaving the round keeps the room seat and assignment but removes active participation until the next deal. Leaving/removal from the room revokes the key and assignment. Neither player departure nor phone disconnect pauses play. Prior missions, infections, rescues and denominators remain. Captured members continue after their original possessed member leaves. Organizer loss, laptop suspension and storage failure retain their conservative pauses.
+
+After return every frozen identity must confirm a drained local journal at the current inbox revision. New events and review decisions invalidate these confirmations. New deals, party finish and finalization reject SYNC_PENDING while phones or conflicts remain. A removed identity cannot authorize again, so its unresolved waiting slot requires the explicit organizer close action. Host closure warns that missing/disputed actions will not count, rejects unresolved entries and prevents late records from changing the score. New late records still receive a rejection receipt; records for an already replaced round get an explicit stale-round outcome on the phone.
+
+Finished search is never reopened by replay. Mission eligibility is recomputed from effective captures; capture removes credit, voluntary withdrawal does not. Aborted and final rows remain sealed. The existing fixed starting denominators and tutorial exclusions remain unchanged.
+
+## Durable recovery and verification
+
+Server schema version 3 adds venue, the private round inbox, completion confirmations, decisions and frozen review names. Version 1 upgrades through version 2; version 2 receives defaults and a baseline ledger without re-dealing cards or changing sealed results. Restored active rounds remain paused. Phone queues survive reload/restart on the same origin and browser. Deduplication survives a lost acknowledgement and server restart. Connections, sound ownership and stale cues remain transient.
+
+[Inbox tests](../../src/server/round-sync.test.ts), [game rules](../../src/server/game.test.ts) and [real seven-client recovery](../../tests/integration/offline.test.ts) cover reverse delivery, capture chains, group departure, conflicting groups, causal undo, review, completion barriers, saved receipts and immutable results. Browser acceptance must exercise real IndexedDB, offline reload and network restoration; DOM emulation alone cannot establish them. [Device acceptance](../testing/device-acceptance.md) records the remaining physical boundaries.

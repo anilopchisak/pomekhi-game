@@ -5,6 +5,7 @@ import { LobbyShell, RoundStatus } from '../../../shared/ui/index.js';
 import { invitationUrl } from '../invitation.js';
 import type { LobbyInputs, LobbyCommand } from '../../../../shared/protocol.js';
 import { DealControls } from './DealControls.js';
+import { RecoveryControls } from './RecoveryControls.js';
 import { GameControls } from './GameControls.js';
 import { SoundControls } from './SoundControls.js';
 
@@ -12,13 +13,14 @@ const storageKey = 'pomekhi.organizer';
 function storedCode() { try { return sessionStorage.getItem(storageKey) ?? ''; } catch { return ''; } }
 
 export function HostPage() {
-  const { connection, generation, view, request, clockOffset, cue } = useLobbyConnection();
+  const { connection, generation, view, request, clockOffset, cue, resetView } = useLobbyConnection();
   const credential = useRef(storedCode());
   const operation = useRef(0);
   const prepareSound = useRef<(() => Promise<void>) | null>(null);
   const [code, setCode] = useState(credential.current);
   const [busy, setBusy] = useState(false);
   const [error, setError] = useState('');
+  const [local, setLocal] = useState(false);
   const [address, setAddress] = useState('');
   const [publicAddress, setPublicAddress] = useState('');
   const [qr, setQr] = useState('');
@@ -27,7 +29,9 @@ export function HostPage() {
   const room = view?.kind === 'organizer' ? view.room : null;
   const persistence = view?.persistence;
   const disabled = busy || connection !== 'online' || persistence?.state !== undefined && persistence.state !== 'ready';
-  const joinUrl = room && publicAddress ? invitationUrl(publicAddress, room.code) : '';
+  const sync = room?.game.synchronization;
+  const waitingForSync = room?.game.phase === 'between_rounds' && sync && !sync.closed && (sync.conflicts > 0 || sync.waitingPlayerIds.length > 0);
+  const joinUrl = room && publicAddress ? invitationUrl(publicAddress, room.code, local) : '';
 
   const authorize = useCallback(async (value: string) => {
     try { sessionStorage.setItem(storageKey, value); }
@@ -42,10 +46,11 @@ export function HostPage() {
       setError(describeError(result.error));
       if (result.error === 'INVALID_ORGANIZER_CODE' || result.error === 'INVALID_INPUT') {
         credential.current = '';
+        resetView(); setCode(''); setPending(null);
         try { sessionStorage.removeItem(storageKey); } catch { /* The credential is already cleared in memory. */ }
       }
     }
-  }, [request]);
+  }, [request, resetView]);
 
   useEffect(() => { if (generation && credential.current) void authorize(credential.current); }, [generation, authorize]);
   useEffect(() => {
@@ -99,10 +104,12 @@ export function HostPage() {
         <h3>Комната <code>{room.code}</code></h3>
         <form onSubmit={event => {
           event.preventDefault();
-          try { invitationUrl(address, room.code); setPublicAddress(address.trim()); setError(''); }
-          catch { setError('Вставьте HTTPS-адрес Tuna без дополнительных путей и параметров.'); }
+          try { invitationUrl(address, room.code, local); setPublicAddress(address.trim()); setError(''); }
+          catch { setError('Укажите HTTPS-адрес Tuna или включите локальный режим для HTTP-адреса ноутбука. Пути и параметры не нужны.'); }
         }}>
-          <label>Адрес Tuna<input type="url" value={address} placeholder="https://…" onChange={event => setAddress(event.target.value)} required /></label>
+          <label><input type="checkbox" checked={local} onChange={e => { setLocal(e.target.checked); setPublicAddress(''); }} /> Локальное подключение</label>
+          <p>{local ? 'Все телефоны и ноутбук должны быть в одной сети. Возьмите адрес Local player address из окна запуска. Адрес выбирается до входа; автоматического переноса между сайтами нет.' : 'Вставьте HTTPS-адрес Tuna.'}</p>
+          <label>{local ? 'Локальный адрес ноутбука' : 'Адрес Tuna'}<input type="url" value={address} placeholder="https://…" onChange={event => setAddress(event.target.value)} required /></label>
           <button>Показать приглашение</button>
         </form>
         {joinUrl && <>
@@ -115,7 +122,8 @@ export function HostPage() {
           <p>Отсканируйте QR или откройте ссылку. Если вводите адрес сайта вручную, используйте код комнаты.</p>
         </>}
       </section>
-      <DealControls room={room} disabled={disabled} run={run} />
+      <RecoveryControls room={room} review={view.review ?? []} disabled={disabled} run={run} />
+      <DealControls room={room} disabled={disabled || Boolean(waitingForSync)} run={run} />
       <GameControls key={room.id} room={room} disabled={disabled} run={run} />
       <SoundControls enabled={view.audioEnabled} disabled={disabled} cue={cue} prepareRef={prepareSound} gameVersion={room.game.version} clockOffset={clockOffset} claim={async enabled => {
         const result = await request('organizer:audio', { enabled });

@@ -6,7 +6,7 @@ import { createFileSessionStore } from './session-store.js';
 import { validateSession } from './session-format.js';
 import { createLobby } from './lobby.js';
 
-const empty = () => ({ schemaVersion: 2 as const, lobby: { revision: 0, usedCodes: [], room: null } });
+const empty = () => ({ schemaVersion: 3 as const, lobby: { revision: 0, usedCodes: [], room: null } });
 it('atomically replaces the last checkpoint and ignores unfinished temporary files', async () => {
   const dir = await mkdtemp(join(tmpdir(), 'pomekhi-save-')), store = createFileSessionStore(dir);
   try {
@@ -46,7 +46,7 @@ it('rejects incomplete state, duplicate identities, invalid cross-references and
   lobby.execute('h', 'organizer:authorize', { code: 'ORGANIZER' }); lobby.execute('h', 'room:create', {});
   const room = lobby.viewFor('h'); if (room?.kind !== 'organizer' || !room.room) throw new Error('No room');
   for (let i = 0; i < 4; i++) lobby.execute(`p${i}`, 'player:join', { roomCode: room.room.code, name: `Имя ${i}`, resumeKey: String(i).padStart(64, '0') });
-  const state = () => ({ schemaVersion: 2 as const, lobby: lobby.exportState() });
+  const state = () => ({ schemaVersion: 3 as const, lobby: lobby.exportState() });
   expect(validateSession(JSON.parse(JSON.stringify(state())))).toEqual(state());
   const duplicate = state(); duplicate.lobby.room!.players.push(duplicate.lobby.room!.players[0]);
   expect(() => validateSession(duplicate)).toThrow();

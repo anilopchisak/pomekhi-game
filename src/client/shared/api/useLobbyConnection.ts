@@ -9,6 +9,7 @@ type Reply = LobbyReply | { ok: false; error: RequestError };
 type ClientSocket = Socket<ServerToClientEvents, ClientToServerEvents>;
 
 const messages: Record<RequestError, string> = {
+  SYNC_PENDING: 'Сначала синхронизируйте телефоны и разберите спорные действия. Можно явно закрыть ожидание с ноутбука.',
   STORAGE_UNAVAILABLE: 'Не удалось сохранить партию. Игра остановлена. Организатор может восстановить запись с ноутбука.',
   INVALID_INPUT: 'Проверьте данные: имя — от 1 до 24 символов, код комнаты — 6 символов.',
   INVALID_ORGANIZER_CODE: 'Код организатора не подошёл. Возьмите актуальный код из окна запуска.',
@@ -41,14 +42,19 @@ export function useLobbyConnection() {
   const epoch = useRef(0);
   const [connection, setConnection] = useState<ConnectionState>('connecting');
   const [generation, setGeneration] = useState(0);
+  const [restored, setRestored] = useState(false);
   const [view, setView] = useState<LobbyView>();
   const latestView = useRef<LobbyView>(undefined);
   const offsetRef = useRef<number | null>(null);
   const [clockOffset, setClockOffset] = useState<number | null>(null);
   const [cue, setCue] = useState<GameCue>();
+  const resetView = useCallback(() => {
+    latestView.current = undefined; offsetRef.current = null;
+    setView(undefined); setRestored(false); setClockOffset(null); setCue(undefined);
+  }, []);
   const accept = useCallback((next: LobbyView, sampledAt?: number) => {
     if (latestView.current && next.revision < latestView.current.revision) return;
-    latestView.current = next; setView(next);
+    latestView.current = next; setView(next); setRestored(true);
     if (next.kind !== 'ended' && next.room && (sampledAt !== undefined || offsetRef.current === null)) {
       const offset = next.room.game.serverNow - (sampledAt ?? performance.now());
       offsetRef.current = offset; setClockOffset(offset);
@@ -61,7 +67,8 @@ export function useLobbyConnection() {
     socket.on('connect', () => {
       epoch.current++;
       latestView.current = undefined; offsetRef.current = null; setClockOffset(null); setCue(undefined);
-      setView(undefined);
+      // Keep the last authorized screen while identity is being restored.
+      setRestored(false);
       setConnection('online');
       setGeneration(value => value + 1);
     });
@@ -74,8 +81,13 @@ export function useLobbyConnection() {
     });
     socket.on('disconnect', () => { epoch.current++; setCue(undefined); setConnection('offline'); });
     socket.on('connect_error', () => setConnection('offline'));
+    // A browser network hint can be false while the LAN socket is still reachable.
+    const networkLost = () => { if (!socket.connected) { setConnection('offline'); setCue(undefined); } };
+    const networkRestored = () => { if (!socket.connected) socket.connect(); };
+    window.addEventListener('offline', networkLost);
+    window.addEventListener('online', networkRestored);
     socket.connect();
-    return () => { epoch.current++; socket.removeAllListeners(); socket.disconnect(); socketRef.current = null; };
+    return () => { window.removeEventListener('offline', networkLost); window.removeEventListener('online', networkRestored); epoch.current++; socket.removeAllListeners(); socket.disconnect(); socketRef.current = null; };
   }, [accept]);
 
   const request = useCallback(<Command extends LobbyCommand>(command: Command, input: LobbyInputs[Command]): Promise<Reply> => {
@@ -85,7 +97,8 @@ export function useLobbyConnection() {
     const startedAt = performance.now();
     return new Promise(resolve => {
       // Volatile emits never queue a control command for a later connection.
-      const emit = socket.timeout(6000).volatile.emit.bind(socket) as (
+      const channel = ['play:sync', 'play:complete', 'player:join', 'player:resume', 'organizer:authorize'].includes(command) ? socket.timeout(6000) : socket.timeout(6000).volatile;
+      const emit = channel.emit.bind(socket) as (
         event: Command, data: LobbyInputs[Command], callback: (error: Error | null, reply?: LobbyReply) => void,
       ) => void;
       emit(command, input, (error, reply) => {
@@ -99,12 +112,13 @@ export function useLobbyConnection() {
   const roomId = view && view.kind !== 'ended' ? view.room?.id : undefined;
   const timed = view && view.kind !== 'ended' && view.room ? ['placement', 'search', 'return'].includes(view.room.game.phase) : false;
   useEffect(() => {
-    if (connection !== 'online' || !roomId) return;
+    if (connection !== 'online' || !roomId || !restored) return;
     const sync = () => { if (!document.hidden) void request('lobby:sync', {}); };
     document.addEventListener('visibilitychange', sync);
     const timer = timed ? window.setInterval(sync, 30000) : undefined;
     if (timed) sync();
     return () => { document.removeEventListener('visibilitychange', sync); window.clearInterval(timer); };
-  }, [connection, roomId, timed, generation, request]);
-  return { connection, generation, view, request, clockOffset, cue };
+  }, [connection, roomId, timed, generation, request, restored]);
+  const reconnect = useCallback(() => { socketRef.current?.disconnect().connect(); }, []);
+  return { connection, generation, view, request, clockOffset, cue, reconnect, resetView };
 }

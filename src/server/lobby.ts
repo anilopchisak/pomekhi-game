@@ -1,5 +1,6 @@
 import { createHash, randomInt, randomUUID, timingSafeEqual } from 'node:crypto';
 import type { GameCue, GameSettings, LobbyCommand, LobbyError, LobbyReply, LobbyView, RoomSnapshot } from '../shared/protocol.js';
+import { validOfflineEvent } from './round-sync.js';
 import { createGame, validSettings } from './game.js';
 import type { GameClock, SavedGame } from './game.js';
 
@@ -59,11 +60,11 @@ export function createLobby({ organizerCode, generateId = randomUUID, generateRo
   function viewFor(connection: string): LobbyView | undefined {
     const actor = actors.get(connection);
     if (!actor) return undefined;
-    if (actor.kind === 'organizer') return { revision, kind: 'organizer', room: snapshot(), audioEnabled: audioOwner === connection };
+    if (actor.kind === 'organizer') return { revision, kind: 'organizer', room: snapshot(), audioEnabled: audioOwner === connection, review: room && ['between_rounds', 'finished'].includes(room.game.publicState().phase) ? room.game.review() : [] };
     if (actor.kind === 'ended') return { revision, ...actor };
     const state = snapshot();
     if (!state) return undefined;
-    return { revision, kind: 'player', room: state, playerId: actor.playerId, assignment: room!.game.personal(actor.playerId), play: room!.game.personalPlay(actor.playerId) };
+    return { revision, kind: 'player', room: state, playerId: actor.playerId, assignment: room!.game.personal(actor.playerId), play: room!.game.personalPlay(actor.playerId), synchronization: room!.game.personalSync(actor.playerId) };
   }
 
   function disconnect(connection: string) {
@@ -104,6 +105,20 @@ export function createLobby({ organizerCode, generateId = randomUUID, generateRo
     if (!input || typeof input !== 'object' || Array.isArray(input)) return fail('INVALID_INPUT');
     const data = input as Record<string, unknown>;
     const actor = actors.get(connection);
+    if (command === 'play:sync' || command === 'play:complete') {
+      if (actor?.kind !== 'player') return fail('FORBIDDEN');
+      if (!room || data.roomId !== room.id) return fail('ROOM_NOT_FOUND');
+      if (typeof data.roundId !== 'string') return fail('INVALID_INPUT');
+      let error: LobbyError | undefined;
+      if (command === 'play:sync') {
+        if (!Array.isArray(data.events) || data.events.length > 24 || !data.events.every(e => validOfflineEvent(e) && e.roundId === data.roundId)) return fail('INVALID_INPUT');
+        error = room.game.syncEvents(actor.playerId, data.roundId, data.events);
+      } else {
+        if (!Number.isSafeInteger(data.syncRevision)) return fail('INVALID_INPUT');
+        error = room.game.completeSync(actor.playerId, data.roundId, data.syncRevision as number);
+      }
+      if (error) return fail(error); notify(); return { ok: true, view: viewFor(connection)! };
+    }
     if (command === 'lobby:sync') return actor ? { ok: true, view: viewFor(connection)! } : fail('FORBIDDEN');
     if (command === 'organizer:authorize') {
       if (typeof data.code !== 'string' || data.code.length > 32) return fail('INVALID_INPUT');
@@ -166,9 +181,9 @@ export function createLobby({ organizerCode, generateId = randomUUID, generateRo
       if (!player) return fail('SESSION_EXPIRED');
       remove(player, 'left');
     } else if (['deal:create', 'deal:shuffle', 'deal:cancel', 'deal:replace', 'card:ready', 'card:request',
-      'game:configure', 'round:start', 'round:pause', 'round:resume', 'round:return', 'round:abort', 'party:finish', 'party:extend', 'play:infect', 'play:release', 'play:mission', 'play:undo', 'results:finalize'].includes(command)) {
+      'game:configure', 'round:start', 'round:pause', 'round:resume', 'round:return', 'round:abort', 'party:finish', 'party:extend', 'play:infect', 'play:release', 'play:mission', 'play:undo', 'results:finalize', 'venue:configure', 'play:withdraw', 'sync:resolve', 'sync:close'].includes(command)) {
       const playAction = command.startsWith('play:');
-      const gameAction = command.startsWith('game:') || command.startsWith('round:') || command.startsWith('party:') || playAction || command === 'results:finalize';
+      const gameAction = command.startsWith('game:') || command.startsWith('round:') || command.startsWith('party:') || playAction || command === 'results:finalize' || command === 'venue:configure' || command.startsWith('sync:');
       const organizerAction = command.startsWith('deal:') || gameAction && !playAction;
       if (organizerAction ? actor?.kind !== 'organizer' : actor?.kind !== 'player') return fail('FORBIDDEN');
       if (!room || room.id !== data.roomId) return fail('ROOM_NOT_FOUND');
@@ -189,12 +204,16 @@ export function createLobby({ organizerCode, generateId = randomUUID, generateRo
       if (['deal:replace', 'card:ready', 'card:request'].includes(command) && typeof data.assignmentId !== 'string') return fail('INVALID_INPUT');
       if (command === 'card:ready' && typeof data.ready !== 'boolean') return fail('INVALID_INPUT');
       if (command === 'card:request' && typeof data.requested !== 'boolean') return fail('INVALID_INPUT');
+      if (command === 'sync:resolve' && (typeof data.eventId !== 'string' || !['accept', 'reject'].includes(data.decision as string) || data.beforeId !== undefined && typeof data.beforeId !== 'string')) return fail('INVALID_INPUT');
+      if (command === 'sync:close' && data.confirm !== true) return fail('INVALID_INPUT');
       const principal = actor!.kind === 'player' ? `player:${actor!.playerId}` : 'organizer';
       const fields: unknown[] = [command, data.roomId, gameAction ? data.gameVersion : data.dealVersion, gameAction ? data.roundId : data.dealId];
       if (command === 'game:configure') {
         const settings = data.settings as GameSettings;
         fields.push(settings.tutorialEnabled, settings.initialDifficulty, settings.maximumDifficulty, settings.infectionMode, settings.roundLimit, settings.placementSeconds, settings.searchSeconds, settings.returnSeconds);
       }
+      if (command === 'venue:configure') fields.push(data.venue);
+      if (command === 'sync:resolve') fields.push(data.eventId, data.decision, data.beforeId);
       if (playAction) fields.push(data.playVersion);
       if (command === 'play:infect') fields.push(data.targetId);
       if (command === 'play:undo') fields.push(data.actionId);
@@ -219,8 +238,12 @@ export function createLobby({ organizerCode, generateId = randomUUID, generateRo
       if (command === 'deal:create' || command === 'deal:shuffle') error = room.game.deal([...room.players.keys()], data.possessedCount as number, command === 'deal:shuffle');
       else if (command === 'deal:cancel') error = room.game.cancelDeal();
       else if (command === 'deal:replace') error = room.game.change(data.playerId as string, data.assignmentId as string, 'replace');
+      else if (command === 'venue:configure') error = room.game.configureVenue(data.venue);
+      else if (command === 'sync:resolve') error = room.game.resolveSync(data.eventId as string, data.decision as 'accept' | 'reject', data.beforeId as string | undefined);
+      else if (command === 'sync:close') error = room.game.closeSync();
+      else if (command === 'play:withdraw' && actor!.kind === 'player') error = room.game.withdraw(actor!.playerId);
       else if (command === 'game:configure') error = room.game.configure(data.settings as GameSettings);
-      else if (command === 'round:start') error = room.game.start([...room.players.values()].map(player => ({ id: player.id, online: player.connections.size > 0 })), data.confirmWarnings as boolean);
+      else if (command === 'round:start') error = room.game.start([...room.players.values()].map(player => ({ id: player.id, name: player.name, online: player.connections.size > 0 })), data.confirmWarnings as boolean);
       else if (command === 'round:pause') error = room.game.pause();
       else if (command === 'round:resume') error = room.game.resume(data.confirmWarnings as boolean);
       else if (command === 'round:return') error = room.game.beginReturn();

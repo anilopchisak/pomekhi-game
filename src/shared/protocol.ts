@@ -43,12 +43,30 @@ export interface PersonalPlay {
   undo: { id: string; label: string; available: boolean } | null;
 }
 interface PlayCommand extends GameCommand { playVersion: number }
+export interface Venue { base: string; zones: string[] }
+export type OfflineAction =
+  | { kind: 'infect'; targetId: string }
+  | { kind: 'captured'; by: string }
+  | { kind: 'release' }
+  | { kind: 'mission'; completed: boolean }
+  | { kind: 'undo'; actionId: string }
+  | { kind: 'withdraw' };
+export interface OfflineEvent {
+  id: string; clientId: string; sequence: number; previousId: string | null;
+  roundId: string; action: OfflineAction; phase: GamePhase; paused: boolean; estimatedServerTime: number | null;
+}
+export interface EventReceipt { id: string; status: 'accepted' | 'review' | 'rejected'; reason: string | null }
+export interface ReviewEvent extends EventReceipt { actor: string; actorName?: string; targetName?: string; dependsOn?: string[]; action: OfflineAction }
+export interface RoundSyncSnapshot { waitingPlayerIds: string[]; waitingPlayers?: { id: string; name: string }[]; conflicts: number; closed: boolean; revision: number }
+export interface PersonalSync { roundId: string; receipts: EventReceipt[]; complete: boolean; withdrawn: boolean }
 export interface GameSnapshot {
   phase: GamePhase;
   version: number;
   roundId: string | null;
   roundNumber: number;
   completedRounds: number;
+  venue: Venue;
+  synchronization: RoundSyncSnapshot | null;
   tutorialCompleted: boolean;
   roundPlan: RoundPlan;
   settings: GameSettings;
@@ -91,8 +109,8 @@ export interface PersistenceStatus {
   mode: 'memory' | 'disk'; state: 'ready' | 'load_error' | 'write_error'; recovered: boolean;
 }
 export type LobbyView = { revision: number; persistence?: PersistenceStatus } & (
-  | { kind: 'organizer'; room: RoomSnapshot | null; audioEnabled: boolean }
-  | { kind: 'player'; room: RoomSnapshot; playerId: string; assignment: Assignment | null; play: PersonalPlay | null }
+  | { kind: 'organizer'; room: RoomSnapshot | null; audioEnabled: boolean; review?: ReviewEvent[] }
+  | { kind: 'player'; room: RoomSnapshot; playerId: string; assignment: Assignment | null; play: PersonalPlay | null; synchronization?: PersonalSync | null }
   | { kind: 'ended'; reason: 'closed' | 'removed' | 'left' }
 );
 
@@ -100,7 +118,7 @@ export type LobbyError = 'INVALID_INPUT' | 'INVALID_ORGANIZER_CODE' | 'FORBIDDEN
   | 'ROOM_NOT_FOUND' | 'ROOM_FULL' | 'NAME_TAKEN' | 'SESSION_EXPIRED'
   | 'INVALID_COMPOSITION' | 'STALE_DEAL' | 'STALE_CARD' | 'REPLACEMENT_PENDING' | 'REQUEST_LIMIT'
   | 'INVALID_PHASE' | 'STALE_GAME' | 'START_WARNING' | 'RESUME_WARNING' | 'SETTINGS_LOCKED'
-  | 'STALE_PLAY' | 'ACTION_UNAVAILABLE' | 'UNDO_DEPENDENCY' | 'RESULTS_FINAL' | 'STORAGE_UNAVAILABLE';
+  | 'STALE_PLAY' | 'ACTION_UNAVAILABLE' | 'UNDO_DEPENDENCY' | 'RESULTS_FINAL' | 'STORAGE_UNAVAILABLE' | 'SYNC_PENDING';
 export type LobbyReply = { ok: true; view: LobbyView } | { ok: false; error: LobbyError };
 
 export interface LobbyInputs {
@@ -132,6 +150,12 @@ export interface LobbyInputs {
   'play:mission': PlayCommand & { completed: boolean };
   'play:undo': PlayCommand & { actionId: string };
   'results:finalize': GameCommand;
+  'venue:configure': GameCommand & { venue: Venue };
+  'play:withdraw': PlayCommand;
+  'play:sync': { roomId: string; roundId: string; events: OfflineEvent[] };
+  'play:complete': { roomId: string; roundId: string; syncRevision: number };
+  'sync:resolve': GameCommand & { eventId: string; decision: 'accept' | 'reject'; beforeId?: string };
+  'sync:close': GameCommand & { confirm: true };
   'storage:retry': Record<string, never>;
   'storage:reset': { confirm: true };
 }

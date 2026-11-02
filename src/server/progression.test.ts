@@ -9,7 +9,11 @@ function fixture() {
   const players = Array.from({ length: 7 }, (_, i) => ({ id: `player-${i}`, online: true }));
   const configure = (changes: Partial<ReturnType<typeof game.publicState>['settings']>) => game.configure({ ...game.publicState().settings, ...changes });
   expect(configure({ placementSeconds: 1, searchSeconds: 1, returnSeconds: 1 })).toBeUndefined();
-  const deal = () => expect(game.deal(players.map(p => p.id), 3, false)).toBeUndefined();
+  const deal = () => {
+    const state = game.publicState();
+    if (state.synchronization) for (const player of players) expect(game.completeSync(player.id, state.roundId!, state.synchronization.revision)).toBeUndefined();
+    expect(game.deal(players.map(p => p.id), 3, false)).toBeUndefined();
+  };
   const start = () => expect(game.start(players, true)).toBeUndefined();
   const complete = () => { start(); time.advance(3000); };
   return { game, time, players, configure, deal, start, complete };

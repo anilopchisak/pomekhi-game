@@ -47,7 +47,7 @@ it.each(['lobby', 'reading', 'placement', 'between_rounds', 'finished'] as const
   for (const enabled of [false, true]) {
     const { current, legacy } = legacyFixture(phase, enabled), original = structuredClone(legacy);
     const saved = validateSession(legacy), game = saved.lobby.room!.game;
-    expect(saved.schemaVersion).toBe(2);
+    expect(saved.schemaVersion).toBe(3);
     expect(legacy).toEqual(original);
     expect(game.settings).toMatchObject({ tutorialEnabled: false, initialDifficulty: 1, maximumDifficulty: 1, infectionMode: enabled ? 'on' : 'off' });
     expect(game.dealing.assignments).toEqual(current.lobby.room!.game.dealing.assignments);
@@ -61,11 +61,11 @@ it.each(['lobby', 'reading', 'placement', 'between_rounds', 'finished'] as const
 });
 
 it('migrates an empty version-1 save and rejects unsupported schemas and malformed legacy cards', () => {
-  expect(validateSession({ schemaVersion: 1, lobby: { revision: 0, usedCodes: [], room: null } }).schemaVersion).toBe(2);
+  expect(validateSession({ schemaVersion: 1, lobby: { revision: 0, usedCodes: [], room: null } }).schemaVersion).toBe(3);
   const { legacy } = legacyFixture('reading', false);
   legacy.lobby.room.game.dealing.assignments[0][1].card.difficulty = 2;
   expect(() => validateSession(legacy)).toThrow();
-  expect(() => validateSession({ schemaVersion: 3, lobby: null })).toThrow();
+  expect(() => validateSession({ schemaVersion: 99, lobby: null })).toThrow();
 });
 
 it('rejects a forged tutorial, round number or result plan in a version-2 checkpoint', () => {
@@ -80,7 +80,7 @@ it('rejects a forged tutorial, round number or result plan in a version-2 checkp
   expect(() => validateSession(finished)).toThrow();
 });
 
-it('loads a legacy file through the real store and commits version 2 without losing issued cards', async () => {
+it('loads a legacy file through the real store and commits version 3 without losing issued cards', async () => {
   const directory = await mkdtemp(join(tmpdir(), 'pomekhi-upgrade-')), store = createFileSessionStore(directory);
   const { legacy, current } = legacyFixture('reading', true);
   try {
@@ -89,7 +89,7 @@ it('loads a legacy file through the real store and commits version 2 without los
     expect(migrated!.lobby.room!.game.dealing.assignments).toEqual(current.lobby.room!.game.dealing.assignments);
     expect(JSON.parse(await readFile(join(directory, 'session.json'), 'utf8')).schemaVersion).toBe(1);
     await store.write(migrated!);
-    expect(JSON.parse(await readFile(join(directory, 'session.json'), 'utf8')).schemaVersion).toBe(2);
+    expect(JSON.parse(await readFile(join(directory, 'session.json'), 'utf8')).schemaVersion).toBe(3);
     const lobby = createLobby({ organizerCode: 'NEWCODE' });
     try {
       lobby.restore(migrated!.lobby);
@@ -106,4 +106,16 @@ it('migrates a legacy capture result when infection was disabled later in the br
   expect(game.settings.infectionMode).toBe('off');
   expect(game.results[0]).toMatchObject({ infectedPlayers: 1, infectionEnabled: null });
   expect(game.roundPlan!.infectionEnabled).toBe(true);
+});
+
+it.each(['reading', 'placement', 'between_rounds', 'finished'] as const)('upgrades version 2 %s to an offline-ready format without changing issued data', phase => {
+  const { current } = legacyFixture(phase, true, phase === 'between_rounds');
+  const previous = JSON.parse(JSON.stringify(current));
+  delete previous.lobby.room.game.roundSync; delete previous.lobby.room.game.venue; delete previous.lobby.room.game.playerNames;
+  const saved = validateSession(previous), original = current.lobby.room!.game;
+  expect(saved.schemaVersion).toBe(3); expect(saved.lobby.room!.game.venue).toEqual({ base: 'База', zones: [] });
+  expect(saved.lobby.room!.game.search).toEqual(original.search); expect(saved.lobby.room!.game.results).toEqual(original.results);
+  const restored = createLobby({ organizerCode: 'NEWCODE' });
+  try { restored.restore(saved.lobby); expect(() => validateSession({ schemaVersion: 3, lobby: restored.exportState() })).not.toThrow(); }
+  finally { restored.dispose(); }
 });

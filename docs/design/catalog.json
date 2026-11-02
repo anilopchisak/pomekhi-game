@@ -139,6 +139,32 @@
         "private snapshot validation and paused restart",
         "writer ownership and startup cancellation"
       ]
+    },
+    {
+      "id": "offline-play",
+      "path": "docs/design/offline-play.md",
+      "sources": [
+        "src/server/round-sync.ts",
+        "src/server/game.ts",
+        "src/server/search.ts",
+        "src/server/lobby.ts",
+        "src/server/session-format.ts",
+        "src/shared/protocol.ts",
+        "src/client/pages/player/model",
+        "scripts/start-lan.mjs",
+        "vite.config.ts"
+      ],
+      "prefixes": [
+        "src/client/pages/host/",
+        "src/client/pages/player/",
+        "src/client/shared/"
+      ],
+      "reviewWhen": [
+        "offline queue, personal cache or service worker",
+        "reconciliation, conflict review or completion barrier",
+        "round withdrawal, zones or local invitations",
+        "durable inbox migration and replay"
+      ]
     }
   ]
 }

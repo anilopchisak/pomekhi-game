@@ -4,11 +4,13 @@ import { LobbyShell, RoundStatus } from '../../../shared/ui/index.js';
 import { clearPlayerSession, createResumeKey, readPlayerSession, savePlayerSession } from '../session.js';
 import type { PlayerSession } from '../session.js';
 import { PersonalCardPanel } from './PersonalCardPanel.js';
+import { purgeOffline } from '../model/offline-store.js';
+import { useOfflinePlayer } from '../model/useOfflinePlayer.js';
 import { PlayControls } from './PlayControls.js';
 import type { LobbyCommand, LobbyInputs } from '../../../../shared/protocol.js';
 
 export function PlayerPage() {
-  const { connection, generation, view, request, clockOffset } = useLobbyConnection();
+  const { connection, generation, view, request, clockOffset, reconnect, resetView } = useLobbyConnection();
   const invitationCode = new URLSearchParams(window.location.search).get('room')?.toUpperCase() ?? '';
   const initial = readPlayerSession();
   const saved = useRef(initial && (!invitationCode || initial.roomCode === invitationCode) ? initial : null);
@@ -18,7 +20,18 @@ export function PlayerPage() {
   const [error, setError] = useState('');
   const [busy, setBusy] = useState(false);
   const [pending, setPending] = useState<{ command: LobbyCommand; input: LobbyInputs[LobbyCommand] } | null>(null);
-  const playerView = view?.kind === 'player' ? view : undefined;
+  const [authorizedGeneration, setAuthorizedGeneration] = useState(0);
+  const [shellReady, setShellReady] = useState(false);
+  useEffect(() => {
+    let active = true;
+    if (window.isSecureContext && 'serviceWorker' in navigator) void navigator.serviceWorker.ready.then(() => { if (active) setShellReady(true); }).catch(() => {});
+    return () => { active = false; };
+  }, []);
+  const persisted = saved.current;
+  const scope = persisted ? `${persisted.roomCode}:${persisted.resumeKey}` : null;
+  const offline = useOfflinePlayer(scope, view?.kind === 'player' ? view : undefined, connection === 'online', generation > 0 && authorizedGeneration === generation, generation, request, clockOffset);
+  const playerView = view?.kind === 'ended' ? undefined : offline.view;
+  const offlineDisabled = busy || !offline.available && connection !== 'online';
 
   const enter = useCallback(async (session: PlayerSession) => {
     const attempt = ++operation.current;
@@ -28,14 +41,18 @@ export function PlayerPage() {
     setBusy(false);
     if (result.ok) {
       if (result.view.kind !== 'player') return;
+      setAuthorizedGeneration(generation);
       const completed = { ...session, pending: false };
       saved.current = completed;
       try { savePlayerSession(completed); } catch { /* The pre-join key is already stored. */ }
     } else {
       setError(describeError(result.error));
-      if (result.error !== 'TIMEOUT' && result.error !== 'CONNECTION_LOST' && result.error !== 'STORAGE_UNAVAILABLE') { saved.current = null; clearPlayerSession(); }
+      if (result.error !== 'TIMEOUT' && result.error !== 'CONNECTION_LOST' && result.error !== 'STORAGE_UNAVAILABLE') {
+        saved.current = null; clearPlayerSession(); resetView(); setAuthorizedGeneration(0); setPending(null);
+        void purgeOffline(`${session.roomCode}:${session.resumeKey}`).catch(() => {});
+      }
     }
-  }, [request]);
+  }, [request, generation, resetView]);
 
   useEffect(() => { if (generation && saved.current) void enter(saved.current); }, [generation, enter]);
   const ended = view?.kind === 'ended' ? view.reason : null;
@@ -44,9 +61,10 @@ export function PlayerPage() {
     operation.current++;
     setBusy(false);
     saved.current = null; clearPlayerSession();
+    void offline.clear().catch(() => {});
     setPending(null);
     setError({ closed: 'Комната закрыта. Для новой встречи потребуется новое приглашение.', removed: 'Организатор удалил ваш вход. При необходимости войдите заново.', left: 'Вы вышли из комнаты.' }[ended]);
-  }, [ended]);
+  }, [ended, offline.clear]);
 
   async function cardAction<C extends LobbyCommand>(command: C, input: LobbyInputs[C]) {
     const attempt = ++operation.current;
@@ -66,6 +84,8 @@ export function PlayerPage() {
     const previous = saved.current;
     const session: PlayerSession = previous?.roomCode === normalizedCode
       ? previous : { roomCode: normalizedCode, name, resumeKey: createResumeKey(), pending: true };
+    const previousStored = readPlayerSession();
+    if (previousStored && previousStored.resumeKey !== session.resumeKey) await purgeOffline(`${previousStored.roomCode}:${previousStored.resumeKey}`).catch(() => {});
     try { savePlayerSession(session); }
     catch { setError('Браузер не позволяет сохранить вход. Разрешите хранилище сайта и повторите.'); return; }
     saved.current = session;
@@ -73,6 +93,13 @@ export function PlayerPage() {
   }
 
   return <LobbyShell title={playerView ? 'Вы внутри' : 'Войти в дом'} connection={connection} error={error}>
+    {offline.error && <p role="alert">{offline.error}</p>}
+    {connection !== 'online' && <section><p role="alert">{playerView ? offline.available ? 'Нет связи. Карточка доступна; новые отметки сохраняются на телефоне. Состояние остальных участников не подтверждено.' : 'Нет связи. Последний экран сохранён во вкладке, но записать новые действия без хранилища нельзя.' : 'Нет связи. Для первого входа подключитесь к ноутбуку или интернету.'}</p><button onClick={reconnect}>Подключиться снова</button></section>}
+    {offline.available && playerView && <section aria-label="Синхронизация телефона">
+      <p>{shellReady ? 'Офлайн-перезагрузка подготовлена. Сохраняйте этот адрес и браузер.' : 'Держите вкладку открытой: офлайн-перезагрузка пока недоступна. В локальном HTTP после закрытия вкладки потребуется связь с ноутбуком.'}</p><p role="status">{offline.pending ? `Сохранено на телефоне: ${offline.pending}. Ждёт отправки.` : offline.conflicts ? `Нужен разбор: ${offline.conflicts}.` : 'Все отправленные действия подтверждены сервером.'}</p>
+      {offline.rejected.length > 0 && <p role="alert">Не зачтено действий: {offline.rejected.length}. Проверьте результат на базе: запись отклонена организатором, закрытием итога или правилами раунда.</p>}
+      {playerView.synchronization?.withdrawn && <p>Вы пропускаете этот раунд. Вернитесь на базу; место в комнате сохранено.</p>}
+    </section>}
     {view?.persistence && view.persistence.state !== 'ready' && <p role="alert">Сохранение недоступно. Игра остановлена; ждите восстановления с ноутбука. Ваш вход сохранён.</p>}
     {pending && playerView && <button disabled={busy || connection !== 'online'} onClick={() => void cardAction(pending.command, pending.input)}>Повторить действие</button>}
     {!playerView ? <form onSubmit={event => { event.preventDefault(); void join(); }}>
@@ -80,10 +107,12 @@ export function PlayerPage() {
       <label>Ваше имя<input value={name} autoComplete="nickname" maxLength={48} onChange={event => setName(event.target.value)} required /></label>
       <button disabled={busy || connection !== 'online'}>{busy ? 'Входим…' : 'Войти в комнату'}</button>
     </form> : <>
-    <RoundStatus game={playerView.room.game} clockOffset={clockOffset} connection={connection}
-      role={playerView.play?.card.role ?? playerView.assignment?.card.role} playStatus={playerView.play?.status} waiting={!playerView.assignment} />
-    {playerView.play && <PlayControls view={playerView} disabled={busy || connection !== 'online'} run={cardAction} />}
-    {playerView.assignment && <PersonalCardPanel tutorial={playerView.room.game.roundPlan.kind === 'tutorial'} infectionEnabled={playerView.room.game.roundPlan.infectionEnabled} assignment={playerView.play ? { ...playerView.assignment, id: playerView.play.cardKey, card: playerView.play.card } : playerView.assignment} disabled={busy || connection !== 'online'} readOnly={playerView.room.game.phase !== 'reading'} act={async (action, flag) => {
+    <RoundStatus game={playerView.room.game} clockOffset={offline.clockOffset} connection={connection}
+      role={playerView.play?.card.role ?? playerView.assignment?.card.role} playStatus={playerView.play?.status} waiting={!playerView.assignment || playerView.synchronization?.withdrawn} />
+    {playerView.play && !playerView.synchronization?.withdrawn && <PlayControls view={playerView} disabled={offlineDisabled} run={cardAction} queue={offline.available ? offline.queue : undefined} />}
+    {['placement', 'search', 'return'].includes(playerView.room.game.phase) && playerView.room.game.activePlayerIds.includes(playerView.playerId) && !playerView.synchronization?.withdrawn && <button data-danger disabled={offlineDisabled} onClick={() => { if (window.confirm('Пропустить текущий раунд и вернуться на базу? Остальные продолжают игру, место в комнате сохранится.')) { if (offline.available) void offline.queue({ kind: 'withdraw' }); else if (playerView.play) void cardAction('play:withdraw', { ...dealCommand(playerView.room), roomId: playerView.room.id, requestId: dealCommand(playerView.room).requestId, gameVersion: playerView.room.game.version, roundId: playerView.room.game.roundId, playVersion: playerView.play.version }); } }}>Пропустить этот раунд</button>}
+    {offline.pendingCapture && <p>Вы отметили заражение. Прочитайте задание на телефоне заразившего вас участника. Новая карточка появится после согласования с сервером.</p>}
+    {playerView.assignment && !offline.pendingCapture && <PersonalCardPanel tutorial={playerView.room.game.roundPlan.kind === 'tutorial'} infectionEnabled={playerView.room.game.roundPlan.infectionEnabled} assignment={playerView.play ? { ...playerView.assignment, id: playerView.play.cardKey, card: playerView.play.card } : playerView.assignment} disabled={busy || connection !== 'online'} readOnly={playerView.room.game.phase !== 'reading'} act={async (action, flag) => {
       const base = { ...dealCommand(playerView.room), assignmentId: playerView.assignment!.id };
       await cardAction(action, action === 'card:ready' ? { ...base, ready: flag } : { ...base, requested: flag });
     }} />}
@@ -97,7 +126,7 @@ export function PlayerPage() {
         {!playerView.room.dealing.assignments.some(item => item.playerId === player.id) && <small>Ждёт следующей раздачи</small>}
       </li>)}</ul>
       <button data-danger disabled={busy || connection !== 'online'} onClick={async () => {
-        if (!window.confirm('Выйти из комнаты? Ваше место освободится. Если вы участвуете в текущем раунде, он будет поставлен на паузу.')) return;
+        if (!window.confirm('Выйти из комнаты? Ваше место освободится. Остальные продолжат игру; прежний вход перестанет действовать.')) return;
         const attempt = ++operation.current;
         setBusy(true); setError('');
         const result = await request('player:leave', { roomId: playerView.room.id });

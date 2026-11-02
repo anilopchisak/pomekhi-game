@@ -98,5 +98,5 @@ export function createSearch(roundId: string, initial: ReadonlyMap<string, Assig
     events.splice(0, events.length, ...structuredClone(state.events).map(e => ({ ...e, touches: new Set(e.touches) })));
     version = state.version + Number(bump); finalized = state.finalized; rebuild();
   }
-  return { personal, act, undo, depart, canSearch, result, exportState, restore, seal: () => { finalized = true; }, version: () => version };
+  return { group: (playerId: string) => states.get(playerId)?.group ?? null, personal, act, undo, depart, canSearch, result, exportState, restore, seal: () => { finalized = true; }, version: () => version };
 }

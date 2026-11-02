@@ -2,10 +2,11 @@ import type { Assignment } from '../shared/protocol.js';
 import type { SavedLobby } from './lobby.js';
 import { createSearch } from './search.js';
 import type { SavedSearch } from './search.js';
+import { createRoundSync, validateRoundSync } from './round-sync.js';
 import { validDifficulty, validSettings, isTimedPhase } from './game.js';
 
 /** Private disk contract. Never import this module from the browser or wire protocol. */
-export interface SavedSession { schemaVersion: 2; lobby: SavedLobby }
+export interface SavedSession { schemaVersion: 3; lobby: SavedLobby }
 function requireValue(condition: unknown): asserts condition { if (!condition) throw new Error('Invalid or incompatible session file.'); }
 function object(value: unknown): Record<string, unknown> { requireValue(value && typeof value === 'object' && !Array.isArray(value)); return value as Record<string, unknown>; }
 function array(value: unknown, limit = 100000): unknown[] { requireValue(Array.isArray(value) && value.length <= limit); return value; }
@@ -65,7 +66,8 @@ function migrateLegacy(input: Record<string, unknown>) {
 export function validateSession(value: unknown): SavedSession {
   let saved = object(value);
   if (saved.schemaVersion === 1) saved = migrateLegacy(saved);
-  requireValue(saved.schemaVersion === 2);
+  if (saved.schemaVersion === 2) { saved = structuredClone(saved); saved.schemaVersion = 3; const oldLobby = object(saved.lobby); if (oldLobby.room !== null) { const g = object(object(oldLobby.room).game); g.venue = { base: 'База', zones: [] }; g.roundSync = null; } }
+  requireValue(saved.schemaVersion === 3);
   const lobby = object(saved.lobby); requireValue(integer(lobby.revision));
   const codes = strings(lobby.usedCodes); requireValue(codes.every(v => /^[A-Z2-9]{6}$/.test(v)));
   if (lobby.room === null) return saved as unknown as SavedSession;
@@ -80,7 +82,18 @@ export function validateSession(value: unknown): SavedSession {
     requireValue(principal === 'organizer' || ids.some(id => principal === `player:${id}`));
     for (const [id, hash] of pairs(requests, 1024)) requireValue(/^[a-zA-Z0-9_-]{8,80}$/.test(id) && typeof hash === 'string' && /^[a-f0-9]{64}$/.test(hash));
   }
-  const game = object(room.game), deal = object(game.dealing);
+  const game = object(room.game);
+  if (game.playerNames !== undefined) for (const [, name] of pairs(game.playerNames, 12)) requireValue(text(name, 256));
+  const venue = object(game.venue); requireValue(text(venue.base, 64));
+  requireValue(array(venue.zones, 12).every(z => text(z, 64)));
+  requireValue(new Set([venue.base, ...venue.zones as string[]].map(v => (v as string).trim().toLocaleLowerCase('ru'))).size === (venue.zones as string[]).length + 1);
+  if (game.roundSync !== null) {
+    validateRoundSync(game.roundSync, game.roundId);
+    const rebuilt = createRoundSync(game.roundSync, () => 'validation-only').current().exportState();
+    const actual = object(game.search);
+    requireValue(JSON.stringify(rebuilt.roster) === JSON.stringify(actual.roster) && JSON.stringify(rebuilt.events) === JSON.stringify(actual.events) && rebuilt.finalized === actual.finalized);
+  }
+  const deal = object(game.dealing);
   requireValue(typeof game.tutorialCompleted === 'boolean' && integer(game.progressionRounds) && game.progressionRounds >= 1 && validDifficulty(deal.difficulty));
   const plan = game.roundPlan === null ? null : validatePlan(game.roundPlan);
   if (plan) requireValue(plan.difficulty === deal.difficulty);
@@ -152,7 +165,7 @@ export function validateSession(value: unknown): SavedSession {
       requireValue(generated.length === ++effective && generated.at(-1)!.id === e.id && JSON.stringify(generated.at(-1)!.touches.sort()) === JSON.stringify([...e.touches].sort()));
     }
     requireValue(typed.version >= typed.events.length);
-    if (timed) requireValue(!typed.finalized && active.length === assignments.length && assignments.every(([id, a]) => active.includes(id) && roster.some(([originalId, original]) => id === originalId && JSON.stringify(a.card) === JSON.stringify(original.card) && a.id === original.id)));
+    if (timed) requireValue(!typed.finalized && assignments.every(([id, a]) => (active.includes(id) || typed.events.some(e => !e.undone && e.action.kind === 'depart' && e.action.actor === id)) && roster.some(([originalId, original]) => id === originalId && JSON.stringify(a.card) === JSON.stringify(original.card) && a.id === original.id)));
     const current = results.find(r => r.roundId === typed.roundId);
     if (current) {
       requireValue(plan !== null && ['kind', 'number', 'difficulty', 'infectionEnabled'].every(key => key === 'infectionEnabled' && current[key] === null || current[key] === plan[key]));

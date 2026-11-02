@@ -199,6 +199,7 @@ it('shows a late player waiting without a card until the next manual deal', asyn
   expect(container.querySelector('[aria-label="Личная карточка"]')).toBeNull();
   await act(async () => {
     value(lobby.execute('host', 'round:abort', gameBase()));
+    value(lobby.execute('host', 'sync:close', { ...gameBase(), confirm: true }));
     value(lobby.execute('host', 'deal:create', { ...base(), possessedCount: 3 }));
   });
   expect(button('Открыть карточку')).toBeDefined(); expect(container.querySelector('[aria-label="Личная карточка"] h4')).toBeNull();
@@ -380,6 +381,8 @@ it('renders provisional totals and freezes them on the organizer panel', async (
   await click('Начать раунд');
   await act(async () => clock.advance(270000));
   expect(container.textContent).toContain('Предварительный итог');
+  expect(button('Зафиксировать результаты').disabled).toBe(true);
+  await click('Закрыть ожидание с предупреждением');
   await click('Зафиксировать результаты');
   expect(container.textContent).toContain('Результат зафиксирован');
   expect([...container.querySelectorAll('button')].some(button => button.textContent === 'Зафиксировать результаты')).toBe(false);
