@@ -1,0 +1,1367 @@
+{
+  "jsonrpc": "2.0",
+  "id": 5007829,
+  "result": {
+    "content": [
+      {
+        "type": "text",
+        "text": "{\"data\":{\"P08\":{\"id\":\"3:6464\",\"name\":\"P08 · Прочитайте миссию\",\"children\":[{\"id\":\"3:6465\",\"name\":\"Brand and connection\",\"type\":\"FRAME\"},{\"id\":\"3:6468\",\"name\":\"Room navigation\",\"type\":\"FRAME\"},{\"id\":\"3:6475\",\"name\":\"Personal workspace\",\"type\":\"FRAME\"},{\"id\":\"3:6485\",\"name\":\"Personal actions / outside card scroll\",\"type\":\"FRAME\"},{\"id\":\"3:6490\",\"name\":\"Small / Личная карточка · задания не публикуются\",\"type\":\"TEXT\"}],\"text\":[{\"id\":\"3:6466\",\"text\":\"ОДЕРЖИМЫЕ\",\"font\":{\"family\":\"Golos Text\",\"style\":\"Medium\",\"hash\":\"\"}},{\"id\":\"3:6467\",\"text\":\"На связи\",\"font\":{\"family\":\"Golos Text\",\"style\":\"Regular\",\"hash\":\"\"}},{\"id\":\"3:6478\",\"text\":\"Прочитайте миссию\",\"font\":{\"family\":\"Golos Text\",\"style\":\"Medium\",\"hash\":\"\"}},{\"id\":\"3:6479\",\"text\":\"Освобождение — главная цель. Личная миссия даёт дополнительный успех, если вас не заразили.\",\"font\":{\"family\":\"Golos Text\",\"style\":\"Regular\",\"hash\":\"\"}},{\"id\":\"3:6490\",\"text\":\"Личная карточка · задания не публикуются\",\"font\":{\"family\":\"Golos Text\",\"style\":\"Regular\",\"hash\":\"\"}}]},\"P52\":{\"id\":\"3:13109\",\"name\":\"P52 · Карточка скрыта\",\"children\":[{\"id\":\"3:13110\",\"name\":\"Brand and connection\",\"type\":\"FRAME\"},{\"id\":\"3:13113\",\"name\":\"Room navigation\",\"type\":\"FRAME\"},{\"id\":\"3:13120\",\"name\":\"Personal workspace\",\"type\":\"FRAME\"},{\"id\":\"3:13128\",\"name\":\"Personal actions / outside card scroll\",\"type\":\"FRAME\"},{\"id\":\"3:13133\",\"name\":\"Small / Личная карточка · задания не публикуются\",\"type\":\"TEXT\"}],\"text\":[{\"id\":\"3:13111\",\"text\":\"ОДЕРЖИМЫЕ\",\"font\":{\"family\":\"Golos Text\",\"style\":\"Medium\",\"hash\":\"\"}},{\"id\":\"3:13112\",\"text\":\"На связи\",\"font\":{\"family\":\"Golos Text\",\"style\":\"Regular\",\"hash\":\"\"}},{\"id\":\"3:13123\",\"text\":\"Карточка скрыта\",\"font\":{\"family\":\"Golos Text\",\"style\":\"Medium\",\"hash\":\"\"}},{\"id\":\"3:13124\",\"text\":\"Готовность сохранена. Ждите начала раунда.\",\"font\":{\"family\":\"Golos Text\",\"style\":\"Regular\",\"hash\":\"\"}},{\"id\":\"3:13126\",\"text\":\"Задание закрыто\",\"font\":{\"family\":\"Golos Text\",\"style\":\"Medium\",\"hash\":\"\"}},{\"id\":\"3:13127\",\"text\":\"Откройте, когда рядом нет других игроков.\",\"font\":{\"family\":\"Golos Text\",\"style\":\"Regular\",\"hash\":\"\"}},{\"id\":\"3:13133\",\"text\":\"Личная карточка · задания не публикуются\",\"font\":{\"family\":\"Golos Text\",\"style\":\"Regular\",\"hash\":\"\"}}]},\"P01\":{\"id\":\"3:288\",\"name\":\"P01 · Ищите и освобождайте\",\"children\":[{\"id\":\"3:289\",\"name\":\"Brand and connection\",\"type\":\"FRAME\"},{\"id\":\"3:292\",\"name\":\"Room navigation\",\"type\":\"FRAME\"},{\"id\":\"3:299\",\"name\":\"Personal workspace\",\"type\":\"FRAME\"},{\"id\":\"3:309\",\"name\":\"Personal actions / outside card scroll\",\"type\":\"FRAME\"},{\"id\":\"3:316\",\"name\":\"Small / Личная карточка · задания не публикуются\",\"type\":\"TEXT\"}],\"text\":[{\"id\":\"3:290\",\"text\":\"ОДЕРЖИМЫЕ\",\"font\":{\"family\":\"Golos Text\",\"style\":\"Medium\",\"hash\":\"\"}},{\"id\":\"3:291\",\"text\":\"На связи\",\"font\":{\"family\":\"Golos Text\",\"style\":\"Regular\",\"hash\":\"\"}},{\"id\":\"3:302\",\"text\":\"Ищите и освобождайте\",\"font\":{\"family\":\"Golos Text\",\"style\":\"Medium\",\"hash\":\"\"}},{\"id\":\"3:303\",\"text\":\"Исследуйте по одному. Не возвращайтесь к столу до призыва, если карточка не разрешает иначе.\",\"font\":{\"family\":\"Golos Text\",\"style\":\"Regular\",\"hash\":\"\"}},{\"id\":\"3:316\",\"text\":\"Личная карточка · задания не публикуются\",\"font\":{\"family\":\"Golos Text\",\"style\":\"Regular\",\"hash\":\"\"}}]},\"L14\":{\"id\":\"3:2208\",\"name\":\"L14 · Новая раздача — только свободным\",\"children\":[{\"id\":\"3:2209\",\"name\":\"Main navigation\",\"type\":\"FRAME\"},{\"id\":\"3:2218\",\"name\":\"Room workspace\",\"type\":\"FRAME\"}],\"text\":[{\"id\":\"3:2210\",\"text\":\"ОДЕРЖИМЫЕ\",\"font\":{\"family\":\"Golos Text\",\"style\":\"Medium\",\"hash\":\"\"}},{\"id\":\"3:2213\",\"text\":\"Связь установлена\",\"font\":{\"family\":\"Golos Text\",\"style\":\"Regular\",\"hash\":\"\"}},{\"id\":\"3:2221\",\"text\":\"Участники\",\"font\":{\"family\":\"Golos Text\",\"style\":\"Medium\",\"hash\":\"\"}},{\"id\":\"3:2222\",\"text\":\"12/12\",\"font\":{\"family\":\"IBM Plex Mono\",\"style\":\"Medium\",\"hash\":\"ac0c3464000d8fb6175b85f8fa3e30a3fb8351fe\"}},{\"id\":\"3:2320\",\"text\":\"Исходные роли открыты.\\nЗадания остаются личными.\",\"font\":{\"family\":\"Golos Text\",\"style\":\"Regular\",\"hash\":\"\"}},{\"id\":\"3:2324\",\"text\":\"Новая раздача — только свободным\",\"font\":{\"family\":\"Golos Text\",\"style\":\"Bold\",\"hash\":\"\"}},{\"id\":\"3:2325\",\"text\":\"8 вернулись к столу. 4 участника сохраняют свои задания, группы и места. Их карточки не меняются.\",\"font\":{\"family\":\"Golos Text\",\"style\":\"Regular\",\"hash\":\"\"}},{\"id\":\"3:2327\",\"text\":\"8 новых карточек · 4 сохраняются\",\"font\":{\"family\":\"Golos Text\",\"style\":\"Medium\",\"hash\":\"\"}},{\"id\":\"3:2328\",\"text\":\"Неосвобождённые группы, места и полные задания продолжают действовать.\",\"font\":{\"family\":\"Golos Text\",\"style\":\"Regular\",\"hash\":\"\"}},{\"id\":\"3:2334\",\"text\":\"Общий ритуал\",\"font\":{\"family\":\"Golos Text\",\"style\":\"Medium\",\"hash\":\"\"}},{\"id\":\"3:2337\",\"text\":\"Осталось шагов\",\"font\":{\"family\":\"Golos Text\",\"style\":\"Regular\",\"hash\":\"\"}},{\"id\":\"3:2338\",\"text\":\"42\",\"font\":{\"family\":\"IBM Plex Mono\",\"style\":\"Medium\",\"hash\":\"ac0c3464000d8fb6175b85f8fa3e30a3fb8351fe\"}},{\"id\":\"3:2348\",\"text\":\"9\",\"font\":{\"family\":\"IBM Plex Mono\",\"style\":\"Medium\",\"hash\":\"ac0c3464000d8fb6175b85f8fa3e30a3fb8351fe\"}},{\"id\":\"3:2349\",\"text\":\"Первое\\nпрорицание\",\"font\":{\"family\":\"Golos Text\",\"style\":\"Medium\",\"hash\":\"\"}},{\"id\":\"42:17873\",\"text\":\"Закрыто\",\"font\":{\"family\":\"Golos Text\",\"style\":\"Regular\",\"hash\":\"\"}},{\"id\":\"3:2358\",\"text\":\"6\",\"font\":{\"family\":\"IBM Plex Mono\",\"style\":\"Medium\",\"hash\":\"ac0c3464000d8fb6175b85f8fa3e30a3fb8351fe\"}},{\"id\":\"3:2359\",\"text\":\"Второе\\nпрорицание\",\"font\":{\"family\":\"Golos Text\",\"style\":\"Medium\",\"hash\":\"\"}},{\"id\":\"42:17875\",\"text\":\"Закрыто\",\"font\":{\"family\":\"Golos Text\",\"style\":\"Regular\",\"hash\":\"\"}},{\"id\":\"3:2368\",\"text\":\"3\",\"font\":{\"family\":\"IBM Plex Mono\",\"style\":\"Medium\",\"hash\":\"ac0c3464000d8fb6175b85f8fa3e30a3fb8351fe\"}},{\"id\":\"3:2369\",\"text\":\"Последняя\\nдверь\",\"font\":{\"family\":\"Golos Text\",\"style\":\"Medium\",\"hash\":\"\"}},{\"id\":\"42:17877\",\"text\":\"Закрыто\",\"font\":{\"family\":\"Golos Text\",\"style\":\"Regular\",\"hash\":\"\"}},{\"id\":\"3:2370\",\"text\":\"Прорицания → дверь → выход\",\"font\":{\"family\":\"Golos Text\",\"style\":\"Regular\",\"hash\":\"\"}},{\"id\":\"3:2371\",\"text\":\"Освобождение · миссия · испытание\\nОдин успех = один шаг.\",\"font\":{\"family\":\"Golos Text\",\"style\":\"Regular\",\"hash\":\"\"}},{\"id\":\"3:2374\",\"text\":\"Открытое прорицание можно посмотреть нажатием.\",\"font\":{\"family\":\"Golos Text\",\"style\":\"Regular\",\"hash\":\"\"}}]},\"L42\":{\"id\":\"3:14223\",\"name\":\"L42 · Раунд · демонстрация призыва\",\"children\":[{\"id\":\"3:14224\",\"name\":\"Main navigation\",\"type\":\"FRAME\"},{\"id\":\"3:14230\",\"name\":\"Room workspace\",\"type\":\"FRAME\"}],\"text\":[{\"id\":\"3:14225\",\"text\":\"ОДЕРЖИМЫЕ\",\"font\":{\"family\":\"Golos Text\",\"style\":\"Medium\",\"hash\":\"\"}},{\"id\":\"3:14227\",\"text\":\"Связь установлена\",\"font\":{\"family\":\"Golos Text\",\"style\":\"Regular\",\"hash\":\"\"}},{\"id\":\"3:14233\",\"text\":\"Участники\",\"font\":{\"family\":\"Golos Text\",\"style\":\"Medium\",\"hash\":\"\"}},{\"id\":\"3:14234\",\"text\":\"12/12\",\"font\":{\"family\":\"IBM Plex Mono\",\"style\":\"Medium\",\"hash\":\"ac0c3464000d8fb6175b85f8fa3e30a3fb8351fe\"}},{\"id\":\"3:14248\",\"text\":\"Исходные роли открыты.\\nЗадания остаются личными.\",\"font\":{\"family\":\"Golos Text\",\"style\":\"Regular\",\"hash\":\"\"}},{\"id\":\"3:14251\",\"text\":\"Дом слушает\",\"font\":{\"family\":\"Golos Text\",\"style\":\"Bold\",\"hash\":\"\"}},{\"id\":\"3:14252\",\"text\":\"Исследуйте по одному. Главная цель — освобождать одержимых. Ведущий сам объявит возвращение.\",\"font\":{\"family\":\"Golos Text\",\"style\":\"Regular\",\"hash\":\"\"}},{\"id\":\"3:14262\",\"text\":\"Общий ритуал\",\"font\":{\"family\":\"Golos Text\",\"style\":\"Medium\",\"hash\":\"\"}},{\"id\":\"3:14264\",\"text\":\"Осталось шагов\",\"font\":{\"family\":\"Golos Text\",\"style\":\"Regular\",\"hash\":\"\"}},{\"id\":\"3:14265\",\"text\":\"46\",\"font\":{\"family\":\"IBM Plex Mono\",\"style\":\"Medium\",\"hash\":\"ac0c3464000d8fb6175b85f8fa3e30a3fb8351fe\"}},{\"id\":\"3:14275\",\"text\":\"13\",\"font\":{\"family\":\"IBM Plex Mono\",\"style\":\"Medium\",\"hash\":\"ac0c3464000d8fb6175b85f8fa3e30a3fb8351fe\"}},{\"id\":\"3:14276\",\"text\":\"Первое\\nпрорицание\",\"font\":{\"family\":\"Golos Text\",\"style\":\"Medium\",\"hash\":\"\"}},{\"id\":\"42:18227\",\"text\":\"Закрыто\",\"font\":{\"family\":\"Golos Text\",\"style\":\"Regular\",\"hash\":\"\"}},{\"id\":\"3:14285\",\"text\":\"2\",\"font\":{\"family\":\"IBM Plex Mono\",\"style\":\"Medium\",\"hash\":\"ac0c3464000d8fb6175b85f8fa3e30a3fb8351fe\"}},{\"id\":\"3:14286\",\"text\":\"Второе\\nпрорицание\",\"font\":{\"family\":\"Golos Text\",\"style\":\"Medium\",\"hash\":\"\"}},{\"id\":\"42:18229\",\"text\":\"Закрыто\",\"font\":{\"family\":\"Golos Text\",\"style\":\"Regular\",\"hash\":\"\"}},{\"id\":\"3:14295\",\"text\":\"3\",\"font\":{\"family\":\"IBM Plex Mono\",\"style\":\"Medium\",\"hash\":\"ac0c3464000d8fb6175b85f8fa3e30a3fb8351fe\"}},{\"id\":\"3:14296\",\"text\":\"Последняя\\nдверь\",\"font\":{\"family\":\"Golos Text\",\"style\":\"Medium\",\"hash\":\"\"}},{\"id\":\"42:18231\",\"text\":\"Закрыто\",\"font\":{\"family\":\"Golos Text\",\"style\":\"Regular\",\"hash\":\"\"}},{\"id\":\"3:14297\",\"text\":\"Прорицания → дверь → выход\",\"font\":{\"family\":\"Golos Text\",\"style\":\"Regular\",\"hash\":\"\"}},{\"id\":\"3:14298\",\"text\":\"Освобождение · миссия · испытание\\nОдин успех = один шаг.\",\"font\":{\"family\":\"Golos Text\",\"style\":\"Regular\",\"hash\":\"\"}},{\"id\":\"3:14300\",\"text\":\"Открытое прорицание можно посмотреть нажатием.\",\"font\":{\"family\":\"Golos Text\",\"style\":\"Regular\",\"hash\":\"\"}}]},\"L45\":{\"id\":\"20:11343\",\"name\":\"L45 · Раунд 2 · Дом слушает\",\"children\":[{\"id\":\"20:11344\",\"name\":\"Main navigation\",\"type\":\"FRAME\"},{\"id\":\"20:11350\",\"name\":\"Room workspace\",\"type\":\"FRAME\"}],\"text\":[{\"id\":\"20:11345\",\"text\":\"ОДЕРЖИМЫЕ\",\"font\":{\"family\":\"Golos Text\",\"style\":\"Medium\",\"hash\":\"\"}},{\"id\":\"20:11347\",\"text\":\"Связь установлена\",\"font\":{\"family\":\"Golos Text\",\"style\":\"Regular\",\"hash\":\"\"}},{\"id\":\"20:11353\",\"text\":\"Участники\",\"font\":{\"family\":\"Golos Text\",\"style\":\"Medium\",\"hash\":\"\"}},{\"id\":\"20:11354\",\"text\":\"12/12\",\"font\":{\"family\":\"IBM Plex Mono\",\"style\":\"Medium\",\"hash\":\"ac0c3464000d8fb6175b85f8fa3e30a3fb8351fe\"}},{\"id\":\"20:11368\",\"text\":\"Исходные роли открыты.\\nЗадания остаются личными.\",\"font\":{\"family\":\"Golos Text\",\"style\":\"Regular\",\"hash\":\"\"}},{\"id\":\"20:11371\",\"text\":\"Дом слушает\",\"font\":{\"family\":\"Golos Text\",\"style\":\"Bold\",\"hash\":\"\"}},{\"id\":\"20:11372\",\"text\":\"Новые экзорцисты исследуют по одному. Сохранённые группы продолжают прежние задания.\",\"font\":{\"family\":\"Golos Text\",\"style\":\"Regular\",\"hash\":\"\"}},{\"id\":\"20:11382\",\"text\":\"Общий ритуал\",\"font\":{\"family\":\"Golos Text\",\"style\":\"Medium\",\"hash\":\"\"}},{\"id\":\"20:11384\",\"text\":\"Осталось шагов\",\"font\":{\"family\":\"Golos Text\",\"style\":\"Regular\",\"hash\":\"\"}},{\"id\":\"20:11385\",\"text\":\"42\",\"font\":{\"family\":\"IBM Plex Mono\",\"style\":\"Medium\",\"hash\":\"ac0c3464000d8fb6175b85f8fa3e30a3fb8351fe\"}},{\"id\":\"20:11395\",\"text\":\"9\",\"font\":{\"family\":\"IBM Plex Mono\",\"style\":\"Medium\",\"hash\":\"ac0c3464000d8fb6175b85f8fa3e30a3fb8351fe\"}},{\"id\":\"20:11396\",\"text\":\"Первое\\nпрорицание\",\"font\":{\"family\":\"Golos Text\",\"style\":\"Medium\",\"hash\":\"\"}},{\"id\":\"42:18409\",\"text\":\"Закрыто\",\"font\":{\"family\":\"Golos Text\",\"style\":\"Regular\",\"hash\":\"\"}},{\"id\":\"20:11405\",\"text\":\"6\",\"font\":{\"family\":\"IBM Plex Mono\",\"style\":\"Medium\",\"hash\":\"ac0c3464000d8fb6175b85f8fa3e30a3fb8351fe\"}},{\"id\":\"20:11406\",\"text\":\"Второе\\nпрорицание\",\"font\":{\"family\":\"Golos Text\",\"style\":\"Medium\",\"hash\":\"\"}},{\"id\":\"42:18411\",\"text\":\"Закрыто\",\"font\":{\"family\":\"Golos Text\",\"style\":\"Regular\",\"hash\":\"\"}},{\"id\":\"20:11415\",\"text\":\"3\",\"font\":{\"family\":\"IBM Plex Mono\",\"style\":\"Medium\",\"hash\":\"ac0c3464000d8fb6175b85f8fa3e30a3fb8351fe\"}},{\"id\":\"20:11416\",\"text\":\"Последняя\\nдверь\",\"font\":{\"family\":\"Golos Text\",\"style\":\"Medium\",\"hash\":\"\"}},{\"id\":\"42:18413\",\"text\":\"Закрыто\",\"font\":{\"family\":\"Golos Text\",\"style\":\"Regular\",\"hash\":\"\"}},{\"id\":\"20:11417\",\"text\":\"Прорицания → дверь → выход\",\"font\":{\"family\":\"Golos Text\",\"style\":\"Regular\",\"hash\":\"\"}},{\"id\":\"20:11418\",\"text\":\"Освобождение · миссия · испытание\\nОдин успех = один шаг.\",\"font\":{\"family\":\"Golos Text\",\"style\":\"Regular\",\"hash\":\"\"}},{\"id\":\"20:11420\",\"text\":\"Открытое прорицание можно посмотреть нажатием.\",\"font\":{\"family\":\"Golos Text\",\"style\":\"Regular\",\"hash\":\"\"}}]},\"A10\":{\"id\":\"3:10790\",\"name\":\"A10 · Один шаг назад\",\"children\":[{\"id\":\"3:10791\",\"name\":\"Main navigation\",\"type\":\"FRAME\"},{\"id\":\"3:10800\",\"name\":\"Room workspace\",\"type\":\"FRAME\"}],\"text\":[{\"id\":\"3:10792\",\"text\":\"ОДЕРЖИМЫЕ\",\"font\":{\"family\":\"Golos Text\",\"style\":\"Medium\",\"hash\":\"\"}},{\"id\":\"3:10795\",\"text\":\"Связь установлена\",\"font\":{\"family\":\"Golos Text\",\"style\":\"Regular\",\"hash\":\"\"}},{\"id\":\"3:10803\",\"text\":\"Участники\",\"font\":{\"family\":\"Golos Text\",\"style\":\"Medium\",\"hash\":\"\"}},{\"id\":\"3:10804\",\"text\":\"12/12\",\"font\":{\"family\":\"IBM Plex Mono\",\"style\":\"Medium\",\"hash\":\"ac0c3464000d8fb6175b85f8fa3e30a3fb8351fe\"}},{\"id\":\"3:10902\",\"text\":\"Исходные роли открыты.\\nЗадания остаются личными.\",\"font\":{\"family\":\"Golos Text\",\"style\":\"Regular\",\"hash\":\"\"}},{\"id\":\"3:10906\",\"text\":\"Один шаг назад\",\"font\":{\"family\":\"Golos Text\",\"style\":\"Bold\",\"hash\":\"\"}},{\"id\":\"3:10907\",\"text\":\"Во второй стопке больше всего свечей: одна возвращается к первому прорицанию. Оно остаётся открытым.\",\"font\":{\"family\":\"Golos Text\",\"style\":\"Regular\",\"hash\":\"\"}},{\"id\":\"3:10958\",\"text\":\"Имена стёрты\",\"font\":{\"family\":\"Golos Text\",\"style\":\"Medium\",\"hash\":\"\"}},{\"id\":\"3:10959\",\"text\":\"1\",\"font\":{\"family\":\"Golos Text\",\"style\":\"Bold\",\"hash\":\"\"}},{\"id\":\"3:10960\",\"text\":\"Посмотреть условие\",\"font\":{\"family\":\"Golos Text\",\"style\":\"Regular\",\"hash\":\"\"}},{\"id\":\"3:10962\",\"text\":\"Второе прорицание\",\"font\":{\"family\":\"Golos Text\",\"style\":\"Medium\",\"hash\":\"\"}},{\"id\":\"3:10963\",\"text\":\"14\",\"font\":{\"family\":\"Golos Text\",\"style\":\"Bold\",\"hash\":\"\"}},{\"id\":\"3:10964\",\"text\":\"Закрыто\",\"font\":{\"family\":\"Golos Text\",\"style\":\"Regular\",\"hash\":\"\"}},{\"id\":\"3:10966\",\"text\":\"Последняя дверь\",\"font\":{\"family\":\"Golos Text\",\"style\":\"Medium\",\"hash\":\"\"}},{\"id\":\"3:10967\",\"text\":\"3\",\"font\":{\"family\":\"Golos Text\",\"style\":\"Bold\",\"hash\":\"\"}},{\"id\":\"3:10968\",\"text\":\"Закрыто\",\"font\":{\"family\":\"Golos Text\",\"style\":\"Regular\",\"hash\":\"\"}},{\"id\":\"3:10915\",\"text\":\"Общий ритуал\",\"font\":{\"family\":\"Golos Text\",\"style\":\"Medium\",\"hash\":\"\"}},{\"id\":\"3:10918\",\"text\":\"Осталось шагов\",\"font\":{\"family\":\"Golos Text\",\"style\":\"Regular\",\"hash\":\"\"}},{\"id\":\"3:10919\",\"text\":\"34\",\"font\":{\"family\":\"IBM Plex Mono\",\"style\":\"Medium\",\"hash\":\"ac0c3464000d8fb6175b85f8fa3e30a3fb8351fe\"}},{\"id\":\"3:10929\",\"text\":\"1\",\"font\":{\"family\":\"IBM Plex Mono\",\"style\":\"Medium\",\"hash\":\"ac0c3464000d8fb6175b85f8fa3e30a3fb8351fe\"}},{\"id\":\"3:10930\",\"text\":\"Имена\\nстёрты\",\"font\":{\"family\":\"Golos Text\",\"style\":\"Medium\",\"hash\":\"\"}},{\"id\":\"42:18127\",\"text\":\"Открыто\",\"font\":{\"family\":\"Golos Text\",\"style\":\"Regular\",\"hash\":\"\"}},{\"id\":\"3:10939\",\"text\":\"14\",\"font\":{\"family\":\"IBM Plex Mono\",\"style\":\"Medium\",\"hash\":\"ac0c3464000d8fb6175b85f8fa3e30a3fb8351fe\"}},{\"id\":\"3:10940\",\"text\":\"Второе\\nпрорицание\",\"font\":{\"family\":\"Golos Text\",\"style\":\"Medium\",\"hash\":\"\"}},{\"id\":\"42:18130\",\"text\":\"Закрыто\",\"font\":{\"family\":\"Golos Text\",\"style\":\"Regular\",\"hash\":\"\"}},{\"id\":\"3:10949\",\"text\":\"3\",\"font\":{\"family\":\"IBM Plex Mono\",\"style\":\"Medium\",\"hash\":\"ac0c3464000d8fb6175b85f8fa3e30a3fb8351fe\"}},{\"id\":\"3:10950\",\"text\":\"Последняя\\nдверь\",\"font\":{\"family\":\"Golos Text\",\"style\":\"Medium\",\"hash\":\"\"}},{\"id\":\"42:18133\",\"text\":\"Закрыто\",\"font\":{\"family\":\"Golos Text\",\"style\":\"Regular\",\"hash\":\"\"}},{\"id\":\"3:10951\",\"text\":\"Прорицания → дверь → выход\",\"font\":{\"family\":\"Golos Text\",\"style\":\"Regular\",\"hash\":\"\"}},{\"id\":\"3:10952\",\"text\":\"Освобождение · миссия · испытание\\nОдин успех = один шаг.\",\"font\":{\"family\":\"Golos Text\",\"style\":\"Regular\",\"hash\":\"\"}},{\"id\":\"3:10955\",\"text\":\"Открытое прорицание можно посмотреть нажатием.\",\"font\":{\"family\":\"Golos Text\",\"style\":\"Regular\",\"hash\":\"\"}}]},\"M02\":{\"id\":\"3:7476\",\"name\":\"M02 · Настройки партии\",\"children\":[{\"id\":\"3:7477\",\"name\":\"Dialog header\",\"type\":\"FRAME\"},{\"id\":\"3:7481\",\"name\":\"Dialog scroll region\",\"type\":\"FRAME\"},{\"id\":\"3:7495\",\"name\":\"Action / Готово\",\"type\":\"INSTANCE\"}],\"text\":[{\"id\":\"3:7478\",\"text\":\"Настройки партии\",\"font\":{\"family\":\"Golos Text\",\"style\":\"Medium\",\"hash\":\"\"}},{\"id\":\"3:7482\",\"text\":\"Семь раундов. Настройки выданных заданий заблокированы до следующей допустимой подготовки.\",\"font\":{\"family\":\"Golos Text\",\"style\":\"Regular\",\"hash\":\"\"}},{\"id\":\"31:14856\",\"text\":\"Таймеры этапов\",\"font\":{\"family\":\"Golos Text\",\"style\":\"Medium\",\"hash\":\"\"}},{\"id\":\"31:14857\",\"text\":\"Расстановка — 45 секунд. Раунд — 4 минуты. Пауза останавливает отсчёт. Чтение и сверка — без таймера.\",\"font\":{\"family\":\"Golos Text\",\"style\":\"Regular\",\"hash\":\"\"}},{\"id\":\"3:7484\",\"text\":\"Партия · 7 раундов\",\"font\":{\"family\":\"Golos Text\",\"style\":\"Medium\",\"hash\":\"\"}},{\"id\":\"3:7485\",\"text\":\"Первая партия: эффекты испытаний выключены на все семь раундов.\",\"font\":{\"family\":\"Golos Text\",\"style\":\"Regular\",\"hash\":\"\"}},{\"id\":\"3:7489\",\"text\":\"Порядок и состав\",\"font\":{\"family\":\"Golos Text\",\"style\":\"Medium\",\"hash\":\"\"}},{\"id\":\"3:7490\",\"text\":\"5–12 человек. Выданные задания не меняются настройками.\",\"font\":{\"family\":\"Golos Text\",\"style\":\"Regular\",\"hash\":\"\"}}]}},\"api\":{\"set\":\"undefined\",\"fonts\":\"function\"},\"sections\":[{\"id\":\"3:27986\",\"name\":\"01 · Ноутбук · 5–12 человек\",\"type\":\"SECTION\",\"count\":73},{\"id\":\"3:27987\",\"name\":\"02 · Личные карточки · 320 / 390 / 430\",\"type\":\"SECTION\",\"count\":174},{\"id\":\"3:27988\",\"name\":\"03 · Настройки, обучение и редактор\",\"type\":\"SECTION\",\"count\":121},{\"id\":\"3:27989\",\"name\":\"04 · Ритуал и движение\",\"type\":\"SECTION\",\"count\":26},{\"id\":\"3:27990\",\"name\":\"05 · Каталог для проверки\",\"type\":\"SECTION\",\"count\":10},{\"id\":\"2:13969\",\"name\":\"Эллипс 1\",\"type\":\"ELLIPSE\"}]}"
+      }
+    ],
+    "structuredContent": {
+      "api": {
+        "set": "undefined",
+        "fonts": "function"
+      },
+      "data": {
+        "P08": {
+          "id": "3:6464",
+          "name": "P08 · Прочитайте миссию",
+          "children": [
+            {
+              "id": "3:6465",
+              "name": "Brand and connection",
+              "type": "FRAME"
+            },
+            {
+              "id": "3:6468",
+              "name": "Room navigation",
+              "type": "FRAME"
+            },
+            {
+              "id": "3:6475",
+              "name": "Personal workspace",
+              "type": "FRAME"
+            },
+            {
+              "id": "3:6485",
+              "name": "Personal actions / outside card scroll",
+              "type": "FRAME"
+            },
+            {
+              "id": "3:6490",
+              "name": "Small / Личная карточка · задания не публикуются",
+              "type": "TEXT"
+            }
+          ],
+          "text": [
+            {
+              "id": "3:6466",
+              "text": "ОДЕРЖИМЫЕ",
+              "font": {
+                "family": "Golos Text",
+                "style": "Medium",
+                "hash": ""
+              }
+            },
+            {
+              "id": "3:6467",
+              "text": "На связи",
+              "font": {
+                "family": "Golos Text",
+                "style": "Regular",
+                "hash": ""
+              }
+            },
+            {
+              "id": "3:6478",
+              "text": "Прочитайте миссию",
+              "font": {
+                "family": "Golos Text",
+                "style": "Medium",
+                "hash": ""
+              }
+            },
+            {
+              "id": "3:6479",
+              "text": "Освобождение — главная цель. Личная миссия даёт дополнительный успех, если вас не заразили.",
+              "font": {
+                "family": "Golos Text",
+                "style": "Regular",
+                "hash": ""
+              }
+            },
+            {
+              "id": "3:6490",
+              "text": "Личная карточка · задания не публикуются",
+              "font": {
+                "family": "Golos Text",
+                "style": "Regular",
+                "hash": ""
+              }
+            }
+          ]
+        },
+        "P52": {
+          "id": "3:13109",
+          "name": "P52 · Карточка скрыта",
+          "children": [
+            {
+              "id": "3:13110",
+              "name": "Brand and connection",
+              "type": "FRAME"
+            },
+            {
+              "id": "3:13113",
+              "name": "Room navigation",
+              "type": "FRAME"
+            },
+            {
+              "id": "3:13120",
+              "name": "Personal workspace",
+              "type": "FRAME"
+            },
+            {
+              "id": "3:13128",
+              "name": "Personal actions / outside card scroll",
+              "type": "FRAME"
+            },
+            {
+              "id": "3:13133",
+              "name": "Small / Личная карточка · задания не публикуются",
+              "type": "TEXT"
+            }
+          ],
+          "text": [
+            {
+              "id": "3:13111",
+              "text": "ОДЕРЖИМЫЕ",
+              "font": {
+                "family": "Golos Text",
+                "style": "Medium",
+                "hash": ""
+              }
+            },
+            {
+              "id": "3:13112",
+              "text": "На связи",
+              "font": {
+                "family": "Golos Text",
+                "style": "Regular",
+                "hash": ""
+              }
+            },
+            {
+              "id": "3:13123",
+              "text": "Карточка скрыта",
+              "font": {
+                "family": "Golos Text",
+                "style": "Medium",
+                "hash": ""
+              }
+            },
+            {
+              "id": "3:13124",
+              "text": "Готовность сохранена. Ждите начала раунда.",
+              "font": {
+                "family": "Golos Text",
+                "style": "Regular",
+                "hash": ""
+              }
+            },
+            {
+              "id": "3:13126",
+              "text": "Задание закрыто",
+              "font": {
+                "family": "Golos Text",
+                "style": "Medium",
+                "hash": ""
+              }
+            },
+            {
+              "id": "3:13127",
+              "text": "Откройте, когда рядом нет других игроков.",
+              "font": {
+                "family": "Golos Text",
+                "style": "Regular",
+                "hash": ""
+              }
+            },
+            {
+              "id": "3:13133",
+              "text": "Личная карточка · задания не публикуются",
+              "font": {
+                "family": "Golos Text",
+                "style": "Regular",
+                "hash": ""
+              }
+            }
+          ]
+        },
+        "P01": {
+          "id": "3:288",
+          "name": "P01 · Ищите и освобождайте",
+          "children": [
+            {
+              "id": "3:289",
+              "name": "Brand and connection",
+              "type": "FRAME"
+            },
+            {
+              "id": "3:292",
+              "name": "Room navigation",
+              "type": "FRAME"
+            },
+            {
+              "id": "3:299",
+              "name": "Personal workspace",
+              "type": "FRAME"
+            },
+            {
+              "id": "3:309",
+              "name": "Personal actions / outside card scroll",
+              "type": "FRAME"
+            },
+            {
+              "id": "3:316",
+              "name": "Small / Личная карточка · задания не публикуются",
+              "type": "TEXT"
+            }
+          ],
+          "text": [
+            {
+              "id": "3:290",
+              "text": "ОДЕРЖИМЫЕ",
+              "font": {
+                "family": "Golos Text",
+                "style": "Medium",
+                "hash": ""
+              }
+            },
+            {
+              "id": "3:291",
+              "text": "На связи",
+              "font": {
+                "family": "Golos Text",
+                "style": "Regular",
+                "hash": ""
+              }
+            },
+            {
+              "id": "3:302",
+              "text": "Ищите и освобождайте",
+              "font": {
+                "family": "Golos Text",
+                "style": "Medium",
+                "hash": ""
+              }
+            },
+            {
+              "id": "3:303",
+              "text": "Исследуйте по одному. Не возвращайтесь к столу до призыва, если карточка не разрешает иначе.",
+              "font": {
+                "family": "Golos Text",
+                "style": "Regular",
+                "hash": ""
+              }
+            },
+            {
+              "id": "3:316",
+              "text": "Личная карточка · задания не публикуются",
+              "font": {
+                "family": "Golos Text",
+                "style": "Regular",
+                "hash": ""
+              }
+            }
+          ]
+        },
+        "L14": {
+          "id": "3:2208",
+          "name": "L14 · Новая раздача — только свободным",
+          "children": [
+            {
+              "id": "3:2209",
+              "name": "Main navigation",
+              "type": "FRAME"
+            },
+            {
+              "id": "3:2218",
+              "name": "Room workspace",
+              "type": "FRAME"
+            }
+          ],
+          "text": [
+            {
+              "id": "3:2210",
+              "text": "ОДЕРЖИМЫЕ",
+              "font": {
+                "family": "Golos Text",
+                "style": "Medium",
+                "hash": ""
+              }
+            },
+            {
+              "id": "3:2213",
+              "text": "Связь установлена",
+              "font": {
+                "family": "Golos Text",
+                "style": "Regular",
+                "hash": ""
+              }
+            },
+            {
+              "id": "3:2221",
+              "text": "Участники",
+              "font": {
+                "family": "Golos Text",
+                "style": "Medium",
+                "hash": ""
+              }
+            },
+            {
+              "id": "3:2222",
+              "text": "12/12",
+              "font": {
+                "family": "IBM Plex Mono",
+                "style": "Medium",
+                "hash": "ac0c3464000d8fb6175b85f8fa3e30a3fb8351fe"
+              }
+            },
+            {
+              "id": "3:2320",
+              "text": "Исходные роли открыты.\nЗадания остаются личными.",
+              "font": {
+                "family": "Golos Text",
+                "style": "Regular",
+                "hash": ""
+              }
+            },
+            {
+              "id": "3:2324",
+              "text": "Новая раздача — только свободным",
+              "font": {
+                "family": "Golos Text",
+                "style": "Bold",
+                "hash": ""
+              }
+            },
+            {
+              "id": "3:2325",
+              "text": "8 вернулись к столу. 4 участника сохраняют свои задания, группы и места. Их карточки не меняются.",
+              "font": {
+                "family": "Golos Text",
+                "style": "Regular",
+                "hash": ""
+              }
+            },
+            {
+              "id": "3:2327",
+              "text": "8 новых карточек · 4 сохраняются",
+              "font": {
+                "family": "Golos Text",
+                "style": "Medium",
+                "hash": ""
+              }
+            },
+            {
+              "id": "3:2328",
+              "text": "Неосвобождённые группы, места и полные задания продолжают действовать.",
+              "font": {
+                "family": "Golos Text",
+                "style": "Regular",
+                "hash": ""
+              }
+            },
+            {
+              "id": "3:2334",
+              "text": "Общий ритуал",
+              "font": {
+                "family": "Golos Text",
+                "style": "Medium",
+                "hash": ""
+              }
+            },
+            {
+              "id": "3:2337",
+              "text": "Осталось шагов",
+              "font": {
+                "family": "Golos Text",
+                "style": "Regular",
+                "hash": ""
+              }
+            },
+            {
+              "id": "3:2338",
+              "text": "42",
+              "font": {
+                "family": "IBM Plex Mono",
+                "style": "Medium",
+                "hash": "ac0c3464000d8fb6175b85f8fa3e30a3fb8351fe"
+              }
+            },
+            {
+              "id": "3:2348",
+              "text": "9",
+              "font": {
+                "family": "IBM Plex Mono",
+                "style": "Medium",
+                "hash": "ac0c3464000d8fb6175b85f8fa3e30a3fb8351fe"
+              }
+            },
+            {
+              "id": "3:2349",
+              "text": "Первое\nпрорицание",
+              "font": {
+                "family": "Golos Text",
+                "style": "Medium",
+                "hash": ""
+              }
+            },
+            {
+              "id": "42:17873",
+              "text": "Закрыто",
+              "font": {
+                "family": "Golos Text",
+                "style": "Regular",
+                "hash": ""
+              }
+            },
+            {
+              "id": "3:2358",
+              "text": "6",
+              "font": {
+                "family": "IBM Plex Mono",
+                "style": "Medium",
+                "hash": "ac0c3464000d8fb6175b85f8fa3e30a3fb8351fe"
+              }
+            },
+            {
+              "id": "3:2359",
+              "text": "Второе\nпрорицание",
+              "font": {
+                "family": "Golos Text",
+                "style": "Medium",
+                "hash": ""
+              }
+            },
+            {
+              "id": "42:17875",
+              "text": "Закрыто",
+              "font": {
+                "family": "Golos Text",
+                "style": "Regular",
+                "hash": ""
+              }
+            },
+            {
+              "id": "3:2368",
+              "text": "3",
+              "font": {
+                "family": "IBM Plex Mono",
+                "style": "Medium",
+                "hash": "ac0c3464000d8fb6175b85f8fa3e30a3fb8351fe"
+              }
+            },
+            {
+              "id": "3:2369",
+              "text": "Последняя\nдверь",
+              "font": {
+                "family": "Golos Text",
+                "style": "Medium",
+                "hash": ""
+              }
+            },
+            {
+              "id": "42:17877",
+              "text": "Закрыто",
+              "font": {
+                "family": "Golos Text",
+                "style": "Regular",
+                "hash": ""
+              }
+            },
+            {
+              "id": "3:2370",
+              "text": "Прорицания → дверь → выход",
+              "font": {
+                "family": "Golos Text",
+                "style": "Regular",
+                "hash": ""
+              }
+            },
+            {
+              "id": "3:2371",
+              "text": "Освобождение · миссия · испытание\nОдин успех = один шаг.",
+              "font": {
+                "family": "Golos Text",
+                "style": "Regular",
+                "hash": ""
+              }
+            },
+            {
+              "id": "3:2374",
+              "text": "Открытое прорицание можно посмотреть нажатием.",
+              "font": {
+                "family": "Golos Text",
+                "style": "Regular",
+                "hash": ""
+              }
+            }
+          ]
+        },
+        "L42": {
+          "id": "3:14223",
+          "name": "L42 · Раунд · демонстрация призыва",
+          "children": [
+            {
+              "id": "3:14224",
+              "name": "Main navigation",
+              "type": "FRAME"
+            },
+            {
+              "id": "3:14230",
+              "name": "Room workspace",
+              "type": "FRAME"
+            }
+          ],
+          "text": [
+            {
+              "id": "3:14225",
+              "text": "ОДЕРЖИМЫЕ",
+              "font": {
+                "family": "Golos Text",
+                "style": "Medium",
+                "hash": ""
+              }
+            },
+            {
+              "id": "3:14227",
+              "text": "Связь установлена",
+              "font": {
+                "family": "Golos Text",
+                "style": "Regular",
+                "hash": ""
+              }
+            },
+            {
+              "id": "3:14233",
+              "text": "Участники",
+              "font": {
+                "family": "Golos Text",
+                "style": "Medium",
+                "hash": ""
+              }
+            },
+            {
+              "id": "3:14234",
+              "text": "12/12",
+              "font": {
+                "family": "IBM Plex Mono",
+                "style": "Medium",
+                "hash": "ac0c3464000d8fb6175b85f8fa3e30a3fb8351fe"
+              }
+            },
+            {
+              "id": "3:14248",
+              "text": "Исходные роли открыты.\nЗадания остаются личными.",
+              "font": {
+                "family": "Golos Text",
+                "style": "Regular",
+                "hash": ""
+              }
+            },
+            {
+              "id": "3:14251",
+              "text": "Дом слушает",
+              "font": {
+                "family": "Golos Text",
+                "style": "Bold",
+                "hash": ""
+              }
+            },
+            {
+              "id": "3:14252",
+              "text": "Исследуйте по одному. Главная цель — освобождать одержимых. Ведущий сам объявит возвращение.",
+              "font": {
+                "family": "Golos Text",
+                "style": "Regular",
+                "hash": ""
+              }
+            },
+            {
+              "id": "3:14262",
+              "text": "Общий ритуал",
+              "font": {
+                "family": "Golos Text",
+                "style": "Medium",
+                "hash": ""
+              }
+            },
+            {
+              "id": "3:14264",
+              "text": "Осталось шагов",
+              "font": {
+                "family": "Golos Text",
+                "style": "Regular",
+                "hash": ""
+              }
+            },
+            {
+              "id": "3:14265",
+              "text": "46",
+              "font": {
+                "family": "IBM Plex Mono",
+                "style": "Medium",
+                "hash": "ac0c3464000d8fb6175b85f8fa3e30a3fb8351fe"
+              }
+            },
+            {
+              "id": "3:14275",
+              "text": "13",
+              "font": {
+                "family": "IBM Plex Mono",
+                "style": "Medium",
+                "hash": "ac0c3464000d8fb6175b85f8fa3e30a3fb8351fe"
+              }
+            },
+            {
+              "id": "3:14276",
+              "text": "Первое\nпрорицание",
+              "font": {
+                "family": "Golos Text",
+                "style": "Medium",
+                "hash": ""
+              }
+            },
+            {
+              "id": "42:18227",
+              "text": "Закрыто",
+              "font": {
+                "family": "Golos Text",
+                "style": "Regular",
+                "hash": ""
+              }
+            },
+            {
+              "id": "3:14285",
+              "text": "2",
+              "font": {
+                "family": "IBM Plex Mono",
+                "style": "Medium",
+                "hash": "ac0c3464000d8fb6175b85f8fa3e30a3fb8351fe"
+              }
+            },
+            {
+              "id": "3:14286",
+              "text": "Второе\nпрорицание",
+              "font": {
+                "family": "Golos Text",
+                "style": "Medium",
+                "hash": ""
+              }
+            },
+            {
+              "id": "42:18229",
+              "text": "Закрыто",
+              "font": {
+                "family": "Golos Text",
+                "style": "Regular",
+                "hash": ""
+              }
+            },
+            {
+              "id": "3:14295",
+              "text": "3",
+              "font": {
+                "family": "IBM Plex Mono",
+                "style": "Medium",
+                "hash": "ac0c3464000d8fb6175b85f8fa3e30a3fb8351fe"
+              }
+            },
+            {
+              "id": "3:14296",
+              "text": "Последняя\nдверь",
+              "font": {
+                "family": "Golos Text",
+                "style": "Medium",
+                "hash": ""
+              }
+            },
+            {
+              "id": "42:18231",
+              "text": "Закрыто",
+              "font": {
+                "family": "Golos Text",
+                "style": "Regular",
+                "hash": ""
+              }
+            },
+            {
+              "id": "3:14297",
+              "text": "Прорицания → дверь → выход",
+              "font": {
+                "family": "Golos Text",
+                "style": "Regular",
+                "hash": ""
+              }
+            },
+            {
+              "id": "3:14298",
+              "text": "Освобождение · миссия · испытание\nОдин успех = один шаг.",
+              "font": {
+                "family": "Golos Text",
+                "style": "Regular",
+                "hash": ""
+              }
+            },
+            {
+              "id": "3:14300",
+              "text": "Открытое прорицание можно посмотреть нажатием.",
+              "font": {
+                "family": "Golos Text",
+                "style": "Regular",
+                "hash": ""
+              }
+            }
+          ]
+        },
+        "L45": {
+          "id": "20:11343",
+          "name": "L45 · Раунд 2 · Дом слушает",
+          "children": [
+            {
+              "id": "20:11344",
+              "name": "Main navigation",
+              "type": "FRAME"
+            },
+            {
+              "id": "20:11350",
+              "name": "Room workspace",
+              "type": "FRAME"
+            }
+          ],
+          "text": [
+            {
+              "id": "20:11345",
+              "text": "ОДЕРЖИМЫЕ",
+              "font": {
+                "family": "Golos Text",
+                "style": "Medium",
+                "hash": ""
+              }
+            },
+            {
+              "id": "20:11347",
+              "text": "Связь установлена",
+              "font": {
+                "family": "Golos Text",
+                "style": "Regular",
+                "hash": ""
+              }
+            },
+            {
+              "id": "20:11353",
+              "text": "Участники",
+              "font": {
+                "family": "Golos Text",
+                "style": "Medium",
+                "hash": ""
+              }
+            },
+            {
+              "id": "20:11354",
+              "text": "12/12",
+              "font": {
+                "family": "IBM Plex Mono",
+                "style": "Medium",
+                "hash": "ac0c3464000d8fb6175b85f8fa3e30a3fb8351fe"
+              }
+            },
+            {
+              "id": "20:11368",
+              "text": "Исходные роли открыты.\nЗадания остаются личными.",
+              "font": {
+                "family": "Golos Text",
+                "style": "Regular",
+                "hash": ""
+              }
+            },
+            {
+              "id": "20:11371",
+              "text": "Дом слушает",
+              "font": {
+                "family": "Golos Text",
+                "style": "Bold",
+                "hash": ""
+              }
+            },
+            {
+              "id": "20:11372",
+              "text": "Новые экзорцисты исследуют по одному. Сохранённые группы продолжают прежние задания.",
+              "font": {
+                "family": "Golos Text",
+                "style": "Regular",
+                "hash": ""
+              }
+            },
+            {
+              "id": "20:11382",
+              "text": "Общий ритуал",
+              "font": {
+                "family": "Golos Text",
+                "style": "Medium",
+                "hash": ""
+              }
+            },
+            {
+              "id": "20:11384",
+              "text": "Осталось шагов",
+              "font": {
+                "family": "Golos Text",
+                "style": "Regular",
+                "hash": ""
+              }
+            },
+            {
+              "id": "20:11385",
+              "text": "42",
+              "font": {
+                "family": "IBM Plex Mono",
+                "style": "Medium",
+                "hash": "ac0c3464000d8fb6175b85f8fa3e30a3fb8351fe"
+              }
+            },
+            {
+              "id": "20:11395",
+              "text": "9",
+              "font": {
+                "family": "IBM Plex Mono",
+                "style": "Medium",
+                "hash": "ac0c3464000d8fb6175b85f8fa3e30a3fb8351fe"
+              }
+            },
+            {
+              "id": "20:11396",
+              "text": "Первое\nпрорицание",
+              "font": {
+                "family": "Golos Text",
+                "style": "Medium",
+                "hash": ""
+              }
+            },
+            {
+              "id": "42:18409",
+              "text": "Закрыто",
+              "font": {
+                "family": "Golos Text",
+                "style": "Regular",
+                "hash": ""
+              }
+            },
+            {
+              "id": "20:11405",
+              "text": "6",
+              "font": {
+                "family": "IBM Plex Mono",
+                "style": "Medium",
+                "hash": "ac0c3464000d8fb6175b85f8fa3e30a3fb8351fe"
+              }
+            },
+            {
+              "id": "20:11406",
+              "text": "Второе\nпрорицание",
+              "font": {
+                "family": "Golos Text",
+                "style": "Medium",
+                "hash": ""
+              }
+            },
+            {
+              "id": "42:18411",
+              "text": "Закрыто",
+              "font": {
+                "family": "Golos Text",
+                "style": "Regular",
+                "hash": ""
+              }
+            },
+            {
+              "id": "20:11415",
+              "text": "3",
+              "font": {
+                "family": "IBM Plex Mono",
+                "style": "Medium",
+                "hash": "ac0c3464000d8fb6175b85f8fa3e30a3fb8351fe"
+              }
+            },
+            {
+              "id": "20:11416",
+              "text": "Последняя\nдверь",
+              "font": {
+                "family": "Golos Text",
+                "style": "Medium",
+                "hash": ""
+              }
+            },
+            {
+              "id": "42:18413",
+              "text": "Закрыто",
+              "font": {
+                "family": "Golos Text",
+                "style": "Regular",
+                "hash": ""
+              }
+            },
+            {
+              "id": "20:11417",
+              "text": "Прорицания → дверь → выход",
+              "font": {
+                "family": "Golos Text",
+                "style": "Regular",
+                "hash": ""
+              }
+            },
+            {
+              "id": "20:11418",
+              "text": "Освобождение · миссия · испытание\nОдин успех = один шаг.",
+              "font": {
+                "family": "Golos Text",
+                "style": "Regular",
+                "hash": ""
+              }
+            },
+            {
+              "id": "20:11420",
+              "text": "Открытое прорицание можно посмотреть нажатием.",
+              "font": {
+                "family": "Golos Text",
+                "style": "Regular",
+                "hash": ""
+              }
+            }
+          ]
+        },
+        "A10": {
+          "id": "3:10790",
+          "name": "A10 · Один шаг назад",
+          "children": [
+            {
+              "id": "3:10791",
+              "name": "Main navigation",
+              "type": "FRAME"
+            },
+            {
+              "id": "3:10800",
+              "name": "Room workspace",
+              "type": "FRAME"
+            }
+          ],
+          "text": [
+            {
+              "id": "3:10792",
+              "text": "ОДЕРЖИМЫЕ",
+              "font": {
+                "family": "Golos Text",
+                "style": "Medium",
+                "hash": ""
+              }
+            },
+            {
+              "id": "3:10795",
+              "text": "Связь установлена",
+              "font": {
+                "family": "Golos Text",
+                "style": "Regular",
+                "hash": ""
+              }
+            },
+            {
+              "id": "3:10803",
+              "text": "Участники",
+              "font": {
+                "family": "Golos Text",
+                "style": "Medium",
+                "hash": ""
+              }
+            },
+            {
+              "id": "3:10804",
+              "text": "12/12",
+              "font": {
+                "family": "IBM Plex Mono",
+                "style": "Medium",
+                "hash": "ac0c3464000d8fb6175b85f8fa3e30a3fb8351fe"
+              }
+            },
+            {
+              "id": "3:10902",
+              "text": "Исходные роли открыты.\nЗадания остаются личными.",
+              "font": {
+                "family": "Golos Text",
+                "style": "Regular",
+                "hash": ""
+              }
+            },
+            {
+              "id": "3:10906",
+              "text": "Один шаг назад",
+              "font": {
+                "family": "Golos Text",
+                "style": "Bold",
+                "hash": ""
+              }
+            },
+            {
+              "id": "3:10907",
+              "text": "Во второй стопке больше всего свечей: одна возвращается к первому прорицанию. Оно остаётся открытым.",
+              "font": {
+                "family": "Golos Text",
+                "style": "Regular",
+                "hash": ""
+              }
+            },
+            {
+              "id": "3:10958",
+              "text": "Имена стёрты",
+              "font": {
+                "family": "Golos Text",
+                "style": "Medium",
+                "hash": ""
+              }
+            },
+            {
+              "id": "3:10959",
+              "text": "1",
+              "font": {
+                "family": "Golos Text",
+                "style": "Bold",
+                "hash": ""
+              }
+            },
+            {
+              "id": "3:10960",
+              "text": "Посмотреть условие",
+              "font": {
+                "family": "Golos Text",
+                "style": "Regular",
+                "hash": ""
+              }
+            },
+            {
+              "id": "3:10962",
+              "text": "Второе прорицание",
+              "font": {
+                "family": "Golos Text",
+                "style": "Medium",
+                "hash": ""
+              }
+            },
+            {
+              "id": "3:10963",
+              "text": "14",
+              "font": {
+                "family": "Golos Text",
+                "style": "Bold",
+                "hash": ""
+              }
+            },
+            {
+              "id": "3:10964",
+              "text": "Закрыто",
+              "font": {
+                "family": "Golos Text",
+                "style": "Regular",
+                "hash": ""
+              }
+            },
+            {
+              "id": "3:10966",
+              "text": "Последняя дверь",
+              "font": {
+                "family": "Golos Text",
+                "style": "Medium",
+                "hash": ""
+              }
+            },
+            {
+              "id": "3:10967",
+              "text": "3",
+              "font": {
+                "family": "Golos Text",
+                "style": "Bold",
+                "hash": ""
+              }
+            },
+            {
+              "id": "3:10968",
+              "text": "Закрыто",
+              "font": {
+                "family": "Golos Text",
+                "style": "Regular",
+                "hash": ""
+              }
+            },
+            {
+              "id": "3:10915",
+              "text": "Общий ритуал",
+              "font": {
+                "family": "Golos Text",
+                "style": "Medium",
+                "hash": ""
+              }
+            },
+            {
+              "id": "3:10918",
+              "text": "Осталось шагов",
+              "font": {
+                "family": "Golos Text",
+                "style": "Regular",
+                "hash": ""
+              }
+            },
+            {
+              "id": "3:10919",
+              "text": "34",
+              "font": {
+                "family": "IBM Plex Mono",
+                "style": "Medium",
+                "hash": "ac0c3464000d8fb6175b85f8fa3e30a3fb8351fe"
+              }
+            },
+            {
+              "id": "3:10929",
+              "text": "1",
+              "font": {
+                "family": "IBM Plex Mono",
+                "style": "Medium",
+                "hash": "ac0c3464000d8fb6175b85f8fa3e30a3fb8351fe"
+              }
+            },
+            {
+              "id": "3:10930",
+              "text": "Имена\nстёрты",
+              "font": {
+                "family": "Golos Text",
+                "style": "Medium",
+                "hash": ""
+              }
+            },
+            {
+              "id": "42:18127",
+              "text": "Открыто",
+              "font": {
+                "family": "Golos Text",
+                "style": "Regular",
+                "hash": ""
+              }
+            },
+            {
+              "id": "3:10939",
+              "text": "14",
+              "font": {
+                "family": "IBM Plex Mono",
+                "style": "Medium",
+                "hash": "ac0c3464000d8fb6175b85f8fa3e30a3fb8351fe"
+              }
+            },
+            {
+              "id": "3:10940",
+              "text": "Второе\nпрорицание",
+              "font": {
+                "family": "Golos Text",
+                "style": "Medium",
+                "hash": ""
+              }
+            },
+            {
+              "id": "42:18130",
+              "text": "Закрыто",
+              "font": {
+                "family": "Golos Text",
+                "style": "Regular",
+                "hash": ""
+              }
+            },
+            {
+              "id": "3:10949",
+              "text": "3",
+              "font": {
+                "family": "IBM Plex Mono",
+                "style": "Medium",
+                "hash": "ac0c3464000d8fb6175b85f8fa3e30a3fb8351fe"
+              }
+            },
+            {
+              "id": "3:10950",
+              "text": "Последняя\nдверь",
+              "font": {
+                "family": "Golos Text",
+                "style": "Medium",
+                "hash": ""
+              }
+            },
+            {
+              "id": "42:18133",
+              "text": "Закрыто",
+              "font": {
+                "family": "Golos Text",
+                "style": "Regular",
+                "hash": ""
+              }
+            },
+            {
+              "id": "3:10951",
+              "text": "Прорицания → дверь → выход",
+              "font": {
+                "family": "Golos Text",
+                "style": "Regular",
+                "hash": ""
+              }
+            },
+            {
+              "id": "3:10952",
+              "text": "Освобождение · миссия · испытание\nОдин успех = один шаг.",
+              "font": {
+                "family": "Golos Text",
+                "style": "Regular",
+                "hash": ""
+              }
+            },
+            {
+              "id": "3:10955",
+              "text": "Открытое прорицание можно посмотреть нажатием.",
+              "font": {
+                "family": "Golos Text",
+                "style": "Regular",
+                "hash": ""
+              }
+            }
+          ]
+        },
+        "M02": {
+          "id": "3:7476",
+          "name": "M02 · Настройки партии",
+          "children": [
+            {
+              "id": "3:7477",
+              "name": "Dialog header",
+              "type": "FRAME"
+            },
+            {
+              "id": "3:7481",
+              "name": "Dialog scroll region",
+              "type": "FRAME"
+            },
+            {
+              "id": "3:7495",
+              "name": "Action / Готово",
+              "type": "INSTANCE"
+            }
+          ],
+          "text": [
+            {
+              "id": "3:7478",
+              "text": "Настройки партии",
+              "font": {
+                "family": "Golos Text",
+                "style": "Medium",
+                "hash": ""
+              }
+            },
+            {
+              "id": "3:7482",
+              "text": "Семь раундов. Настройки выданных заданий заблокированы до следующей допустимой подготовки.",
+              "font": {
+                "family": "Golos Text",
+                "style": "Regular",
+                "hash": ""
+              }
+            },
+            {
+              "id": "31:14856",
+              "text": "Таймеры этапов",
+              "font": {
+                "family": "Golos Text",
+                "style": "Medium",
+                "hash": ""
+              }
+            },
+            {
+              "id": "31:14857",
+              "text": "Расстановка — 45 секунд. Раунд — 4 минуты. Пауза останавливает отсчёт. Чтение и сверка — без таймера.",
+              "font": {
+                "family": "Golos Text",
+                "style": "Regular",
+                "hash": ""
+              }
+            },
+            {
+              "id": "3:7484",
+              "text": "Партия · 7 раундов",
+              "font": {
+                "family": "Golos Text",
+                "style": "Medium",
+                "hash": ""
+              }
+            },
+            {
+              "id": "3:7485",
+              "text": "Первая партия: эффекты испытаний выключены на все семь раундов.",
+              "font": {
+                "family": "Golos Text",
+                "style": "Regular",
+                "hash": ""
+              }
+            },
+            {
+              "id": "3:7489",
+              "text": "Порядок и состав",
+              "font": {
+                "family": "Golos Text",
+                "style": "Medium",
+                "hash": ""
+              }
+            },
+            {
+              "id": "3:7490",
+              "text": "5–12 человек. Выданные задания не меняются настройками.",
+              "font": {
+                "family": "Golos Text",
+                "style": "Regular",
+                "hash": ""
+              }
+            }
+          ]
+        }
+      },
+      "sections": [
+        {
+          "id": "3:27986",
+          "name": "01 · Ноутбук · 5–12 человек",
+          "type": "SECTION",
+          "count": 73
+        },
+        {
+          "id": "3:27987",
+          "name": "02 · Личные карточки · 320 / 390 / 430",
+          "type": "SECTION",
+          "count": 174
+        },
+        {
+          "id": "3:27988",
+          "name": "03 · Настройки, обучение и редактор",
+          "type": "SECTION",
+          "count": 121
+        },
+        {
+          "id": "3:27989",
+          "name": "04 · Ритуал и движение",
+          "type": "SECTION",
+          "count": 26
+        },
+        {
+          "id": "3:27990",
+          "name": "05 · Каталог для проверки",
+          "type": "SECTION",
+          "count": 10
+        },
+        {
+          "id": "2:13969",
+          "name": "Эллипс 1",
+          "type": "ELLIPSE"
+        }
+      ]
+    }
+  }
+}

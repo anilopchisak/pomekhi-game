@@ -1,0 +1,242 @@
+{
+  "format": "pomekhi.fiction-sources",
+  "version": 1,
+  "sources": [
+    {
+      "id": "monkeys-paw",
+      "title": "The Monkey's Paw",
+      "titleRu": "Обезьянья лапка",
+      "creator": "W. W. Jacobs",
+      "year": 1902,
+      "kind": "short_story",
+      "urls": [
+        "https://www.gutenberg.org/cache/epub/12122/pg12122-images.html"
+      ],
+      "setting": "The White family’s private home, its entrance and the road outside.",
+      "plot": "A wish grants money through compensation for a son’s death. A second wish is followed by knocking at the family door; a third stops it before the visitor is revealed.",
+      "fearActions": [
+        "A small object seems to move in a hand.",
+        "Quiet knocking becomes insistent.",
+        "An unseen visitor may be a loved person returned in an intolerable form."
+      ],
+      "adaptationBoundary": "Design inference: stage a request for access and a withdrawn invitation through acting. Do not require a corpse, a real relative’s identity, a talisman mechanism or a locked exit."
+    },
+    {
+      "id": "turn-screw",
+      "title": "The Turn of the Screw",
+      "titleRu": "Поворот винта",
+      "creator": "Henry James",
+      "year": 1898,
+      "kind": "novella",
+      "urls": [
+        "https://www.gutenberg.org/files/209/209-h/209-h.htm"
+      ],
+      "setting": "The private Bly country estate: rooms, windows, garden, tower and lake grounds.",
+      "plot": "A governess interprets apparitions of dead servants as a threat to two children. Her protective intervention ends in tragedy; the narrative does not settle every perception or interpretation.",
+      "fearActions": [
+        "A still figure watches from a tower.",
+        "A face appears outside a closed window.",
+        "Figures recur at progressively closer domestic boundaries."
+      ],
+      "adaptationBoundary": "Design inference: perform an intrusive gaze or attention directed past the visitor. Keep the actor on a permitted level surface; no child role, lake, climbing or actual disappearance is required."
+    },
+    {
+      "id": "old-nurse",
+      "title": "The Old Nurse's Story",
+      "titleRu": "Рассказ старой няни",
+      "creator": "Elizabeth Gaskell",
+      "year": 1852,
+      "kind": "short_story",
+      "urls": [
+        "https://www.gutenberg.org/cache/epub/24879/pg24879-images.html"
+      ],
+      "setting": "Private Furnivall Manor, its rooms, windows, garden and surrounding winter grounds.",
+      "plot": "A nurse protects a girl in a house haunted by an earlier family expulsion. A spectral child beckons outside; the old cruelty returns as a repeated scene that belated remorse cannot undo.",
+      "fearActions": [
+        "A visible child appears to cry and strike a window without an audible sound.",
+        "Music comes from an internally ruined organ.",
+        "An old domestic confrontation repeats."
+      ],
+      "adaptationBoundary": "Design inference: mime an unheard call or knock at an imaginary boundary. Use adult fictional roles; omit child endangerment, exposure, restraint, a real instrument and reenacted violence."
+    },
+    {
+      "id": "ash-tree",
+      "title": "The Ash-tree",
+      "titleRu": "Ясень",
+      "creator": "M. R. James",
+      "year": 1904,
+      "kind": "short_story",
+      "urls": [
+        "https://www.gutenbergca.gutenbergcanada.ca/ebooks/jamesmr-ashtree/jamesmr-ashtree-00-h.html"
+      ],
+      "setting": "Private Castringham Hall, a bedroom window, terrace and the adjacent ash tree.",
+      "plot": "Deaths in the same family bedroom follow an accused woman’s execution. Scratching at the window is not explained by the branches. The nearby hollow tree conceals the material source of the attacks.",
+      "fearActions": [
+        "Something scratches glass beyond the reach of branches.",
+        "Indistinct crawling shapes seem to move around a sleeper’s head.",
+        "The garden threat crosses a bedroom boundary."
+      ],
+      "adaptationBoundary": "Design inference: fingers can suggest crawling on the actor’s own clothing. Do not use live animals, concealed touching, opened exterior windows, fire or reenacted attacks."
+    },
+    {
+      "id": "empty-house",
+      "title": "The Empty House",
+      "titleRu": "Пустой дом",
+      "creator": "Algernon Blackwood",
+      "year": 1906,
+      "kind": "short_story",
+      "urls": [
+        "https://www.gutenberg.org/cache/epub/14471/pg14471-images.html"
+      ],
+      "setting": "An apparently ordinary vacant private town house, its entrance and interior rooms.",
+      "plot": "Two visitors investigate a house associated with a murder. A frightened apparition and unseen rushing footsteps make the previous pursuit seem to recur around them.",
+      "fearActions": [
+        "A terrified figure briefly occupies a doorway.",
+        "Light fleeing steps are followed by a heavier pursuer.",
+        "The watchers feel an unseen presence behind them."
+      ],
+      "adaptationBoundary": "Design inference: repeat an unfinished domestic action with distinct vocal or hand-made rhythms. Do not run on stairs, rush past players, stage a collision or claim a real invisible sound source."
+    },
+    {
+      "id": "beckoning",
+      "title": "The Beckoning Fair One",
+      "titleRu": "Манящая красавица",
+      "creator": "Oliver Onions",
+      "year": 1911,
+      "kind": "novella",
+      "urls": [
+        "https://www.gutenberg.org/cache/epub/14168/pg14168-images.html"
+      ],
+      "setting": "A writer’s separately rented domestic rooms in an old residential house.",
+      "plot": "A writer becomes absorbed by a supposed female presence in his rooms. He withdraws from work and human company while his living friend becomes unwelcome and encounters harm.",
+      "fearActions": [
+        "Hair-brushing is heard when no woman is visible.",
+        "Bedding seems to bear another occupant’s impression.",
+        "Ordinary household noises seem personally directed."
+      ],
+      "adaptationBoundary": "Design inference: serve an empty place or groom an invisible occupant using pantomime. Omit erotic contact, injury, damage and enforced isolation; preserve uncertainty about the narrator’s interpretation."
+    },
+    {
+      "id": "jolly-corner",
+      "title": "The Jolly Corner",
+      "titleRu": "Весёлый уголок",
+      "creator": "Henry James",
+      "year": 1908,
+      "kind": "short_story",
+      "urls": [
+        "https://www.gutenberg.org/cache/epub/1190/pg1190-images.html"
+      ],
+      "setting": "A man’s vacant childhood town house in New York, visited at dusk and night.",
+      "plot": "A returning expatriate searches his old home for the self he might have become. He encounters a disturbing double; another person’s response to that figure differs from his own.",
+      "fearActions": [
+        "A human figure stands rigidly with its face hidden in its hands.",
+        "The hands slowly uncover an unfamiliar identity.",
+        "The apparently familiar self becomes a stranger."
+      ],
+      "adaptationBoundary": "Design inference: separate face, voice and ordinary gesture through acting. No identical-looking second actor, disfigurement, aggressive advance, collapse or physical rescue is required."
+    },
+    {
+      "id": "vourdalak",
+      "title": "The Family of the Vourdalak",
+      "titleRu": "Семья вурдалака",
+      "creator": "Aleksey Konstantinovich Tolstoy",
+      "year": 1839,
+      "kind": "short_story",
+      "urls": [
+        "https://fr.wikisource.org/wiki/La_Famille_du_Vourdalak",
+        "https://ru.wikisource.org/wiki/Семья_вурдалака_(А._К._Толстой;_Маркевич)/1884_(ДО)"
+      ],
+      "setting": "A Serbian family’s private village home, windows, gate, yard and nearby road.",
+      "plot": "An elderly relative returns at an uncertain deadline. Familiar affection becomes a means of approaching the family, and the dead later return to seek admission from people who recognize them.",
+      "fearActions": [
+        "A familiar face has a hollow voice and detached gaze.",
+        "A watcher presses his face to a window.",
+        "Knocking accompanies a request to open.",
+        "A returned relative appeals to recognition and pity."
+      ],
+      "adaptationBoundary": "Design inference: stage familiar words with alien affect and a request at an imaginary boundary. The text does not establish a universal invitation barrier. Omit biting, kissing, weapons, blood, child roles and reenacted injury."
+    },
+    {
+      "id": "others",
+      "title": "The Others",
+      "titleRu": "Другие",
+      "creator": "Alejandro Amenábar",
+      "year": 2001,
+      "kind": "film",
+      "urls": [
+        "https://www.criterion.com/films/33636-the-others",
+        "https://www.criterion.com/current/posts/8292-the-others-something-in-this-house",
+        "https://www.rialtopictures.com/catalogue/the-others"
+      ],
+      "setting": "A secluded private country mansion and its enclosed grounds.",
+      "plot": "A mother maintains a dark, closely controlled household for her light-sensitive children. New servants and apparent intrusions challenge the family’s account of who belongs in the house.",
+      "fearActions": [
+        "Domestic rooms are treated as occupied by unacknowledged others.",
+        "Curtains and doors become emotionally charged boundaries.",
+        "Household certainty gives way to competing claims of ownership."
+      ],
+      "adaptationBoundary": "Design inference: address an empty place or dispute occupancy through performance. Do not recreate a medical condition, enforce darkness or add damage. Film facts and Philip Horne’s critical interpretation are distinct evidence types."
+    },
+    {
+      "id": "uninvited",
+      "title": "The Uninvited",
+      "titleRu": "Незваные",
+      "creator": "Lewis Allen; screenplay by Dodie Smith and Frank Partos, based on Dorothy Macardle",
+      "year": 1944,
+      "kind": "film",
+      "urls": [
+        "https://www.criterion.com/films/27964-the-uninvited",
+        "https://www.criterion.com/current/posts/2934-the-uninvited-spirits-by-starlight",
+        "https://www.universalpicturesathome.com/movies/the-uninvited-1944"
+      ],
+      "setting": "Private Windward House in Cornwall, its rooms and adjacent coastal grounds.",
+      "plot": "A brother and sister buy a suspiciously inexpensive house. Apparent hauntings draw them into the history of an earlier household and a young woman’s connection to it.",
+      "fearActions": [
+        "Sobbing seems to come from empty rooms.",
+        "A room becomes inexplicably cold.",
+        "A mimosa scent accompanies the haunting."
+      ],
+      "adaptationBoundary": "Design inference: a visible performer can act listening to a sob or reacting to an absent presence. Do not claim real temperature changes, introduce fragrances or use cliffs as playable terrain. The publisher essay is criticism, not a full screenplay."
+    },
+    {
+      "id": "innocents",
+      "title": "The Innocents",
+      "titleRu": "Невинные",
+      "creator": "Jack Clayton; screenplay by William Archibald and Truman Capote, based on Henry James",
+      "year": 1961,
+      "kind": "film",
+      "urls": [
+        "https://www.criterion.com/films/28569-the-innocents",
+        "https://www.criterion.com/current/posts/3315-freddie-francis-on-the-innocents"
+      ],
+      "setting": "A private English country house, windows and daylight garden grounds.",
+      "plot": "A governess suspects that her new charges are affected by dead adults. The film intensifies the uncertainty and domestic menace of The Turn of the Screw.",
+      "fearActions": [
+        "Figures appear within the house and outside its domestic boundaries.",
+        "Daylight garden space becomes threatening.",
+        "A familiar face is made uncanny through framing and attention."
+      ],
+      "adaptationBoundary": "Design inference: reproduce a visible person’s stillness and misplaced gaze, not camera effects. Freddie Francis’s first-person production account supports staging observations, not every plot detail. Omit sexualized child behavior and coercive rescue."
+    },
+    {
+      "id": "blink",
+      "title": "Blink",
+      "titleRu": "Не моргай",
+      "creator": "Steven Moffat; Doctor Who",
+      "year": 2007,
+      "kind": "television_episode",
+      "urls": [
+        "https://downloads.bbc.co.uk/writersroom/scripts/doctor-who-s3-ep10-blink.pdf",
+        "https://www.doctorwho.tv/characters/weeping-angels"
+      ],
+      "setting": "The abandoned private Wester Drumlins house and garden; other episode locations are outside this adaptation.",
+      "plot": "A visitor to an abandoned house encounters apparently motionless figures. Looking away permits their movement, and their touch displaces victims in time.",
+      "fearActions": [
+        "A statue-like body freezes under observation.",
+        "Its position changes outside a watcher’s gaze.",
+        "Hands conceal a threatening face."
+      ],
+      "adaptationBoundary": "User-authorized game adaptation: slow bounded following freezes under observation and releases on actual self-view in an existing house mirror. These beings are aliens in the source. The game release is authored, not asserted as the episode’s verified solution. No mirror is carried or turned, and there is no blink-endurance or touch requirement."
+    }
+  ]
+}

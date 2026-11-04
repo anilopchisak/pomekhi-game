@@ -1,5 +1,7 @@
 # Private cards and untimed reading
 
+> The executable uses the [first-game design](first-game.md). Below, older round, dealing, scoring and schema behavior applies to compatibility fixtures; shared foundation behavior still applies.
+
 Status: implemented. [Game session](rounds.md) now owns timed phases; [search actions](search-actions.md) own effective roles, capture and team results.
 
 ## Owners and interfaces

@@ -1,0 +1,27 @@
+# First-game lifecycle
+
+The [target rules](../product/README.md) own gameplay intent. This document owns how the executable runs the seven-round first-game variant. Older design descriptions remain references for shared foundations and compatibility fixtures; the executable does not open a legacy party.
+
+## Authority and data flow
+
+[Lobby](../../src/server/lobby.ts) owns identity and command authorization. The [game](../../src/server/game.ts) owns phase, locked preparation, virtual table order, confirmed physical status, and the set of people waiting for a later deal. The [dealing owner](../../src/server/dealing.ts) issues alternating roles and excludes retained group cards from its eligible pool. Story and offering source text is [server-only](../../src/server/first-game-content.ts). Built-in offerings use internal IDs outside the editable catalog's ID space, so imported entries never replace or lose to a built-in offering with the same ID. The editable catalog's harder flag is independent of historical level metadata.
+
+The [search ledger](../../src/server/search.ts) has a round-local event log seeded with retained groups. Each group has an immutable original assignment identifier and frozen card; it can outlive the original member. New possessed members can report a permitted location during placement. The group carries that location until release. Search membership includes both new card recipients and retained members. The next round's rescue denominator counts live original assignments and its mission denominator counts newly dealt exorcists.
+
+The [round inbox](../../src/server/round-sync.ts) replays accepted events and retains decisions, dependencies and receipts. Phones send reports and acknowledge the journal using their personal inbox membership, including when they keep a card from an earlier round. A mission completed before recall can be reported during recall or checking. A search action recorded in search and delivered after recall enters review. An organizer decision cannot override eligibility or causal undo. Physical status is recorded separately through the authenticated player's or organizer's command, and must match the current effective result. A network failure never creates a game status. A confirmed group can be kept in play without a connected phone. Unconfirmed free people can be confirmed at a later check.
+
+## Transitions and presentation
+
+Preparation leads to reading, timed placement, timed exorcism, untimed recall, untimed checking, and the next deal or a terminal outcome. A player action cannot advance a timer; timer callbacks and organizer commands share the session queue. Early recall and a normal deadline recall share the free-only return path. Stop closes the pending result without scoring it and recalls everyone.
+
+At finalization the game checks synchronization and physical return availability, carries unresolved groups, and commits the [ritual](../../src/server/ritual.ts) once. Confirmed total possession requires all remaining identities to be confirmed in groups. A rescued medium at the base prevents that ending. A penalty has one legal source only when there is one maximum and it is not A. An explicit dismissal is recorded without moving a candle. Revealed prophecy state is independent of the current stack sizes.
+
+The [protocol](../../src/shared/protocol.ts) has distinct organizer and personal projections. The organizer sees named initial roles and check statuses; a phone sees only its own assignment, check status and eligible capture targets. Published candles are committed values. The shared laptop places the timer and settings in its toolbar, with a separate scroll region for reports and history. The phone places its private card in the phase view. Dialog dismissal returns focus to the opener or to the refreshed target list when that opener is disabled. The timer is unknown without a fresh snapshot.
+
+Review dialogs show the current provisional score and the decision consequences. The server recalculates the actual preview after a decision. The penalty dialog uses the ritual's projected source, positions and remaining steps from the same calculation that moves the candle. The ritual view plays committed candle steps at 450 ms and shows a reveal for 500 ms. Reduced motion uses a short reveal fade. Skip, pause and lost connection drop presentation frames and display the committed snapshot.
+
+## Storage and checks
+
+The [disk store](../../src/server/session-store.ts) writes schema 6 to data/party-v6.json using the same single-writer lock and atomic commit. It reads only a valid legacy catalog when initializing without a version-six file; it does not resume the legacy room. An I/O error reading the legacy file opens organizer recovery without writing a default bank. Retry imports the legacy catalog after access is restored. The [validator](../../src/server/session-format.ts) validates and replays the game and inbox before a checkpoint is accepted. Restore keeps a timed phase paused with its saved remainder, and preserves untimed recall and checking.
+
+[Game tests](../../src/server/first-game.test.ts) cover ordered deals, carryover, sole return, loss, scoring, penalties and Pixso candle histories. [Transport and recovery tests](../../tests/integration/persistence.test.ts) use independent real clients and files for delayed review, identity recovery, and repeat finalization. Physical play, live network reachability, audibility, and real mobile devices require the separate [device checks](../testing/device-acceptance.md).

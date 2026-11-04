@@ -83,7 +83,7 @@ export function GameControls({ room, disabled, run }: {
       <button disabled={disabled || !game.ritual.canUndoPenalty} onClick={() => void run('ritual:undo-penalty', gameCommand(room))}>Отменить последний штраф</button>
     </div>}
     {game.phase === 'finished' && game.ritual && game.ritual.outcome !== 'playing' && game.freeplayFrom === null && <button disabled={disabled} onClick={() => { if (window.confirm('Продолжить свободные раунды? Исход ритуала сохранится, новые результаты будут показаны отдельно.')) void run('party:freeplay', gameCommand(room)); }}>Продолжить свободную игру</button>}
-    {pendingRitual && <p role="status">После синхронизации подтвердите итоги раунда. До этого следующая раздача и завершение партии недоступны.</p>}
+    {pendingRitual && <p role="status">После синхронизации подтвердите итоги раунда. До этого следующая раздача недоступна.</p>}
     <button disabled={disabled} onClick={() => void run('lobby:sync', {})}>Обновить состояние</button>
   </section>;
 }

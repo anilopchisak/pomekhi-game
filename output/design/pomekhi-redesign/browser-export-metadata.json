@@ -1,0 +1,47 @@
+{
+  "room": {
+    "id": "12:3825",
+    "width": 1366,
+    "height": 768
+  },
+  "phone": {
+    "id": "12:3531",
+    "width": 320,
+    "height": 844
+  },
+  "editor": {
+    "id": "12:7723",
+    "width": 1120,
+    "height": 760
+  },
+  "settings": {
+    "id": "12:7179",
+    "width": 820,
+    "height": 760
+  },
+  "results": {
+    "id": "17:15544",
+    "width": 1440,
+    "height": 900
+  },
+  "stress": {
+    "id": "12:3927",
+    "width": 1366,
+    "height": 768
+  },
+  "phone430": {
+    "id": "12:3580",
+    "width": 430,
+    "height": 844
+  },
+  "long": {
+    "id": "12:5781",
+    "width": 320,
+    "height": 844
+  },
+  "lost": {
+    "id": "15:13796",
+    "width": 1440,
+    "height": 900
+  }
+}

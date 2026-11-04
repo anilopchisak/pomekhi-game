@@ -41,7 +41,8 @@ export function useOfflinePlayer(scope: string | null, live: PlayerView | undefi
   const pending = record?.events.filter(e => !e.receipt) ?? [];
   const conflicts = record?.events.filter(e => e.receipt?.status === 'review') ?? [];
   useEffect(() => {
-    if (!scope || !available || !online || !authorized || !live?.room.game.roundId || !live.assignment || syncing.current) return;
+    const currentRound = live?.room.game.roundId;
+    if (!scope || !available || !online || !authorized || !currentRound || live.synchronization?.roundId !== currentRound || syncing.current) return;
     const signature = `${generation}:${live.room.game.roundId}`;
     const needHandshake = handshake.current !== signature;
     const needComplete = !['placement', 'search', 'return', 'reading', 'lobby'].includes(live.room.game.phase)

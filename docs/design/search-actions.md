@@ -1,5 +1,7 @@
 # Search actions, undo and round results
 
+> The executable uses the [first-game design](first-game.md). Below, older round, dealing, scoring and schema behavior applies to compatibility fixtures; shared foundation behavior still applies.
+
 Status: implemented. Players judge physical conditions on trust; software authorizes state changes, not physical performance. State is checkpointed locally by the [session coordinator](session-persistence.md).
 
 ## Owners and lifecycle

@@ -1,0 +1,1 @@
+{"type":"pomekhi-task-result","taskId":"output/design/oderzhimye-ux/replace-component.js.txt-1793716635889","ok":false,"result":{"error":"Error: in setReactionsAsync: Property \"reactions\" failed validation: Unrecognized key: \"deprecatedVersion\" at [0].trigger","stack":"    at link (<input>:22:118)\n    at anonymous (<input>:28:283)\n"}}

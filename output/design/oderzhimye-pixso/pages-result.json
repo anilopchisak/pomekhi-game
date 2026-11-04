@@ -1,0 +1,12 @@
+{
+  "jsonrpc": "2.0",
+  "id": 722704,
+  "result": {
+    "content": [
+      {
+        "type": "text",
+        "text": "[{\"pageId\":\"0:1\",\"pageName\":\"01 · Research & flows\"},{\"pageId\":\"3:2\",\"pageName\":\"02 · Components\"},{\"pageId\":\"3:3\",\"pageName\":\"03 · Screens & prototypes\"}]"
+      }
+    ]
+  }
+}

@@ -437,6 +437,8 @@
       "src/client/shared/ui/LobbyShell.module.css",
       "src/client/shared/ui/RoundStatus.module.css",
       "src/client/shared/ui/RitualBoard.module.css",
+      "src/client/shared/ui/GameDialog.module.css",
+      "src/client/pages/player/ui/PlayerScene.module.css",
       "src/client/pages/host/ui/Broadcast.module.css"
     ]
   }

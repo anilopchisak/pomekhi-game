@@ -1,0 +1,761 @@
+{
+  "format": "pomekhi.editorial-review",
+  "version": 1,
+  "reviewer": "authoring agent; no human or live-party review claimed",
+  "status": "editorial review completed; physical discoverability and balance unverified",
+  "method": "Each possessed record was reviewed for entity intention, visible causal behavior, distinct capture/release, one-rescuer feasibility, group staging and narrative independence. Fiction is inspiration, not recovered commercial rules. Actual fear and discovery are not established.",
+  "possessed": [
+    {
+      "id": "P001",
+      "mechanic": "ask_singer_to_stop",
+      "reviewStatus": "checked_from_authored_text",
+      "note": "Joining the song sustains it; a direct request to stop addresses the singer as a person.",
+      "entityIntent": "Keep a lullaby running for an absent listener.",
+      "decision": "retain_core"
+    },
+    {
+      "id": "P002",
+      "mechanic": "interrupt_returning_wrist_without_touch",
+      "reviewStatus": "checked_from_authored_text",
+      "note": "The involuntary returning hand is stopped by a visible noncontact barrier; no cup or cloth is used.",
+      "entityIntent": "Keep the wrist returning to a point against its owner’s intention.",
+      "decision": "replace"
+    },
+    {
+      "id": "P003",
+      "mechanic": "two_hand_warming_with_speech",
+      "reviewStatus": "checked_from_authored_text",
+      "note": "Wordless partial contact maintains estrangement; both accepted hands with human address restore connection.",
+      "entityIntent": "Borrow warmth through a person’s hands.",
+      "decision": "retain_core"
+    },
+    {
+      "id": "P004",
+      "mechanic": "decline_dance_invitation",
+      "reviewStatus": "checked_from_authored_text",
+      "note": "Accepting and dancing joins it; a clear in-fiction refusal breaks the invitation. Real consent refusal is always outside scoring.",
+      "entityIntent": "Keep a visitor in an endless dance.",
+      "decision": "retain_core"
+    },
+    {
+      "id": "P005",
+      "mechanic": "accept_embrace_invitation",
+      "reviewStatus": "checked_from_authored_text",
+      "note": "Substituting another social exchange repeats the delay; accepting the embrace invitation completes farewell without compelling contact.",
+      "entityIntent": "Leave without receiving a farewell.",
+      "decision": "retain_core"
+    },
+    {
+      "id": "P006",
+      "mechanic": "two_independent_door_passes",
+      "reviewStatus": "checked_from_authored_text",
+      "note": "Two independent unintrusive passes acknowledge the boundary without entering the old event.",
+      "entityIntent": "Keep an old household behind a closed threshold.",
+      "decision": "adapt"
+    },
+    {
+      "id": "P007",
+      "mechanic": "ask_purpose_of_performed_melody",
+      "reviewStatus": "checked_from_authored_text",
+      "note": "Treating it as a louder recording preserves the loop; asking its purpose recognizes an intended listener.",
+      "entityIntent": "Repeat a tune for an absent household listener.",
+      "decision": "retain_core"
+    },
+    {
+      "id": "P008",
+      "mechanic": "withdraw_invitation_and_close_mimed_door",
+      "reviewStatus": "checked_from_authored_text",
+      "note": "Reinviting sustains access; closing the mimed opening and withdrawing permission breaks it. This access rule is authored, not asserted as a universal rule in the literary sources.",
+      "entityIntent": "Enter through an invitation that has not been withdrawn.",
+      "decision": "replace"
+    },
+    {
+      "id": "P009",
+      "mechanic": "remember_first_fictional_identity",
+      "reviewStatus": "checked_from_authored_text",
+      "note": "Demanding a real identity strengthens the invasive exchange; keeping the first fictional name resists replacement.",
+      "entityIntent": "Overwrite the person’s identity on each address.",
+      "decision": "retain_core"
+    },
+    {
+      "id": "P010",
+      "mechanic": "acknowledge_implied_companion",
+      "reviewStatus": "checked_from_authored_text",
+      "note": "Denying the visible actor’s concern sustains it; addressing the specified empty place acknowledges a separate guest.",
+      "entityIntent": "Bring an unacknowledged companion into the home.",
+      "decision": "retain_core"
+    },
+    {
+      "id": "P011",
+      "mechanic": "reject_imposed_role_and_name_self",
+      "reviewStatus": "checked_from_authored_text",
+      "note": "Accepting the imposed identity admits replacement; asserting a separate fictional identity ends the mistaken recognition. Unlike P009, remembering a first name is not the task.",
+      "entityIntent": "Replace a visitor with a remembered resident.",
+      "decision": "replace"
+    },
+    {
+      "id": "P012",
+      "mechanic": "fill_empty_portrait_frame",
+      "reviewStatus": "checked_from_authored_text",
+      "note": "Blocking the frame erases recognition; a visible steady face completes the portrait. No actual painting is needed.",
+      "entityIntent": "Recover a face missing from the household memory.",
+      "decision": "adapt"
+    },
+    {
+      "id": "P013",
+      "mechanic": "supply_audible_strike_with_silent_knock",
+      "reviewStatus": "checked_from_authored_text",
+      "note": "Copying voiceless motion joins the loop; supplying its missing audible consequence completes it. No fixed beat sequence or reversed pattern is required.",
+      "entityIntent": "Make an unheard event happen again.",
+      "decision": "replace"
+    },
+    {
+      "id": "P014",
+      "mechanic": "remove_mimed_bed_from_empty_space",
+      "reviewStatus": "checked_from_authored_text",
+      "note": "An unfinished care routine is acted over empty space. Removing its imagined bed is a visible completed pantomime, not manipulation of cloth.",
+      "entityIntent": "Repeat caring for an absent sleeper.",
+      "decision": "replace"
+    },
+    {
+      "id": "P015",
+      "mechanic": "hear_completed_witness_episode_with_open_palm",
+      "reviewStatus": "checked_from_authored_text",
+      "note": "Deliberate interruption strengthens the silencing voice; a visible willing listener lets the witness finish. The completion is a whole episode, not a hidden sentence.",
+      "entityIntent": "Erase a witness by interrupting every attempt to speak.",
+      "decision": "replace"
+    },
+    {
+      "id": "P016",
+      "mechanic": "join_sustained_pitch",
+      "reviewStatus": "checked_from_authored_text",
+      "note": "An abrupt interruption separates the voices; a shared ordinary exhalation reunites them without a pitch test.",
+      "entityIntent": "Hold a voice below the living person who made it.",
+      "decision": "adapt"
+    },
+    {
+      "id": "P017",
+      "mechanic": "answer_body_taps_from_second_position",
+      "reviewStatus": "checked_from_authored_text",
+      "note": "The actor and rescuer use their own body for sound at two positions, not two prepared surfaces.",
+      "entityIntent": "Wait for an answer from another part of the home.",
+      "decision": "retain_core"
+    },
+    {
+      "id": "P018",
+      "mechanic": "address_implied_footsteps",
+      "reviewStatus": "checked_from_authored_text",
+      "note": "Physical imitation admits the walking loop; addressing the implied walker gives its approach a stopping point.",
+      "entityIntent": "Continue an unseen approach.",
+      "decision": "retain_core"
+    },
+    {
+      "id": "P019",
+      "mechanic": "mime_removal_of_mouth_seal",
+      "reviewStatus": "checked_from_authored_text",
+      "note": "Shushing reinforces the seal; visibly removing one’s own mimed seal gives a model of release.",
+      "entityIntent": "Keep speech under an alien seal.",
+      "decision": "retain_core"
+    },
+    {
+      "id": "P020",
+      "mechanic": "serious_reciprocal_bow",
+      "reviewStatus": "checked_from_authored_text",
+      "note": "Joining the acted laughter keeps the voice; a serious reciprocal farewell closes the social exchange.",
+      "entityIntent": "Keep an alien playful voice in an unfinished farewell.",
+      "decision": "adapt"
+    },
+    {
+      "id": "P021",
+      "mechanic": "replace_percussion_with_normal_breath",
+      "reviewStatus": "checked_from_authored_text",
+      "note": "Accelerating the answer accepts it; stillness with an ordinary breath restores self-directed rhythm. No physiological result is judged.",
+      "entityIntent": "Make the body answer an unseen caller.",
+      "decision": "adapt"
+    },
+    {
+      "id": "P022",
+      "mechanic": "sever_mimed_tether",
+      "reviewStatus": "checked_from_authored_text",
+      "note": "Tugging accepts the attachment; visibly cutting its mimed line breaks it without contact.",
+      "entityIntent": "Pull a resident by an invisible attachment.",
+      "decision": "retain_core"
+    },
+    {
+      "id": "P023",
+      "mechanic": "take_and_return_mimed_loan",
+      "reviewStatus": "checked_from_authored_text",
+      "note": "The lending episode is performed with empty hands; an intended take-and-return is enough, no key is needed.",
+      "entityIntent": "Never complete the return of an invisible loan.",
+      "decision": "replace"
+    },
+    {
+      "id": "P024",
+      "mechanic": "remove_input_from_delayed_reflection",
+      "reviewStatus": "checked_from_authored_text",
+      "note": "Following the delayed copy gives it priority; withdrawing both hands and staying still removes its input.",
+      "entityIntent": "Keep an image acting after its person stops.",
+      "decision": "retain_core"
+    },
+    {
+      "id": "P025",
+      "mechanic": "vacate_place_and_admit_actor",
+      "reviewStatus": "checked_from_authored_text",
+      "note": "A resident is displaced from an empty standing place rather than a chair. No furniture is required.",
+      "entityIntent": "Displace the resident from their own standing place.",
+      "decision": "replace"
+    },
+    {
+      "id": "P026",
+      "mechanic": "actual_self_view_in_existing_house_mirror",
+      "reviewStatus": "checked_from_authored_text",
+      "note": "User explicitly preserves seeing one’s own face in an existing house mirror. It is neither carried nor staged, and no one must turn or touch it.",
+      "entityIntent": "Advance outside observation until confronted with one’s own actual face.",
+      "decision": "retain_core"
+    },
+    {
+      "id": "P027",
+      "mechanic": "complete_open_hand_shape",
+      "reviewStatus": "checked_from_authored_text",
+      "note": "Copying the stuck greeting retains it; a full visible greeting supplies the missing opening.",
+      "entityIntent": "Prevent a familiar human greeting from completing.",
+      "decision": "adapt"
+    },
+    {
+      "id": "P028",
+      "mechanic": "occupy_expected_empty_place_and_nod",
+      "reviewStatus": "checked_from_authored_text",
+      "note": "The missing resident has an empty place, not a seat. Standing and acknowledging a bow completes arrival.",
+      "entityIntent": "Wait for an absent visitor to occupy an empty place.",
+      "decision": "retain_core"
+    },
+    {
+      "id": "P029",
+      "mechanic": "complete_forward_three_step_march",
+      "reviewStatus": "checked_from_authored_text",
+      "note": "Repeating the incomplete return joins it; a complete short forward walk supplies its end.",
+      "entityIntent": "Restart the last part of a homecoming.",
+      "decision": "adapt"
+    },
+    {
+      "id": "P030",
+      "mechanic": "prop_free_p030",
+      "reviewStatus": "checked_from_authored_text",
+      "note": "The requested spinner is unchanged; the location must already have enough space, without moving or preparing furniture.",
+      "entityIntent": "Keep the body in a fixed returning orbit.",
+      "decision": "retain_core"
+    },
+    {
+      "id": "P031",
+      "mechanic": "cancel_and_cross_third_empty_place",
+      "reviewStatus": "checked_from_authored_text",
+      "note": "An extra place in the household is indicated spatially; no table or cups are required.",
+      "entityIntent": "Admit an extra resident through a third empty place.",
+      "decision": "replace"
+    },
+    {
+      "id": "P032",
+      "mechanic": "witness_actor_palms_join_with_single_hand",
+      "reviewStatus": "checked_from_authored_text",
+      "note": "Transferring the alien trace accepts it; witnessing both hands rejoined interrupts the split. Contact is light, negotiated and requires only one rescuer hand.",
+      "entityIntent": "Separate a person from ownership of one hand.",
+      "decision": "replace"
+    },
+    {
+      "id": "P033",
+      "mechanic": "uncross_and_spread_own_fingers",
+      "reviewStatus": "checked_from_authored_text",
+      "note": "A bodily crossing is held as an imagined knot; opening and separating fingers replaces a real cord.",
+      "entityIntent": "Keep the fingers caught in an alien bodily pattern.",
+      "decision": "adapt"
+    },
+    {
+      "id": "P034",
+      "mechanic": "receive_mimed_offering_then_release_open_hand",
+      "reviewStatus": "checked_from_authored_text",
+      "note": "The unfinished offering is transferred and released through empty-hand pantomime, without money or fabric.",
+      "entityIntent": "Prevent the last offering from being released.",
+      "decision": "adapt"
+    },
+    {
+      "id": "P035",
+      "mechanic": "keep_expression_across_two_face_passes",
+      "reviewStatus": "checked_from_authored_text",
+      "note": "Repeated changes accept the replacement; an unchanged face through two passes provides a stable identity. Unlike P024, movement timing is not the puzzle.",
+      "entityIntent": "Keep replacing the person’s visible identity.",
+      "decision": "replace"
+    },
+    {
+      "id": "P036",
+      "mechanic": "answer_closed_hand_tap_then_listen",
+      "reviewStatus": "checked_from_authored_text",
+      "note": "An acted sound comes from the performer’s closed hand. The answering strike and listening remain physical but need no container.",
+      "entityIntent": "Wait for an answering sound from a closed hand.",
+      "decision": "retain_core"
+    },
+    {
+      "id": "P037",
+      "mechanic": "noncontact_palm_cover_then_lower_together",
+      "reviewStatus": "checked_from_authored_text",
+      "note": "The performer’s own hand is the acted voice channel. A noncontact covering gesture closes it; no cup is present.",
+      "entityIntent": "Use the palm as the source of an absent crying voice.",
+      "decision": "replace"
+    },
+    {
+      "id": "P038",
+      "mechanic": "elicit_present_place_answer_to_wake_actor",
+      "reviewStatus": "checked_from_authored_text",
+      "note": "Encouraging continued sleep gives the intruder time; eliciting the resident’s own account of the present room wakes them. No special candle or factual quiz is used.",
+      "entityIntent": "Keep the resident asleep while another presence answers.",
+      "decision": "replace"
+    },
+    {
+      "id": "P039",
+      "mechanic": "body_occludes_face_in_fixed_mirror",
+      "reviewStatus": "checked_from_authored_text",
+      "note": "An existing house mirror is blocked by the rescuer’s body, without moving or covering it with an object.",
+      "entityIntent": "Hold a person through their fixed-house reflection.",
+      "decision": "retain_core"
+    },
+    {
+      "id": "P040",
+      "mechanic": "correct_mimed_hand_funnel",
+      "reviewStatus": "checked_from_authored_text",
+      "note": "Speaking into the actor’s listening channel joins the intrusion; making one’s own outward listening channel restores a separate listener.",
+      "entityIntent": "Let an absent speaker control the channel of listening.",
+      "decision": "adapt"
+    },
+    {
+      "id": "P041",
+      "mechanic": "latch_mimed_case_and_point_return_route",
+      "reviewStatus": "checked_from_authored_text",
+      "note": "Reopening repeats the interrupted move; fastening the already-closed case finishes the departure. No real luggage or exact password is needed.",
+      "entityIntent": "Restart the last departure before it can finish.",
+      "decision": "replace"
+    },
+    {
+      "id": "P042",
+      "mechanic": "lift_mimed_cover_and_show_empty_hand",
+      "reviewStatus": "checked_from_authored_text",
+      "note": "A hidden shape is framed by the actor’s hands over empty space; uncovering is visible pantomime, not handling a prop.",
+      "entityIntent": "Keep an absent shape hidden between the actor’s hands.",
+      "decision": "retain_core"
+    },
+    {
+      "id": "P043",
+      "mechanic": "address_actor_from_expected_threshold_side",
+      "reviewStatus": "checked_from_authored_text",
+      "note": "Claiming the missing resident’s role from the wrong side joins the false return; an actual relocated voice completes the expected arrival.",
+      "entityIntent": "Keep waiting for an arrival from the old direction.",
+      "decision": "replace"
+    },
+    {
+      "id": "P044",
+      "mechanic": "recognize_host_and_request_passage",
+      "reviewStatus": "checked_from_authored_text",
+      "note": "Eviction repeats displacement; recognizing the resident as the one who grants permission restores ownership. Unlike P011, the rescuer rejects no identity imposed on them.",
+      "entityIntent": "Displace a resident until they accept being a stranger.",
+      "decision": "replace"
+    },
+    {
+      "id": "P045",
+      "mechanic": "listen_to_tree_without_knocking",
+      "reviewStatus": "checked_from_authored_text",
+      "note": "Knocking calls further; silent listening through the visible hand withdrawal completes the attention.",
+      "entityIntent": "Wait for a human ear at the garden tree.",
+      "decision": "retain_core"
+    },
+    {
+      "id": "P046",
+      "mechanic": "cross_mimed_track_transversely",
+      "reviewStatus": "checked_from_authored_text",
+      "note": "Deliberate following extends the track; a transverse crossing breaks its direction. There is no stone arrangement or need for visible footprints.",
+      "entityIntent": "Keep a person returning to someone else’s track.",
+      "decision": "replace"
+    },
+    {
+      "id": "P047",
+      "mechanic": "complete_one_shared_short_step",
+      "reviewStatus": "checked_from_authored_text",
+      "note": "An abandoned person fears crossing a remembered boundary. The rescuer shares one completed step without travelling as a pair.",
+      "entityIntent": "Prevent a solitary return across a remembered boundary.",
+      "decision": "adapt"
+    },
+    {
+      "id": "P048",
+      "mechanic": "hand_exits_actor_arm_enclosure",
+      "reviewStatus": "checked_from_authored_text",
+      "note": "The closed place is shown by the actor’s body, with no ground marking. A visible opening gesture gives it an exit.",
+      "entityIntent": "Keep an unseen occupant within a bodily enclosure.",
+      "decision": "adapt"
+    },
+    {
+      "id": "P049",
+      "mechanic": "answer_whistle_with_human_voice_and_open_hand",
+      "reviewStatus": "checked_from_authored_text",
+      "note": "Whistled answering accepts the call; an ordinary voice with a visible empty hand restores a human greeting. No musical accuracy or real gate is needed.",
+      "entityIntent": "Replace a human greeting with an impersonal call.",
+      "decision": "replace"
+    },
+    {
+      "id": "P050",
+      "mechanic": "show_open_hands_wait_invitation_and_cross",
+      "reviewStatus": "checked_from_authored_text",
+      "note": "Forcing fictional access accepts the false return; an observed empty-handed greeting followed by permission completes a recognized arrival. The physical route is always passable.",
+      "entityIntent": "Admit a familiar-looking claimant without recognizing who came back.",
+      "decision": "replace"
+    },
+    {
+      "id": "P051",
+      "mechanic": "simultaneous_palms_on_tree",
+      "reviewStatus": "checked_from_authored_text",
+      "note": "Circling pursues the tree’s claim; simultaneous contact and withdrawal return both hands together.",
+      "entityIntent": "Split a resident’s touch between body and garden.",
+      "decision": "adapt"
+    },
+    {
+      "id": "P052",
+      "mechanic": "sweep_and_flick_presence_out_of_own_sleeve",
+      "reviewStatus": "checked_from_authored_text",
+      "note": "Tracing the spread accepts it; a complete outward sweep expels it. The direction follows the visible bodily intrusion, not an abstract reversed sequence.",
+      "entityIntent": "Spread an imagined crawling presence from the garden into a body.",
+      "decision": "replace"
+    },
+    {
+      "id": "P053",
+      "mechanic": "ground_strike_and_complete_rising_hand",
+      "reviewStatus": "checked_from_authored_text",
+      "note": "Offering one’s place provides a host; an audible ground contact and completed rising gesture let the trapped sound emerge without occupying someone. This is an authored symbolic release.",
+      "entityIntent": "Borrow a living person’s place to come up from below.",
+      "decision": "replace"
+    },
+    {
+      "id": "P054",
+      "mechanic": "left_to_left_handshake",
+      "reviewStatus": "checked_from_authored_text",
+      "note": "The habitual cross-handed greeting joins the mismatch; matching the offered left hand restores the actor’s own orientation.",
+      "entityIntent": "Recognize people through the wrong-handed social world.",
+      "decision": "retain_core"
+    },
+    {
+      "id": "P055",
+      "mechanic": "lift_imaginary_weight_from_shoulders",
+      "reviewStatus": "checked_from_authored_text",
+      "note": "Offering to take it accepts the burden; a negotiated symbolic lifting from both shoulders removes it without force.",
+      "entityIntent": "Keep an unseen burden on a resident.",
+      "decision": "adapt"
+    },
+    {
+      "id": "P056",
+      "mechanic": "recognizable_gentle_pulse_mime",
+      "reviewStatus": "checked_from_authored_text",
+      "note": "A social handshake accepts the estranged hand; a brief acknowledged wrist contact answers the bodily uncertainty. No pulse check is scored.",
+      "entityIntent": "Make the person doubt that the offered hand is their own.",
+      "decision": "adapt"
+    },
+    {
+      "id": "P057",
+      "mechanic": "cross_out_traced_palm_circle",
+      "reviewStatus": "checked_from_authored_text",
+      "note": "Copying its circuit strengthens the mark; two crossing strokes visibly cancel it. This is an authored ritual gesture.",
+      "entityIntent": "Keep a circular bodily trace intact.",
+      "decision": "retain_core"
+    },
+    {
+      "id": "P058",
+      "mechanic": "support_puppet_elbow",
+      "reviewStatus": "checked_from_authored_text",
+      "note": "A social pumping movement lends it further motion; a light accepted elbow support allows self-directed relaxation.",
+      "entityIntent": "Keep a limb under an absent puppeteer’s control.",
+      "decision": "retain_core"
+    },
+    {
+      "id": "P059",
+      "mechanic": "agreed_shoulder_to_shoulder_contact",
+      "reviewStatus": "checked_from_authored_text",
+      "note": "Warmth is acknowledged through a brief agreed shoulder-to-shoulder presence, without cloth or other equipment.",
+      "entityIntent": "Keep a resident isolated from living warmth.",
+      "decision": "retain_core"
+    },
+    {
+      "id": "P060",
+      "mechanic": "stationary_linked_elbow_pose",
+      "reviewStatus": "checked_from_authored_text",
+      "note": "Taking the sleeve preserves a trailing hold; a brief agreed side-by-side elbow greeting completes companionship without joint travel.",
+      "entityIntent": "Keep a homecoming waiting for its missing companion.",
+      "decision": "adapt"
+    },
+    {
+      "id": "P061",
+      "mechanic": "match_spread_handprint",
+      "reviewStatus": "checked_from_authored_text",
+      "note": "An incompatible closed fist denies its shape; a full accepted palm match recognizes the hand.",
+      "entityIntent": "Find an owner for a detached palm impression.",
+      "decision": "retain_core"
+    },
+    {
+      "id": "P062",
+      "mechanic": "greet_with_agreed_upper_back_touch",
+      "reviewStatus": "checked_from_authored_text",
+      "note": "A turning attempt repeats control; an accepted upper-back touch and address acknowledge them without forcing the face.",
+      "entityIntent": "Keep the person turned away from the household.",
+      "decision": "retain_core"
+    },
+    {
+      "id": "P063",
+      "mechanic": "stationary_back_to_back_contact",
+      "reviewStatus": "checked_from_authored_text",
+      "note": "Offering hand support pursues the absent hold; independent back-to-back contact occupies the threatened space.",
+      "entityIntent": "Keep an unseen presence immediately behind the actor.",
+      "decision": "retain_core"
+    },
+    {
+      "id": "P064",
+      "mechanic": "provide_low_screen_light",
+      "reviewStatus": "checked_from_authored_text",
+      "note": "Performing an overhead inspection sustains exposure; a low stable light permits voluntary uncovering.",
+      "entityIntent": "Hide the face while searching for a low light.",
+      "decision": "retain_core"
+    },
+    {
+      "id": "P065",
+      "mechanic": "cast_other_persons_hand_shadow",
+      "reviewStatus": "checked_from_authored_text",
+      "note": "Copying its shape accepts it; a real visible projection places the shape outside the actor. Admission depends on actual dim-screen visibility.",
+      "entityIntent": "Keep an alien shape hidden inside ordinary hands.",
+      "decision": "adapt"
+    },
+    {
+      "id": "P066",
+      "mechanic": "draw_light_to_empty_space_and_isolated_hand",
+      "reviewStatus": "checked_from_authored_text",
+      "note": "Inviting it to stay binds it; drawing its attention from body to empty space and an isolated lit hand gives an exit. No moving shadow or invisible projection is claimed.",
+      "entityIntent": "Keep an intruding presence on a living body.",
+      "decision": "replace"
+    },
+    {
+      "id": "P067",
+      "mechanic": "stationary_screen_cover_with_hand_only",
+      "reviewStatus": "checked_from_authored_text",
+      "note": "Later user instruction removes all material task props; the action uses the player’s body and phone only.",
+      "entityIntent": "Keep the actor exposed to an unseen watcher through light.",
+      "decision": "retain_core"
+    },
+    {
+      "id": "P068",
+      "mechanic": "move_screen_to_change_real_hand_shadow_side",
+      "reviewStatus": "checked_from_authored_text",
+      "note": "A real hand casts the shadow instead of a figurine. No independent shadow motion is claimed.",
+      "entityIntent": "Hold a hand and its visible trace on the wrong relative side.",
+      "decision": "adapt"
+    },
+    {
+      "id": "P069",
+      "mechanic": "mime_opening_curtain_with_empty_hand",
+      "reviewStatus": "checked_from_authored_text",
+      "note": "The enclosing curtain is represented by the actor’s hands only, with no fabric or window operation.",
+      "entityIntent": "Keep morning outside the actor’s own enclosure.",
+      "decision": "retain_core"
+    },
+    {
+      "id": "P070",
+      "mechanic": "connect_own_chest_to_wall_print",
+      "reviewStatus": "checked_from_authored_text",
+      "note": "Outlining preserves the detached trace; linking one’s own chest and a whole hand at that place returns it to a living owner. Unlike P061 this uses no person-to-person palm contact.",
+      "entityIntent": "Keep a bodily trace separate from the person it belonged to.",
+      "decision": "replace"
+    },
+    {
+      "id": "P071",
+      "mechanic": "farewell_double_then_greet_original",
+      "reviewStatus": "checked_from_authored_text",
+      "note": "Addressing only the absent double accepts replacement; a completed farewell followed by greeting the visible person separates them. No reversed gesture list remains.",
+      "entityIntent": "Let the double leave while the original remains unrecognized.",
+      "decision": "replace"
+    },
+    {
+      "id": "P072",
+      "mechanic": "limit_mirror_input_to_available_hand",
+      "reviewStatus": "checked_from_authored_text",
+      "note": "Demanding two-handed copying strengthens the mismatch; a one-handed model permits a complete response.",
+      "entityIntent": "Demand a complete reflection from an incomplete body.",
+      "decision": "retain_core"
+    },
+    {
+      "id": "P073",
+      "mechanic": "answer_two_voices_with_two_gestures",
+      "reviewStatus": "checked_from_authored_text",
+      "note": "Answering as two people feeds the split; two clear gestures give one person’s coherent identity and destination.",
+      "entityIntent": "Split one person between two competing voices.",
+      "decision": "retain_core"
+    },
+    {
+      "id": "P074",
+      "mechanic": "cover_speaking_mouth_to_break_echo",
+      "reviewStatus": "checked_from_authored_text",
+      "note": "Repeating the echo accepts borrowed speech; a clearly heard address without a visible speaking mouth breaks its coupling to the visitor’s lips. This is an authored performance rule, not an actual ghost effect.",
+      "entityIntent": "Borrow the visible speaker’s voice through their moving lips.",
+      "decision": "replace"
+    },
+    {
+      "id": "P075",
+      "mechanic": "screen_absent_observer_until_actor_straightens",
+      "reviewStatus": "checked_from_authored_text",
+      "note": "Taking the observer’s place sustains domination; a visible screen across its sightline lets the person straighten. No actual shadow, strain or support of body weight is required.",
+      "entityIntent": "Keep a person bowed under an absent observer’s gaze.",
+      "decision": "replace"
+    }
+  ],
+  "similarityReviews": [
+    {
+      "cards": [
+        "P008",
+        "P043",
+        "P050",
+        "P006"
+      ],
+      "rationale": "All use a threshold. Withdrawal of invitation, relocating a voice, admitted empty-handed crossing and two nonopening passes have different observable completions."
+    },
+    {
+      "cards": [
+        "P009",
+        "P011",
+        "P044",
+        "P071"
+      ],
+      "rationale": "Remembering the first name, rejecting an imposed role, recognizing the actor as host and separating farewell from greeting have distinct identity conflicts."
+    },
+    {
+      "cards": [
+        "P024",
+        "P035",
+        "P072"
+      ],
+      "rationale": "Delayed movement copying, changing facial identity and incomplete one-hand reflection use different failures and release actions."
+    },
+    {
+      "cards": [
+        "P032",
+        "P003",
+        "P061"
+      ],
+      "rationale": "One hand witnessing joined actor palms differs from warming two offered hands with speech and matching a single spread palm. All are negotiated, light and independently supported."
+    },
+    {
+      "cards": [
+        "E003",
+        "E021",
+        "E032"
+      ],
+      "rationale": "Identifying an actual respondent, stationary environmental listening and reproducing two heard sounds are different observations; none requires supernatural evidence."
+    },
+    {
+      "cards": [
+        "E004",
+        "E034"
+      ],
+      "rationale": "Using a newly offered fictional name differs from comparing ordinary and deliberately changed renditions of a phrase. The latter neither asks a name nor reverses words."
+    },
+    {
+      "cards": [
+        "P026",
+        "P039"
+      ],
+      "rationale": "The angel’s own actual face releases it; the other actor must lose sight of its reflection behind the rescuer. Existing mirrors are fixed scenery and are never carried, turned or covered."
+    },
+    {
+      "cards": [
+        "P002",
+        "P033",
+        "P048"
+      ],
+      "rationale": "A returning wrist is stopped by a noncontact barrier, crossed fingers visibly separate, and a hand exits the actor’s body-framed empty space. Full opposing capture actions differ."
+    },
+    {
+      "cards": [
+        "P014",
+        "P023",
+        "P034",
+        "P042"
+      ],
+      "rationale": "Removing an imagined bed, returning an imagined loan, releasing an imagined offering and uncovering a hand-framed shape have different visible endings. All use empty hands."
+    },
+    {
+      "cards": [
+        "P025",
+        "P028"
+      ],
+      "rationale": "One actor needs to be admitted to their own place; the other welcomes the rescuer into an absent guest’s place. Taking the place captures in the former and releases in the latter, with different observed social cues."
+    },
+    {
+      "cards": [
+        "P047",
+        "P030"
+      ],
+      "rationale": "A single coordinated forward step completing a return differs from an outside orbit around a stationary spinner; neither permits paired exploration."
+    },
+    {
+      "cards": [
+        "E013",
+        "E019",
+        "E038"
+      ],
+      "rationale": "Two viewpoints on an empty place, an altered ending to a witnessed gesture, and a self-directed release after two visits need no equipment and have distinct completions."
+    }
+  ],
+  "trialReview": {
+    "originalExamples": [
+      "T001",
+      "T002",
+      "T003",
+      "T004"
+    ],
+    "newOrFanInspired": [
+      "T005",
+      "T006",
+      "T007",
+      "T008",
+      "T009",
+      "T010",
+      "T011"
+    ],
+    "captureReward": "T001 late branch and some T004 outcomes can reward confirmed captivity or non-delivery. This is a trial success only; it never restores invalidated personal mission credit.",
+    "evidence": "T002 fear must be affirmed by the affected participant. T008 and T010 answers must remain independent until recorded. T003 silence and T004 non-delivery require an explicit report, not missing packets.",
+    "firstGame": "All effects and bonuses suppressed; selected cards count rounds only.",
+    "branchTiming": "Both branches are complete. The pre-movement checking-entry convention is explicitly proposed, not asserted as a verified source ruling.",
+    "admission": "Unavailable participants or naturally available required features are checked before assignment, never rerolled after an outcome is known. There are no task props; unknown reports remain pending."
+  },
+  "walkthroughs": [
+    {
+      "scenario": "sole free rescuer",
+      "result": "Every possessed release needs at most one free rescuer. P032/P037/P050/P075 have explicit one-hand/light-compatible staging; no second witness, real twin, additional prop holder or external event is required."
+    },
+    {
+      "scenario": "persistent possession",
+      "result": "New stories introduce no timed revelation, automatic end, forced captive return or role replacement. Repeated acts have rest pauses where needed; each actor may answer real stop/technical speech immediately."
+    },
+    {
+      "scenario": "free story mixing",
+      "result": "All six prologues use a private dwelling or its grounds. No personal card names a story ID, story cast or a particular fictional event as a prerequisite."
+    },
+    {
+      "scenario": "fiction versus live fact",
+      "result": "Only people make sounds and move their bodies/phones. Hand-shadow tasks require a real prechecked dim-screen effect. Existing house mirrors are fixed natural features: the angel must actually see its own face. No unseen autonomous object is claimed."
+    },
+    {
+      "scenario": "real stop",
+      "result": "T006 uses shoulder-touch plus outward open palm, explicitly unlike a real stop. Stops, technical help, consent and reflexive fear remain outside capture and trial evidence."
+    },
+    {
+      "scenario": "zero task props",
+      "result": "No carried or staged equipment is used. Group members repeat voice/body performance, with pauses as needed. The user permits ordinary existing house mirrors: the angel simply sees its own face; the mirror is not touched. The Dwelling is an agreed empty place."
+    }
+  ],
+  "openAcceptance": [
+    "Live puzzle discoverability without additional assistance.",
+    "Real light visibility, table layout and audible announcements.",
+    "Comfort with agreed contact and frightening acting.",
+    "Seven-round candle budget and practical mission/trial success rates.",
+    "Native device/browser behavior, networking and implementation of presently absent mechanics."
+  ]
+}

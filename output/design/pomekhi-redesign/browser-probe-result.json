@@ -1,0 +1,197 @@
+{
+  "target": {
+    "id": "12:7509",
+    "name": "Overlay / G09",
+    "type": "FRAME",
+    "parent": "4:3",
+    "parentType": "PAGE"
+  },
+  "overlays": [
+    {
+      "id": "12:7066",
+      "name": "Overlay / H05",
+      "position": "CENTER"
+    },
+    {
+      "id": "12:7101",
+      "name": "Overlay / H06",
+      "position": "CENTER"
+    },
+    {
+      "id": "12:7147",
+      "name": "Overlay / H07",
+      "position": "CENTER"
+    },
+    {
+      "id": "12:7179",
+      "name": "Overlay / H08",
+      "position": "CENTER"
+    },
+    {
+      "id": "12:7234",
+      "name": "Overlay / H09",
+      "position": "CENTER"
+    },
+    {
+      "id": "12:7289",
+      "name": "Overlay / H15",
+      "position": "CENTER"
+    },
+    {
+      "id": "12:7324",
+      "name": "Overlay / X04",
+      "position": "CENTER"
+    },
+    {
+      "id": "12:7365",
+      "name": "Overlay / X06",
+      "position": "CENTER"
+    },
+    {
+      "id": "12:7395",
+      "name": "Overlay / X07",
+      "position": "CENTER"
+    },
+    {
+      "id": "12:7425",
+      "name": "Overlay / X08",
+      "position": "CENTER"
+    },
+    {
+      "id": "12:7446",
+      "name": "Overlay / X09",
+      "position": "CENTER"
+    },
+    {
+      "id": "12:7467",
+      "name": "Overlay / X10",
+      "position": "CENTER"
+    },
+    {
+      "id": "12:7488",
+      "name": "Overlay / G05",
+      "position": "CENTER"
+    },
+    {
+      "id": "12:7509",
+      "name": "Overlay / G09",
+      "position": "CENTER"
+    },
+    {
+      "id": "12:7553",
+      "name": "Overlay / E01",
+      "position": "CENTER"
+    },
+    {
+      "id": "12:7587",
+      "name": "Overlay / E02",
+      "position": "CENTER"
+    },
+    {
+      "id": "12:7649",
+      "name": "Overlay / E03",
+      "position": "CENTER"
+    },
+    {
+      "id": "12:7723",
+      "name": "Overlay / E04",
+      "position": "CENTER"
+    },
+    {
+      "id": "12:7807",
+      "name": "Overlay / E05",
+      "position": "CENTER"
+    },
+    {
+      "id": "12:7879",
+      "name": "Overlay / E06",
+      "position": "CENTER"
+    },
+    {
+      "id": "12:7963",
+      "name": "Overlay / E07",
+      "position": "CENTER"
+    },
+    {
+      "id": "12:8050",
+      "name": "Overlay / E08",
+      "position": "CENTER"
+    },
+    {
+      "id": "12:8115",
+      "name": "Overlay / E09",
+      "position": "CENTER"
+    },
+    {
+      "id": "12:8184",
+      "name": "Overlay / E10",
+      "position": "CENTER"
+    },
+    {
+      "id": "12:8271",
+      "name": "Overlay / E11",
+      "position": "CENTER"
+    },
+    {
+      "id": "12:8333",
+      "name": "Overlay / X13",
+      "position": "CENTER"
+    },
+    {
+      "id": "12:8354",
+      "name": "Overlay / X14",
+      "position": "CENTER"
+    },
+    {
+      "id": "12:8375",
+      "name": "Overlay / X15",
+      "position": "CENTER"
+    },
+    {
+      "id": "12:8396",
+      "name": "Overlay / X16",
+      "position": "CENTER"
+    },
+    {
+      "id": "12:8417",
+      "name": "Overlay / X17",
+      "position": "CENTER"
+    },
+    {
+      "id": "12:8438",
+      "name": "Overlay / X18",
+      "position": "CENTER"
+    },
+    {
+      "id": "12:8459",
+      "name": "Overlay / X19",
+      "position": "CENTER"
+    },
+    {
+      "id": "12:8480",
+      "name": "Overlay / X20",
+      "position": "CENTER"
+    },
+    {
+      "id": "12:8501",
+      "name": "Overlay / X21",
+      "position": "CENTER"
+    },
+    {
+      "id": "12:8522",
+      "name": "Overlay / X22",
+      "position": "CENTER"
+    },
+    {
+      "id": "12:8543",
+      "name": "Overlay / X23",
+      "position": "CENTER"
+    },
+    {
+      "id": "12:8564",
+      "name": "Overlay / X24",
+      "position": "CENTER"
+    }
+  ],
+  "reacted": 1760
+}

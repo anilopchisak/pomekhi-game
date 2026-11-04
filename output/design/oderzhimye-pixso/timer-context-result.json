@@ -1,0 +1,21 @@
+{
+  "jsonrpc": "2.0",
+  "id": 3821520,
+  "result": {
+    "content": [
+      {
+        "type": "text",
+        "text": "{\"error\":\"Context write mismatch\",\"id\":\"3:123\",\"key\":\"Context#31:0\",\"value\":\"Нет сети\",\"rollback\":{\"status\":\"attempted\"}}"
+      }
+    ],
+    "structuredContent": {
+      "error": "Context write mismatch",
+      "id": "3:123",
+      "key": "Context#31:0",
+      "rollback": {
+        "status": "attempted"
+      },
+      "value": "Нет сети"
+    }
+  }
+}

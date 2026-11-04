@@ -1,0 +1,1370 @@
+[
+  {
+    "source_id": "H03",
+    "source_title": "Вечер начинается здесь",
+    "source_node": "17:14039",
+    "decision": "rework-or-merge",
+    "target_id": "L02",
+    "target_node": "3:346",
+    "reason": "Reworked for the target rules, purple system and stable private/public information boundary."
+  },
+  {
+    "source_id": "H11",
+    "source_title": "Прочитайте свои карточки",
+    "source_node": "17:14911",
+    "decision": "rework-or-merge",
+    "target_id": "L07",
+    "target_node": "3:991",
+    "reason": "Reworked for the target rules, purple system and stable private/public information boundary."
+  },
+  {
+    "source_id": "X01",
+    "source_title": "Дом слушает",
+    "source_node": "17:16324",
+    "decision": "rework-or-merge",
+    "target_id": "L01",
+    "target_node": "3:123",
+    "reason": "Reworked for the target rules, purple system and stable private/public information boundary."
+  },
+  {
+    "source_id": "H01",
+    "source_title": "Вход организатора",
+    "source_node": "17:13894",
+    "decision": "rework-or-merge",
+    "target_id": "L30",
+    "target_node": "3:4917",
+    "reason": "Reworked for the target rules, purple system and stable private/public information boundary."
+  },
+  {
+    "source_id": "H02",
+    "source_title": "Проверьте код",
+    "source_node": "17:13965",
+    "decision": "rework-or-merge",
+    "target_id": "L31",
+    "target_node": "3:4989",
+    "reason": "Reworked for the target rules, purple system and stable private/public information boundary."
+  },
+  {
+    "source_id": "H04",
+    "source_title": "Пригласите участников",
+    "source_node": "17:14112",
+    "decision": "rework-or-merge",
+    "target_id": "L03",
+    "target_node": "3:425",
+    "reason": "Reworked for the target rules, purple system and stable private/public information boundary."
+  },
+  {
+    "source_id": "H05",
+    "source_title": "Приглашение в комнату",
+    "source_node": "17:21035",
+    "decision": "rework-or-merge",
+    "target_id": "M01",
+    "target_node": "3:7452",
+    "reason": "Reworked for the target rules, purple system and stable private/public information boundary."
+  },
+  {
+    "source_id": "H06",
+    "source_title": "Соберите компанию",
+    "source_node": "17:14293",
+    "decision": "rework-or-merge",
+    "target_id": "L04",
+    "target_node": "3:497",
+    "reason": "Reworked for the target rules, purple system and stable private/public information boundary."
+  },
+  {
+    "source_id": "H07",
+    "source_title": "Подключение по локальной сети",
+    "source_node": "17:14421",
+    "decision": "rework-or-merge",
+    "target_id": "M01",
+    "target_node": "3:7452",
+    "reason": "Reworked for the target rules, purple system and stable private/public information boundary."
+  },
+  {
+    "source_id": "H08",
+    "source_title": "Настройки партии",
+    "source_node": "17:14549",
+    "decision": "rework-or-merge",
+    "target_id": "M02",
+    "target_node": "3:7476",
+    "reason": "Reworked for the target rules, purple system and stable private/public information boundary."
+  },
+  {
+    "source_id": "H09",
+    "source_title": "Бесконечная партия",
+    "source_node": "17:14693",
+    "decision": "remove-and-replace",
+    "target_id": "M02",
+    "target_node": "3:7476",
+    "reason": "Arbitrary/endless party configuration is removed; the target keeps seven rounds."
+  },
+  {
+    "source_id": "H10",
+    "source_title": "Все в одной комнате",
+    "source_node": "17:14817",
+    "decision": "rework-or-merge",
+    "target_id": "L04",
+    "target_node": "3:497",
+    "reason": "Reworked for the target rules, purple system and stable private/public information boundary."
+  },
+  {
+    "source_id": "H12",
+    "source_title": "Одержимые занимают места",
+    "source_node": "17:15015",
+    "decision": "rework-or-merge",
+    "target_id": "L08",
+    "target_node": "3:1184",
+    "reason": "Reworked for the target rules, purple system and stable private/public information boundary."
+  },
+  {
+    "source_id": "H13",
+    "source_title": "Игра на паузе",
+    "source_node": "17:15117",
+    "decision": "rework-or-merge",
+    "target_id": "L20",
+    "target_node": "3:3234",
+    "reason": "Reworked for the target rules, purple system and stable private/public information boundary."
+  },
+  {
+    "source_id": "H14",
+    "source_title": "Сверяем действия",
+    "source_node": "17:15219",
+    "decision": "rework-or-merge",
+    "target_id": "L10",
+    "target_node": "3:1530",
+    "reason": "Reworked for the target rules, purple system and stable private/public information boundary."
+  },
+  {
+    "source_id": "H15",
+    "source_title": "Разбор спорного действия",
+    "source_node": "17:15320",
+    "decision": "rework-or-merge",
+    "target_id": "M25",
+    "target_node": "3:7914",
+    "reason": "Reworked for the target rules, purple system and stable private/public information boundary."
+  },
+  {
+    "source_id": "H16",
+    "source_title": "Пробный раунд завершён",
+    "source_node": "17:15451",
+    "decision": "remove-and-replace",
+    "target_id": "L26",
+    "target_node": "3:4247",
+    "reason": "The separate tutorial round is replaced by seven-round first-game trial suppression."
+  },
+  {
+    "source_id": "H17",
+    "source_title": "Раунд завершён",
+    "source_node": "17:15544",
+    "decision": "rework-or-merge",
+    "target_id": "L12",
+    "target_node": "3:1864",
+    "reason": "Reworked for the target rules, purple system and stable private/public information boundary."
+  },
+  {
+    "source_id": "H18",
+    "source_title": "Правила у ноутбука",
+    "source_node": "17:15644",
+    "decision": "rework-or-merge",
+    "target_id": "M04",
+    "target_node": "3:7523",
+    "reason": "Reworked for the target rules, purple system and stable private/public information boundary."
+  },
+  {
+    "source_id": "H19",
+    "source_title": "Дом освобождён",
+    "source_node": "17:15740",
+    "decision": "rework-or-merge",
+    "target_id": "L16",
+    "target_node": "3:2542",
+    "reason": "Reworked for the target rules, purple system and stable private/public information boundary."
+  },
+  {
+    "source_id": "H20",
+    "source_title": "История продолжается",
+    "source_node": "17:15834",
+    "decision": "remove-and-replace",
+    "target_id": "L39",
+    "target_node": "3:6171",
+    "reason": "Post-outcome freeplay cannot revise a finished target party."
+  },
+  {
+    "source_id": "H21",
+    "source_title": "Раунд отменён",
+    "source_node": "17:15908",
+    "decision": "rework-or-merge",
+    "target_id": "L19",
+    "target_node": "3:3061",
+    "reason": "Reworked for the target rules, purple system and stable private/public information boundary."
+  },
+  {
+    "source_id": "H22",
+    "source_title": "Дух остаётся в доме",
+    "source_node": "17:15997",
+    "decision": "rework-or-merge",
+    "target_id": "L17",
+    "target_node": "3:2715",
+    "reason": "Reworked for the target rules, purple system and stable private/public information boundary."
+  },
+  {
+    "source_id": "H23",
+    "source_title": "Дом слушает",
+    "source_node": "17:16091",
+    "decision": "rework-or-merge",
+    "target_id": "L01",
+    "target_node": "3:123",
+    "reason": "Reworked for the target rules, purple system and stable private/public information boundary."
+  },
+  {
+    "source_id": "H24",
+    "source_title": "Партия завершена",
+    "source_node": "17:16173",
+    "decision": "rework-or-merge",
+    "target_id": "L39",
+    "target_node": "3:6171",
+    "reason": "Reworked for the target rules, purple system and stable private/public information boundary."
+  },
+  {
+    "source_id": "H25",
+    "source_title": "Дополнительный раунд",
+    "source_node": "17:16247",
+    "decision": "remove-and-replace",
+    "target_id": "L14",
+    "target_node": "3:2208",
+    "reason": "An extra scored round is removed; only the next of seven rounds remains."
+  },
+  {
+    "source_id": "X02",
+    "source_title": "Возвращайтесь к ноутбуку",
+    "source_node": "17:16426",
+    "decision": "rework-or-merge",
+    "target_id": "L09",
+    "target_node": "3:1357",
+    "reason": "Reworked for the target rules, purple system and stable private/public information boundary."
+  },
+  {
+    "source_id": "X03",
+    "source_title": "Открыто новое правило",
+    "source_node": "17:16521",
+    "decision": "rework-or-merge",
+    "target_id": "A08",
+    "target_node": "3:10179",
+    "reason": "Reworked for the target rules, purple system and stable private/public information boundary."
+  },
+  {
+    "source_id": "X04",
+    "source_title": "Звук и атмосфера",
+    "source_node": "17:16610",
+    "decision": "rework-or-merge",
+    "target_id": "M07",
+    "target_node": "3:7559",
+    "reason": "Reworked for the target rules, purple system and stable private/public information boundary."
+  },
+  {
+    "source_id": "X05",
+    "source_title": "Партия прервана",
+    "source_node": "17:16747",
+    "decision": "rework-or-merge",
+    "target_id": "L19",
+    "target_node": "3:3061",
+    "reason": "Reworked for the target rules, purple system and stable private/public information boundary."
+  },
+  {
+    "source_id": "X06",
+    "source_title": "Как играть",
+    "source_node": "17:16841",
+    "decision": "rework-or-merge",
+    "target_id": "M03",
+    "target_node": "3:7497",
+    "reason": "Reworked for the target rules, purple system and stable private/public information boundary."
+  },
+  {
+    "source_id": "X07",
+    "source_title": "Как работает ритуал",
+    "source_node": "17:16967",
+    "decision": "rework-or-merge",
+    "target_id": "M04",
+    "target_node": "3:7523",
+    "reason": "Reworked for the target rules, purple system and stable private/public information boundary."
+  },
+  {
+    "source_id": "X08",
+    "source_title": "Заменить карточку Анны?",
+    "source_node": "17:17093",
+    "decision": "rework-or-merge",
+    "target_id": "M05",
+    "target_node": "3:7541",
+    "reason": "Reworked for the target rules, purple system and stable private/public information boundary."
+  },
+  {
+    "source_id": "X09",
+    "source_title": "Закрыть ожидание?",
+    "source_node": "17:17210",
+    "decision": "rework-or-merge",
+    "target_id": "M26",
+    "target_node": "3:7928",
+    "reason": "Reworked for the target rules, purple system and stable private/public information boundary."
+  },
+  {
+    "source_id": "X10",
+    "source_title": "Подтвердить итоги?",
+    "source_node": "17:17327",
+    "decision": "rework-or-merge",
+    "target_id": "M06",
+    "target_node": "3:7550",
+    "reason": "Reworked for the target rules, purple system and stable private/public information boundary."
+  },
+  {
+    "source_id": "G02",
+    "source_title": "Комната восстановлена",
+    "source_node": "17:17444",
+    "decision": "rework-or-merge",
+    "target_id": "L21",
+    "target_node": "3:3409",
+    "reason": "Reworked for the target rules, purple system and stable private/public information boundary."
+  },
+  {
+    "source_id": "G03",
+    "source_title": "Возобновите игру вручную",
+    "source_node": "17:17534",
+    "decision": "rework-or-merge",
+    "target_id": "L21",
+    "target_node": "3:3409",
+    "reason": "Reworked for the target rules, purple system and stable private/public information boundary."
+  },
+  {
+    "source_id": "G04",
+    "source_title": "Игра остановлена",
+    "source_node": "17:17632",
+    "decision": "rework-or-merge",
+    "target_id": "L20",
+    "target_node": "3:3234",
+    "reason": "Reworked for the target rules, purple system and stable private/public information boundary."
+  },
+  {
+    "source_id": "G05",
+    "source_title": "Сохранение не загружено",
+    "source_node": "17:17737",
+    "decision": "rework-or-merge",
+    "target_id": "L23",
+    "target_node": "3:3755",
+    "reason": "Reworked for the target rules, purple system and stable private/public information boundary."
+  },
+  {
+    "source_id": "G06",
+    "source_title": "Не хватает карточек",
+    "source_node": "17:17854",
+    "decision": "rework-or-merge",
+    "target_id": "L25",
+    "target_node": "3:4083",
+    "reason": "Reworked for the target rules, purple system and stable private/public information boundary."
+  },
+  {
+    "source_id": "G08",
+    "source_title": "Нет связи с программой",
+    "source_node": "17:17943",
+    "decision": "rework-or-merge",
+    "target_id": "L22",
+    "target_node": "3:3582",
+    "reason": "Reworked for the target rules, purple system and stable private/public information boundary."
+  },
+  {
+    "source_id": "G09",
+    "source_title": "Звук недоступен",
+    "source_node": "17:18041",
+    "decision": "rework-or-merge",
+    "target_id": "L36",
+    "target_node": "3:5665",
+    "reason": "Reworked for the target rules, purple system and stable private/public information boundary."
+  },
+  {
+    "source_id": "G10",
+    "source_title": "Контроль игры прерван",
+    "source_node": "17:18184",
+    "decision": "rework-or-merge",
+    "target_id": "L20",
+    "target_node": "3:3234",
+    "reason": "Reworked for the target rules, purple system and stable private/public information boundary."
+  },
+  {
+    "source_id": "E01",
+    "source_title": "Редактор заданий",
+    "source_node": "17:18279",
+    "decision": "rework-or-merge",
+    "target_id": "M18",
+    "target_node": "3:7706",
+    "reason": "Reworked for the target rules, purple system and stable private/public information boundary."
+  },
+  {
+    "source_id": "E02",
+    "source_title": "Редактор заданий",
+    "source_node": "17:18444",
+    "decision": "rework-or-merge",
+    "target_id": "M18",
+    "target_node": "3:7706",
+    "reason": "Reworked for the target rules, purple system and stable private/public information boundary."
+  },
+  {
+    "source_id": "E03",
+    "source_title": "Редактор заданий",
+    "source_node": "17:18624",
+    "decision": "rework-or-merge",
+    "target_id": "M19",
+    "target_node": "3:7746",
+    "reason": "Reworked for the target rules, purple system and stable private/public information boundary."
+  },
+  {
+    "source_id": "E04",
+    "source_title": "Редактор заданий",
+    "source_node": "17:18804",
+    "decision": "rework-or-merge",
+    "target_id": "M18",
+    "target_node": "3:7706",
+    "reason": "Reworked for the target rules, purple system and stable private/public information boundary."
+  },
+  {
+    "source_id": "E05",
+    "source_title": "Редактор заданий",
+    "source_node": "17:18984",
+    "decision": "rework-or-merge",
+    "target_id": "M20",
+    "target_node": "3:7789",
+    "reason": "Reworked for the target rules, purple system and stable private/public information boundary."
+  },
+  {
+    "source_id": "E06",
+    "source_title": "Новая карточка",
+    "source_node": "17:19152",
+    "decision": "rework-or-merge",
+    "target_id": "M18",
+    "target_node": "3:7706",
+    "reason": "Reworked for the target rules, purple system and stable private/public information boundary."
+  },
+  {
+    "source_id": "E07",
+    "source_title": "Редактор заданий",
+    "source_node": "17:19332",
+    "decision": "rework-or-merge",
+    "target_id": "M19",
+    "target_node": "3:7746",
+    "reason": "Reworked for the target rules, purple system and stable private/public information boundary."
+  },
+  {
+    "source_id": "E08",
+    "source_title": "Редактор заданий",
+    "source_node": "17:19518",
+    "decision": "rework-or-merge",
+    "target_id": "M20",
+    "target_node": "3:7789",
+    "reason": "Reworked for the target rules, purple system and stable private/public information boundary."
+  },
+  {
+    "source_id": "E09",
+    "source_title": "Импорт банка заданий",
+    "source_node": "17:19704",
+    "decision": "rework-or-merge",
+    "target_id": "M16",
+    "target_node": "3:7657",
+    "reason": "Reworked for the target rules, purple system and stable private/public information boundary."
+  },
+  {
+    "source_id": "E10",
+    "source_title": "Редактор заданий",
+    "source_node": "17:19869",
+    "decision": "rework-or-merge",
+    "target_id": "M18",
+    "target_node": "3:7706",
+    "reason": "Reworked for the target rules, purple system and stable private/public information boundary."
+  },
+  {
+    "source_id": "E11",
+    "source_title": "Редактор заданий",
+    "source_node": "17:20052",
+    "decision": "rework-or-merge",
+    "target_id": "M17",
+    "target_node": "3:7697",
+    "reason": "Reworked for the target rules, purple system and stable private/public information boundary."
+  },
+  {
+    "source_id": "P01",
+    "source_title": "Вечер начинается здесь",
+    "source_node": "17:20210",
+    "decision": "rework-or-merge",
+    "target_id": "P03",
+    "target_node": "3:6346",
+    "reason": "Reworked for the target rules, purple system and stable private/public information boundary."
+  },
+  {
+    "source_id": "P14",
+    "source_title": "Следуйте своей карточке",
+    "source_node": "17:20657",
+    "decision": "rework-or-merge",
+    "target_id": "P02",
+    "target_node": "3:317",
+    "reason": "Reworked for the target rules, purple system and stable private/public information boundary."
+  },
+  {
+    "source_id": "P15",
+    "source_title": "Ищите и помогайте",
+    "source_node": "17:20706",
+    "decision": "rework-or-merge",
+    "target_id": "P01",
+    "target_node": "3:288",
+    "reason": "Reworked for the target rules, purple system and stable private/public information boundary."
+  },
+  {
+    "source_id": "P25",
+    "source_title": "Освобождение записано",
+    "source_node": "17:20991",
+    "decision": "rework-or-merge",
+    "target_id": "P17",
+    "target_node": "3:6695",
+    "reason": "Reworked for the target rules, purple system and stable private/public information boundary."
+  },
+  {
+    "source_id": "P02",
+    "source_title": "Проверьте код",
+    "source_node": "17:20242",
+    "decision": "rework-or-merge",
+    "target_id": "P04",
+    "target_node": "3:6370",
+    "reason": "Reworked for the target rules, purple system and stable private/public information boundary."
+  },
+  {
+    "source_id": "P03",
+    "source_title": "Вас пригласили",
+    "source_node": "17:20277",
+    "decision": "rework-or-merge",
+    "target_id": "P03",
+    "target_node": "3:6346",
+    "reason": "Reworked for the target rules, purple system and stable private/public information boundary."
+  },
+  {
+    "source_id": "P04",
+    "source_title": "Как вас называть?",
+    "source_node": "17:20305",
+    "decision": "rework-or-merge",
+    "target_id": "P05",
+    "target_node": "3:6394",
+    "reason": "Reworked for the target rules, purple system and stable private/public information boundary."
+  },
+  {
+    "source_id": "P05",
+    "source_title": "Вы в комнате",
+    "source_node": "17:20340",
+    "decision": "rework-or-merge",
+    "target_id": "P06",
+    "target_node": "3:6418",
+    "reason": "Reworked for the target rules, purple system and stable private/public information boundary."
+  },
+  {
+    "source_id": "P06",
+    "source_title": "Карточка получена",
+    "source_node": "17:20364",
+    "decision": "rework-or-merge",
+    "target_id": "P07",
+    "target_node": "3:6439",
+    "reason": "Reworked for the target rules, purple system and stable private/public information boundary."
+  },
+  {
+    "source_id": "P07",
+    "source_title": "Прочитайте своё задание",
+    "source_node": "17:20396",
+    "decision": "rework-or-merge",
+    "target_id": "P09",
+    "target_node": "3:6491",
+    "reason": "Reworked for the target rules, purple system and stable private/public information boundary."
+  },
+  {
+    "source_id": "P08",
+    "source_title": "Ваша цель — помогать",
+    "source_node": "17:20444",
+    "decision": "rework-or-merge",
+    "target_id": "P08",
+    "target_node": "3:6464",
+    "reason": "Reworked for the target rules, purple system and stable private/public information boundary."
+  },
+  {
+    "source_id": "P09",
+    "source_title": "Вы готовы",
+    "source_node": "17:20489",
+    "decision": "rework-or-merge",
+    "target_id": "P11",
+    "target_node": "3:6545",
+    "reason": "Reworked for the target rules, purple system and stable private/public information boundary."
+  },
+  {
+    "source_id": "P11",
+    "source_title": "Карточка заменена",
+    "source_node": "17:20537",
+    "decision": "rework-or-merge",
+    "target_id": "P41",
+    "target_node": "3:7218",
+    "reason": "Reworked for the target rules, purple system and stable private/public information boundary."
+  },
+  {
+    "source_id": "P12",
+    "source_title": "Займите своё место",
+    "source_node": "17:20569",
+    "decision": "rework-or-merge",
+    "target_id": "P14",
+    "target_node": "3:6618",
+    "reason": "Reworked for the target rules, purple system and stable private/public information boundary."
+  },
+  {
+    "source_id": "P13",
+    "source_title": "Дождитесь поиска",
+    "source_node": "17:20618",
+    "decision": "rework-or-merge",
+    "target_id": "P13",
+    "target_node": "3:6597",
+    "reason": "Reworked for the target rules, purple system and stable private/public information boundary."
+  },
+  {
+    "source_id": "P16",
+    "source_title": "Миссия отмечена",
+    "source_node": "17:20752",
+    "decision": "rework-or-merge",
+    "target_id": "P20",
+    "target_node": "3:6764",
+    "reason": "Reworked for the target rules, purple system and stable private/public information boundary."
+  },
+  {
+    "source_id": "P17",
+    "source_title": "Вы заражены",
+    "source_node": "17:20797",
+    "decision": "rework-or-merge",
+    "target_id": "P15",
+    "target_node": "3:6645",
+    "reason": "Reworked for the target rules, purple system and stable private/public information boundary."
+  },
+  {
+    "source_id": "P18",
+    "source_title": "Вы в заражённой группе",
+    "source_node": "17:20845",
+    "decision": "rework-or-merge",
+    "target_id": "P16",
+    "target_node": "3:6666",
+    "reason": "Reworked for the target rules, purple system and stable private/public information boundary."
+  },
+  {
+    "source_id": "P19",
+    "source_title": "Действие уже связано с другими",
+    "source_node": "17:20893",
+    "decision": "rework-or-merge",
+    "target_id": "P45",
+    "target_node": "3:7300",
+    "reason": "Reworked for the target rules, purple system and stable private/public information boundary."
+  },
+  {
+    "source_id": "P20",
+    "source_title": "Вы освобождены",
+    "source_node": "17:20917",
+    "decision": "rework-or-merge",
+    "target_id": "P18",
+    "target_node": "3:6716",
+    "reason": "Reworked for the target rules, purple system and stable private/public information boundary."
+  },
+  {
+    "source_id": "P21",
+    "source_title": "Игра на паузе",
+    "source_node": "17:20941",
+    "decision": "rework-or-merge",
+    "target_id": "P28",
+    "target_node": "3:6941",
+    "reason": "Reworked for the target rules, purple system and stable private/public information boundary."
+  },
+  {
+    "source_id": "P22",
+    "source_title": "Вы пропускаете раунд",
+    "source_node": "17:20967",
+    "decision": "rework-or-merge",
+    "target_id": "P34",
+    "target_node": "3:7067",
+    "reason": "Reworked for the target rules, purple system and stable private/public information boundary."
+  },
+  {
+    "source_id": "P23",
+    "source_title": "Вы присоединились",
+    "source_node": "12:2647",
+    "decision": "rework-or-merge",
+    "target_id": "P33",
+    "target_node": "3:7046",
+    "reason": "Reworked for the target rules, purple system and stable private/public information boundary."
+  },
+  {
+    "source_id": "P24",
+    "source_title": "Карточка доступна без сети",
+    "source_node": "12:2675",
+    "decision": "rework-or-merge",
+    "target_id": "P24",
+    "target_node": "3:6851",
+    "reason": "Reworked for the target rules, purple system and stable private/public information boundary."
+  },
+  {
+    "source_id": "P26",
+    "source_title": "Поиск окончен",
+    "source_node": "12:2725",
+    "decision": "rework-or-merge",
+    "target_id": "P29",
+    "target_node": "3:6962",
+    "reason": "Reworked for the target rules, purple system and stable private/public information boundary."
+  },
+  {
+    "source_id": "P27",
+    "source_title": "Запись требует разбора",
+    "source_node": "12:2750",
+    "decision": "rework-or-merge",
+    "target_id": "P26",
+    "target_node": "3:6899",
+    "reason": "Reworked for the target rules, purple system and stable private/public information boundary."
+  },
+  {
+    "source_id": "P28",
+    "source_title": "Действие не засчитано",
+    "source_node": "12:2778",
+    "decision": "rework-or-merge",
+    "target_id": "P27",
+    "target_node": "3:6920",
+    "reason": "Reworked for the target rules, purple system and stable private/public information boundary."
+  },
+  {
+    "source_id": "P29",
+    "source_title": "Ваш вход завершён",
+    "source_node": "12:2806",
+    "decision": "rework-or-merge",
+    "target_id": "P51",
+    "target_node": "3:7431",
+    "reason": "Reworked for the target rules, purple system and stable private/public information boundary."
+  },
+  {
+    "source_id": "P30",
+    "source_title": "Ваша личная карточка",
+    "source_node": "12:2830",
+    "decision": "rework-or-merge",
+    "target_id": "P01",
+    "target_node": "3:288",
+    "reason": "Reworked for the target rules, purple system and stable private/public information boundary."
+  },
+  {
+    "source_id": "P31",
+    "source_title": "Звук на телефоне",
+    "source_node": "12:2878",
+    "decision": "rework-or-merge",
+    "target_id": "M07P",
+    "target_node": "3:7987",
+    "reason": "Reworked for the target rules, purple system and stable private/public information boundary."
+  },
+  {
+    "source_id": "P32",
+    "source_title": "Предварительный итог",
+    "source_node": "12:2917",
+    "decision": "rework-or-merge",
+    "target_id": "P25",
+    "target_node": "3:6878",
+    "reason": "Reworked for the target rules, purple system and stable private/public information boundary."
+  },
+  {
+    "source_id": "P33",
+    "source_title": "Вы снова в игре",
+    "source_node": "12:2943",
+    "decision": "rework-or-merge",
+    "target_id": "P07",
+    "target_node": "3:6439",
+    "reason": "Reworked for the target rules, purple system and stable private/public information boundary."
+  },
+  {
+    "source_id": "P34",
+    "source_title": "Дом освобождён",
+    "source_node": "12:2977",
+    "decision": "rework-or-merge",
+    "target_id": "P36",
+    "target_node": "3:7109",
+    "reason": "Reworked for the target rules, purple system and stable private/public information boundary."
+  },
+  {
+    "source_id": "P35",
+    "source_title": "Партия восстановлена",
+    "source_node": "12:3002",
+    "decision": "rework-or-merge",
+    "target_id": "P39",
+    "target_node": "3:7172",
+    "reason": "Reworked for the target rules, purple system and stable private/public information boundary."
+  },
+  {
+    "source_id": "P36",
+    "source_title": "Комната закрыта",
+    "source_node": "12:3027",
+    "decision": "rework-or-merge",
+    "target_id": "P51",
+    "target_node": "3:7431",
+    "reason": "Reworked for the target rules, purple system and stable private/public information boundary."
+  },
+  {
+    "source_id": "P37",
+    "source_title": "Все места заняты",
+    "source_node": "12:3051",
+    "decision": "rework-or-merge",
+    "target_id": "P49",
+    "target_node": "3:7387",
+    "reason": "Reworked for the target rules, purple system and stable private/public information boundary."
+  },
+  {
+    "source_id": "P38",
+    "source_title": "Не удалось включить звук",
+    "source_node": "12:3086",
+    "decision": "rework-or-merge",
+    "target_id": "P46",
+    "target_node": "3:7321",
+    "reason": "Reworked for the target rules, purple system and stable private/public information boundary."
+  },
+  {
+    "source_id": "P39",
+    "source_title": "Вы вышли из комнаты",
+    "source_node": "12:3128",
+    "decision": "rework-or-merge",
+    "target_id": "P35",
+    "target_node": "3:7088",
+    "reason": "Reworked for the target rules, purple system and stable private/public information boundary."
+  },
+  {
+    "source_id": "P40",
+    "source_title": "Вы отметили заражение",
+    "source_node": "12:3152",
+    "decision": "rework-or-merge",
+    "target_id": "P54",
+    "target_node": "3:18930",
+    "reason": "Reworked for the target rules, purple system and stable private/public information boundary."
+  },
+  {
+    "source_id": "PX01",
+    "source_title": "Условие заражения выполнено",
+    "source_node": "12:3179",
+    "decision": "rework-or-merge",
+    "target_id": "P21",
+    "target_node": "3:6785",
+    "reason": "Reworked for the target rules, purple system and stable private/public information boundary."
+  },
+  {
+    "source_id": "PX02",
+    "source_title": "Никита выбран",
+    "source_node": "12:3224",
+    "decision": "rework-or-merge",
+    "target_id": "M12",
+    "target_node": "3:7621",
+    "reason": "Reworked for the target rules, purple system and stable private/public information boundary."
+  },
+  {
+    "source_id": "PX03",
+    "source_title": "Нет доступных целей",
+    "source_node": "12:3276",
+    "decision": "rework-or-merge",
+    "target_id": "P22",
+    "target_node": "3:6809",
+    "reason": "Reworked for the target rules, purple system and stable private/public information boundary."
+  },
+  {
+    "source_id": "PX04",
+    "source_title": "Информация о комнате",
+    "source_node": "12:3310",
+    "decision": "rework-or-merge",
+    "target_id": "M01P",
+    "target_node": "3:7937",
+    "reason": "Reworked for the target rules, purple system and stable private/public information boundary."
+  },
+  {
+    "source_id": "PX05",
+    "source_title": "Как играть",
+    "source_node": "12:3351",
+    "decision": "rework-or-merge",
+    "target_id": "M03P",
+    "target_node": "3:7961",
+    "reason": "Reworked for the target rules, purple system and stable private/public information boundary."
+  },
+  {
+    "source_id": "PX06",
+    "source_title": "Для входа нужна связь",
+    "source_node": "12:3379",
+    "decision": "rework-or-merge",
+    "target_id": "P47",
+    "target_node": "3:7342",
+    "reason": "Reworked for the target rules, purple system and stable private/public information boundary."
+  },
+  {
+    "source_id": "PX07",
+    "source_title": "Подтвердить освобождение?",
+    "source_node": "12:3414",
+    "decision": "rework-or-merge",
+    "target_id": "M11",
+    "target_node": "3:7612",
+    "reason": "Reworked for the target rules, purple system and stable private/public information boundary."
+  },
+  {
+    "source_id": "PX08",
+    "source_title": "Пропустить этот раунд?",
+    "source_node": "12:3445",
+    "decision": "rework-or-merge",
+    "target_id": "M09",
+    "target_node": "3:7594",
+    "reason": "Reworked for the target rules, purple system and stable private/public information boundary."
+  },
+  {
+    "source_id": "PX09",
+    "source_title": "Выйти из комнаты?",
+    "source_node": "12:3476",
+    "decision": "rework-or-merge",
+    "target_id": "M10",
+    "target_node": "3:7603",
+    "reason": "Reworked for the target rules, purple system and stable private/public information boundary."
+  },
+  {
+    "source_id": "PX10",
+    "source_title": "Никита заражён",
+    "source_node": "12:3507",
+    "decision": "rework-or-merge",
+    "target_id": "P54",
+    "target_node": "3:18930",
+    "reason": "Reworked for the target rules, purple system and stable private/public information boundary."
+  },
+  {
+    "source_id": "A01",
+    "source_title": "A01 supporting variant",
+    "source_node": "12:3531",
+    "decision": "rework-or-merge",
+    "target_id": "P01W320",
+    "target_node": "3:13361",
+    "reason": "Reworked for the target rules, purple system and stable private/public information boundary."
+  },
+  {
+    "source_id": "A02",
+    "source_title": "A02 supporting variant",
+    "source_node": "12:3580",
+    "decision": "rework-or-merge",
+    "target_id": "P01W430",
+    "target_node": "3:13419",
+    "reason": "Reworked for the target rules, purple system and stable private/public information boundary."
+  },
+  {
+    "source_id": "A03",
+    "source_title": "A03 supporting variant",
+    "source_node": "12:3629",
+    "decision": "rework-or-merge",
+    "target_id": "P02W320",
+    "target_node": "3:13390",
+    "reason": "Reworked for the target rules, purple system and stable private/public information boundary."
+  },
+  {
+    "source_id": "A04",
+    "source_title": "A04 supporting variant",
+    "source_node": "12:3675",
+    "decision": "rework-or-merge",
+    "target_id": "P09W320",
+    "target_node": "3:13477",
+    "reason": "Reworked for the target rules, purple system and stable private/public information boundary."
+  },
+  {
+    "source_id": "A05",
+    "source_title": "A05 supporting variant",
+    "source_node": "12:3721",
+    "decision": "rework-or-merge",
+    "target_id": "L01W1440",
+    "target_node": "3:13184",
+    "reason": "Reworked for the target rules, purple system and stable private/public information boundary."
+  },
+  {
+    "source_id": "A06",
+    "source_title": "A06 supporting variant",
+    "source_node": "12:3825",
+    "decision": "rework-or-merge",
+    "target_id": "L01",
+    "target_node": "3:123",
+    "reason": "Reworked for the target rules, purple system and stable private/public information boundary."
+  },
+  {
+    "source_id": "A07",
+    "source_title": "A07 supporting variant",
+    "source_node": "12:3927",
+    "decision": "rework-or-merge",
+    "target_id": "L01",
+    "target_node": "3:123",
+    "reason": "Reworked for the target rules, purple system and stable private/public information boundary."
+  },
+  {
+    "source_id": "X11",
+    "source_title": "Дом слушает",
+    "source_node": "12:4036",
+    "decision": "rework-or-merge",
+    "target_id": "L35",
+    "target_node": "3:5490",
+    "reason": "Reworked for the target rules, purple system and stable private/public information boundary."
+  },
+  {
+    "source_id": "X12",
+    "source_title": "Итоги партии",
+    "source_node": "12:4138",
+    "decision": "rework-or-merge",
+    "target_id": "L39",
+    "target_node": "3:6171",
+    "reason": "Reworked for the target rules, purple system and stable private/public information boundary."
+  },
+  {
+    "source_id": "X13",
+    "source_title": "Перетасовать карточки?",
+    "source_node": "12:4232",
+    "decision": "remove-and-replace",
+    "target_id": "L14",
+    "target_node": "3:2208",
+    "reason": "Global reshuffling is removed; retained assignments and groups persist."
+  },
+  {
+    "source_id": "X14",
+    "source_title": "Отменить раунд?",
+    "source_node": "12:4349",
+    "decision": "remove-and-replace",
+    "target_id": "L19",
+    "target_node": "3:3061",
+    "reason": "A discretionary score-free round cancellation is removed; technical stop remains distinct."
+  },
+  {
+    "source_id": "X15",
+    "source_title": "Завершить поиск?",
+    "source_node": "12:4466",
+    "decision": "remove-and-replace",
+    "target_id": "L09",
+    "target_node": "3:1357",
+    "reason": "Manual public countdown/finish control is replaced by the computer recall."
+  },
+  {
+    "source_id": "X16",
+    "source_title": "Закрыть комнату?",
+    "source_node": "12:4583",
+    "decision": "rework-or-merge",
+    "target_id": "L19",
+    "target_node": "3:3061",
+    "reason": "Reworked for the target rules, purple system and stable private/public information boundary."
+  },
+  {
+    "source_id": "X17",
+    "source_title": "Удалить Сашу?",
+    "source_node": "12:4700",
+    "decision": "rework-or-merge",
+    "target_id": "M08",
+    "target_node": "3:7581",
+    "reason": "Reworked for the target rules, purple system and stable private/public information boundary."
+  },
+  {
+    "source_id": "X18",
+    "source_title": "Сбросить сохранение?",
+    "source_node": "12:4817",
+    "decision": "remove-and-replace",
+    "target_id": "L23",
+    "target_node": "3:3755",
+    "reason": "Destructive saved-party reset is outside this design scope. Recovery remains explicit."
+  },
+  {
+    "source_id": "X19",
+    "source_title": "Заменить банк импортом?",
+    "source_node": "12:4934",
+    "decision": "rework-or-merge",
+    "target_id": "M16",
+    "target_node": "3:7657",
+    "reason": "Reworked for the target rules, purple system and stable private/public information boundary."
+  },
+  {
+    "source_id": "X20",
+    "source_title": "Вернуть стандартный банк?",
+    "source_node": "12:5051",
+    "decision": "remove-and-replace",
+    "target_id": "M18",
+    "target_node": "3:7706",
+    "reason": "Replacing the bank implicitly is removed; use explicit import and preserved drafts."
+  },
+  {
+    "source_id": "X21",
+    "source_title": "Завершить партию сейчас?",
+    "source_node": "12:5168",
+    "decision": "rework-or-merge",
+    "target_id": "M14",
+    "target_node": "3:7639",
+    "reason": "Reworked for the target rules, purple system and stable private/public information boundary."
+  },
+  {
+    "source_id": "X22",
+    "source_title": "Продолжить свободную игру?",
+    "source_node": "12:5285",
+    "decision": "remove-and-replace",
+    "target_id": "L39",
+    "target_node": "3:6171",
+    "reason": "Free continuation is removed from the original-rules party."
+  },
+  {
+    "source_id": "X23",
+    "source_title": "Отменить раздачу?",
+    "source_node": "12:5402",
+    "decision": "remove-and-replace",
+    "target_id": "L07",
+    "target_node": "3:991",
+    "reason": "Issued assignments cannot be reset with a global redeal."
+  },
+  {
+    "source_id": "X24",
+    "source_title": "Начать без всех готовых?",
+    "source_node": "12:5519",
+    "decision": "remove-and-replace",
+    "target_id": "L07",
+    "target_node": "3:991",
+    "reason": "Starting before everyone is ready is removed."
+  },
+  {
+    "source_id": "PX11",
+    "source_title": "Миссия добавлена в итог",
+    "source_node": "12:5636",
+    "decision": "rework-or-merge",
+    "target_id": "P20",
+    "target_node": "3:6764",
+    "reason": "Reworked for the target rules, purple system and stable private/public information boundary."
+  },
+  {
+    "source_id": "PX12",
+    "source_title": "Кто вас заразил?",
+    "source_node": "12:5669",
+    "decision": "rework-or-merge",
+    "target_id": "M27",
+    "target_node": "3:13166",
+    "reason": "Reworked for the target rules, purple system and stable private/public information boundary."
+  },
+  {
+    "source_id": "PX13",
+    "source_title": "Вас заразила Анна?",
+    "source_node": "12:5710",
+    "decision": "rework-or-merge",
+    "target_id": "M27",
+    "target_node": "3:13166",
+    "reason": "Reworked for the target rules, purple system and stable private/public information boundary."
+  },
+  {
+    "source_id": "PX14",
+    "source_title": "Командная победа",
+    "source_node": "12:5741",
+    "decision": "rework-or-merge",
+    "target_id": "P36",
+    "target_node": "3:7109",
+    "reason": "Reworked for the target rules, purple system and stable private/public information boundary."
+  },
+  {
+    "source_id": "L01",
+    "source_title": "Длинное задание",
+    "source_node": "12:5781",
+    "decision": "rework-or-merge",
+    "target_id": "P09W320",
+    "target_node": "3:13477",
+    "reason": "Reworked for the target rules, purple system and stable private/public information boundary."
+  },
+  {
+    "source_id": "PX15",
+    "source_title": "Вы готовы",
+    "source_node": "12:9014",
+    "decision": "rework-or-merge",
+    "target_id": "P10",
+    "target_node": "3:6518",
+    "reason": "Reworked for the target rules, purple system and stable private/public information boundary."
+  },
+  {
+    "source_id": "PX16",
+    "source_title": "Карточка только для вас",
+    "source_node": "12:9052",
+    "decision": "rework-or-merge",
+    "target_id": "P07",
+    "target_node": "3:6439",
+    "reason": "Reworked for the target rules, purple system and stable private/public information boundary."
+  },
+  {
+    "source_id": "PX17",
+    "source_title": "Карточка скрыта",
+    "source_node": "12:9084",
+    "decision": "rework-or-merge",
+    "target_id": "P40",
+    "target_node": "3:7193",
+    "reason": "Concealment preserves assignment, role and readiness; the toggle stays outside task scrolling."
+  },
+  {
+    "source_id": "PX18",
+    "source_title": "Карточка скрыта",
+    "source_node": "12:9124",
+    "decision": "rework-or-merge",
+    "target_id": "P53",
+    "target_node": "3:13134",
+    "reason": "Concealment preserves assignment, role and readiness; the toggle stays outside task scrolling."
+  },
+  {
+    "source_id": "PX19",
+    "source_title": "Карточка группы скрыта",
+    "source_node": "12:9164",
+    "decision": "rework-or-merge",
+    "target_id": "P40",
+    "target_node": "3:7193",
+    "reason": "Concealment preserves assignment, role and readiness; the toggle stays outside task scrolling."
+  },
+  {
+    "source_id": "PX20",
+    "source_title": "Раунд завершён",
+    "source_node": "12:9204",
+    "decision": "rework-or-merge",
+    "target_id": "P50",
+    "target_node": "3:7408",
+    "reason": "Reworked for the target rules, purple system and stable private/public information boundary."
+  },
+  {
+    "source_id": "PX21",
+    "source_title": "Возвращайтесь к ноутбуку",
+    "source_node": "12:9230",
+    "decision": "rework-or-merge",
+    "target_id": "P29",
+    "target_node": "3:6962",
+    "reason": "Reworked for the target rules, purple system and stable private/public information boundary."
+  },
+  {
+    "source_id": "PXT02",
+    "source_title": "PXT02 supporting variant",
+    "source_node": "12:10045",
+    "decision": "rework-or-merge",
+    "target_id": "M12O",
+    "target_node": "3:18976",
+    "reason": "Capture is a physical report; only eligible active exorcists can be selected, with a current-target confirmation."
+  },
+  {
+    "source_id": "PXT03",
+    "source_title": "PXT03 supporting variant",
+    "source_node": "12:10097",
+    "decision": "rework-or-merge",
+    "target_id": "P21",
+    "target_node": "3:6785",
+    "reason": "Capture is a physical report; only eligible active exorcists can be selected, with a current-target confirmation."
+  },
+  {
+    "source_id": "PXC01",
+    "source_title": "PXC01 supporting variant",
+    "source_node": "12:10149",
+    "decision": "rework-or-merge",
+    "target_id": "P21",
+    "target_node": "3:6785",
+    "reason": "Capture is a physical report; only eligible active exorcists can be selected, with a current-target confirmation."
+  },
+  {
+    "source_id": "PXC02",
+    "source_title": "PXC02 supporting variant",
+    "source_node": "12:10194",
+    "decision": "rework-or-merge",
+    "target_id": "M12",
+    "target_node": "3:7621",
+    "reason": "Capture is a physical report; only eligible active exorcists can be selected, with a current-target confirmation."
+  },
+  {
+    "source_id": "PXC03",
+    "source_title": "PXC03 supporting variant",
+    "source_node": "12:10246",
+    "decision": "rework-or-merge",
+    "target_id": "M12O",
+    "target_node": "3:18976",
+    "reason": "Capture is a physical report; only eligible active exorcists can be selected, with a current-target confirmation."
+  },
+  {
+    "source_id": "PXC04",
+    "source_title": "PXC04 supporting variant",
+    "source_node": "12:10298",
+    "decision": "rework-or-merge",
+    "target_id": "P21",
+    "target_node": "3:6785",
+    "reason": "Capture is a physical report; only eligible active exorcists can be selected, with a current-target confirmation."
+  },
+  {
+    "source_id": "PXC10",
+    "source_title": "PXC10 supporting variant",
+    "source_node": "12:10350",
+    "decision": "rework-or-merge",
+    "target_id": "P54",
+    "target_node": "3:18930",
+    "reason": "Capture is a physical report; only eligible active exorcists can be selected, with a current-target confirmation."
+  },
+  {
+    "source_id": "PXS01",
+    "source_title": "PXS01 supporting variant",
+    "source_node": "12:10374",
+    "decision": "rework-or-merge",
+    "target_id": "M27",
+    "target_node": "3:13166",
+    "reason": "Self-capture reports retain causal group attribution and never create extra release credit."
+  },
+  {
+    "source_id": "PXS02",
+    "source_title": "PXS02 supporting variant",
+    "source_node": "12:10405",
+    "decision": "rework-or-merge",
+    "target_id": "M27",
+    "target_node": "3:13166",
+    "reason": "Self-capture reports retain causal group attribution and never create extra release credit."
+  },
+  {
+    "source_id": "PXS03",
+    "source_title": "PXS03 supporting variant",
+    "source_node": "12:10436",
+    "decision": "rework-or-merge",
+    "target_id": "M27",
+    "target_node": "3:13166",
+    "reason": "Self-capture reports retain causal group attribution and never create extra release credit."
+  },
+  {
+    "source_id": "PXS04",
+    "source_title": "PXS04 supporting variant",
+    "source_node": "12:10467",
+    "decision": "rework-or-merge",
+    "target_id": "M27",
+    "target_node": "3:13166",
+    "reason": "Self-capture reports retain causal group attribution and never create extra release credit."
+  },
+  {
+    "source_id": "PXS05",
+    "source_title": "PXS05 supporting variant",
+    "source_node": "12:10498",
+    "decision": "rework-or-merge",
+    "target_id": "M27",
+    "target_node": "3:13166",
+    "reason": "Self-capture reports retain causal group attribution and never create extra release credit."
+  },
+  {
+    "source_id": "H11R",
+    "source_title": "H11R supporting variant",
+    "source_node": "12:10529",
+    "decision": "rework-or-merge",
+    "target_id": "L07R00",
+    "target_node": "3:19027",
+    "reason": "Reworked for the target rules, purple system and stable private/public information boundary."
+  },
+  {
+    "source_id": "X12L",
+    "source_title": "X12L supporting variant",
+    "source_node": "15:13796",
+    "decision": "rework-or-merge",
+    "target_id": "L17",
+    "target_node": "3:2715",
+    "reason": "Reworked for the target rules, purple system and stable private/public information boundary."
+  },
+  {
+    "source_id": "P09C",
+    "source_title": "P09C supporting variant",
+    "source_node": "44:23163",
+    "decision": "rework-or-merge",
+    "target_id": "P12",
+    "target_node": "3:6572",
+    "reason": "Concealment preserves assignment, role and readiness; the toggle stays outside task scrolling."
+  },
+  {
+    "source_id": "PX15C",
+    "source_title": "PX15C supporting variant",
+    "source_node": "44:23206",
+    "decision": "rework-or-merge",
+    "target_id": "P52",
+    "target_node": "3:13109",
+    "reason": "Concealment preserves assignment, role and readiness; the toggle stays outside task scrolling."
+  }
+]

@@ -20,7 +20,7 @@ export function validOfflineEvent(value: unknown): value is OfflineEvent {
 /** Round-local durable inbox. Arrival order is never treated as proof of physical chronology. */
 export function createRoundSync(saved: SavedRoundSync, generateId: () => string) {
   const state = structuredClone(saved);
-  let search = createSearch(state.base.roundId, new Map(state.base.roster), generateId);
+  let search = createSearch(state.base.roundId, new Map(state.base.roster), generateId, state.base.retained);
   let actionId = '';
   function apply(actor: string, action: OfflineAction): LobbyError | undefined {
     if (action.kind === 'withdraw') { if (!search.personal(actor)) return 'ACTION_UNAVAILABLE'; search.depart(actor); return; }
@@ -32,12 +32,12 @@ export function createRoundSync(saved: SavedRoundSync, generateId: () => string)
     }
     if (action.kind === 'infect') {
       const target = search.personal(action.targetId), source = search.personal(actor);
-      if (target?.status === 'captured' && source && source.card.id === target.card.id) return;
+      if (target?.status === 'captured' && source && search.group(actor) === search.group(action.targetId)) return;
     }
     return search.act(actor, action.kind, action.kind === 'infect' ? action.targetId : undefined, action.kind === 'mission' ? action.completed : undefined);
   }
   function rebuild() {
-    search = createSearch(state.base.roundId, new Map(state.base.roster), () => actionId);
+    search = createSearch(state.base.roundId, new Map(state.base.roster), () => actionId, state.base.retained);
     search.restore(state.base, false);
     const pending = state.entries.filter(e => e.receipt.status !== 'rejected');
     const done = new Set(state.entries.filter(e => e.receipt.status === 'rejected').map(e => e.event.id));
@@ -111,8 +111,18 @@ export function createRoundSync(saved: SavedRoundSync, generateId: () => string)
     if (!state.completed.includes(actor)) state.completed.push(actor);
   }
   function publicState() { return { revision: state.revision, waitingPlayerIds: state.closed ? [] : state.players.filter(id => !state.completed.includes(id)), conflicts: state.entries.filter(e => e.receipt.status === 'review').length, closed: state.closed }; }
-  return { seal: () => { state.sealed = true; search.seal(); }, current: () => search, ingest, legacy, resolve, complete, publicState,
-    personal: (actor: string) => ({ roundId: state.base.roundId, receipts: state.entries.filter(e => e.actor === actor).map(e => ({ ...e.receipt })), complete: state.completed.includes(actor), withdrawn: state.players.includes(actor) && search.personal(actor) === null }),
+  function place(actor: string, zone: string) {
+    const error = search.place(actor, zone);
+    if (!error) state.base.locations = search.exportState().locations;
+    return error;
+  }
+  return { seal: () => { state.sealed = true; search.seal(); }, current: () => search, ingest, legacy, resolve, complete, publicState, place,
+    personal: (actor: string) => state.players.includes(actor) ? {
+      roundId: state.base.roundId,
+      receipts: state.entries.filter(e => e.actor === actor).map(e => ({ ...e.receipt })),
+      complete: state.completed.includes(actor),
+      withdrawn: search.personal(actor) === null,
+    } : null,
     review: (): ReviewEvent[] => state.entries.map(e => ({ ...e.receipt, actor: e.actor, dependsOn: [...new Set([e.event.previousId, e.event.action.kind === 'undo' ? e.event.action.actionId : null].filter((id): id is string => id !== null))], action: structuredClone(e.event.action) })),
     close: () => { if (state.closed) return; state.closed = true; for (const entry of state.entries) if (entry.receipt.status === 'review') { entry.receipt.status = 'rejected'; entry.receipt.reason = 'results_closed'; } state.revision++; rebuild(); },
     ready: () => state.closed || state.players.every(id => state.completed.includes(id)) && !state.entries.some(e => e.receipt.status === 'review'),
@@ -125,7 +135,7 @@ export function validateRoundSync(value: unknown, roundId: unknown): asserts val
   assert(s && typeof s === 'object' && s.base?.roundId === roundId && Array.isArray(s.base?.roster) && Array.isArray(s.base?.events));
   assert(Array.isArray(s.entries) && s.entries.length <= 12000 && Array.isArray(s.players) && s.players.length <= 12 && new Set(s.players).size === s.players.length);
   assert(Number.isSafeInteger(s.base.version) && s.base.version >= 0 && typeof s.base.finalized === 'boolean');
-  assert(s.base.roster.length >= 4 && s.base.roster.length <= 12 && new Set(s.base.roster.map(([id]) => id)).size === s.base.roster.length);
+  assert(s.base.roster.length >= (s.base.retained ? 1 : 4) && s.base.roster.length <= 12 && new Set(s.base.roster.map(([id]) => id)).size === s.base.roster.length);
   for (const [id, assignment] of s.base.roster) {
     const card = assignment?.card;
     assert(typeof id === 'string' && typeof assignment?.id === 'string' && typeof assignment.ready === 'boolean' && typeof assignment.replacementRequested === 'boolean');

@@ -1,0 +1,617 @@
+[
+  {
+    "mode": "start",
+    "id": "H03",
+    "base": "H10",
+    "url": "https://www.figma.com/proto/ILsPo7txuQU0S96McIEWda/Pomekhi-%E2%80%94-UX-UI-Redesign?node-id=17-14039&starting-point-node-id=17%3A14039&scaling=scale-down&content-scaling=fixed",
+    "screenshot": "/tmp/pomekhi-check-H03.png",
+    "at": "2026-11-02T18:12:43.891Z"
+  },
+  {
+    "mode": "click",
+    "id": "H03",
+    "key": "primary",
+    "base": "H10",
+    "url": "https://www.figma.com/proto/ILsPo7txuQU0S96McIEWda/Pomekhi-%E2%80%94-UX-UI-Redesign?node-id=17-14112&starting-point-node-id=17%3A14039&scaling=scale-down&content-scaling=fixed",
+    "screenshot": "/tmp/pomekhi-check-H03.png",
+    "at": "2026-11-02T18:12:53.516Z"
+  },
+  {
+    "mode": "click",
+    "id": "Overlay/H06",
+    "key": "Скопировать",
+    "base": "H04",
+    "url": "https://www.figma.com/proto/ILsPo7txuQU0S96McIEWda/Pomekhi-%E2%80%94-UX-UI-Redesign?node-id=17-14817&starting-point-node-id=17%3A14039&scaling=scale-down&content-scaling=fixed",
+    "screenshot": "/tmp/pomekhi-check-Overlay-H06.png",
+    "at": "2026-11-02T18:13:14.237Z"
+  },
+  {
+    "mode": "click",
+    "id": "H10",
+    "key": "primary",
+    "base": "H10",
+    "url": "https://www.figma.com/proto/ILsPo7txuQU0S96McIEWda/Pomekhi-%E2%80%94-UX-UI-Redesign?node-id=17-14911&starting-point-node-id=17%3A14039&scaling=scale-down&content-scaling=fixed",
+    "screenshot": "/tmp/pomekhi-check-H10.png",
+    "at": "2026-11-02T18:13:16.277Z"
+  },
+  {
+    "mode": "click",
+    "id": "H11",
+    "key": "primary",
+    "base": "H10",
+    "url": "https://www.figma.com/proto/ILsPo7txuQU0S96McIEWda/Pomekhi-%E2%80%94-UX-UI-Redesign?node-id=17-14911&starting-point-node-id=17%3A14039&scaling=scale-down&content-scaling=fixed",
+    "screenshot": "/tmp/pomekhi-check-H11.png",
+    "at": "2026-11-02T18:13:18.307Z"
+  },
+  {
+    "mode": "click",
+    "id": "Overlay/X24",
+    "key": "Всё равно",
+    "base": "H11",
+    "url": "https://www.figma.com/proto/ILsPo7txuQU0S96McIEWda/Pomekhi-%E2%80%94-UX-UI-Redesign?node-id=17-15015&starting-point-node-id=17%3A14039&scaling=scale-down&content-scaling=fixed",
+    "screenshot": "/tmp/pomekhi-check-Overlay-X24.png",
+    "at": "2026-11-02T18:13:42.655Z"
+  },
+  {
+    "mode": "wait",
+    "id": "H12",
+    "key": "0",
+    "base": "H10",
+    "url": "https://www.figma.com/proto/ILsPo7txuQU0S96McIEWda/Pomekhi-%E2%80%94-UX-UI-Redesign?node-id=17-16324&starting-point-node-id=17%3A14039&scaling=scale-down&content-scaling=fixed",
+    "screenshot": "/tmp/pomekhi-check-H12.png",
+    "at": "2026-11-02T18:13:53.021Z"
+  },
+  {
+    "mode": "click",
+    "id": "X01",
+    "key": "primary",
+    "base": "H10",
+    "url": "https://www.figma.com/proto/ILsPo7txuQU0S96McIEWda/Pomekhi-%E2%80%94-UX-UI-Redesign?node-id=17-15117&starting-point-node-id=17%3A14039&scaling=scale-down&content-scaling=fixed",
+    "screenshot": "/tmp/pomekhi-check-X01.png",
+    "at": "2026-11-02T18:13:55.038Z"
+  },
+  {
+    "mode": "click",
+    "id": "H13",
+    "key": "primary",
+    "base": "H10",
+    "url": "https://www.figma.com/proto/ILsPo7txuQU0S96McIEWda/Pomekhi-%E2%80%94-UX-UI-Redesign?node-id=17-16324&starting-point-node-id=17%3A14039&scaling=scale-down&content-scaling=fixed",
+    "screenshot": "/tmp/pomekhi-check-H13.png",
+    "at": "2026-11-02T18:13:57.065Z"
+  },
+  {
+    "mode": "click",
+    "id": "X01",
+    "key": "secondary",
+    "base": "H10",
+    "url": "https://www.figma.com/proto/ILsPo7txuQU0S96McIEWda/Pomekhi-%E2%80%94-UX-UI-Redesign?node-id=17-16324&starting-point-node-id=17%3A14039&scaling=scale-down&content-scaling=fixed",
+    "screenshot": "/tmp/pomekhi-check-X01.png",
+    "at": "2026-11-02T18:14:06.404Z"
+  },
+  {
+    "mode": "click",
+    "id": "Overlay/X15",
+    "key": "Начать возвращение",
+    "base": "X01",
+    "url": "https://www.figma.com/proto/ILsPo7txuQU0S96McIEWda/Pomekhi-%E2%80%94-UX-UI-Redesign?node-id=17-16426&starting-point-node-id=17%3A14039&scaling=scale-down&content-scaling=fixed",
+    "screenshot": "/tmp/pomekhi-check-Overlay-X15.png",
+    "at": "2026-11-02T18:14:08.435Z"
+  },
+  {
+    "mode": "wait",
+    "id": "X02",
+    "key": "0",
+    "base": "H10",
+    "url": "https://www.figma.com/proto/ILsPo7txuQU0S96McIEWda/Pomekhi-%E2%80%94-UX-UI-Redesign?node-id=17-15219&starting-point-node-id=17%3A14039&scaling=scale-down&content-scaling=fixed",
+    "screenshot": "/tmp/pomekhi-check-X02.png",
+    "at": "2026-11-02T18:14:18.757Z"
+  },
+  {
+    "mode": "click",
+    "id": "H14",
+    "key": "secondary",
+    "base": "H10",
+    "url": "https://www.figma.com/proto/ILsPo7txuQU0S96McIEWda/Pomekhi-%E2%80%94-UX-UI-Redesign?node-id=17-15219&starting-point-node-id=17%3A14039&scaling=scale-down&content-scaling=fixed",
+    "screenshot": "/tmp/pomekhi-check-H14.png",
+    "at": "2026-11-02T18:14:32.413Z"
+  },
+  {
+    "mode": "click",
+    "id": "Overlay/X09",
+    "key": "Закрыть ожидание",
+    "base": "H14",
+    "url": "https://www.figma.com/proto/ILsPo7txuQU0S96McIEWda/Pomekhi-%E2%80%94-UX-UI-Redesign?node-id=17-15544&starting-point-node-id=17%3A14039&scaling=scale-down&content-scaling=fixed",
+    "screenshot": "/tmp/pomekhi-check-Overlay-X09.png",
+    "at": "2026-11-02T18:14:34.435Z"
+  },
+  {
+    "mode": "click",
+    "id": "H17",
+    "key": "primary",
+    "base": "H10",
+    "url": "https://www.figma.com/proto/ILsPo7txuQU0S96McIEWda/Pomekhi-%E2%80%94-UX-UI-Redesign?node-id=17-15544&starting-point-node-id=17%3A14039&scaling=scale-down&content-scaling=fixed",
+    "screenshot": "/tmp/pomekhi-check-H17.png",
+    "at": "2026-11-02T18:14:36.460Z"
+  },
+  {
+    "mode": "click",
+    "id": "Overlay/X10",
+    "key": "Подтвердить",
+    "base": "H17",
+    "url": "https://www.figma.com/proto/ILsPo7txuQU0S96McIEWda/Pomekhi-%E2%80%94-UX-UI-Redesign?node-id=17-16521&starting-point-node-id=17%3A14039&scaling=scale-down&content-scaling=fixed",
+    "screenshot": "/tmp/pomekhi-check-Overlay-X10.png",
+    "at": "2026-11-02T18:14:47.994Z"
+  },
+  {
+    "mode": "start",
+    "id": "P14",
+    "base": "H10",
+    "url": "https://www.figma.com/proto/ILsPo7txuQU0S96McIEWda/Pomekhi-%E2%80%94-UX-UI-Redesign?node-id=17-20657&starting-point-node-id=17%3A20657&scaling=scale-down&content-scaling=fixed",
+    "screenshot": "/tmp/pomekhi-check-P14.png",
+    "at": "2026-11-02T18:14:52.314Z"
+  },
+  {
+    "mode": "click",
+    "id": "P14",
+    "key": "secondary",
+    "base": "H10",
+    "url": "https://www.figma.com/proto/ILsPo7txuQU0S96McIEWda/Pomekhi-%E2%80%94-UX-UI-Redesign?node-id=17-20657&starting-point-node-id=17%3A20657&scaling=scale-down&content-scaling=fixed",
+    "screenshot": "/tmp/pomekhi-check-P14.png",
+    "at": "2026-11-02T18:14:54.363Z"
+  },
+  {
+    "mode": "click",
+    "id": "PX01",
+    "key": "Никита",
+    "base": "H10",
+    "url": "https://www.figma.com/proto/ILsPo7txuQU0S96McIEWda/Pomekhi-%E2%80%94-UX-UI-Redesign?node-id=17-20657&starting-point-node-id=17%3A20657&scaling=scale-down&content-scaling=fixed",
+    "screenshot": "/tmp/pomekhi-check-PX01.png",
+    "at": "2026-11-02T18:14:56.336Z"
+  },
+  {
+    "mode": "click",
+    "id": "PX02",
+    "key": "primary",
+    "base": "H10",
+    "url": "https://www.figma.com/proto/ILsPo7txuQU0S96McIEWda/Pomekhi-%E2%80%94-UX-UI-Redesign?node-id=12-3414&starting-point-node-id=17%3A20657&scaling=scale-down&content-scaling=fixed",
+    "screenshot": "/tmp/pomekhi-check-PX02.png",
+    "at": "2026-11-02T18:14:58.351Z"
+  },
+  {
+    "mode": "click",
+    "id": "PX10",
+    "key": "primary",
+    "base": "H10",
+    "url": "https://www.figma.com/proto/ILsPo7txuQU0S96McIEWda/Pomekhi-%E2%80%94-UX-UI-Redesign?node-id=17-20917&starting-point-node-id=17%3A20657&scaling=scale-down&content-scaling=fixed",
+    "screenshot": "/tmp/pomekhi-check-PX10.png",
+    "at": "2026-11-02T18:15:00.381Z"
+  },
+  {
+    "mode": "start",
+    "id": "P14",
+    "base": "H10",
+    "url": "https://www.figma.com/proto/ILsPo7txuQU0S96McIEWda/Pomekhi-%E2%80%94-UX-UI-Redesign?node-id=17-20657&starting-point-node-id=17%3A20657&scaling=scale-down&content-scaling=fixed",
+    "screenshot": "/tmp/pomekhi-check-P14.png",
+    "at": "2026-11-02T18:15:19.722Z"
+  },
+  {
+    "mode": "click",
+    "id": "P14",
+    "key": "secondary",
+    "base": "H10",
+    "url": "https://www.figma.com/proto/ILsPo7txuQU0S96McIEWda/Pomekhi-%E2%80%94-UX-UI-Redesign?node-id=12-3179&starting-point-node-id=17%3A20657&scaling=scale-down&content-scaling=fixed",
+    "screenshot": "/tmp/pomekhi-check-P14.png",
+    "at": "2026-11-02T18:15:27.933Z"
+  },
+  {
+    "mode": "click",
+    "id": "PX01",
+    "key": "Никита",
+    "base": "H10",
+    "url": "https://www.figma.com/proto/ILsPo7txuQU0S96McIEWda/Pomekhi-%E2%80%94-UX-UI-Redesign?node-id=12-3224&starting-point-node-id=17%3A20657&scaling=scale-down&content-scaling=fixed",
+    "screenshot": "/tmp/pomekhi-check-PX01.png",
+    "at": "2026-11-02T18:15:42.435Z"
+  },
+  {
+    "mode": "click",
+    "id": "PX02",
+    "key": "primary",
+    "base": "H10",
+    "url": "https://www.figma.com/proto/ILsPo7txuQU0S96McIEWda/Pomekhi-%E2%80%94-UX-UI-Redesign?node-id=12-3507&starting-point-node-id=17%3A20657&scaling=scale-down&content-scaling=fixed",
+    "screenshot": "/tmp/pomekhi-check-PX02.png",
+    "at": "2026-11-02T18:15:44.472Z"
+  },
+  {
+    "mode": "click",
+    "id": "PX10",
+    "key": "primary",
+    "base": "H10",
+    "url": "https://www.figma.com/proto/ILsPo7txuQU0S96McIEWda/Pomekhi-%E2%80%94-UX-UI-Redesign?node-id=17-20657&starting-point-node-id=17%3A20657&scaling=scale-down&content-scaling=fixed",
+    "screenshot": "/tmp/pomekhi-check-PX10.png",
+    "at": "2026-11-02T18:15:46.518Z"
+  },
+  {
+    "mode": "click",
+    "id": "P14",
+    "key": "primary",
+    "base": "H10",
+    "url": "https://www.figma.com/proto/ILsPo7txuQU0S96McIEWda/Pomekhi-%E2%80%94-UX-UI-Redesign?node-id=12-3414&starting-point-node-id=17%3A20657&scaling=scale-down&content-scaling=fixed",
+    "screenshot": "/tmp/pomekhi-check-P14.png",
+    "at": "2026-11-02T18:15:48.567Z"
+  },
+  {
+    "mode": "click",
+    "id": "PX07",
+    "key": "primary",
+    "base": "H10",
+    "url": "https://www.figma.com/proto/ILsPo7txuQU0S96McIEWda/Pomekhi-%E2%80%94-UX-UI-Redesign?node-id=17-20917&starting-point-node-id=17%3A20657&scaling=scale-down&content-scaling=fixed",
+    "screenshot": "/tmp/pomekhi-check-PX07.png",
+    "at": "2026-11-02T18:15:50.618Z"
+  },
+  {
+    "mode": "start",
+    "id": "P15",
+    "base": "H10",
+    "url": "https://www.figma.com/proto/ILsPo7txuQU0S96McIEWda/Pomekhi-%E2%80%94-UX-UI-Redesign?node-id=17-20706&starting-point-node-id=17%3A20706&scaling=scale-down&content-scaling=fixed",
+    "screenshot": "/tmp/pomekhi-check-P15.png",
+    "at": "2026-11-02T18:16:35.629Z"
+  },
+  {
+    "mode": "click",
+    "id": "P15",
+    "key": "primary",
+    "base": "H10",
+    "url": "https://www.figma.com/proto/ILsPo7txuQU0S96McIEWda/Pomekhi-%E2%80%94-UX-UI-Redesign?node-id=17-20752&starting-point-node-id=17%3A20706&scaling=scale-down&content-scaling=fixed",
+    "screenshot": "/tmp/pomekhi-check-P15.png",
+    "at": "2026-11-02T18:16:37.629Z"
+  },
+  {
+    "mode": "click",
+    "id": "P16",
+    "key": "primary",
+    "base": "H10",
+    "url": "https://www.figma.com/proto/ILsPo7txuQU0S96McIEWda/Pomekhi-%E2%80%94-UX-UI-Redesign?node-id=17-20706&starting-point-node-id=17%3A20706&scaling=scale-down&content-scaling=fixed",
+    "screenshot": "/tmp/pomekhi-check-P16.png",
+    "at": "2026-11-02T18:16:39.636Z"
+  },
+  {
+    "mode": "start",
+    "id": "P15",
+    "base": "H10",
+    "url": "https://www.figma.com/proto/ILsPo7txuQU0S96McIEWda/Pomekhi-%E2%80%94-UX-UI-Redesign?node-id=17-20706&starting-point-node-id=17%3A20706&scaling=scale-down&content-scaling=fixed",
+    "screenshot": "/tmp/pomekhi-check-P15.png",
+    "at": "2026-11-02T18:18:26.526Z"
+  },
+  {
+    "mode": "click",
+    "id": "P15",
+    "key": "secondary",
+    "base": "H10",
+    "url": "https://www.figma.com/proto/ILsPo7txuQU0S96McIEWda/Pomekhi-%E2%80%94-UX-UI-Redesign?node-id=12-5669&starting-point-node-id=17%3A20706&scaling=scale-down&content-scaling=fixed",
+    "screenshot": "/tmp/pomekhi-check-P15.png",
+    "at": "2026-11-02T18:18:28.564Z"
+  },
+  {
+    "mode": "click",
+    "id": "PX12",
+    "key": "Анна",
+    "base": "H10",
+    "url": "https://www.figma.com/proto/ILsPo7txuQU0S96McIEWda/Pomekhi-%E2%80%94-UX-UI-Redesign?node-id=12-5710&starting-point-node-id=17%3A20706&scaling=scale-down&content-scaling=fixed",
+    "screenshot": "/tmp/pomekhi-check-PX12.png",
+    "at": "2026-11-02T18:18:30.568Z"
+  },
+  {
+    "mode": "click",
+    "id": "PX13",
+    "key": "primary",
+    "base": "H10",
+    "url": "https://www.figma.com/proto/ILsPo7txuQU0S96McIEWda/Pomekhi-%E2%80%94-UX-UI-Redesign?node-id=17-20797&starting-point-node-id=17%3A20706&scaling=scale-down&content-scaling=fixed",
+    "screenshot": "/tmp/pomekhi-check-PX13.png",
+    "at": "2026-11-02T18:18:32.582Z"
+  },
+  {
+    "mode": "click",
+    "id": "P17",
+    "key": "hide",
+    "base": "H10",
+    "url": "https://www.figma.com/proto/ILsPo7txuQU0S96McIEWda/Pomekhi-%E2%80%94-UX-UI-Redesign?node-id=12-3414&starting-point-node-id=17%3A20706&scaling=scale-down&content-scaling=fixed",
+    "screenshot": "/tmp/pomekhi-check-P17.png",
+    "at": "2026-11-02T18:18:34.597Z"
+  },
+  {
+    "mode": "click",
+    "id": "PX19",
+    "key": "reveal",
+    "base": "H10",
+    "url": "https://www.figma.com/proto/ILsPo7txuQU0S96McIEWda/Pomekhi-%E2%80%94-UX-UI-Redesign?node-id=12-3414&starting-point-node-id=17%3A20706&scaling=scale-down&content-scaling=fixed",
+    "screenshot": "/tmp/pomekhi-check-PX19.png",
+    "at": "2026-11-02T18:18:36.631Z"
+  },
+  {
+    "mode": "start",
+    "id": "P17",
+    "base": "H10",
+    "url": "https://www.figma.com/proto/ILsPo7txuQU0S96McIEWda/Pomekhi-%E2%80%94-UX-UI-Redesign?node-id=17-20797&starting-point-node-id=17%3A20797&scaling=scale-down&content-scaling=fixed",
+    "screenshot": "/tmp/pomekhi-check-P17.png",
+    "at": "2026-11-02T18:19:35.125Z"
+  },
+  {
+    "mode": "click",
+    "id": "P17",
+    "key": "hide",
+    "base": "H10",
+    "url": "https://www.figma.com/proto/ILsPo7txuQU0S96McIEWda/Pomekhi-%E2%80%94-UX-UI-Redesign?node-id=12-9164&starting-point-node-id=17%3A20797&scaling=scale-down&content-scaling=fixed",
+    "screenshot": "/tmp/pomekhi-check-P17.png",
+    "at": "2026-11-02T18:19:37.164Z"
+  },
+  {
+    "mode": "click",
+    "id": "PX19",
+    "key": "reveal",
+    "base": "H10",
+    "url": "https://www.figma.com/proto/ILsPo7txuQU0S96McIEWda/Pomekhi-%E2%80%94-UX-UI-Redesign?node-id=17-20797&starting-point-node-id=17%3A20797&scaling=scale-down&content-scaling=fixed",
+    "screenshot": "/tmp/pomekhi-check-PX19.png",
+    "at": "2026-11-02T18:19:39.251Z"
+  },
+  {
+    "mode": "start",
+    "id": "H10",
+    "base": "H10",
+    "url": "https://www.figma.com/proto/ILsPo7txuQU0S96McIEWda/Pomekhi-%E2%80%94-UX-UI-Redesign?node-id=17-14817&starting-point-node-id=17%3A14817&scaling=scale-down&content-scaling=fixed",
+    "screenshot": "/tmp/pomekhi-check-H10.png",
+    "at": "2026-11-02T18:19:46.625Z"
+  },
+  {
+    "mode": "click",
+    "id": "H10",
+    "key": "settings",
+    "base": "H10",
+    "url": "https://www.figma.com/proto/ILsPo7txuQU0S96McIEWda/Pomekhi-%E2%80%94-UX-UI-Redesign?node-id=17-14817&starting-point-node-id=17%3A14817&scaling=scale-down&content-scaling=fixed",
+    "screenshot": "/tmp/pomekhi-check-H10.png",
+    "at": "2026-11-02T18:19:48.615Z"
+  },
+  {
+    "mode": "key",
+    "id": "H10",
+    "key": "53",
+    "base": "H10",
+    "url": "https://www.figma.com/proto/ILsPo7txuQU0S96McIEWda/Pomekhi-%E2%80%94-UX-UI-Redesign?node-id=17-14817&starting-point-node-id=17%3A14817&scaling=scale-down&content-scaling=fixed",
+    "screenshot": "/tmp/pomekhi-check-H10.png",
+    "at": "2026-11-02T18:20:25.046Z"
+  },
+  {
+    "mode": "click",
+    "id": "H10",
+    "key": "help",
+    "base": "H10",
+    "url": "https://www.figma.com/proto/ILsPo7txuQU0S96McIEWda/Pomekhi-%E2%80%94-UX-UI-Redesign?node-id=17-14817&starting-point-node-id=17%3A14817&scaling=scale-down&content-scaling=fixed",
+    "screenshot": "/tmp/pomekhi-check-H10.png",
+    "at": "2026-11-02T18:20:27.097Z"
+  },
+  {
+    "mode": "key",
+    "id": "H10",
+    "key": "53",
+    "base": "H10",
+    "url": "https://www.figma.com/proto/ILsPo7txuQU0S96McIEWda/Pomekhi-%E2%80%94-UX-UI-Redesign?node-id=17-14817&starting-point-node-id=17%3A14817&scaling=scale-down&content-scaling=fixed",
+    "screenshot": "/tmp/pomekhi-check-H10.png",
+    "at": "2026-11-02T18:20:29.391Z"
+  },
+  {
+    "mode": "start",
+    "id": "E01",
+    "base": "H10",
+    "url": "https://www.figma.com/proto/ILsPo7txuQU0S96McIEWda/Pomekhi-%E2%80%94-UX-UI-Redesign?node-id=17-18279&starting-point-node-id=17%3A18279&scaling=scale-down&content-scaling=fixed",
+    "screenshot": "/tmp/pomekhi-check-E01.png",
+    "at": "2026-11-02T18:20:36.705Z"
+  },
+  {
+    "mode": "click",
+    "id": "E01",
+    "key": "openBank",
+    "base": "H10",
+    "url": "https://www.figma.com/proto/ILsPo7txuQU0S96McIEWda/Pomekhi-%E2%80%94-UX-UI-Redesign?node-id=17-18279&starting-point-node-id=17%3A18279&scaling=scale-down&content-scaling=fixed",
+    "screenshot": "/tmp/pomekhi-check-E01.png",
+    "at": "2026-11-02T18:20:38.738Z"
+  },
+  {
+    "mode": "click",
+    "id": "Overlay/E02",
+    "key": "p01",
+    "base": "E01",
+    "url": "https://www.figma.com/proto/ILsPo7txuQU0S96McIEWda/Pomekhi-%E2%80%94-UX-UI-Redesign?node-id=17-18279&starting-point-node-id=17%3A18279&scaling=scale-down&content-scaling=fixed",
+    "screenshot": "/tmp/pomekhi-check-Overlay-E02.png",
+    "at": "2026-11-02T18:20:40.764Z"
+  },
+  {
+    "mode": "click",
+    "id": "Overlay/E04",
+    "key": "Фильтры",
+    "base": "E01",
+    "url": "https://www.figma.com/proto/ILsPo7txuQU0S96McIEWda/Pomekhi-%E2%80%94-UX-UI-Redesign?node-id=17-18279&starting-point-node-id=17%3A18279&scaling=scale-down&content-scaling=fixed",
+    "screenshot": "/tmp/pomekhi-check-Overlay-E04.png",
+    "at": "2026-11-02T18:21:13.555Z"
+  },
+  {
+    "mode": "start",
+    "id": "G03",
+    "base": "H10",
+    "url": "https://www.figma.com/proto/ILsPo7txuQU0S96McIEWda/Pomekhi-%E2%80%94-UX-UI-Redesign?node-id=17-17534&starting-point-node-id=17%3A17534&scaling=scale-down&content-scaling=fixed",
+    "screenshot": "/tmp/pomekhi-check-G03.png",
+    "at": "2026-11-02T18:22:35.571Z"
+  },
+  {
+    "mode": "start",
+    "id": "P24",
+    "base": "H10",
+    "url": "https://www.figma.com/proto/ILsPo7txuQU0S96McIEWda/Pomekhi-%E2%80%94-UX-UI-Redesign?node-id=12-2675&starting-point-node-id=12%3A2675&scaling=scale-down&content-scaling=fixed",
+    "screenshot": "/tmp/pomekhi-check-P24.png",
+    "at": "2026-11-02T18:22:44.856Z"
+  },
+  {
+    "mode": "click",
+    "id": "P24",
+    "key": "primary",
+    "base": "H10",
+    "url": "https://www.figma.com/proto/ILsPo7txuQU0S96McIEWda/Pomekhi-%E2%80%94-UX-UI-Redesign?node-id=17-20991&starting-point-node-id=12%3A2675&scaling=scale-down&content-scaling=fixed",
+    "screenshot": "/tmp/pomekhi-check-P24.png",
+    "at": "2026-11-02T18:22:46.889Z"
+  },
+  {
+    "mode": "start",
+    "id": "P03",
+    "base": "H10",
+    "url": "https://www.figma.com/proto/ILsPo7txuQU0S96McIEWda/Pomekhi-%E2%80%94-UX-UI-Redesign?node-id=17-20277&starting-point-node-id=17%3A20277&scaling=scale-down&content-scaling=fixed",
+    "screenshot": "/tmp/pomekhi-check-P03.png",
+    "at": "2026-11-02T18:23:17.750Z"
+  },
+  {
+    "mode": "click",
+    "id": "P03",
+    "key": "primary",
+    "base": "H10",
+    "url": "https://www.figma.com/proto/ILsPo7txuQU0S96McIEWda/Pomekhi-%E2%80%94-UX-UI-Redesign?node-id=17-20340&starting-point-node-id=17%3A20277&scaling=scale-down&content-scaling=fixed",
+    "screenshot": "/tmp/pomekhi-check-P03.png",
+    "at": "2026-11-02T18:23:19.806Z"
+  },
+  {
+    "mode": "key",
+    "id": "P05",
+    "key": "124",
+    "base": "H10",
+    "url": "https://www.figma.com/proto/ILsPo7txuQU0S96McIEWda/Pomekhi-%E2%80%94-UX-UI-Redesign?node-id=17-20364&starting-point-node-id=17%3A20277&scaling=scale-down&content-scaling=fixed",
+    "screenshot": "/tmp/pomekhi-check-P05.png",
+    "at": "2026-11-02T18:23:22.080Z"
+  },
+  {
+    "mode": "click",
+    "id": "P06",
+    "key": "reveal",
+    "base": "H10",
+    "url": "https://www.figma.com/proto/ILsPo7txuQU0S96McIEWda/Pomekhi-%E2%80%94-UX-UI-Redesign?node-id=17-20396&starting-point-node-id=17%3A20277&scaling=scale-down&content-scaling=fixed",
+    "screenshot": "/tmp/pomekhi-check-P06.png",
+    "at": "2026-11-02T18:23:24.105Z"
+  },
+  {
+    "mode": "click",
+    "id": "P07",
+    "key": "primary",
+    "base": "H10",
+    "url": "https://www.figma.com/proto/ILsPo7txuQU0S96McIEWda/Pomekhi-%E2%80%94-UX-UI-Redesign?node-id=17-20489&starting-point-node-id=17%3A20277&scaling=scale-down&content-scaling=fixed",
+    "screenshot": "/tmp/pomekhi-check-P07.png",
+    "at": "2026-11-02T18:23:26.122Z"
+  },
+  {
+    "mode": "key",
+    "id": "P09",
+    "key": "124",
+    "base": "H10",
+    "url": "https://www.figma.com/proto/ILsPo7txuQU0S96McIEWda/Pomekhi-%E2%80%94-UX-UI-Redesign?node-id=17-20569&starting-point-node-id=17%3A20277&scaling=scale-down&content-scaling=fixed",
+    "screenshot": "/tmp/pomekhi-check-P09.png",
+    "at": "2026-11-02T18:23:28.427Z"
+  },
+  {
+    "mode": "start",
+    "id": "H03",
+    "base": "H10",
+    "url": "https://www.figma.com/proto/ILsPo7txuQU0S96McIEWda/Pomekhi-%E2%80%94-UX-UI-Redesign?node-id=17-14039&starting-point-node-id=17%3A14039&scaling=scale-down&content-scaling=fixed",
+    "screenshot": "/tmp/pomekhi-check-H03.png",
+    "at": "2026-11-02T18:27:23.950Z"
+  },
+  {
+    "mode": "click",
+    "id": "H03",
+    "key": "primary",
+    "base": "H10",
+    "url": "https://www.figma.com/proto/ILsPo7txuQU0S96McIEWda/Pomekhi-%E2%80%94-UX-UI-Redesign?node-id=17-14112&starting-point-node-id=17%3A14039&scaling=scale-down&content-scaling=fixed",
+    "screenshot": "/tmp/pomekhi-check-H03.png",
+    "at": "2026-11-02T18:27:25.976Z"
+  },
+  {
+    "mode": "start",
+    "id": "P09",
+    "base": "H10",
+    "url": "https://www.figma.com/proto/ILsPo7txuQU0S96McIEWda/Pomekhi-UX-UI-Redesign?node-id=17-20489&starting-point-node-id=17%3A20489&scaling=scale-down&content-scaling=fixed",
+    "screenshot": "/tmp/pomekhi-check-P09.png",
+    "at": "2026-11-02T19:40:13.063Z"
+  },
+  {
+    "mode": "click",
+    "id": "P09",
+    "key": "hide",
+    "base": "H10",
+    "url": "https://www.figma.com/proto/ILsPo7txuQU0S96McIEWda/Pomekhi-%E2%80%94-UX-UI-Redesign?node-id=44-23163&starting-point-node-id=17%3A20489&scaling=scale-down&content-scaling=fixed",
+    "screenshot": "/tmp/pomekhi-check-P09.png",
+    "at": "2026-11-02T19:41:22.460Z"
+  },
+  {
+    "mode": "click",
+    "id": "P09C",
+    "key": "reveal",
+    "base": "H10",
+    "url": "https://www.figma.com/proto/ILsPo7txuQU0S96McIEWda/Pomekhi-%E2%80%94-UX-UI-Redesign?node-id=17-20489&starting-point-node-id=17%3A20489&scaling=scale-down&content-scaling=fixed",
+    "screenshot": "/tmp/pomekhi-check-P09C.png",
+    "at": "2026-11-02T19:41:24.467Z"
+  },
+  {
+    "mode": "click",
+    "id": "P09",
+    "key": "help",
+    "base": "H10",
+    "url": "https://www.figma.com/proto/ILsPo7txuQU0S96McIEWda/Pomekhi-%E2%80%94-UX-UI-Redesign?node-id=12-3351&starting-point-node-id=17%3A20489&scaling=scale-down&content-scaling=fixed",
+    "screenshot": "/tmp/pomekhi-check-P09.png",
+    "at": "2026-11-02T19:41:26.506Z"
+  },
+  {
+    "mode": "click",
+    "id": "PX05",
+    "key": "primary",
+    "base": "H10",
+    "url": "https://www.figma.com/proto/ILsPo7txuQU0S96McIEWda/Pomekhi-%E2%80%94-UX-UI-Redesign?node-id=17-20489&starting-point-node-id=17%3A20489&scaling=scale-down&content-scaling=fixed",
+    "screenshot": "/tmp/pomekhi-check-PX05.png",
+    "at": "2026-11-02T19:41:28.564Z"
+  },
+  {
+    "mode": "start",
+    "id": "H03",
+    "base": "H10",
+    "url": "https://www.figma.com/proto/ILsPo7txuQU0S96McIEWda/Pomekhi-%E2%80%94-UX-UI-Redesign?node-id=17-14039&starting-point-node-id=17%3A14039&scaling=scale-down&content-scaling=fixed",
+    "screenshot": "/tmp/pomekhi-check-H03.png",
+    "at": "2026-11-02T19:42:02.288Z"
+  },
+  {
+    "mode": "click",
+    "id": "H03",
+    "key": "primary",
+    "base": "H10",
+    "url": "https://www.figma.com/proto/ILsPo7txuQU0S96McIEWda/Pomekhi-%E2%80%94-UX-UI-Redesign?node-id=17-14112&starting-point-node-id=17%3A14039&scaling=scale-down&content-scaling=fixed",
+    "screenshot": "/tmp/pomekhi-check-H03.png",
+    "at": "2026-11-02T19:42:04.304Z"
+  },
+  {
+    "mode": "click",
+    "id": "H04",
+    "key": "primary",
+    "base": "H10",
+    "url": "https://www.figma.com/proto/ILsPo7txuQU0S96McIEWda/Pomekhi-%E2%80%94-UX-UI-Redesign?node-id=17-14817&starting-point-node-id=17%3A14039&scaling=scale-down&content-scaling=fixed",
+    "screenshot": "/tmp/pomekhi-check-H04.png",
+    "at": "2026-11-02T19:42:06.356Z"
+  },
+  {
+    "mode": "start",
+    "id": "H15",
+    "base": "H10",
+    "url": "https://www.figma.com/proto/ILsPo7txuQU0S96McIEWda/Pomekhi-%E2%80%94-UX-UI-Redesign?node-id=17-15320&starting-point-node-id=17%3A15320&scaling=scale-down&content-scaling=fixed",
+    "screenshot": "/tmp/pomekhi-check-H15.png",
+    "at": "2026-11-02T19:42:51.854Z"
+  },
+  {
+    "mode": "click",
+    "id": "H15",
+    "key": "submit",
+    "base": "H10",
+    "url": "https://www.figma.com/proto/ILsPo7txuQU0S96McIEWda/Pomekhi-%E2%80%94-UX-UI-Redesign?node-id=17-15544&starting-point-node-id=17%3A15320&scaling=scale-down&content-scaling=fixed",
+    "screenshot": "/tmp/pomekhi-check-H15.png",
+    "at": "2026-11-02T19:42:53.912Z"
+  }
+]

@@ -1,0 +1,61 @@
+{
+  "jsonrpc": "2.0",
+  "id": 890288,
+  "result": {
+    "content": [
+      {
+        "type": "text",
+        "text": "{\"fonts\":[{\"f\":{\"family\":\"Golos Text\",\"style\":\"Regular\"},\"status\":\"rejected\",\"reason\":\"The font \\\"{\\\"family\\\":\\\"Golos Text\\\",\\\"style\\\":\\\"Regular\\\"}\\\" Not a valid font\"},{\"f\":{\"family\":\"Inter\",\"style\":\"Regular\"},\"status\":\"fulfilled\"},{\"f\":{\"family\":\"Inter\",\"style\":\"Medium\"},\"status\":\"fulfilled\"},{\"f\":{\"family\":\"Inter\",\"style\":\"Bold\"},\"status\":\"fulfilled\"},{\"f\":{\"family\":\"Arial\",\"style\":\"Regular\"},\"status\":\"rejected\",\"reason\":\"The font \\\"{\\\"family\\\":\\\"Arial\\\",\\\"style\\\":\\\"Regular\\\"}\\\" Not a valid font\"},{\"f\":{\"family\":\"IBM Plex Mono\",\"style\":\"Medium\",\"hash\":\"ac0c3464000d8fb6175b85f8fa3e30a3fb8351fe\"},\"status\":\"fulfilled\"}]}"
+      }
+    ],
+    "structuredContent": {
+      "fonts": [
+        {
+          "f": {
+            "family": "Golos Text",
+            "style": "Regular"
+          },
+          "status": "rejected",
+          "reason": "The font \"{\"family\":\"Golos Text\",\"style\":\"Regular\"}\" Not a valid font"
+        },
+        {
+          "f": {
+            "family": "Inter",
+            "style": "Regular"
+          },
+          "status": "fulfilled"
+        },
+        {
+          "f": {
+            "family": "Inter",
+            "style": "Medium"
+          },
+          "status": "fulfilled"
+        },
+        {
+          "f": {
+            "family": "Inter",
+            "style": "Bold"
+          },
+          "status": "fulfilled"
+        },
+        {
+          "f": {
+            "family": "Arial",
+            "style": "Regular"
+          },
+          "status": "rejected",
+          "reason": "The font \"{\"family\":\"Arial\",\"style\":\"Regular\"}\" Not a valid font"
+        },
+        {
+          "f": {
+            "family": "IBM Plex Mono",
+            "style": "Medium",
+            "hash": "ac0c3464000d8fb6175b85f8fa3e30a3fb8351fe"
+          },
+          "status": "fulfilled"
+        }
+      ]
+    }
+  }
+}

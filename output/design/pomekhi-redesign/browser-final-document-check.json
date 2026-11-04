@@ -1,0 +1,24 @@
+{
+  "type": "pomekhi-task-result",
+  "taskId": "mvzldkximr955fmbcd",
+  "ok": true,
+  "result": {
+    "screens": 150,
+    "frames": 188,
+    "missing": [],
+    "pages": [
+      {
+        "id": "0:1",
+        "name": "01 · Research & flows"
+      },
+      {
+        "id": "4:2",
+        "name": "02 · Components"
+      },
+      {
+        "id": "4:3",
+        "name": "03 · Screens & prototypes"
+      }
+    ]
+  }
+}

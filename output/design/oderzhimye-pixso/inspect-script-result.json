@@ -1,0 +1,40 @@
+{
+  "jsonrpc": "2.0",
+  "id": 8248743,
+  "result": {
+    "content": [
+      {
+        "type": "text",
+        "text": "{\"pages\":[{\"id\":\"0:1\",\"name\":\"01 · Research & flows\",\"type\":\"PAGE\"},{\"id\":\"3:2\",\"name\":\"02 · Components\",\"type\":\"PAGE\"},{\"id\":\"3:3\",\"name\":\"03 · Screens & prototypes\",\"type\":\"PAGE\"}],\"currentPage\":{\"id\":\"0:1\",\"name\":\"01 · Research & flows\"},\"api\":{\"getNodeById\":\"function\",\"getNodeByIdAsync\":\"function\",\"setCurrentPageAsync\":\"function\"}}"
+      }
+    ],
+    "structuredContent": {
+      "api": {
+        "getNodeById": "function",
+        "getNodeByIdAsync": "function",
+        "setCurrentPageAsync": "function"
+      },
+      "currentPage": {
+        "id": "0:1",
+        "name": "01 · Research & flows"
+      },
+      "pages": [
+        {
+          "id": "0:1",
+          "name": "01 · Research & flows",
+          "type": "PAGE"
+        },
+        {
+          "id": "3:2",
+          "name": "02 · Components",
+          "type": "PAGE"
+        },
+        {
+          "id": "3:3",
+          "name": "03 · Screens & prototypes",
+          "type": "PAGE"
+        }
+      ]
+    }
+  }
+}

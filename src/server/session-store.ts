@@ -1,6 +1,7 @@
 import { mkdir, open, readdir, unlink, rename, copyFile } from 'node:fs/promises';
 import { join, resolve } from 'node:path';
-import { randomUUID } from 'node:crypto';
+import { createHash, randomUUID } from 'node:crypto';
+import { standardCatalog, validateSavedCatalog } from './catalog.js';
 import { validateSession } from './session-format.js';
 import type { SavedSession } from './session-format.js';
 
@@ -14,9 +15,30 @@ export interface SessionStore {
 function missing(error: unknown) { return (error as NodeJS.ErrnoException).code === 'ENOENT'; }
 function alive(pid: number) { try { process.kill(pid, 0); return true; } catch (error) { return (error as NodeJS.ErrnoException).code !== 'ESRCH'; } }
 
+// Recognize only unchanged standard missions from the previous bank.
+const priorMissionDigests: Record<string, string> = {
+  e11: '1f7d43b121797e82c6d956097bbba01df8cae2c1734397277562ab040d2f3421',
+  e12: 'f71d78cbad99e557b376431c325367461c31d5c2f93c66afee0c75e0d800106a',
+  e18: '71d164b032375770515a791bf51dc1df602d9ece89a5716e2a2fc99116c52377',
+  e19: '7b988cc9f39358af454e7d9e34880b3a1dbdc0d5807ccb0f493673f931d81ca0',
+  e21: '710406d2280a6cb9a61873c65cb3c41b694195def5a41d68bcc48e9ed3b7f082',
+  e25: 'd1b9fd2b69cbe69e516f672006b2b1ab505ed528055cbe81067e796aaad67b58',
+  e30: '64c9cab782f73403ad85326ec39c4f30047fe631104115b3a13359790aba2406',
+};
+function firstGameCatalog(value: unknown) {
+  const catalog = validateSavedCatalog(value);
+  const current = new Map(standardCatalog().file.entries.map(({ card }) => [card.id, card]));
+  for (const { card } of catalog.file.entries) {
+    const revised = current.get(card.id);
+    if (card.role === 'exorcist' && revised?.role === 'exorcist' &&
+      priorMissionDigests[card.id] === createHash('sha256').update(card.mission).digest('hex')) card.mission = revised.mission;
+  }
+  return catalog;
+}
+
 /** Local-disk adapter. Claims are unique, so stale cleanup never unlinks a replacement writer's lock. */
-export function createFileSessionStore(directory: string): SessionStore {
-  const root = resolve(directory), file = join(root, 'session.json'), claims = join(root, '.writers');
+export function createFileSessionStore(directory: string, firstGame = false): SessionStore {
+  const root = resolve(directory), file = join(root, firstGame ? 'party-v6.json' : 'session.json'), claims = join(root, '.writers');
   const ownClaim = `${process.pid}-${randomUUID()}.lock`;
   let owned = false, closed = false, writing = false;
   async function acquire() {
@@ -35,14 +57,35 @@ export function createFileSessionStore(directory: string): SessionStore {
     } catch (error) { await unlink(join(claims, ownClaim)); throw error; }
   }
   function check() { if (!owned || closed) throw new Error('Session store is not available.'); }
+  async function loadLegacyCatalog() {
+    const legacy = await open(join(root, 'session.json'), 'r').catch((error: unknown) => {
+      if (!missing(error)) throw error;
+      return null;
+    });
+    if (!legacy) return null;
+    try {
+      if ((await legacy.stat()).size > 16 * 1024 * 1024) return null;
+      const contents = await legacy.readFile('utf8');
+      try {
+        const parsed = JSON.parse(contents);
+        if (parsed?.schemaVersion !== 5) return null;
+        return { schemaVersion: 6 as const, lobby: { catalog: firstGameCatalog(parsed.lobby.catalog), revision: 0, usedCodes: [], room: null } };
+      } catch { return null; }
+    } finally { await legacy.close(); }
+  }
   async function load() {
     check();
     let handle;
     try {
       handle = await open(file, 'r');
       if ((await handle.stat()).size > 16 * 1024 * 1024) throw new Error('Session file exceeds the supported size.');
-      return validateSession(JSON.parse(await handle.readFile('utf8')));
-    } catch (error) { if (missing(error)) return null; throw error; }
+      const parsed = JSON.parse(await handle.readFile('utf8'));
+      if (firstGame && parsed?.schemaVersion !== 6) throw Error('Invalid first-game checkpoint version.');
+      return validateSession(parsed);
+    } catch (error) {
+      if (!missing(error)) throw error;
+      return firstGame ? loadLegacyCatalog() : null;
+    }
     finally { await handle?.close(); }
   }
   async function write(state: SavedSession) {

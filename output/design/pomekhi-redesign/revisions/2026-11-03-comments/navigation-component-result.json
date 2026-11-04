@@ -1,0 +1,18 @@
+{
+  "type": "pomekhi-task-result",
+  "taskId": "mvzn9jr7wvf6sqvzvf",
+  "ok": true,
+  "result": {
+    "createdNodeIds": [
+      "44:23069"
+    ],
+    "mutatedNodeIds": [
+      "5:126",
+      "5:127",
+      "5:128",
+      "44:23069"
+    ],
+    "navigationId": "5:126",
+    "helpTextId": "44:23069"
+  }
+}

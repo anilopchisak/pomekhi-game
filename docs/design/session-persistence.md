@@ -1,5 +1,7 @@
 # Session persistence and paused recovery
 
+> The executable uses the [first-game design](first-game.md). Below, older round, dealing, scoring and schema behavior applies to compatibility fixtures; shared foundation behavior still applies.
+
 Status: implemented. The executable uses one local data/session.json checkpoint. Factories default to memory unless a SessionStore is supplied. Supplied launchers select the project working directory. Keep the data directory on one local machine; network/shared filesystems are outside this contract.
 
 ## Owners and private format

@@ -29,7 +29,7 @@ export function createSession(options: LobbyOptions & { store?: SessionStore }) 
     return () => { cancelled = true; cancel(); };
   } } });
   lobby.subscribe(value => { dirty = true; if (value) cue = value; });
-  const saved = (): SavedSession => ({ schemaVersion: 5, lobby: lobby.exportState() });
+  const saved = (): SavedSession => ({ schemaVersion: options.firstGame ? 6 : 5, lobby: lobby.exportState() });
   const viewFor = (connection: string): LobbyView | undefined => {
     const view = visible.get(connection); return view ? structuredClone(view) : undefined;
   };

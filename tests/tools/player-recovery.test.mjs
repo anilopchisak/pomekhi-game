@@ -7,6 +7,8 @@ import { HostPage } from '../../src/client/pages/host/index.js';
 import { readPlayerSession, savePlayerSession } from '../../src/client/pages/player/session.js';
 import { createLobby } from '../../src/server/lobby.js';
 import { audioHarness } from '../helpers/audio.mjs';
+import { controlledClock } from '../helpers/game-clock.js';
+import { dealCommand, gameCommand } from '../../src/client/shared/api/index.js';
 
 const { io, offlineRecords } = vi.hoisted(() => ({ io: vi.fn(), offlineRecords: new Map() }));
 vi.mock('socket.io-client', () => ({ io }));
@@ -155,6 +157,58 @@ it('shows the join form after offline removal and rejoins with a new credential 
   expect(lobby.viewFor('host').room.players).toHaveLength(1);
   expect(offlineRecords.size).toBe(1);
   expect([...offlineRecords.values()][0].view.playerId).toBe(lobby.viewFor('host').room.players[0].id);
+});
+
+it('uploads a retained phone release and acknowledges checking without a new card', async () => {
+  const time = controlledClock();
+  const lobby = createLobby({ organizerCode: 'HOST', generateRoomCode: () => 'ABCDEF', clock: time.clock, firstGame: true });
+  const host = () => lobby.viewFor('host');
+  const send = (connection, command, input) => expect(lobby.execute(connection, command, input)).toMatchObject({ ok: true });
+  const game = (command, input = {}) => send('host', command, { ...gameCommand(host().room), ...input });
+  const deal = () => send('host', 'deal:create', { ...dealCommand(host().room), possessedCount: 0 });
+  const session = { roomCode: 'ABCDEF', name: 'Медиум 1', resumeKey: 'b'.repeat(64), pending: false };
+  try {
+    send('host', 'organizer:authorize', { code: 'HOST' });
+    send('host', 'room:create', {});
+    for (let i = 0; i < 5; i++) send(`original-${i}`, 'player:join', {
+      ...session, name: `Медиум ${i}`, resumeKey: (i + 10).toString(16).repeat(64),
+    });
+    const order = host().room.players.map(p => p.id);
+    game('venue:configure', { venue: { base: 'База', zones: ['Кухня'], dwelling: { zone: 'Кухня', place: 'Угол' }, storyId: 'S001', harder: false, order } });
+    deal();
+    game('round:start', { confirmWarnings: true });
+    time.advance(45000);
+    game('round:return');
+    game('round:return');
+    game('round:presence', { playerId: order[0], status: 'at_base' });
+    game('sync:close', { confirm: true });
+    game('results:finalize');
+    deal();
+    game('round:start', { confirmWarnings: true });
+    time.advance(45000);
+
+    const view = lobby.viewFor('original-1');
+    expect(view).toMatchObject({ assignment: null, play: { retained: true } });
+    const { roundId } = view.room.game;
+    const scope = `${session.roomCode}:${session.resumeKey}`;
+    const event = { id: 'retained-release', clientId: 'retained-phone', sequence: 1, previousId: null, roundId,
+      action: { kind: 'release' }, phase: 'search', paused: false, estimatedServerTime: null };
+    offlineRecords.set(scope, { scope, view, cachedAt: Date.now(), clientId: event.clientId, sequence: 1, events: [{ event, before: view.play }] });
+    savePlayerSession(session);
+    const socket = recoveryTransport(() => lobby);
+    await act(async () => root.render(createElement(PlayerPage)));
+    await vi.waitFor(() => expect(lobby.viewFor('phone-0')?.play?.status).toBe('released'));
+
+    await act(async () => {
+      game('round:return');
+      game('round:return');
+      socket.publish();
+    });
+    await vi.waitFor(() => expect(lobby.viewFor('phone-0').synchronization.complete).toBe(true));
+    expect(host().room.game.results.at(-1).rescuedGroups).toBe(1);
+  } finally {
+    lobby.dispose();
+  }
 });
 
 it.each(['TIMEOUT', 'STORAGE_UNAVAILABLE'])('retains the authorized phone screen on uncertain recovery: %s', async error => {

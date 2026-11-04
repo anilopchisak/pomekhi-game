@@ -26,7 +26,7 @@
 
 ## Future consumers
 
-Private cards, timed phases and short laptop signals are implemented. Release/infection, dependency-aware undo and team results are implemented. Paused disk recovery is implemented; procedural atmosphere and broadcast are implemented; recorded music, voice and the task editor remain planned. See [search design](../design/search-actions.md) for private/public consumers. Changes to game events must review laptop and personal projections together. The organizer participates from a phone while controls stay on the laptop. Rules are owned by [product requirements](../product/README.md).
+Private cards, timed phases, short laptop signals, release/infection, dependency-aware undo, team results, paused disk recovery, procedural atmosphere, broadcast and the task editor are implemented. Recorded music and voice remain future work. See [search design](../design/search-actions.md) for private/public consumers. Changes to game events must review laptop and personal projections together. The organizer participates from a phone while controls stay on the laptop. [Current implementation](../product/current-implementation.md) describes the existing build; [target rules](../product/README.md) own intended rules. Use the [game rules workflow](game-rules.md) before documenting or changing gameplay.
 
 ## Verification boundaries
 

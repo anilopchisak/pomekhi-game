@@ -6,6 +6,7 @@ import { expect, it } from 'vitest';
 import { createFileSessionStore } from './session-store.js';
 import { validateSession } from './session-format.js';
 import { createLobby } from './lobby.js';
+import { createSession } from './session.js';
 
 const empty = () => ({ schemaVersion: 5 as const, lobby: { catalog: standardCatalog(), revision: 0, usedCodes: [], room: null } });
 it('atomically replaces the last checkpoint and ignores unfinished temporary files', async () => {
@@ -67,4 +68,53 @@ it('does not replace a valid file when the target cannot be atomically renamed',
     await expect(store.write(empty())).rejects.toThrow();
     expect((await readdir(dir)).some(p => p.endsWith('.tmp'))).toBe(false);
   } finally { await store.close(); await rm(dir, { recursive: true, force: true }); }
+});
+
+it('keeps the old room file, preserves catalog edits and revises only an unchanged standard mission', async () => {
+  const dir = await mkdtemp(join(tmpdir(), 'pomekhi-upgrade-')), store = createFileSessionStore(dir, true);
+  const lobby = createLobby({ organizerCode: 'ORGANIZER' });
+  try {
+    lobby.execute('h', 'organizer:authorize', { code: 'ORGANIZER' }); lobby.execute('h', 'room:create', {});
+    const saved = { schemaVersion: 5, lobby: lobby.exportState() };
+    const entries = saved.lobby.catalog!.file.entries;
+    const old = entries.find(e => e.card.id === 'e11')!.card;
+    const edited = entries.find(e => e.card.id === 'e12')!.card;
+    if (old.role !== 'exorcist' || edited.role !== 'exorcist') throw Error('Invalid fixture.');
+    old.mission = 'Придумайте на базе короткое название для самого запомнившегося вам эпизода поиска. Придумывать его во время помощи необязательно.';
+    edited.mission = 'Моя версия миссии.';
+    const legacyFile = join(dir, 'session.json'), legacyBytes = JSON.stringify(saved);
+    await writeFile(legacyFile, legacyBytes);
+    await store.acquire();
+    const recovered = (await store.load())!;
+    expect(recovered).toMatchObject({ schemaVersion: 6, lobby: { room: null } });
+    expect(recovered.lobby.catalog!.file.entries.find(e => e.card.id === 'e11')?.card).toMatchObject({ mission: expect.stringContaining('До призыва') });
+    expect(recovered.lobby.catalog!.file.entries.find(e => e.card.id === 'e12')?.card).toMatchObject({ mission: edited.mission });
+    await store.write(recovered);
+    expect(await readFile(legacyFile, 'utf8')).toBe(legacyBytes);
+  } finally { lobby.dispose(); await store.close(); await rm(dir, { recursive: true, force: true }); }
+});
+
+it('allows retrying a failed legacy read without first committing the default bank', async () => {
+  const dir = await mkdtemp(join(tmpdir(), 'pomekhi-legacy-read-'));
+  const legacyFile = join(dir, 'session.json');
+  const session = createSession({ firstGame: true, organizerCode: 'ORGANIZER', store: createFileSessionStore(dir, true) });
+  try {
+    // A directory at the legacy path causes an I/O error without relying on file permissions.
+    await mkdir(legacyFile);
+    await session.initialize();
+    expect(await session.execute('h', 'organizer:authorize', { code: 'ORGANIZER' })).toMatchObject({
+      ok: true, view: { persistence: { state: 'load_error' } },
+    });
+    expect(await readdir(dir)).not.toContain('party-v6.json');
+
+    await rm(legacyFile, { recursive: true });
+    const saved = empty();
+    saved.lobby.catalog.file.entries[0].card.title = 'Edited legacy card';
+    await writeFile(legacyFile, JSON.stringify(saved));
+    expect(await session.execute('h', 'storage:retry', {})).toMatchObject({ ok: true, view: { persistence: { state: 'ready' } } });
+    expect(await session.catalogExecute('h', { action: 'read' })).toMatchObject({
+      ok: true, catalog: { file: saved.lobby.catalog.file },
+    });
+    expect(await readdir(dir)).toContain('party-v6.json');
+  } finally { await session.close(); await rm(dir, { recursive: true, force: true }); }
 });

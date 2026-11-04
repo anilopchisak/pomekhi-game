@@ -1,0 +1,79 @@
+{
+  "type": "pomekhi-task-result",
+  "taskId": "mvznbh9fsb4wncm5s6f",
+  "ok": true,
+  "result": {
+    "phoneChildren": [
+      {
+        "id": "17:20658",
+        "name": "Phone status",
+        "y": 20,
+        "h": 24
+      },
+      {
+        "id": "17:20699",
+        "name": "Top room navigation",
+        "y": 60,
+        "h": 48
+      },
+      {
+        "id": "17:20661",
+        "name": "Code / РАУНД 1 / 7 · ПОИСК",
+        "y": 124,
+        "h": 22
+      },
+      {
+        "id": "17:20662",
+        "name": "Heading / Следуйте своей карточке",
+        "y": 162,
+        "h": 31
+      },
+      {
+        "id": "17:20663",
+        "name": "Small / Оставайтесь на выбранном месте.",
+        "y": 209,
+        "h": 18
+      },
+      {
+        "id": "17:20664",
+        "name": "Title / 02:43",
+        "y": 243,
+        "h": 45
+      },
+      {
+        "id": "17:20665",
+        "name": "Personal card scroll",
+        "y": 304,
+        "h": 340
+      },
+      {
+        "id": "17:20677",
+        "name": "Action / Скрыть карточку",
+        "y": 660,
+        "h": 44
+      },
+      {
+        "id": "17:20684",
+        "name": "Primary actions",
+        "y": 720,
+        "h": 104
+      },
+      {
+        "id": "17:20702",
+        "name": "Navigation hit areas",
+        "y": 60,
+        "h": 48
+      }
+    ],
+    "inline": {
+      "id": "44:23147",
+      "children": [
+        {
+          "id": "44:23148",
+          "name": "Code / Код комнаты: POM427",
+          "type": "TEXT"
+        }
+      ]
+    }
+  }
+}

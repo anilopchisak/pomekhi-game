@@ -1,10 +1,10 @@
 import type { Assignment, DealingSnapshot, Difficulty, LobbyError, PersonalCard, Role } from '../shared/protocol.js';
 import { CARD_BANK } from './cards.js';
 
-interface Options { generateId: () => string; randomIndex: (limit: number) => number; getCards?: () => readonly PersonalCard[] }
+interface Options { generateId: () => string; randomIndex: (limit: number) => number; getCards?: () => readonly PersonalCard[]; ordered?: { pool: () => readonly PersonalCard[]; reserved: () => string[]; minimum: () => number } }
 export type DeckUsage = [string, string[]][];
 export interface SavedDealing { usage?: DeckUsage; difficulty: Difficulty; version: number; dealId: string | null; initialPossessedCount: number | null; assignments: [string, Assignment][] }
-export function createDealing({ generateId, randomIndex, getCards = () => CARD_BANK }: Options) {
+export function createDealing({ generateId, randomIndex, getCards = () => CARD_BANK, ordered }: Options) {
   let difficulty: Difficulty = 1;
   let version = 0;
   let dealId: string | null = null;
@@ -36,7 +36,9 @@ export function createDealing({ generateId, randomIndex, getCards = () => CARD_B
     const { possessed, exorcists } = counts();
     return {
       version, dealId, initialPossessedCount,
-      compositionValid: assignments.size >= 4 && assignments.size <= 12 && possessed >= 1 && exorcists >= 2 && possessed <= exorcists,
+      compositionValid: ordered ? assignments.size >= ordered.minimum() && assignments.size <= 12 &&
+        [...assignments.values()].every((item, i) => item.card.role === (i % 2 ? 'possessed' : 'exorcist'))
+        : assignments.size >= 4 && assignments.size <= 12 && possessed >= 1 && exorcists >= 2 && possessed <= exorcists,
       assignments: [...assignments].sort(([a], [b]) => a.localeCompare(b)).map(([playerId, item]) => ({ playerId, assignmentId: item.id, ready: item.ready, replacementRequested: item.replacementRequested })),
     };
   }
@@ -45,6 +47,22 @@ export function createDealing({ generateId, randomIndex, getCards = () => CARD_B
     return assignment ? structuredClone(assignment) : null;
   }
   function deal(players: string[], possessedCount: number, history: ReadonlyMap<string, number> = new Map(), level: Difficulty = 1): LobbyError | undefined {
+    if (ordered) {
+      if (players.length < ordered.minimum() || players.length > 12) return 'INVALID_COMPOSITION';
+      const used = new Set(ordered.reserved()), draft = draftUsage(), next = new Map<string, Assignment>();
+      const pool = ordered.pool().filter(card => !used.has(card.id));
+      if (pool.filter(card => card.role === 'possessed').length < Math.floor(players.length / 2) ||
+        pool.filter(card => card.role === 'exorcist').length < Math.ceil(players.length / 2)) return 'CARD_POOL_INSUFFICIENT';
+      for (const [index, playerId] of players.entries()) {
+        const role = index % 2 ? 'possessed' : 'exorcist';
+        const card = drawOrdered(role, used, draft);
+        if (!card) return 'CARD_POOL_INSUFFICIENT';
+        used.add(card.id);
+        next.set(playerId, { id: generateId(), card, ready: false, replacementRequested: false });
+      }
+      difficulty = 3; usage = draft; assignments = next; dealId = generateId(); initialPossessedCount = Math.floor(players.length / 2); version++;
+      return;
+    }
     if (players.length < 4 || players.length > 12 || !Number.isInteger(possessedCount) || possessedCount < 1 || possessedCount > Math.floor(players.length / 2)) return 'INVALID_COMPOSITION';
     if (!enough('possessed', possessedCount, level) || !enough('exorcist', players.length - possessedCount, level)) return 'CARD_POOL_INSUFFICIENT';
     let draft = draftUsage();
@@ -81,6 +99,17 @@ export function createDealing({ generateId, randomIndex, getCards = () => CARD_B
     assignments = next;
     dealId = generateId(); initialPossessedCount = possessedCount; version++;
   }
+  function drawOrdered(role: Role, used: Set<string>, draft: Map<string, Set<string>>) {
+    const pool = ordered!.pool().filter(card => card.role === role);
+    const key = `${role}:3`, seen = draft.get(key) ?? new Set<string>();
+    const available = pool.filter(card => !used.has(card.id));
+    let fresh = available.filter(card => !seen.has(card.id));
+    if (!fresh.length) { seen.clear(); fresh = available; }
+    if (!fresh.length) return undefined;
+    const card = fresh[randomIndex(fresh.length)];
+    seen.add(card.id); draft.set(key, seen);
+    return structuredClone(card);
+  }
   function cancel() { assignments.clear(); dealId = null; initialPossessedCount = null; version++; }
   function add(playerId: string) {
     if (!dealId || assignments.has(playerId)) return;
@@ -99,9 +128,9 @@ export function createDealing({ generateId, randomIndex, getCards = () => CARD_B
     const current = assignments.get(playerId);
     if (!current || current.id !== assignmentId) return 'STALE_CARD';
     if (action === 'replace') {
-      const used = new Set([...assignments.values()].map(item => item.card.id));
+      const used = new Set([...assignments.values()].map(item => item.card.id).concat(ordered?.reserved() ?? []));
       const draft = draftUsage();
-      const card = select(current.card.role, used, draft);
+      const card = ordered ? drawOrdered(current.card.role, used, draft) : select(current.card.role, used, draft);
       if (!card) return 'CARD_POOL_INSUFFICIENT';
       usage = draft;
       assignments.set(playerId, { id: generateId(), card, ready: false, replacementRequested: false });

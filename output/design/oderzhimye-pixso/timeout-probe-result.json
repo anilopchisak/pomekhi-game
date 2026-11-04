@@ -1,0 +1,140 @@
+{
+  "jsonrpc": "2.0",
+  "id": 2306530,
+  "result": {
+    "content": [
+      {
+        "type": "text",
+        "text": "{\"r\":[{\"action\":{\"destinationId\":\"3:1357\",\"navigation\":\"NAVIGATE\",\"transition\":{\"easing\":{\"type\":\"INOUT_CUBIC\"},\"type\":\"DISSOLVE\"},\"type\":\"NODE\"},\"actions\":[{\"destinationId\":\"3:1357\",\"navigation\":\"NAVIGATE\",\"transition\":{\"easing\":{\"type\":\"INOUT_CUBIC\"},\"type\":\"DISSOLVE\"},\"type\":\"INTERNAL_NODE\"}],\"trigger\":{\"delayMs\":1.8821014538458345e-34,\"timeout\":240,\"type\":\"AFTER_TIMEOUT\"}}],\"pixsoCurrent\":\"0:1\",\"hidden\":[{\"action\":{\"destinationId\":\"3:13134\",\"navigation\":\"NAVIGATE\",\"transition\":{\"easing\":{\"type\":\"INOUT_CUBIC\"},\"type\":\"DISSOLVE\"},\"type\":\"NODE\"},\"actions\":[{\"destinationId\":\"3:13134\",\"navigation\":\"NAVIGATE\",\"transition\":{\"easing\":{\"type\":\"INOUT_CUBIC\"},\"type\":\"DISSOLVE\"},\"type\":\"INTERNAL_NODE\"}],\"trigger\":{\"delayMs\":0,\"type\":\"ON_CLICK\"}},{\"action\":{\"destinationId\":\"3:13134\",\"navigation\":\"NAVIGATE\",\"transition\":{\"easing\":{\"type\":\"INOUT_CUBIC\"},\"type\":\"DISSOLVE\"},\"type\":\"NODE\"},\"actions\":[{\"destinationId\":\"3:13134\",\"navigation\":\"NAVIGATE\",\"transition\":{\"easing\":{\"type\":\"INOUT_CUBIC\"},\"type\":\"DISSOLVE\"},\"type\":\"INTERNAL_NODE\"}],\"trigger\":{\"delayMs\":0,\"type\":\"ON_CLICK\"}},{\"action\":{\"destinationId\":\"3:13134\",\"navigation\":\"NAVIGATE\",\"transition\":{\"easing\":{\"type\":\"INOUT_CUBIC\"},\"type\":\"DISSOLVE\"},\"type\":\"NODE\"},\"actions\":[{\"destinationId\":\"3:13134\",\"navigation\":\"NAVIGATE\",\"transition\":{\"easing\":{\"type\":\"INOUT_CUBIC\"},\"type\":\"DISSOLVE\"},\"type\":\"INTERNAL_NODE\"}],\"trigger\":{\"delayMs\":0,\"type\":\"ON_CLICK\"}}]}"
+      }
+    ],
+    "structuredContent": {
+      "hidden": [
+        {
+          "action": {
+            "destinationId": "3:13134",
+            "navigation": "NAVIGATE",
+            "transition": {
+              "easing": {
+                "type": "INOUT_CUBIC"
+              },
+              "type": "DISSOLVE"
+            },
+            "type": "NODE"
+          },
+          "actions": [
+            {
+              "destinationId": "3:13134",
+              "navigation": "NAVIGATE",
+              "transition": {
+                "easing": {
+                  "type": "INOUT_CUBIC"
+                },
+                "type": "DISSOLVE"
+              },
+              "type": "INTERNAL_NODE"
+            }
+          ],
+          "trigger": {
+            "delayMs": 0,
+            "type": "ON_CLICK"
+          }
+        },
+        {
+          "action": {
+            "destinationId": "3:13134",
+            "navigation": "NAVIGATE",
+            "transition": {
+              "easing": {
+                "type": "INOUT_CUBIC"
+              },
+              "type": "DISSOLVE"
+            },
+            "type": "NODE"
+          },
+          "actions": [
+            {
+              "destinationId": "3:13134",
+              "navigation": "NAVIGATE",
+              "transition": {
+                "easing": {
+                  "type": "INOUT_CUBIC"
+                },
+                "type": "DISSOLVE"
+              },
+              "type": "INTERNAL_NODE"
+            }
+          ],
+          "trigger": {
+            "delayMs": 0,
+            "type": "ON_CLICK"
+          }
+        },
+        {
+          "action": {
+            "destinationId": "3:13134",
+            "navigation": "NAVIGATE",
+            "transition": {
+              "easing": {
+                "type": "INOUT_CUBIC"
+              },
+              "type": "DISSOLVE"
+            },
+            "type": "NODE"
+          },
+          "actions": [
+            {
+              "destinationId": "3:13134",
+              "navigation": "NAVIGATE",
+              "transition": {
+                "easing": {
+                  "type": "INOUT_CUBIC"
+                },
+                "type": "DISSOLVE"
+              },
+              "type": "INTERNAL_NODE"
+            }
+          ],
+          "trigger": {
+            "delayMs": 0,
+            "type": "ON_CLICK"
+          }
+        }
+      ],
+      "pixsoCurrent": "0:1",
+      "r": [
+        {
+          "action": {
+            "destinationId": "3:1357",
+            "navigation": "NAVIGATE",
+            "transition": {
+              "easing": {
+                "type": "INOUT_CUBIC"
+              },
+              "type": "DISSOLVE"
+            },
+            "type": "NODE"
+          },
+          "actions": [
+            {
+              "destinationId": "3:1357",
+              "navigation": "NAVIGATE",
+              "transition": {
+                "easing": {
+                  "type": "INOUT_CUBIC"
+                },
+                "type": "DISSOLVE"
+              },
+              "type": "INTERNAL_NODE"
+            }
+          ],
+          "trigger": {
+            "delayMs": 1.8821014538458345e-34,
+            "timeout": 240,
+            "type": "AFTER_TIMEOUT"
+          }
+        }
+      ]
+    }
+  }
+}

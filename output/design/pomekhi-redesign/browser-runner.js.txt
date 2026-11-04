@@ -1,0 +1,9 @@
+figma.showUI(`<!doctype html><html><meta charset="utf-8"><style>body{margin:20px;background:#191b1f;color:#f3f0e9;font:14px system-ui}h1{font-size:20px}textarea{box-sizing:border-box;width:100%;height:220px;background:#101113;color:#f3f0e9;border:1px solid #393d45;padding:12px;font:12px monospace}button{height:44px;padding:0 24px;margin:12px 0;background:#efbf75;border:0;border-radius:8px;font-weight:600}#result{height:180px}#status{margin-left:20px}</style><h1>Pomekhi · browser construction</h1><textarea id="code" aria-label="Figma construction script" spellcheck="false"></textarea><div><button id="run">Run task</button><span id="status">Ready</span></div><textarea id="result" aria-label="Execution result" readonly></textarea><script>const run=document.getElementById('run');run.onclick=()=>{run.disabled=true;document.getElementById('status').textContent='Running';parent.postMessage({pluginMessage:{type:'pomekhi-run',code:document.getElementById('code').value}},'*')};onmessage=e=>{const m=e.data.pluginMessage;if(!m||m.type!=='pomekhi-result')return;document.getElementById('result').value=JSON.stringify(m.result,null,2);document.getElementById('status').textContent=m.ok?'Complete':'Error';run.disabled=false};</script></html>`,{width:1000,height:620});
+figma.ui.onmessage=async message=>{
+ if(message.type!=='pomekhi-run')return;
+ try{
+  const AsyncFunction=Object.getPrototypeOf(async function(){}).constructor;
+  const result=await new AsyncFunction('figma',message.code)(figma);
+  figma.ui.postMessage({type:'pomekhi-result',ok:true,result});
+ }catch(error){figma.ui.postMessage({type:'pomekhi-result',ok:false,result:{error:String(error),stack:error.stack}});}
+};

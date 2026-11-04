@@ -1,0 +1,3537 @@
+{
+  "format": "pomekhi.editorial-source-audit",
+  "version": 1,
+  "coverage": {
+    "fanPdf": 147,
+    "currentPersonalCards": 90,
+    "currentPropheciesIncludingFinal": 7,
+    "visibleOriginalExamples": 19,
+    "userRequests": 7
+  },
+  "decisions": {
+    "keep_basis": "Core mechanic retained with wording or compatibility clarification.",
+    "rework": "A source motif or mechanism is credited in the target, with the exact adaptation stated.",
+    "replace": "Source wording and mechanic are not retained in this slot; targetIds identify the replacement, not a claim of inspiration."
+  },
+  "sourceFiles": [
+    {
+      "id": "original",
+      "path": "/Users/pokasich/Downloads/c3f4htgd1w0st3gh3utbc3yrkl36m803.pdf",
+      "sha256": "422a12e6d74679ecc4f5c20f070ef2d96809289ec9b13dee563ec3ed04b2b9a9",
+      "pages": 16,
+      "role": "Rule authority and visible examples; not a complete commercial deck."
+    },
+    {
+      "id": "pdf",
+      "path": "/Users/pokasich/Downloads/Ekzortsisty_i_zarazhyonnye_147_kartochek_s_podskazkami.pdf",
+      "sha256": "87511a263cc60bfdfba53173a98a03c5e0487a532aab5a183f53137ba32a8ec8",
+      "pages": 22,
+      "role": "147-card fan set; its alternative rules and helper blocks are excluded."
+    },
+    {
+      "id": "file:src/server/cards.ts",
+      "path": "src/server/cards.ts",
+      "sha256": "8611929b6405ebbc431bfb19bcae1d6874f88b1a5895c93d9d308d007ffdc9c9",
+      "role": "Current server-only source, read but not changed."
+    },
+    {
+      "id": "file:src/server/prophecies.ts",
+      "path": "src/server/prophecies.ts",
+      "sha256": "f553fe770b30dc28d9baa2112d26cd43368ec4f3770bcb1a60b57b5936dad413",
+      "role": "Current server-only source, read but not changed."
+    }
+  ],
+  "entries": [
+    {
+      "sourceId": "pdf:П-01",
+      "sourceTitle": "Памятка экзорциста",
+      "type": "reference",
+      "page": 3,
+      "sourceObservation": "Source reference uses announced attempts, a generic failure-capture rule and a normal recall of all roles. Rewritten against persistent original-rule play.",
+      "decision": "rework",
+      "targetIds": [
+        "M001"
+      ],
+      "reason": "The reference now explains zero task props, a place-only Dwelling and body/voice group performance. Authored adaptation under the later no-props instruction; no commercial text or supernatural fact is implied."
+    },
+    {
+      "sourceId": "pdf:П-02",
+      "sourceTitle": "Памятка заражённого",
+      "type": "reference",
+      "page": 3,
+      "sourceObservation": "Source reference uses announced attempts, a generic failure-capture rule and a normal recall of all roles. Rewritten against persistent original-rule play.",
+      "decision": "rework",
+      "targetIds": [
+        "M002"
+      ],
+      "reason": "The reference now explains zero task props, a place-only Dwelling and body/voice group performance. Authored adaptation under the later no-props instruction; no commercial text or supernatural fact is implied."
+    },
+    {
+      "sourceId": "pdf:З-01",
+      "sourceTitle": "Эхо",
+      "type": "possessed",
+      "page": 4,
+      "sourceObservation": "ЗАРАЖЁННЫЙ З-01 Эхо ПРОЯВЛЕНИЕ В конце каждой своей фразы дважды повторяй последнее слово. ОСВОБОЖДЕНИЕ Экзорцист повторит последнее слово из твоей фразы.",
+      "decision": "replace",
+      "targetIds": [
+        "P001"
+      ],
+      "reason": "Joining the song sustains it; a direct request to stop addresses the singer as a person. Domestic-horror revision: retain_core. Literary connections are thematic; capture and release are authored rules."
+    },
+    {
+      "sourceId": "pdf:З-02",
+      "sourceTitle": "Забытый голос",
+      "type": "possessed",
+      "page": 4,
+      "sourceObservation": "ЗАРАЖЁННЫЙ З-02 Забытый голос ПРОЯВЛЕНИЕ Говори только шёпотом и делай вид, что громкие звуки тебя пугают. ОСВОБОЖДЕНИЕ Экзорцист попросит тебя говорить громче.",
+      "decision": "replace",
+      "targetIds": [
+        "P002"
+      ],
+      "reason": "The involuntary returning hand is stopped by a visible noncontact barrier; no cup or cloth is used. Authored adaptation under the later no-props instruction; no commercial text or supernatural fact is implied."
+    },
+    {
+      "sourceId": "pdf:З-03",
+      "sourceTitle": "Мелодия стены",
+      "type": "possessed",
+      "page": 4,
+      "sourceObservation": "ЗАРАЖЁННЫЙ З-03 Мелодия стены ПРОЯВЛЕНИЕ Каждые полминуты тихо напевай три произвольные ноты. ОСВОБОЖДЕНИЕ Экзорцист напоёт в ответ ту же короткую мелодию.",
+      "decision": "replace",
+      "targetIds": [
+        "P003"
+      ],
+      "reason": "Wordless partial contact maintains estrangement; both accepted hands with human address restore connection. Domestic-horror revision: retain_core. Literary connections are thematic; capture and release are authored rules."
+    },
+    {
+      "sourceId": "pdf:З-04",
+      "sourceTitle": "Невидимый звонок",
+      "type": "possessed",
+      "page": 4,
+      "sourceObservation": "ЗАРАЖЁННЫЙ З-04 Невидимый звонок ПРОЯВЛЕНИЕ Изображай короткий телефонный звонок и спрашивай, кто звонил. ОСВОБОЖДЕНИЕ Экзорцист изобразит, что поднял телефонную трубку.",
+      "decision": "rework",
+      "targetIds": [
+        "P040"
+      ],
+      "reason": "Speaking into the actor’s listening channel joins the intrusion; making one’s own outward listening channel restores a separate listener. Domestic-horror revision: adapt. Literary connections are thematic; capture and release are authored rules."
+    },
+    {
+      "sourceId": "pdf:З-05",
+      "sourceTitle": "Шуршание",
+      "type": "possessed",
+      "page": 4,
+      "sourceObservation": "ЗАРАЖЁННЫЙ З-05 Шуршание ПРОЯВЛЕНИЕ Тихо шурши ладонями, будто листаешь старую книгу. ОСВОБОЖДЕНИЕ Экзорцист изобразит, что закрыл твою невидимую книгу.",
+      "decision": "rework",
+      "targetIds": [
+        "P041"
+      ],
+      "reason": "Reopening repeats the interrupted move; fastening the already-closed case finishes the departure. No real luggage or exact password is needed. Domestic-horror revision: replace. Literary connections are thematic; capture and release are authored rules."
+    },
+    {
+      "sourceId": "pdf:З-06",
+      "sourceTitle": "Три стука",
+      "type": "possessed",
+      "page": 4,
+      "sourceObservation": "ЗАРАЖЁННЫЙ З-06 Три стука ПРОЯВЛЕНИЕ Время от времени стучи пальцем по своей ладони три раза. ОСВОБОЖДЕНИЕ Экзорцист повторит три твоих стука по своей ладони.",
+      "decision": "rework",
+      "targetIds": [
+        "P013",
+        "P017",
+        "P074"
+      ],
+      "reason": "Copying voiceless motion joins the loop; supplying its missing audible consequence completes it. No fixed beat sequence or reversed pattern is required. Domestic-horror revision: replace. Literary connections are thematic; capture and release are authored rules. The actor and rescuer use their own body for sound at two positions, not two prepared surfaces. Authored adaptation under the later no-props instruction; no commercial text or supernatural fact is implied. Repeating the echo accepts borrowed speech; a clearly heard address without a visible speaking mouth breaks its coupling to the visitor’s lips. This is an authored performance rule, not an actual ghost effect."
+    },
+    {
+      "sourceId": "pdf:З-07",
+      "sourceTitle": "Часы",
+      "type": "possessed",
+      "page": 4,
+      "sourceObservation": "ЗАРАЖЁННЫЙ З-07 Часы ПРОЯВЛЕНИЕ Произноси «тик» и «так», чередуя слова. ОСВОБОЖДЕНИЕ Экзорцист скажет «Время вышло».",
+      "decision": "rework",
+      "targetIds": [
+        "P014"
+      ],
+      "reason": "An unfinished care routine is acted over empty space. Removing its imagined bed is a visible completed pantomime, not manipulation of cloth. Authored adaptation under the later no-props instruction; no commercial text or supernatural fact is implied."
+    },
+    {
+      "sourceId": "pdf:З-08",
+      "sourceTitle": "Сломанная пластинка",
+      "type": "possessed",
+      "page": 4,
+      "sourceObservation": "ЗАРАЖЁННЫЙ З-08 Сломанная пластинка ПРОЯВЛЕНИЕ Каждый вопрос повторяй прежде, чем ответить на него. ОСВОБОЖДЕНИЕ Экзорцист попросит: «Ответь сразу, не повторяя».",
+      "decision": "replace",
+      "targetIds": [
+        "P008"
+      ],
+      "reason": "Reinviting sustains access; closing the mimed opening and withdrawing permission breaks it. This access rule is authored, not asserted as a universal rule in the literary sources. Domestic-horror revision: replace. Literary connections are thematic; capture and release are authored rules."
+    },
+    {
+      "sourceId": "pdf:З-09",
+      "sourceTitle": "Ночной хор",
+      "type": "possessed",
+      "page": 4,
+      "sourceObservation": "ЗАРАЖЁННЫЙ З-09 Ночной хор ПРОЯВЛЕНИЕ Тихо гуди на одной ноте, когда рядом кто-то появляется. ОСВОБОЖДЕНИЕ Экзорцист начнёт гудеть на той же ноте вместе с тобой.",
+      "decision": "rework",
+      "targetIds": [
+        "P016"
+      ],
+      "reason": "An abrupt interruption separates the voices; a shared ordinary exhalation reunites them without a pitch test. Domestic-horror revision: adapt. Literary connections are thematic; capture and release are authored rules."
+    },
+    {
+      "sourceId": "pdf:З-10",
+      "sourceTitle": "Секретный слог",
+      "type": "possessed",
+      "page": 5,
+      "sourceObservation": "ЗАРАЖЁННЫЙ З-10 Секретный слог ПРОЯВЛЕНИЕ В начале каждой фразы вставляй слог «бу», будто он прилип к твоей речи. ОСВОБОЖДЕНИЕ Экзорцист повторит за тобой слог «бу».",
+      "decision": "replace",
+      "targetIds": [
+        "P010"
+      ],
+      "reason": "Denying the visible actor’s concern sustains it; addressing the specified empty place acknowledges a separate guest. Domestic-horror revision: retain_core. Literary connections are thematic; capture and release are authored rules."
+    },
+    {
+      "sourceId": "pdf:З-11",
+      "sourceTitle": "Тревожная пауза",
+      "type": "possessed",
+      "page": 5,
+      "sourceObservation": "ЗАРАЖЁННЫЙ З-11 Тревожная пауза ПРОЯВЛЕНИЕ Перед каждой репликой выдерживай паузу в три секунды. ОСВОБОЖДЕНИЕ Экзорцист тоже помолчит перед ответом.",
+      "decision": "rework",
+      "targetIds": [
+        "P074"
+      ],
+      "reason": "Repeating the echo accepts borrowed speech; a clearly heard address without a visible speaking mouth breaks its coupling to the visitor’s lips. This is an authored performance rule, not an actual ghost effect."
+    },
+    {
+      "sourceId": "pdf:З-12",
+      "sourceTitle": "Имя во тьме",
+      "type": "possessed",
+      "page": 5,
+      "sourceObservation": "ЗАРАЖЁННЫЙ З-12 Имя во тьме ПРОЯВЛЕНИЕ Тихо произноси «кто здесь?» при приближении игроков. ОСВОБОЖДЕНИЕ Экзорцист назовёт своё имя.",
+      "decision": "rework",
+      "targetIds": [
+        "P073"
+      ],
+      "reason": "Answering as two people feeds the split; two clear gestures give one person’s coherent identity and destination. Domestic-horror revision: retain_core. Literary connections are thematic; capture and release are authored rules."
+    },
+    {
+      "sourceId": "pdf:З-13",
+      "sourceTitle": "Радиопомехи",
+      "type": "possessed",
+      "page": 5,
+      "sourceObservation": "ЗАРАЖЁННЫЙ З-13 Радиопомехи ПРОЯВЛЕНИЕ Иногда прерывай речь коротким «ш-ш-ш», как старое радио. ОСВОБОЖДЕНИЕ Экзорцист скажет: «Я тебя слышу».",
+      "decision": "rework",
+      "targetIds": [
+        "P015"
+      ],
+      "reason": "Deliberate interruption strengthens the silencing voice; a visible willing listener lets the witness finish. The completion is a whole episode, not a hidden sentence. Domestic-horror revision: replace. Literary connections are thematic; capture and release are authored rules."
+    },
+    {
+      "sourceId": "pdf:З-14",
+      "sourceTitle": "Обратный счёт",
+      "type": "possessed",
+      "page": 5,
+      "sourceObservation": "ЗАРАЖЁННЫЙ З-14 Обратный счёт ПРОЯВЛЕНИЕ Считай вслух от пяти до одного, затем начинай снова. ОСВОБОЖДЕНИЕ Экзорцист досчитает вместе с тобой до нуля.",
+      "decision": "replace",
+      "targetIds": [
+        "P014"
+      ],
+      "reason": "An unfinished care routine is acted over empty space. Removing its imagined bed is a visible completed pantomime, not manipulation of cloth. Authored adaptation under the later no-props instruction; no commercial text or supernatural fact is implied."
+    },
+    {
+      "sourceId": "pdf:З-15",
+      "sourceTitle": "Слово за стеной",
+      "type": "possessed",
+      "page": 5,
+      "sourceObservation": "ЗАРАЖЁННЫЙ З-15 Слово за стеной ПРОЯВЛЕНИЕ Заканчивай каждую фразу словом «рядом». ОСВОБОЖДЕНИЕ Экзорцист произнесёт слово «рядом».",
+      "decision": "replace",
+      "targetIds": [
+        "P015"
+      ],
+      "reason": "Deliberate interruption strengthens the silencing voice; a visible willing listener lets the witness finish. The completion is a whole episode, not a hidden sentence. Domestic-horror revision: replace. Literary connections are thematic; capture and release are authored rules."
+    },
+    {
+      "sourceId": "pdf:З-16",
+      "sourceTitle": "Зеркальный жест",
+      "type": "possessed",
+      "page": 5,
+      "sourceObservation": "ЗАРАЖЁННЫЙ З-16 Зеркальный жест ПРОЯВЛЕНИЕ Повторяй жесты людей напротив, словно отражение. ОСВОБОЖДЕНИЕ Экзорцист повторит любой твой жест.",
+      "decision": "rework",
+      "targetIds": [
+        "P024",
+        "P071",
+        "P072"
+      ],
+      "reason": "Following the delayed copy gives it priority; withdrawing both hands and staying still removes its input. Domestic-horror revision: retain_core. Literary connections are thematic; capture and release are authored rules. Addressing only the absent double accepts replacement; a completed farewell followed by greeting the visible person separates them. No reversed gesture list remains. Domestic-horror revision: replace. Literary connections are thematic; capture and release are authored rules. Demanding two-handed copying strengthens the mismatch; a one-handed model permits a complete response. Domestic-horror revision: retain_core. Literary connections are thematic; capture and release are authored rules."
+    },
+    {
+      "sourceId": "pdf:З-17",
+      "sourceTitle": "Шаг назад",
+      "type": "possessed",
+      "page": 5,
+      "sourceObservation": "ЗАРАЖЁННЫЙ З-17 Шаг назад ПРОЯВЛЕНИЕ После трёх шагов делай один осторожный шаг назад. ОСВОБОЖДЕНИЕ Экзорцист сделает один шаг назад вместе с тобой.",
+      "decision": "rework",
+      "targetIds": [
+        "P029"
+      ],
+      "reason": "Repeating the incomplete return joins it; a complete short forward walk supplies its end. Domestic-horror revision: adapt. Literary connections are thematic; capture and release are authored rules."
+    },
+    {
+      "sourceId": "pdf:З-18",
+      "sourceTitle": "Невидимая нить",
+      "type": "possessed",
+      "page": 5,
+      "sourceObservation": "ЗАРАЖЁННЫЙ З-18 Невидимая нить ПРОЯВЛЕНИЕ Передвигайся так, будто тебя тянет за рукав невидимая нить. ОСВОБОЖДЕНИЕ Экзорцист изобразит, что перерезал невидимую нить.",
+      "decision": "rework",
+      "targetIds": [
+        "P022",
+        "P058"
+      ],
+      "reason": "Tugging accepts the attachment; visibly cutting its mimed line breaks it without contact. Domestic-horror revision: retain_core. Literary connections are thematic; capture and release are authored rules. A social pumping movement lends it further motion; a light accepted elbow support allows self-directed relaxation. Domestic-horror revision: retain_core. Literary connections are thematic; capture and release are authored rules."
+    },
+    {
+      "sourceId": "pdf:З-19",
+      "sourceTitle": "Статуя",
+      "type": "possessed",
+      "page": 6,
+      "sourceObservation": "ЗАРАЖЁННЫЙ З-19 Статуя ПРОЯВЛЕНИЕ Замирай на несколько секунд, когда кто-то смотрит на тебя. ОСВОБОЖДЕНИЕ Экзорцист замрёт рядом с тобой на три секунды.",
+      "decision": "rework",
+      "targetIds": [
+        "P067"
+      ],
+      "reason": "Offering brighter inspection sustains it; a short stationary screen covering interrupts exposure. Domestic-horror revision: retain_core. Literary connections are thematic; capture and release are authored rules."
+    },
+    {
+      "sourceId": "pdf:З-20",
+      "sourceTitle": "Сонный ходок",
+      "type": "possessed",
+      "page": 6,
+      "sourceObservation": "ЗАРАЖЁННЫЙ З-20 Сонный ходок ПРОЯВЛЕНИЕ Иди очень медленно и часто останавливайся. ОСВОБОЖДЕНИЕ Экзорцист пройдёт рядом три таких же медленных шага.",
+      "decision": "rework",
+      "targetIds": [
+        "P029",
+        "P060"
+      ],
+      "reason": "Repeating the incomplete return joins it; a complete short forward walk supplies its end. Domestic-horror revision: adapt. Literary connections are thematic; capture and release are authored rules. Taking the sleeve preserves a trailing hold; a brief agreed side-by-side elbow greeting completes companionship without joint travel. Domestic-horror revision: adapt. Literary connections are thematic; capture and release are authored rules."
+    },
+    {
+      "sourceId": "pdf:З-21",
+      "sourceTitle": "Танец тени",
+      "type": "possessed",
+      "page": 6,
+      "sourceObservation": "ЗАРАЖЁННЫЙ З-21 Танец тени ПРОЯВЛЕНИЕ При каждой встрече делай маленький поворот вокруг себя. ОСВОБОЖДЕНИЕ Экзорцист повторит твой небольшой поворот.",
+      "decision": "replace",
+      "targetIds": [
+        "P021"
+      ],
+      "reason": "Accelerating the answer accepts it; stillness with an ordinary breath restores self-directed rhythm. No physiological result is judged. Domestic-horror revision: adapt. Literary connections are thematic; capture and release are authored rules."
+    },
+    {
+      "sourceId": "pdf:З-22",
+      "sourceTitle": "Вторая правая",
+      "type": "possessed",
+      "page": 6,
+      "sourceObservation": "ЗАРАЖЁННЫЙ З-22 Вторая правая ПРОЯВЛЕНИЕ Периодически поднимай правую руку, будто здороваешься с пустотой. ОСВОБОЖДЕНИЕ Экзорцист поднимет руку тебе навстречу.",
+      "decision": "rework",
+      "targetIds": [
+        "P027",
+        "P061"
+      ],
+      "reason": "Copying the stuck greeting retains it; a full visible greeting supplies the missing opening. Domestic-horror revision: adapt. Literary connections are thematic; capture and release are authored rules. An incompatible closed fist denies its shape; a full accepted palm match recognizes the hand. Domestic-horror revision: retain_core. Literary connections are thematic; capture and release are authored rules."
+    },
+    {
+      "sourceId": "pdf:З-23",
+      "sourceTitle": "Тяжёлые ботинки",
+      "type": "possessed",
+      "page": 6,
+      "sourceObservation": "ЗАРАЖЁННЫЙ З-23 Тяжёлые ботинки ПРОЯВЛЕНИЕ Делай нарочито широкие, но медленные шаги. ОСВОБОЖДЕНИЕ Экзорцист сделает три таких же широких шага.",
+      "decision": "replace",
+      "targetIds": [
+        "P023"
+      ],
+      "reason": "The lending episode is performed with empty hands; an intended take-and-return is enough, no key is needed. Authored adaptation under the later no-props instruction; no commercial text or supernatural fact is implied."
+    },
+    {
+      "sourceId": "pdf:З-24",
+      "sourceTitle": "Невидимый плащ",
+      "type": "possessed",
+      "page": 6,
+      "sourceObservation": "ЗАРАЖЁННЫЙ З-24 Невидимый плащ ПРОЯВЛЕНИЕ Время от времени поправляй на плечах несуществующий плащ. ОСВОБОЖДЕНИЕ Экзорцист изобразит, что снимает с тебя невидимый плащ.",
+      "decision": "rework",
+      "targetIds": [
+        "P025",
+        "P059"
+      ],
+      "reason": "A resident is displaced from an empty standing place rather than a chair. No furniture is required. Authored adaptation under the later no-props instruction; no commercial text or supernatural fact is implied. Warmth is acknowledged through a brief agreed shoulder-to-shoulder presence, without cloth or other equipment. Authored adaptation under the later no-props instruction; no commercial text or supernatural fact is implied."
+    },
+    {
+      "sourceId": "pdf:З-25",
+      "sourceTitle": "Тень на полу",
+      "type": "possessed",
+      "page": 6,
+      "sourceObservation": "ЗАРАЖЁННЫЙ З-25 Тень на полу ПРОЯВЛЕНИЕ Смотри себе под ноги и периодически спрашивай: «Где моя тень?» ОСВОБОЖДЕНИЕ Экзорцист покажет на пол и скажет: «Вот твоя тень».",
+      "decision": "rework",
+      "targetIds": [
+        "E036"
+      ],
+      "reason": "An honest light-hand-shadow sequence replaces a claim that a ghost was detected. Domestic-horror revision: adapt."
+    },
+    {
+      "sourceId": "pdf:З-26",
+      "sourceTitle": "Потерянное равновесие",
+      "type": "possessed",
+      "page": 6,
+      "sourceObservation": "ЗАРАЖЁННЫЙ З-26 Потерянное равновесие ПРОЯВЛЕНИЕ При разговоре слегка покачивайся с пятки на носок. ОСВОБОЖДЕНИЕ Экзорцист начнёт покачиваться в том же ритме.",
+      "decision": "rework",
+      "targetIds": [
+        "P021"
+      ],
+      "reason": "Accelerating the answer accepts it; stillness with an ordinary breath restores self-directed rhythm. No physiological result is judged. Domestic-horror revision: adapt. Literary connections are thematic; capture and release are authored rules."
+    },
+    {
+      "sourceId": "pdf:З-27",
+      "sourceTitle": "Немая пантомима",
+      "type": "possessed",
+      "page": 6,
+      "sourceObservation": "ЗАРАЖЁННЫЙ З-27 Немая пантомима ПРОЯВЛЕНИЕ Отвечай только жестами, даже на простые вопросы. ОСВОБОЖДЕНИЕ Экзорцист задаст тебе любой вопрос жестами.",
+      "decision": "rework",
+      "targetIds": [
+        "P019",
+        "P073",
+        "E027"
+      ],
+      "reason": "Shushing reinforces the seal; visibly removing one’s own mimed seal gives a model of release. Domestic-horror revision: retain_core. Literary connections are thematic; capture and release are authored rules. Answering as two people feeds the split; two clear gestures give one person’s coherent identity and destination. Domestic-horror revision: retain_core. Literary connections are thematic; capture and release are authored rules. A genuine nonverbal rescue is required, with consent outside fiction. Domestic-horror revision: retain_core."
+    },
+    {
+      "sourceId": "pdf:З-28",
+      "sourceTitle": "Поклон",
+      "type": "possessed",
+      "page": 7,
+      "sourceObservation": "ЗАРАЖЁННЫЙ З-28 Поклон ПРОЯВЛЕНИЕ Начинай общение с маленького театрального поклона. ОСВОБОЖДЕНИЕ Экзорцист поклонится тебе в ответ.",
+      "decision": "rework",
+      "targetIds": [
+        "P020"
+      ],
+      "reason": "Joining the acted laughter keeps the voice; a serious reciprocal farewell closes the social exchange. Domestic-horror revision: adapt. Literary connections are thematic; capture and release are authored rules."
+    },
+    {
+      "sourceId": "pdf:З-29",
+      "sourceTitle": "Крылья",
+      "type": "possessed",
+      "page": 7,
+      "sourceObservation": "ЗАРАЖЁННЫЙ З-29 Крылья ПРОЯВЛЕНИЕ Время от времени расправляй локти, будто у тебя невидимые крылья. ОСВОБОЖДЕНИЕ Экзорцист изобразит, что складывает твои невидимые крылья.",
+      "decision": "rework",
+      "targetIds": [
+        "P065"
+      ],
+      "reason": "Copying its shape accepts it; a real visible projection places the shape outside the actor. Admission depends on actual dim-screen visibility. Domestic-horror revision: adapt. Literary connections are thematic; capture and release are authored rules."
+    },
+    {
+      "sourceId": "pdf:З-30",
+      "sourceTitle": "Сторожевой круг",
+      "type": "possessed",
+      "page": 7,
+      "sourceObservation": "ЗАРАЖЁННЫЙ З-30 Сторожевой круг ПРОЯВЛЕНИЕ Очерчивай в воздухе небольшой круг указательным пальцем. ОСВОБОЖДЕНИЕ Экзорцист нарисует пальцем круг в воздухе.",
+      "decision": "rework",
+      "targetIds": [
+        "P044",
+        "P048"
+      ],
+      "reason": "Eviction repeats displacement; recognizing the resident as the one who grants permission restores ownership. Unlike P011, the rescuer rejects no identity imposed on them. Domestic-horror revision: replace. Literary connections are thematic; capture and release are authored rules. The closed place is shown by the actor’s body, with no ground marking. A visible opening gesture gives it an exit. Authored adaptation under the later no-props instruction; no commercial text or supernatural fact is implied."
+    },
+    {
+      "sourceId": "pdf:З-31",
+      "sourceTitle": "Ключ без двери",
+      "type": "possessed",
+      "page": 7,
+      "sourceObservation": "ЗАРАЖЁННЫЙ З-31 Ключ без двери ПРОЯВЛЕНИЕ Делай вид, будто крутишь ключ в невидимом замке. ОСВОБОЖДЕНИЕ Экзорцист изобразит, что открыл невидимую дверь.",
+      "decision": "replace",
+      "targetIds": [
+        "P031"
+      ],
+      "reason": "An extra place in the household is indicated spatially; no table or cups are required. Authored adaptation under the later no-props instruction; no commercial text or supernatural fact is implied."
+    },
+    {
+      "sourceId": "pdf:З-32",
+      "sourceTitle": "Пыльная полка",
+      "type": "possessed",
+      "page": 7,
+      "sourceObservation": "ЗАРАЖЁННЫЙ З-32 Пыльная полка ПРОЯВЛЕНИЕ Сдувай воображаемую пыль с ладони. ОСВОБОЖДЕНИЕ Экзорцист изобразит, что смахнул пыль с твоей ладони.",
+      "decision": "rework",
+      "targetIds": [
+        "P028"
+      ],
+      "reason": "The missing resident has an empty place, not a seat. Standing and acknowledging a bow completes arrival. Authored adaptation under the later no-props instruction; no commercial text or supernatural fact is implied."
+    },
+    {
+      "sourceId": "pdf:З-33",
+      "sourceTitle": "Пустая чашка",
+      "type": "possessed",
+      "page": 7,
+      "sourceObservation": "ЗАРАЖЁННЫЙ З-33 Пустая чашка ПРОЯВЛЕНИЕ Держи в руках невидимую чашку и предлагай всем чай. ОСВОБОЖДЕНИЕ Экзорцист примет твою невидимую чашку.",
+      "decision": "rework",
+      "targetIds": [
+        "P031"
+      ],
+      "reason": "An extra place in the household is indicated spatially; no table or cups are required. Authored adaptation under the later no-props instruction; no commercial text or supernatural fact is implied."
+    },
+    {
+      "sourceId": "pdf:З-34",
+      "sourceTitle": "Тяжёлый чемодан",
+      "type": "possessed",
+      "page": 7,
+      "sourceObservation": "ЗАРАЖЁННЫЙ З-34 Тяжёлый чемодан ПРОЯВЛЕНИЕ Изображай, что несёшь очень тяжёлый воображаемый чемодан. ОСВОБОЖДЕНИЕ Экзорцист изобразит, что помогает нести твой чемодан.",
+      "decision": "replace",
+      "targetIds": [
+        "P034"
+      ],
+      "reason": "The unfinished offering is transferred and released through empty-hand pantomime, without money or fabric. Authored adaptation under the later no-props instruction; no commercial text or supernatural fact is implied."
+    },
+    {
+      "sourceId": "pdf:З-35",
+      "sourceTitle": "Потерянная записка",
+      "type": "possessed",
+      "page": 7,
+      "sourceObservation": "ЗАРАЖЁННЫЙ З-35 Потерянная записка ПРОЯВЛЕНИЕ Ищи по карманам несуществующую записку. ОСВОБОЖДЕНИЕ Экзорцист изобразит, что нашёл и отдал тебе записку.",
+      "decision": "replace",
+      "targetIds": [
+        "P035"
+      ],
+      "reason": "Repeated changes accept the replacement; an unchanged face through two passes provides a stable identity. Unlike P024, movement timing is not the puzzle. Domestic-horror revision: replace. Literary connections are thematic; capture and release are authored rules."
+    },
+    {
+      "sourceId": "pdf:З-36",
+      "sourceTitle": "Лунный фонарь",
+      "type": "possessed",
+      "page": 7,
+      "sourceObservation": "ЗАРАЖЁННЫЙ З-36 Лунный фонарь ПРОЯВЛЕНИЕ Изображай, что освещаешь путь маленьким невидимым фонарём. ОСВОБОЖДЕНИЕ Экзорцист попросит тебя посветить ему фонарём.",
+      "decision": "replace",
+      "targetIds": [
+        "P036"
+      ],
+      "reason": "An acted sound comes from the performer’s closed hand. The answering strike and listening remain physical but need no container. Authored adaptation under the later no-props instruction; no commercial text or supernatural fact is implied."
+    },
+    {
+      "sourceId": "pdf:З-37",
+      "sourceTitle": "Рамка портрета",
+      "type": "possessed",
+      "page": 8,
+      "sourceObservation": "ЗАРАЖЁННЫЙ З-37 Рамка портрета ПРОЯВЛЕНИЕ Делай вид, что держишь перед собой пустую раму. ОСВОБОЖДЕНИЕ Экзорцист встанет перед рамкой и изобразит портрет.",
+      "decision": "rework",
+      "targetIds": [
+        "P012",
+        "P032"
+      ],
+      "reason": "Blocking the frame erases recognition; a visible steady face completes the portrait. No actual painting is needed. Domestic-horror revision: adapt. Literary connections are thematic; capture and release are authored rules. Transferring the alien trace accepts it; witnessing both hands rejoined interrupts the split. Contact is light, negotiated and requires only one rescuer hand. Domestic-horror revision: replace. Literary connections are thematic; capture and release are authored rules."
+    },
+    {
+      "sourceId": "pdf:З-38",
+      "sourceTitle": "Запертая шкатулка",
+      "type": "possessed",
+      "page": 8,
+      "sourceObservation": "ЗАРАЖЁННЫЙ З-38 Запертая шкатулка ПРОЯВЛЕНИЕ Держи в ладонях воображаемую закрытую шкатулку и прислушивайся к ней. ОСВОБОЖДЕНИЕ Экзорцист изобразит, что открыл твою шкатулку.",
+      "decision": "rework",
+      "targetIds": [
+        "P036"
+      ],
+      "reason": "An acted sound comes from the performer’s closed hand. The answering strike and listening remain physical but need no container. Authored adaptation under the later no-props instruction; no commercial text or supernatural fact is implied."
+    },
+    {
+      "sourceId": "pdf:З-39",
+      "sourceTitle": "Холодная монета",
+      "type": "possessed",
+      "page": 8,
+      "sourceObservation": "ЗАРАЖЁННЫЙ З-39 Холодная монета ПРОЯВЛЕНИЕ Перекладывай воображаемую монету из ладони в ладонь. ОСВОБОЖДЕНИЕ Экзорцист попросит показать монету на ладони.",
+      "decision": "rework",
+      "targetIds": [
+        "P034"
+      ],
+      "reason": "The unfinished offering is transferred and released through empty-hand pantomime, without money or fabric. Authored adaptation under the later no-props instruction; no commercial text or supernatural fact is implied."
+    },
+    {
+      "sourceId": "pdf:З-40",
+      "sourceTitle": "Невидимые очки",
+      "type": "possessed",
+      "page": 8,
+      "sourceObservation": "ЗАРАЖЁННЫЙ З-40 Невидимые очки ПРОЯВЛЕНИЕ Время от времени поправляй на носу несуществующие очки. ОСВОБОЖДЕНИЕ Экзорцист предложит снять невидимые очки.",
+      "decision": "replace",
+      "targetIds": [
+        "P040"
+      ],
+      "reason": "Speaking into the actor’s listening channel joins the intrusion; making one’s own outward listening channel restores a separate listener. Domestic-horror revision: adapt. Literary connections are thematic; capture and release are authored rules."
+    },
+    {
+      "sourceId": "pdf:З-41",
+      "sourceTitle": "Письмо без адреса",
+      "type": "possessed",
+      "page": 8,
+      "sourceObservation": "ЗАРАЖЁННЫЙ З-41 Письмо без адреса ПРОЯВЛЕНИЕ Изображай, что пишешь письмо пальцем в воздухе. ОСВОБОЖДЕНИЕ Экзорцист изобразит, что забирает твоё письмо.",
+      "decision": "replace",
+      "targetIds": [
+        "P041"
+      ],
+      "reason": "Reopening repeats the interrupted move; fastening the already-closed case finishes the departure. No real luggage or exact password is needed. Domestic-horror revision: replace. Literary connections are thematic; capture and release are authored rules."
+    },
+    {
+      "sourceId": "pdf:З-42",
+      "sourceTitle": "Пыльный зонтик",
+      "type": "possessed",
+      "page": 8,
+      "sourceObservation": "ЗАРАЖЁННЫЙ З-42 Пыльный зонтик ПРОЯВЛЕНИЕ Делай вид, что раскрываешь над собой маленький зонт. ОСВОБОЖДЕНИЕ Экзорцист встанет рядом под твой невидимый зонтик.",
+      "decision": "replace",
+      "targetIds": [
+        "P042"
+      ],
+      "reason": "A hidden shape is framed by the actor’s hands over empty space; uncovering is visible pantomime, not handling a prop. Authored adaptation under the later no-props instruction; no commercial text or supernatural fact is implied."
+    },
+    {
+      "sourceId": "pdf:З-43",
+      "sourceTitle": "Невидимый карандаш",
+      "type": "possessed",
+      "page": 8,
+      "sourceObservation": "ЗАРАЖЁННЫЙ З-43 Невидимый карандаш ПРОЯВЛЕНИЕ Изображай, что рисуешь невидимый рисунок на своей ладони. ОСВОБОЖДЕНИЕ Экзорцист попросит тебя показать рисунок.",
+      "decision": "rework",
+      "targetIds": [
+        "P035",
+        "P057"
+      ],
+      "reason": "Repeated changes accept the replacement; an unchanged face through two passes provides a stable identity. Unlike P024, movement timing is not the puzzle. Domestic-horror revision: replace. Literary connections are thematic; capture and release are authored rules. Copying its circuit strengthens the mark; two crossing strokes visibly cancel it. This is an authored ritual gesture. Domestic-horror revision: retain_core. Literary connections are thematic; capture and release are authored rules."
+    },
+    {
+      "sourceId": "pdf:З-44",
+      "sourceTitle": "Звонкие ключи",
+      "type": "possessed",
+      "page": 8,
+      "sourceObservation": "ЗАРАЖЁННЫЙ З-44 Звонкие ключи ПРОЯВЛЕНИЕ Перебирай пальцами невидимую связку ключей. ОСВОБОЖДЕНИЕ Экзорцист попросит у тебя один невидимый ключ.",
+      "decision": "replace",
+      "targetIds": [
+        "P044"
+      ],
+      "reason": "Eviction repeats displacement; recognizing the resident as the one who grants permission restores ownership. Unlike P011, the rescuer rejects no identity imposed on them. Domestic-horror revision: replace. Literary connections are thematic; capture and release are authored rules."
+    },
+    {
+      "sourceId": "pdf:З-45",
+      "sourceTitle": "Нити паутины",
+      "type": "possessed",
+      "page": 8,
+      "sourceObservation": "ЗАРАЖЁННЫЙ З-45 Нити паутины ПРОЯВЛЕНИЕ Осторожно снимай с рукавов несуществующие нити паутины. ОСВОБОЖДЕНИЕ Экзорцист изобразит, что снимает с тебя паутину.",
+      "decision": "rework",
+      "targetIds": [
+        "P023",
+        "P033"
+      ],
+      "reason": "The lending episode is performed with empty hands; an intended take-and-return is enough, no key is needed. Authored adaptation under the later no-props instruction; no commercial text or supernatural fact is implied. A bodily crossing is held as an imagined knot; opening and separating fingers replaces a real cord. Authored adaptation under the later no-props instruction; no commercial text or supernatural fact is implied."
+    },
+    {
+      "sourceId": "pdf:З-46",
+      "sourceTitle": "Запретная буква",
+      "type": "possessed",
+      "page": 9,
+      "sourceObservation": "ЗАРАЖЁННЫЙ З-46 Запретная буква ПРОЯВЛЕНИЕ Старайся не произносить слово «да», заменяя его кивком. ОСВОБОЖДЕНИЕ Экзорцист попросит тебя вслух сказать «да».",
+      "decision": "replace",
+      "targetIds": [
+        "P046"
+      ],
+      "reason": "Deliberate following extends the track; a transverse crossing breaks its direction. There is no stone arrangement or need for visible footprints. Domestic-horror revision: replace. Literary connections are thematic; capture and release are authored rules."
+    },
+    {
+      "sourceId": "pdf:З-47",
+      "sourceTitle": "Наоборот",
+      "type": "possessed",
+      "page": 9,
+      "sourceObservation": "ЗАРАЖЁННЫЙ З-47 Наоборот ПРОЯВЛЕНИЕ На простые вопросы отвечай противоположным по смыслу словом. ОСВОБОЖДЕНИЕ Экзорцист попросит ответить как обычно, не наоборот.",
+      "decision": "rework",
+      "targetIds": [
+        "P011"
+      ],
+      "reason": "Accepting the imposed identity admits replacement; asserting a separate fictional identity ends the mistaken recognition. Unlike P009, remembering a first name is not the task. Domestic-horror revision: replace. Literary connections are thematic; capture and release are authored rules."
+    },
+    {
+      "sourceId": "pdf:З-48",
+      "sourceTitle": "Вечная загадка",
+      "type": "possessed",
+      "page": 9,
+      "sourceObservation": "ЗАРАЖЁННЫЙ З-48 Вечная загадка ПРОЯВЛЕНИЕ Начинай разговор со слов «Угадай, кто я». ОСВОБОЖДЕНИЕ Экзорцист спросит: «Кто ты на самом деле?»",
+      "decision": "replace",
+      "targetIds": [
+        "P048"
+      ],
+      "reason": "The closed place is shown by the actor’s body, with no ground marking. A visible opening gesture gives it an exit. Authored adaptation under the later no-props instruction; no commercial text or supernatural fact is implied."
+    },
+    {
+      "sourceId": "pdf:З-49",
+      "sourceTitle": "Слишком вежливый",
+      "type": "possessed",
+      "page": 9,
+      "sourceObservation": "ЗАРАЖЁННЫЙ З-49 Слишком вежливый ПРОЯВЛЕНИЕ После любой реплики говори «благодарю вас». ОСВОБОЖДЕНИЕ Экзорцист первым скажет тебе «спасибо».",
+      "decision": "replace",
+      "targetIds": [
+        "P049"
+      ],
+      "reason": "Whistled answering accepts the call; an ordinary voice with a visible empty hand restores a human greeting. No musical accuracy or real gate is needed. Domestic-horror revision: replace. Literary connections are thematic; capture and release are authored rules."
+    },
+    {
+      "sourceId": "pdf:З-50",
+      "sourceTitle": "Только вопросы",
+      "type": "possessed",
+      "page": 9,
+      "sourceObservation": "ЗАРАЖЁННЫЙ З-50 Только вопросы ПРОЯВЛЕНИЕ Веди беседу исключительно вопросами. ОСВОБОЖДЕНИЕ Экзорцист попросит тебя ответить обычным утверждением.",
+      "decision": "rework",
+      "targetIds": [
+        "E003"
+      ],
+      "reason": "The completed action identifies who actually answered rather than requiring question-only speech or a real supernatural response. Domestic-horror revision: replace."
+    },
+    {
+      "sourceId": "pdf:З-51",
+      "sourceTitle": "Чужое имя",
+      "type": "possessed",
+      "page": 9,
+      "sourceObservation": "ЗАРАЖЁННЫЙ З-51 Чужое имя ПРОЯВЛЕНИЕ Представляйся каждому игроку новым вымышленным именем. ОСВОБОЖДЕНИЕ Экзорцист повторит имя, которым ты только что назвался.",
+      "decision": "rework",
+      "targetIds": [
+        "P009",
+        "P050",
+        "E004"
+      ],
+      "reason": "Demanding a real identity strengthens the invasive exchange; keeping the first fictional name resists replacement. Domestic-horror revision: retain_core. Literary connections are thematic; capture and release are authored rules. Forcing fictional access accepts the false return; an observed empty-handed greeting followed by permission completes a recognized arrival. The physical route is always passable. Domestic-horror revision: replace. Literary connections are thematic; capture and release are authored rules. A fictional name is immediately used in a new address; no genuine identity or card is exposed. Domestic-horror revision: retain_core."
+    },
+    {
+      "sourceId": "pdf:З-52",
+      "sourceTitle": "Предсказатель",
+      "type": "possessed",
+      "page": 9,
+      "sourceObservation": "ЗАРАЖЁННЫЙ З-52 Предсказатель ПРОЯВЛЕНИЕ Предсказывай собеседникам простые действия, например: «Ты сейчас улыбнёшься». ОСВОБОЖДЕНИЕ Экзорцист выполнит действие, которое ты ему предсказал.",
+      "decision": "replace",
+      "targetIds": [
+        "P052"
+      ],
+      "reason": "Tracing the spread accepts it; a complete outward sweep expels it. The direction follows the visible bodily intrusion, not an abstract reversed sequence. Domestic-horror revision: replace. Literary connections are thematic; capture and release are authored rules."
+    },
+    {
+      "sourceId": "pdf:З-53",
+      "sourceTitle": "Всё уже было",
+      "type": "possessed",
+      "page": 9,
+      "sourceObservation": "ЗАРАЖЁННЫЙ З-53 Всё уже было ПРОЯВЛЕНИЕ На каждую историю отвечай: «Это уже случалось». ОСВОБОЖДЕНИЕ Экзорцист скажет: «Этого ещё не было».",
+      "decision": "replace",
+      "targetIds": [
+        "P053"
+      ],
+      "reason": "Offering one’s place provides a host; an audible ground contact and completed rising gesture let the trapped sound emerge without occupying someone. This is an authored symbolic release. Domestic-horror revision: replace. Literary connections are thematic; capture and release are authored rules."
+    },
+    {
+      "sourceId": "pdf:З-54",
+      "sourceTitle": "Счётчик людей",
+      "type": "possessed",
+      "page": 9,
+      "sourceObservation": "ЗАРАЖЁННЫЙ З-54 Счётчик людей ПРОЯВЛЕНИЕ Пытаясь начать беседу, вслух пересчитывай находящихся поблизости. ОСВОБОЖДЕНИЕ Экзорцист предложит посчитать людей вместе с тобой.",
+      "decision": "rework",
+      "targetIds": [
+        "E020"
+      ],
+      "reason": "Observe the already agreed Dwelling place and its natural features, not a container. Authored adaptation under the later no-props instruction; no commercial text or supernatural fact is implied."
+    },
+    {
+      "sourceId": "pdf:З-55",
+      "sourceTitle": "Потерянное слово",
+      "type": "possessed",
+      "page": 10,
+      "sourceObservation": "ЗАРАЖЁННЫЙ З-55 Потерянное слово ПРОЯВЛЕНИЕ Каждые несколько фраз забывай одно слово и проси его подсказать. ОСВОБОЖДЕНИЕ Экзорцист подскажет слово, которое ты забыл.",
+      "decision": "rework",
+      "targetIds": [
+        "P008"
+      ],
+      "reason": "Reinviting sustains access; closing the mimed opening and withdrawing permission breaks it. This access rule is authored, not asserted as a universal rule in the literary sources. Domestic-horror revision: replace. Literary connections are thematic; capture and release are authored rules."
+    },
+    {
+      "sourceId": "pdf:З-56",
+      "sourceTitle": "Библиотекарь",
+      "type": "possessed",
+      "page": 10,
+      "sourceObservation": "ЗАРАЖЁННЫЙ З-56 Библиотекарь ПРОЯВЛЕНИЕ Проси окружающих говорить тише, даже если они шепчут. ОСВОБОЖДЕНИЕ Экзорцист ответит тебе очень тихим шёпотом.",
+      "decision": "rework",
+      "targetIds": [
+        "P019"
+      ],
+      "reason": "Shushing reinforces the seal; visibly removing one’s own mimed seal gives a model of release. Domestic-horror revision: retain_core. Literary connections are thematic; capture and release are authored rules."
+    },
+    {
+      "sourceId": "pdf:З-57",
+      "sourceTitle": "Упрямый рассказчик",
+      "type": "possessed",
+      "page": 10,
+      "sourceObservation": "ЗАРАЖЁННЫЙ З-57 Упрямый рассказчик ПРОЯВЛЕНИЕ Начинай любой ответ словами «Однажды ночью». ОСВОБОЖДЕНИЕ Экзорцист закончит одной фразой начатую тобой историю.",
+      "decision": "replace",
+      "targetIds": [
+        "P057"
+      ],
+      "reason": "Copying its circuit strengthens the mark; two crossing strokes visibly cancel it. This is an authored ritual gesture. Domestic-horror revision: retain_core. Literary connections are thematic; capture and release are authored rules."
+    },
+    {
+      "sourceId": "pdf:З-58",
+      "sourceTitle": "Пять секунд славы",
+      "type": "possessed",
+      "page": 10,
+      "sourceObservation": "ЗАРАЖЁННЫЙ З-58 Пять секунд славы ПРОЯВЛЕНИЕ Объявляй свои простые действия, как ведущий шоу. ОСВОБОЖДЕНИЕ Экзорцист объявит вслух одно твоё действие.",
+      "decision": "replace",
+      "targetIds": [
+        "P058"
+      ],
+      "reason": "A social pumping movement lends it further motion; a light accepted elbow support allows self-directed relaxation. Domestic-horror revision: retain_core. Literary connections are thematic; capture and release are authored rules."
+    },
+    {
+      "sourceId": "pdf:З-59",
+      "sourceTitle": "Пропавшее завтра",
+      "type": "possessed",
+      "page": 10,
+      "sourceObservation": "ЗАРАЖЁННЫЙ З-59 Пропавшее завтра ПРОЯВЛЕНИЕ Спрашивай других игроков, какой сейчас год. ОСВОБОЖДЕНИЕ Экзорцист назовёт текущий год.",
+      "decision": "replace",
+      "targetIds": [
+        "P059"
+      ],
+      "reason": "Warmth is acknowledged through a brief agreed shoulder-to-shoulder presence, without cloth or other equipment. Authored adaptation under the later no-props instruction; no commercial text or supernatural fact is implied."
+    },
+    {
+      "sourceId": "pdf:З-60",
+      "sourceTitle": "Тайный пароль",
+      "type": "possessed",
+      "page": 10,
+      "sourceObservation": "ЗАРАЖЁННЫЙ З-60 Тайный пароль ПРОЯВЛЕНИЕ В начале беседы говори «пароль?», но не называй правильный. ОСВОБОЖДЕНИЕ Экзорцист придумает любой пароль и скажет его тебе.",
+      "decision": "replace",
+      "targetIds": [
+        "P060"
+      ],
+      "reason": "Taking the sleeve preserves a trailing hold; a brief agreed side-by-side elbow greeting completes companionship without joint travel. Domestic-horror revision: adapt. Literary connections are thematic; capture and release are authored rules."
+    },
+    {
+      "sourceId": "pdf:З-61",
+      "sourceTitle": "Блуждающий маяк",
+      "type": "possessed",
+      "page": 10,
+      "sourceObservation": "ЗАРАЖЁННЫЙ З-61 Блуждающий маяк ПРОЯВЛЕНИЕ Стой у безопасной свободной стены и зови: «Сюда!» ОСВОБОЖДЕНИЕ Экзорцист подойдёт к тебе на зов.",
+      "decision": "rework",
+      "targetIds": [
+        "P066"
+      ],
+      "reason": "Inviting it to stay binds it; drawing its attention from body to empty space and an isolated lit hand gives an exit. No moving shadow or invisible projection is claimed. Domestic-horror revision: replace. Literary connections are thematic; capture and release are authored rules."
+    },
+    {
+      "sourceId": "pdf:З-62",
+      "sourceTitle": "Немой проводник",
+      "type": "possessed",
+      "page": 10,
+      "sourceObservation": "ЗАРАЖЁННЫЙ З-62 Немой проводник ПРОЯВЛЕНИЕ Показывай окружающим безопасное направление рукой, не объясняя. ОСВОБОЖДЕНИЕ Экзорцист спросит, куда ты показываешь.",
+      "decision": "rework",
+      "targetIds": [
+        "P043"
+      ],
+      "reason": "Claiming the missing resident’s role from the wrong side joins the false return; an actual relocated voice completes the expected arrival. Domestic-horror revision: replace. Literary connections are thematic; capture and release are authored rules."
+    },
+    {
+      "sourceId": "pdf:З-63",
+      "sourceTitle": "Невидимый гость",
+      "type": "possessed",
+      "page": 10,
+      "sourceObservation": "ЗАРАЖЁННЫЙ З-63 Невидимый гость ПРОЯВЛЕНИЕ Оставляй рядом с собой место для воображаемого спутника. ОСВОБОЖДЕНИЕ Экзорцист поздоровается с твоим невидимым спутником.",
+      "decision": "rework",
+      "targetIds": [
+        "P010",
+        "P060"
+      ],
+      "reason": "Denying the visible actor’s concern sustains it; addressing the specified empty place acknowledges a separate guest. Domestic-horror revision: retain_core. Literary connections are thematic; capture and release are authored rules. Taking the sleeve preserves a trailing hold; a brief agreed side-by-side elbow greeting completes companionship without joint travel. Domestic-horror revision: adapt. Literary connections are thematic; capture and release are authored rules."
+    },
+    {
+      "sourceId": "pdf:З-64",
+      "sourceTitle": "Осторожный страж",
+      "type": "possessed",
+      "page": 11,
+      "sourceObservation": "ЗАРАЖЁННЫЙ З-64 Осторожный страж ПРОЯВЛЕНИЕ При приближении игрока говори «стой, пароль». ОСВОБОЖДЕНИЕ Экзорцист назовёт любой придуманный пароль.",
+      "decision": "replace",
+      "targetIds": [
+        "P064"
+      ],
+      "reason": "Performing an overhead inspection sustains exposure; a low stable light permits voluntary uncovering. Domestic-horror revision: retain_core. Literary connections are thematic; capture and release are authored rules."
+    },
+    {
+      "sourceId": "pdf:З-65",
+      "sourceTitle": "Вечно опоздавший",
+      "type": "possessed",
+      "page": 11,
+      "sourceObservation": "ЗАРАЖЁННЫЙ З-65 Вечно опоздавший ПРОЯВЛЕНИЕ Периодически спрашивай, не закончилась ли уже игра. ОСВОБОЖДЕНИЕ Экзорцист скажет: «Ты не опоздал».",
+      "decision": "replace",
+      "targetIds": [
+        "P065"
+      ],
+      "reason": "Copying its shape accepts it; a real visible projection places the shape outside the actor. Admission depends on actual dim-screen visibility. Domestic-horror revision: adapt. Literary connections are thematic; capture and release are authored rules."
+    },
+    {
+      "sourceId": "pdf:З-66",
+      "sourceTitle": "Заблудившаяся тень",
+      "type": "possessed",
+      "page": 11,
+      "sourceObservation": "ЗАРАЖЁННЫЙ З-66 Заблудившаяся тень ПРОЯВЛЕНИЕ Периодически спрашивай, где находится выход, даже если он хорошо виден. ОСВОБОЖДЕНИЕ Экзорцист покажет тебе, где находится выход.",
+      "decision": "rework",
+      "targetIds": [
+        "P043"
+      ],
+      "reason": "Claiming the missing resident’s role from the wrong side joins the false return; an actual relocated voice completes the expected arrival. Domestic-horror revision: replace. Literary connections are thematic; capture and release are authored rules."
+    },
+    {
+      "sourceId": "pdf:З-67",
+      "sourceTitle": "Знак на двери",
+      "type": "possessed",
+      "page": 11,
+      "sourceObservation": "ЗАРАЖЁННЫЙ З-67 Знак на двери ПРОЯВЛЕНИЕ Показывай на ближайшую безопасную дверь и шепчи «там знак». ОСВОБОЖДЕНИЕ Экзорцист спросит, какой именно знак ты видишь.",
+      "decision": "rework",
+      "targetIds": [
+        "P070"
+      ],
+      "reason": "Outlining preserves the detached trace; linking one’s own chest and a whole hand at that place returns it to a living owner. Unlike P061 this uses no person-to-person palm contact. Domestic-horror revision: replace. Literary connections are thematic; capture and release are authored rules."
+    },
+    {
+      "sourceId": "pdf:З-68",
+      "sourceTitle": "Собиратель слухов",
+      "type": "possessed",
+      "page": 11,
+      "sourceObservation": "ЗАРАЖЁННЫЙ З-68 Собиратель слухов ПРОЯВЛЕНИЕ Проси каждого игрока сообщить тебе одну выдуманную тайну. ОСВОБОЖДЕНИЕ Экзорцист расскажет тебе любую вымышленную тайну.",
+      "decision": "replace",
+      "targetIds": [
+        "P068"
+      ],
+      "reason": "A real hand casts the shadow instead of a figurine. No independent shadow motion is claimed. Authored adaptation under the later no-props instruction; no commercial text or supernatural fact is implied."
+    },
+    {
+      "sourceId": "pdf:З-69",
+      "sourceTitle": "Окно в прошлое",
+      "type": "possessed",
+      "page": 11,
+      "sourceObservation": "ЗАРАЖЁННЫЙ З-69 Окно в прошлое ПРОЯВЛЕНИЕ Указывай на пустое пространство и рассказывай, что там было раньше. ОСВОБОЖДЕНИЕ Экзорцист спросит, что находится там сейчас.",
+      "decision": "replace",
+      "targetIds": [
+        "P069"
+      ],
+      "reason": "The enclosing curtain is represented by the actor’s hands only, with no fabric or window operation. Authored adaptation under the later no-props instruction; no commercial text or supernatural fact is implied."
+    },
+    {
+      "sourceId": "pdf:З-70",
+      "sourceTitle": "Пустое место",
+      "type": "possessed",
+      "page": 11,
+      "sourceObservation": "ЗАРАЖЁННЫЙ З-70 Пустое место ПРОЯВЛЕНИЕ В каждом разговоре делай паузу и смотри рядом с собеседником. ОСВОБОЖДЕНИЕ Экзорцист посмотрит туда, куда смотришь ты.",
+      "decision": "rework",
+      "targetIds": [
+        "P010",
+        "P018"
+      ],
+      "reason": "Denying the visible actor’s concern sustains it; addressing the specified empty place acknowledges a separate guest. Domestic-horror revision: retain_core. Literary connections are thematic; capture and release are authored rules. Physical imitation admits the walking loop; addressing the implied walker gives its approach a stopping point. Domestic-horror revision: retain_core. Literary connections are thematic; capture and release are authored rules."
+    },
+    {
+      "sourceId": "pdf:З-71",
+      "sourceTitle": "Ночной дозор",
+      "type": "possessed",
+      "page": 11,
+      "sourceObservation": "ЗАРАЖЁННЫЙ З-71 Ночной дозор ПРОЯВЛЕНИЕ При встрече спрашивай «всё спокойно?» и жди ответа. ОСВОБОЖДЕНИЕ Экзорцист первым спросит тебя: «Всё спокойно?»",
+      "decision": "rework",
+      "targetIds": [
+        "E040"
+      ],
+      "reason": "Two real entrance landmarks are inspected on independent visits. Domestic-horror revision: retain_core."
+    },
+    {
+      "sourceId": "pdf:З-72",
+      "sourceTitle": "Проводник снов",
+      "type": "possessed",
+      "page": 11,
+      "sourceObservation": "ЗАРАЖЁННЫЙ З-72 Проводник снов ПРОЯВЛЕНИЕ Спрашивай, что люди видели во сне, даже если это выдумка. ОСВОБОЖДЕНИЕ Экзорцист расскажет тебе любой придуманный сон.",
+      "decision": "rework",
+      "targetIds": [
+        "E023"
+      ],
+      "reason": "Recognition is checked against the source participant’s invented image, not supernatural perception. Domestic-horror revision: adapt."
+    },
+    {
+      "sourceId": "pdf:З-73",
+      "sourceTitle": "Застывшая очередь",
+      "type": "possessed",
+      "page": 12,
+      "sourceObservation": "ЗАРАЖЁННЫЙ З-73 Застывшая очередь ПРОЯВЛЕНИЕ Изображай, что стоишь в невидимой очереди. ОСВОБОЖДЕНИЕ Экзорцист встанет за тобой в воображаемую очередь.",
+      "decision": "rework",
+      "targetIds": [
+        "P028"
+      ],
+      "reason": "The missing resident has an empty place, not a seat. Standing and acknowledging a bow completes arrival. Authored adaptation under the later no-props instruction; no commercial text or supernatural fact is implied."
+    },
+    {
+      "sourceId": "pdf:З-74",
+      "sourceTitle": "Маячок",
+      "type": "possessed",
+      "page": 12,
+      "sourceObservation": "ЗАРАЖЁННЫЙ З-74 Маячок ПРОЯВЛЕНИЕ Тихо говори «я здесь», пока кто-то не обратится к тебе. ОСВОБОЖДЕНИЕ Экзорцист скажет тебе: «Я тебя вижу».",
+      "decision": "replace",
+      "targetIds": [
+        "P074"
+      ],
+      "reason": "Repeating the echo accepts borrowed speech; a clearly heard address without a visible speaking mouth breaks its coupling to the visitor’s lips. This is an authored performance rule, not an actual ghost effect."
+    },
+    {
+      "sourceId": "pdf:З-75",
+      "sourceTitle": "Последний свидетель",
+      "type": "possessed",
+      "page": 12,
+      "sourceObservation": "ЗАРАЖЁННЫЙ З-75 Последний свидетель ПРОЯВЛЕНИЕ Спрашивай, кто последним заходил в эту комнату. ОСВОБОЖДЕНИЕ Экзорцист ответит, кто последним заходил в комнату.",
+      "decision": "replace",
+      "targetIds": [
+        "P075"
+      ],
+      "reason": "Taking the observer’s place sustains domination; a visible screen across its sightline lets the person straighten. No actual shadow, strain or support of body weight is required. Domestic-horror revision: replace. Literary connections are thematic; capture and release are authored rules."
+    },
+    {
+      "sourceId": "pdf:Э-01",
+      "sourceTitle": "Ловец шёпота",
+      "type": "exorcist",
+      "page": 13,
+      "sourceObservation": "ЭКЗОРЦИСТ Э-01 Ловец шёпота Попроси трёх разных игроков сказать тебе по одному слову шёпотом.",
+      "decision": "replace",
+      "targetIds": [
+        "E001"
+      ],
+      "reason": "The on-site offering is made at an agreed empty place, without a vessel, marker or physical deposit. Authored adaptation under the later no-props instruction; no commercial text or supernatural fact is implied."
+    },
+    {
+      "sourceId": "pdf:Э-02",
+      "sourceTitle": "Шаги по следу",
+      "type": "exorcist",
+      "page": 13,
+      "sourceObservation": "ЭКЗОРЦИСТ Э-02 Шаги по следу Пройди пять медленных шагов за выбранным игроком, сохраняя расстояние.",
+      "decision": "rework",
+      "targetIds": [
+        "E010"
+      ],
+      "reason": "Actual independent visits verify a homecoming path; no party coalition or written map is introduced. Domestic-horror revision: adapt."
+    },
+    {
+      "sourceId": "pdf:Э-03",
+      "sourceTitle": "Важный вопрос",
+      "type": "exorcist",
+      "page": 13,
+      "sourceObservation": "ЭКЗОРЦИСТ Э-03 Важный вопрос Задай трём игрокам один и тот же вопрос и запомни ответы.",
+      "decision": "replace",
+      "targetIds": [
+        "E003"
+      ],
+      "reason": "The completed action identifies who actually answered rather than requiring question-only speech or a real supernatural response. Domestic-horror revision: replace."
+    },
+    {
+      "sourceId": "pdf:Э-04",
+      "sourceTitle": "Ночной репортёр",
+      "type": "exorcist",
+      "page": 13,
+      "sourceObservation": "ЭКЗОРЦИСТ Э-04 Ночной репортёр Опиши вслух происходящее рядом с тобой, как ведущий новостей.",
+      "decision": "replace",
+      "targetIds": [
+        "E004"
+      ],
+      "reason": "A fictional name is immediately used in a new address; no genuine identity or card is exposed. Domestic-horror revision: retain_core."
+    },
+    {
+      "sourceId": "pdf:Э-05",
+      "sourceTitle": "Первые подозрения",
+      "type": "exorcist",
+      "page": 13,
+      "sourceObservation": "ЭКЗОРЦИСТ Э-05 Первые подозрения Назови вслух три признака, по которым можно узнать заражённого.",
+      "decision": "rework",
+      "targetIds": [
+        "E025"
+      ],
+      "reason": "Actual before/after observation supplies evidence without delaying a freed person. Domestic-horror revision: retain_core."
+    },
+    {
+      "sourceId": "pdf:Э-06",
+      "sourceTitle": "Ритуальный привет",
+      "type": "exorcist",
+      "page": 13,
+      "sourceObservation": "ЭКЗОРЦИСТ Э-06 Ритуальный привет Поприветствуй двух разных игроков каждый раз новым жестом.",
+      "decision": "rework",
+      "targetIds": [
+        "E007"
+      ],
+      "reason": "The two-part greeting has a social recipient and completion, not arbitrary finger arithmetic. Domestic-horror revision: adapt."
+    },
+    {
+      "sourceId": "pdf:Э-07",
+      "sourceTitle": "Повторитель",
+      "type": "exorcist",
+      "page": 13,
+      "sourceObservation": "ЭКЗОРЦИСТ Э-07 Повторитель С точностью повтори короткую фразу одного из игроков, не передразнивая его.",
+      "decision": "rework",
+      "targetIds": [
+        "E034"
+      ],
+      "reason": "A voluntary comparison of one speaker’s ordinary and performed voice replaces reverse word order. Unlike E004 there is no fictional-name exchange or repeated address."
+    },
+    {
+      "sourceId": "pdf:Э-08",
+      "sourceTitle": "Искатель эха",
+      "type": "exorcist",
+      "page": 13,
+      "sourceObservation": "ЭКЗОРЦИСТ Э-08 Искатель эха Два раза спроси «кто здесь?» в разных разрешённых местах.",
+      "decision": "rework",
+      "targetIds": [
+        "P017",
+        "E009",
+        "T005"
+      ],
+      "reason": "The actor and rescuer use their own body for sound at two positions, not two prepared surfaces. Authored adaptation under the later no-props instruction; no commercial text or supernatural fact is implied. A repeated entrance gesture has a physical trigger and does not block navigation. Domestic-horror revision: retain_core. Domestic-horror framing preserves the private objective, two prophecy branches and participant evidence. T006 uses a distinct fictional cue, not the real stop signal. T007 uses folded empty household cloth. No sensing or runtime implementation is claimed."
+    },
+    {
+      "sourceId": "pdf:Э-09",
+      "sourceTitle": "Страж тишины",
+      "type": "exorcist",
+      "page": 13,
+      "sourceObservation": "ЭКЗОРЦИСТ Э-09 Страж тишины Проведи десять секунд молча рядом с другим игроком.",
+      "decision": "rework",
+      "targetIds": [
+        "E002",
+        "E021"
+      ],
+      "reason": "Silence is maintained through the search; technical and consent speech remains available. Domestic-horror revision: retain_core. A bounded stationary listen reports real sound or honest silence. Domestic-horror revision: retain_core."
+    },
+    {
+      "sourceId": "pdf:Э-10",
+      "sourceTitle": "Полевой дневник",
+      "type": "exorcist",
+      "page": 14,
+      "sourceObservation": "ЭКЗОРЦИСТ Э-10 Полевой дневник Запомни три необычных действия игроков и сообщи ведущему.",
+      "decision": "replace",
+      "targetIds": [
+        "E010"
+      ],
+      "reason": "Actual independent visits verify a homecoming path; no party coalition or written map is introduced. Domestic-horror revision: adapt."
+    },
+    {
+      "sourceId": "pdf:Э-11",
+      "sourceTitle": "Подозрительный комплимент",
+      "type": "exorcist",
+      "page": 14,
+      "sourceObservation": "ЭКЗОРЦИСТ Э-11 Подозрительный комплимент Сделай искренний комплимент человеку, который кажется тебе заражённым.",
+      "decision": "replace",
+      "targetIds": [
+        "E011"
+      ],
+      "reason": "Use naturally available building or ground surfaces only, without laid-out textures. Authored adaptation under the later no-props instruction; no commercial text or supernatural fact is implied."
+    },
+    {
+      "sourceId": "pdf:Э-12",
+      "sourceTitle": "Обратная речь",
+      "type": "exorcist",
+      "page": 14,
+      "sourceObservation": "ЭКЗОРЦИСТ Э-12 Обратная речь Произнеси обычную фразу, переставив в ней порядок слов.",
+      "decision": "rework",
+      "targetIds": [
+        "E005",
+        "E034"
+      ],
+      "reason": "A complete protective act replaces rhyme composition. It does not automatically rescue an unrelated possessed group. Domestic-horror revision: replace. A voluntary comparison of one speaker’s ordinary and performed voice replaces reverse word order. Unlike E004 there is no fictional-name exchange or repeated address."
+    },
+    {
+      "sourceId": "pdf:Э-13",
+      "sourceTitle": "Невидимый прибор",
+      "type": "exorcist",
+      "page": 14,
+      "sourceObservation": "ЭКЗОРЦИСТ Э-13 Невидимый прибор Изобрази, будто измеряешь уровень энергии заражения рукой.",
+      "decision": "replace",
+      "targetIds": [
+        "E013"
+      ],
+      "reason": "Inspect one empty place from two viewpoints, using no object. Authored adaptation under the later no-props instruction; no commercial text or supernatural fact is implied."
+    },
+    {
+      "sourceId": "pdf:Э-14",
+      "sourceTitle": "Говорящий фонарь",
+      "type": "exorcist",
+      "page": 14,
+      "sourceObservation": "ЭКЗОРЦИСТ Э-14 Говорящий фонарь Тихо комментируй свои действия голосом экскурсовода.",
+      "decision": "rework",
+      "targetIds": [
+        "E001"
+      ],
+      "reason": "The on-site offering is made at an agreed empty place, without a vessel, marker or physical deposit. Authored adaptation under the later no-props instruction; no commercial text or supernatural fact is implied."
+    },
+    {
+      "sourceId": "pdf:Э-15",
+      "sourceTitle": "Знак экзорциста",
+      "type": "exorcist",
+      "page": 14,
+      "sourceObservation": "ЭКЗОРЦИСТ Э-15 Знак экзорциста Придумай безопасный приветственный знак из двух движений и покажи его игроку.",
+      "decision": "rework",
+      "targetIds": [
+        "E007"
+      ],
+      "reason": "The two-part greeting has a social recipient and completion, not arbitrary finger arithmetic. Domestic-horror revision: adapt."
+    },
+    {
+      "sourceId": "pdf:Э-16",
+      "sourceTitle": "Проверка памяти",
+      "type": "exorcist",
+      "page": 14,
+      "sourceObservation": "ЭКЗОРЦИСТ Э-16 Проверка памяти Попроси кого-нибудь назвать три предмета вокруг и затем повтори их.",
+      "decision": "rework",
+      "targetIds": [
+        "P075"
+      ],
+      "reason": "Taking the observer’s place sustains domination; a visible screen across its sightline lets the person straighten. No actual shadow, strain or support of body weight is required. Domestic-horror revision: replace. Literary connections are thematic; capture and release are authored rules."
+    },
+    {
+      "sourceId": "pdf:Э-17",
+      "sourceTitle": "Странная примета",
+      "type": "exorcist",
+      "page": 14,
+      "sourceObservation": "ЭКЗОРЦИСТ Э-17 Странная примета Придумай новую примету про заражённых и расскажи её другому игроку.",
+      "decision": "rework",
+      "targetIds": [
+        "E041"
+      ],
+      "reason": "The invented omen remains explicitly fiction and does not create a new game rule. Domestic-horror revision: retain_core."
+    },
+    {
+      "sourceId": "pdf:Э-18",
+      "sourceTitle": "Тень за спиной",
+      "type": "exorcist",
+      "page": 14,
+      "sourceObservation": "ЭКЗОРЦИСТ Э-18 Тень за спиной Спроси двух игроков, видят ли они за тобой воображаемую тень.",
+      "decision": "rework",
+      "targetIds": [
+        "E029"
+      ],
+      "reason": "Introduction, pause and goodbye complete an act without requiring a paranormal reply. Domestic-horror revision: retain_core."
+    },
+    {
+      "sourceId": "pdf:Э-19",
+      "sourceTitle": "Три версии",
+      "type": "exorcist",
+      "page": 15,
+      "sourceObservation": "ЭКЗОРЦИСТ Э-19 Три версии Назови три возможные причины странного поведения одного игрока.",
+      "decision": "replace",
+      "targetIds": [
+        "E019"
+      ],
+      "reason": "Respond to a freely invented two-part gesture by preserving its start and changing its ending; no knot or carried item is used. Authored adaptation under the later no-props instruction; no commercial text or supernatural fact is implied."
+    },
+    {
+      "sourceId": "pdf:Э-20",
+      "sourceTitle": "Голос из прошлого",
+      "type": "exorcist",
+      "page": 15,
+      "sourceObservation": "ЭКЗОРЦИСТ Э-20 Голос из прошлого Скажи одно предложение голосом старинного рассказчика.",
+      "decision": "replace",
+      "targetIds": [
+        "E020"
+      ],
+      "reason": "Observe the already agreed Dwelling place and its natural features, not a container. Authored adaptation under the later no-props instruction; no commercial text or supernatural fact is implied."
+    },
+    {
+      "sourceId": "pdf:Э-21",
+      "sourceTitle": "Нить наблюдений",
+      "type": "exorcist",
+      "page": 15,
+      "sourceObservation": "ЭКЗОРЦИСТ Э-21 Нить наблюдений В течение двадцати секунд наблюдай за одним игроком, не мешая ему.",
+      "decision": "rework",
+      "targetIds": [
+        "T011"
+      ],
+      "reason": "Domestic-horror framing preserves the private objective, two prophecy branches and participant evidence. T006 uses a distinct fictional cue, not the real stop signal. T007 uses folded empty household cloth. No sensing or runtime implementation is claimed."
+    },
+    {
+      "sourceId": "pdf:Э-22",
+      "sourceTitle": "Загадка вечера",
+      "type": "exorcist",
+      "page": 15,
+      "sourceObservation": "ЭКЗОРЦИСТ Э-22 Загадка вечера Загадай любому игроку короткую загадку собственного сочинения.",
+      "decision": "replace",
+      "targetIds": [
+        "E022"
+      ],
+      "reason": "An ordinary act and a changed repeat create an episode rather than an unrelated three-sentence exercise. Domestic-horror revision: adapt."
+    },
+    {
+      "sourceId": "pdf:Э-23",
+      "sourceTitle": "Смена ролей",
+      "type": "exorcist",
+      "page": 15,
+      "sourceObservation": "ЭКЗОРЦИСТ Э-23 Смена ролей Попроси игрока на пять секунд показать, каким экзорцистом был бы он.",
+      "decision": "replace",
+      "targetIds": [
+        "E023"
+      ],
+      "reason": "Recognition is checked against the source participant’s invented image, not supernatural perception. Domestic-horror revision: adapt."
+    },
+    {
+      "sourceId": "pdf:Э-24",
+      "sourceTitle": "Экспресс-допрос",
+      "type": "exorcist",
+      "page": 15,
+      "sourceObservation": "ЭКЗОРЦИСТ Э-24 Экспресс-допрос Задай кому-то три вопроса, на которые можно ответить только «да» или «нет».",
+      "decision": "rework",
+      "targetIds": [
+        "E003"
+      ],
+      "reason": "The completed action identifies who actually answered rather than requiring question-only speech or a real supernatural response. Domestic-horror revision: replace."
+    },
+    {
+      "sourceId": "pdf:Э-25",
+      "sourceTitle": "Письмо в никуда",
+      "type": "exorcist",
+      "page": 15,
+      "sourceObservation": "ЭКЗОРЦИСТ Э-25 Письмо в никуда Изобрази, будто записываешь увиденное в невидимый блокнот.",
+      "decision": "rework",
+      "targetIds": [
+        "E015",
+        "E033"
+      ],
+      "reason": "The on-site offering is made at an agreed empty place, without a vessel, marker or physical deposit. Authored adaptation under the later no-props instruction; no commercial text or supernatural fact is implied. This ends a self-authored habitual act; the cloth rolling exercise is removed. It is not a route or object-fold task. Domestic-horror revision: replace."
+    },
+    {
+      "sourceId": "pdf:Э-26",
+      "sourceTitle": "Тайная карта",
+      "type": "exorcist",
+      "page": 15,
+      "sourceObservation": "ЭКЗОРЦИСТ Э-26 Тайная карта Расскажи игроку, где находится безопасная точка сбора, словно это секрет.",
+      "decision": "rework",
+      "targetIds": [
+        "E028"
+      ],
+      "reason": "Recall three existing spatial landmarks rather than objects or prepared markers. Authored adaptation under the later no-props instruction; no commercial text or supernatural fact is implied."
+    },
+    {
+      "sourceId": "pdf:Э-27",
+      "sourceTitle": "Смелое признание",
+      "type": "exorcist",
+      "page": 15,
+      "sourceObservation": "ЭКЗОРЦИСТ Э-27 Смелое признание Сообщи другому игроку о своей самой смешной выдуманной боязни.",
+      "decision": "rework",
+      "targetIds": [
+        "E041"
+      ],
+      "reason": "The invented omen remains explicitly fiction and does not create a new game rule. Domestic-horror revision: retain_core."
+    },
+    {
+      "sourceId": "pdf:Э-28",
+      "sourceTitle": "Тихий счёт",
+      "type": "exorcist",
+      "page": 16,
+      "sourceObservation": "ЭКЗОРЦИСТ Э-28 Тихий счёт Досчитай до десяти едва слышно, не сбиваясь.",
+      "decision": "replace",
+      "targetIds": [
+        "E028"
+      ],
+      "reason": "Recall three existing spatial landmarks rather than objects or prepared markers. Authored adaptation under the later no-props instruction; no commercial text or supernatural fact is implied."
+    },
+    {
+      "sourceId": "pdf:Э-29",
+      "sourceTitle": "Ночной пароль",
+      "type": "exorcist",
+      "page": 16,
+      "sourceObservation": "ЭКЗОРЦИСТ Э-29 Ночной пароль Придумай пароль из двух слов и попробуй обменяться им с игроком.",
+      "decision": "replace",
+      "targetIds": [
+        "E029"
+      ],
+      "reason": "Introduction, pause and goodbye complete an act without requiring a paranormal reply. Domestic-horror revision: retain_core."
+    },
+    {
+      "sourceId": "pdf:Э-30",
+      "sourceTitle": "Сторожевой круг",
+      "type": "exorcist",
+      "page": 16,
+      "sourceObservation": "ЭКЗОРЦИСТ Э-30 Сторожевой круг Мысленно обозначь вокруг себя круг и опиши его границы словами.",
+      "decision": "rework",
+      "targetIds": [
+        "E031"
+      ],
+      "reason": "The task completes a source/echo/present episode, not an abstract transported finger ring. No exact words or reversed order are tested. Domestic-horror revision: replace."
+    },
+    {
+      "sourceId": "pdf:Э-31",
+      "sourceTitle": "Экзорцистская легенда",
+      "type": "exorcist",
+      "page": 16,
+      "sourceObservation": "ЭКЗОРЦИСТ Э-31 Экзорцистская легенда Расскажи за пятнадцать секунд мини-историю о встрече с заражённым.",
+      "decision": "rework",
+      "targetIds": [
+        "E022"
+      ],
+      "reason": "An ordinary act and a changed repeat create an episode rather than an unrelated three-sentence exercise. Domestic-horror revision: adapt."
+    },
+    {
+      "sourceId": "pdf:Э-32",
+      "sourceTitle": "Зеркальный дозор",
+      "type": "exorcist",
+      "page": 16,
+      "sourceObservation": "ЭКЗОРЦИСТ Э-32 Зеркальный дозор Повтори два жеста выбранного игрока, получив его согласие.",
+      "decision": "rework",
+      "targetIds": [
+        "E024"
+      ],
+      "reason": "One observed pose is reproduced after withdrawing, rather than performing a whole possessed mission. Domestic-horror revision: retain_core."
+    },
+    {
+      "sourceId": "pdf:Э-33",
+      "sourceTitle": "Ложный след",
+      "type": "exorcist",
+      "page": 16,
+      "sourceObservation": "ЭКЗОРЦИСТ Э-33 Ложный след Назови три предмета, которые могли бы оказаться таинственными уликами.",
+      "decision": "replace",
+      "targetIds": [
+        "E033"
+      ],
+      "reason": "This ends a self-authored habitual act; the cloth rolling exercise is removed. It is not a route or object-fold task. Domestic-horror revision: replace."
+    },
+    {
+      "sourceId": "pdf:Э-34",
+      "sourceTitle": "Вежливое расследование",
+      "type": "exorcist",
+      "page": 16,
+      "sourceObservation": "ЭКЗОРЦИСТ Э-34 Вежливое расследование Представься одному человеку как экзорцист и спроси, нужна ли помощь.",
+      "decision": "rework",
+      "targetIds": [
+        "E006",
+        "E035"
+      ],
+      "reason": "The accepted speech restriction includes an actual offer of help, not merely saying nothing. Domestic-horror revision: retain_core. A real voluntary response completes navigation; no escort or exact spell is needed. Domestic-horror revision: adapt."
+    },
+    {
+      "sourceId": "pdf:Э-35",
+      "sourceTitle": "Голосовой ориентир",
+      "type": "exorcist",
+      "page": 16,
+      "sourceObservation": "ЭКЗОРЦИСТ Э-35 Голосовой ориентир Тихо опиши словами путь до места сбора.",
+      "decision": "rework",
+      "targetIds": [
+        "E035"
+      ],
+      "reason": "A real voluntary response completes navigation; no escort or exact spell is needed. Domestic-horror revision: adapt."
+    },
+    {
+      "sourceId": "pdf:Э-36",
+      "sourceTitle": "Расшифровщик",
+      "type": "exorcist",
+      "page": 16,
+      "sourceObservation": "ЭКЗОРЦИСТ Э-36 Расшифровщик Попроси кого-нибудь придумать загадочный звук и попробуй его повторить.",
+      "decision": "rework",
+      "targetIds": [
+        "E032"
+      ],
+      "reason": "Two actually heard sounds are reproduced, not invented as proof of a presence. Domestic-horror revision: retain_core."
+    },
+    {
+      "sourceId": "pdf:Э-37",
+      "sourceTitle": "Два свидетеля",
+      "type": "exorcist",
+      "page": 17,
+      "sourceObservation": "ЭКЗОРЦИСТ Э-37 Два свидетеля Узнай у двух игроков, где они были в начале раунда.",
+      "decision": "replace",
+      "targetIds": [
+        "E037"
+      ],
+      "reason": "Inventory and outward completion replace arbitrary phone hand-switching. No sensor, theft or physical offering is assumed. Domestic-horror revision: replace."
+    },
+    {
+      "sourceId": "pdf:Э-38",
+      "sourceTitle": "Случайный союзник",
+      "type": "exorcist",
+      "page": 17,
+      "sourceObservation": "ЭКЗОРЦИСТ Э-38 Случайный союзник Попроси другого экзорциста придумать название вашей вымышленной команды.",
+      "decision": "replace",
+      "targetIds": [
+        "E038"
+      ],
+      "reason": "Two independent visits end in a completed self-directed shoulder-sweeping gesture. No cloth, pocket, inventory or actual mark is needed."
+    },
+    {
+      "sourceId": "pdf:Э-39",
+      "sourceTitle": "Портрет неизвестного",
+      "type": "exorcist",
+      "page": 17,
+      "sourceObservation": "ЭКЗОРЦИСТ Э-39 Портрет неизвестного Опиши выдуманного заражённого так, чтобы его можно было нарисовать.",
+      "decision": "rework",
+      "targetIds": [
+        "E023",
+        "T010"
+      ],
+      "reason": "Recognition is checked against the source participant’s invented image, not supernatural perception. Domestic-horror revision: adapt. Domestic-horror framing preserves the private objective, two prophecy branches and participant evidence. T006 uses a distinct fictional cue, not the real stop signal. T007 uses folded empty household cloth. No sensing or runtime implementation is claimed."
+    },
+    {
+      "sourceId": "pdf:Э-40",
+      "sourceTitle": "Проверка реальности",
+      "type": "exorcist",
+      "page": 17,
+      "sourceObservation": "ЭКЗОРЦИСТ Э-40 Проверка реальности Назови пять совершенно обычных вещей вокруг себя.",
+      "decision": "rework",
+      "targetIds": [
+        "E039"
+      ],
+      "reason": "Ground attention in five real spatial details, not a collection of objects. Authored adaptation under the later no-props instruction; no commercial text or supernatural fact is implied."
+    },
+    {
+      "sourceId": "pdf:Э-41",
+      "sourceTitle": "Клятва экзорциста",
+      "type": "exorcist",
+      "page": 17,
+      "sourceObservation": "ЭКЗОРЦИСТ Э-41 Клятва экзорциста Произнеси короткую комичную клятву защищать дом от заражённых.",
+      "decision": "replace",
+      "targetIds": [
+        "E041"
+      ],
+      "reason": "The invented omen remains explicitly fiction and does not create a new game rule. Domestic-horror revision: retain_core."
+    },
+    {
+      "sourceId": "pdf:Э-42",
+      "sourceTitle": "Последняя улика",
+      "type": "exorcist",
+      "page": 17,
+      "sourceObservation": "ЭКЗОРЦИСТ Э-42 Последняя улика Перед окончанием раунда назови одну увиденную странность ведущему.",
+      "decision": "replace",
+      "targetIds": [
+        "E042"
+      ],
+      "reason": "A bounded farewell and independent departure replace a repeated bowed-head gesture. No joint movement or delayed rescue is required. Domestic-horror revision: replace."
+    },
+    {
+      "sourceId": "pdf:Р-01",
+      "sourceTitle": "Чужие голоса",
+      "type": "prophecy",
+      "page": 18,
+      "sourceObservation": "ПРОРИЦАНИЕ Р-01 Чужие голоса После открытия этой карты каждый экзорцист до конца игры начинает первую беседу в новом раунде шёпотом.",
+      "decision": "replace",
+      "targetIds": [
+        "R001"
+      ],
+      "reason": "Existing rule, trigger, action and scope preserved verbatim. The domestic fiction connection is thematic; it creates no additional restriction."
+    },
+    {
+      "sourceId": "pdf:Р-02",
+      "sourceTitle": "Тонкая грань",
+      "type": "prophecy",
+      "page": 18,
+      "sourceObservation": "ПРОРИЦАНИЕ Р-02 Тонкая грань В каждом новом раунде экзорцист может предпринять только две попытки освобождения заражённых.",
+      "decision": "replace",
+      "targetIds": [
+        "R002"
+      ],
+      "reason": "Existing rule, trigger, action and scope preserved verbatim. The domestic fiction connection is thematic; it creates no additional restriction."
+    },
+    {
+      "sourceId": "pdf:Р-03",
+      "sourceTitle": "Ночной знак",
+      "type": "prophecy",
+      "page": 18,
+      "sourceObservation": "ПРОРИЦАНИЕ Р-03 Ночной знак Все игроки приветствуют ведущего одним выбранным жестом, прежде чем получить карту.",
+      "decision": "rework",
+      "targetIds": [
+        "T009"
+      ],
+      "reason": "Domestic-horror framing preserves the private objective, two prophecy branches and participant evidence. T006 uses a distinct fictional cue, not the real stop signal. T007 uses folded empty household cloth. No sensing or runtime implementation is claimed."
+    },
+    {
+      "sourceId": "pdf:Р-04",
+      "sourceTitle": "Эхо коридоров",
+      "type": "prophecy",
+      "page": 18,
+      "sourceObservation": "ПРОРИЦАНИЕ Р-04 Эхо коридоров Раз в раунд каждый игрок должен произнести слово «эхо» перед возвращением на базу.",
+      "decision": "rework",
+      "targetIds": [
+        "R010"
+      ],
+      "reason": "Existing rule, trigger, action and scope preserved verbatim. The domestic fiction connection is thematic; it creates no additional restriction."
+    },
+    {
+      "sourceId": "pdf:Р-05",
+      "sourceTitle": "Долгий взгляд",
+      "type": "prophecy",
+      "page": 18,
+      "sourceObservation": "ПРОРИЦАНИЕ Р-05 Долгий взгляд Перед попыткой освобождения экзорцист обязан вслух назвать замеченную привычку заражённого.",
+      "decision": "rework",
+      "targetIds": [
+        "R008"
+      ],
+      "reason": "Existing rule, trigger, action and scope preserved verbatim. The domestic fiction connection is thematic; it creates no additional restriction."
+    },
+    {
+      "sourceId": "pdf:Р-06",
+      "sourceTitle": "Забытые имена",
+      "type": "prophecy",
+      "page": 18,
+      "sourceObservation": "ПРОРИЦАНИЕ Р-06 Забытые имена До конца игры при первом обращении к новому игроку нужно представиться заново.",
+      "decision": "rework",
+      "targetIds": [
+        "R005"
+      ],
+      "reason": "Existing rule, trigger, action and scope preserved verbatim. The domestic fiction connection is thematic; it creates no additional restriction."
+    },
+    {
+      "sourceId": "pdf:Р-07",
+      "sourceTitle": "Молчание часов",
+      "type": "prophecy",
+      "page": 18,
+      "sourceObservation": "ПРОРИЦАНИЕ Р-07 Молчание часов Последние пятнадцать секунд каждого раунда ведущий объявляет общую тишину; перемещения прекращаются.",
+      "decision": "replace",
+      "targetIds": [
+        "R007"
+      ],
+      "reason": "Existing rule, trigger, action and scope preserved verbatim. The domestic fiction connection is thematic; it creates no additional restriction."
+    },
+    {
+      "sourceId": "pdf:Р-08",
+      "sourceTitle": "Перепутанные следы",
+      "type": "prophecy",
+      "page": 18,
+      "sourceObservation": "ПРОРИЦАНИЕ Р-08 Перепутанные следы Перед началом каждого раунда ведущий просит игроков придумать смешное имя своему персонажу.",
+      "decision": "rework",
+      "targetIds": [
+        "E004"
+      ],
+      "reason": "A fictional name is immediately used in a new address; no genuine identity or card is exposed. Domestic-horror revision: retain_core."
+    },
+    {
+      "sourceId": "pdf:Р-09",
+      "sourceTitle": "Холодная весть",
+      "type": "prophecy",
+      "page": 18,
+      "sourceObservation": "ПРОРИЦАНИЕ Р-09 Холодная весть После освобождения заражённого экзорцист громко произносит «тень ушла», чтобы результат был засчитан.",
+      "decision": "replace",
+      "targetIds": [
+        "R009"
+      ],
+      "reason": "Existing rule, trigger, action and scope preserved verbatim. The domestic fiction connection is thematic; it creates no additional restriction."
+    },
+    {
+      "sourceId": "pdf:Р-10",
+      "sourceTitle": "Пляска теней",
+      "type": "prophecy",
+      "page": 19,
+      "sourceObservation": "ПРОРИЦАНИЕ Р-10 Пляска теней В начале каждого раунда каждый игрок показывает короткий жест, который повторяет вся группа.",
+      "decision": "rework",
+      "targetIds": [
+        "T009",
+        "R009"
+      ],
+      "reason": "Domestic-horror framing preserves the private objective, two prophecy branches and participant evidence. T006 uses a distinct fictional cue, not the real stop signal. T007 uses folded empty household cloth. No sensing or runtime implementation is claimed. Existing rule, trigger, action and scope preserved verbatim. The domestic fiction connection is thematic; it creates no additional restriction."
+    },
+    {
+      "sourceId": "pdf:Р-11",
+      "sourceTitle": "Тайна последней свечи",
+      "type": "prophecy",
+      "page": 19,
+      "sourceObservation": "ПРОРИЦАНИЕ Р-11 Тайна последней свечи До конца партии все завершённые личные миссии экзорцистов подтверждаются только на общей проверке.",
+      "decision": "replace",
+      "targetIds": [
+        "R011"
+      ],
+      "reason": "Existing rule, trigger, action and scope preserved verbatim. The domestic fiction connection is thematic; it creates no additional restriction."
+    },
+    {
+      "sourceId": "pdf:Х-01",
+      "sourceTitle": "Ночной рассказчик",
+      "type": "trial",
+      "page": 20,
+      "sourceObservation": "ИСПЫТАНИЕ ХРАНИТЕЛЯ Х-01 Ночной рассказчик В начале раунда объяви атмосферную фразу не длиннее десяти слов, не подсказывая задания.",
+      "decision": "rework",
+      "targetIds": [
+        "T005"
+      ],
+      "reason": "Domestic-horror framing preserves the private objective, two prophecy branches and participant evidence. T006 uses a distinct fictional cue, not the real stop signal. T007 uses folded empty household cloth. No sensing or runtime implementation is claimed."
+    },
+    {
+      "sourceId": "pdf:Х-02",
+      "sourceTitle": "Неподвижный хранитель",
+      "type": "trial",
+      "page": 20,
+      "sourceObservation": "ИСПЫТАНИЕ ХРАНИТЕЛЯ Х-02 Неподвижный хранитель Первую минуту раунда руководи игрой, не вставая со своего места.",
+      "decision": "rework",
+      "targetIds": [
+        "T011"
+      ],
+      "reason": "Domestic-horror framing preserves the private objective, two prophecy branches and participant evidence. T006 uses a distinct fictional cue, not the real stop signal. T007 uses folded empty household cloth. No sensing or runtime implementation is claimed."
+    },
+    {
+      "sourceId": "pdf:Х-03",
+      "sourceTitle": "Мастер шёпота",
+      "type": "trial",
+      "page": 20,
+      "sourceObservation": "ИСПЫТАНИЕ ХРАНИТЕЛЯ Х-03 Мастер шёпота Все объявления этого раунда делай спокойным шёпотом, сохраняя разборчивость.",
+      "decision": "replace",
+      "targetIds": [
+        "T003"
+      ],
+      "reason": "Domestic-horror framing preserves the private objective, two prophecy branches and participant evidence. T006 uses a distinct fictional cue, not the real stop signal. T007 uses folded empty household cloth. No sensing or runtime implementation is claimed."
+    },
+    {
+      "sourceId": "pdf:Х-04",
+      "sourceTitle": "Забытое имя",
+      "type": "trial",
+      "page": 20,
+      "sourceObservation": "ИСПЫТАНИЕ ХРАНИТЕЛЯ Х-04 Забытое имя Придумай себе новое имя и отвечай на него до окончания раунда.",
+      "decision": "rework",
+      "targetIds": [
+        "T008"
+      ],
+      "reason": "Domestic-horror framing preserves the private objective, two prophecy branches and participant evidence. T006 uses a distinct fictional cue, not the real stop signal. T007 uses folded empty household cloth. No sensing or runtime implementation is claimed."
+    },
+    {
+      "sourceId": "pdf:Х-05",
+      "sourceTitle": "Часовой",
+      "type": "trial",
+      "page": 20,
+      "sourceObservation": "ИСПЫТАНИЕ ХРАНИТЕЛЯ Х-05 Часовой Объяви начало и конец исследования коротким звуковым сигналом собственного сочинения.",
+      "decision": "replace",
+      "targetIds": [
+        "T005"
+      ],
+      "reason": "Domestic-horror framing preserves the private objective, two prophecy branches and participant evidence. T006 uses a distinct fictional cue, not the real stop signal. T007 uses folded empty household cloth. No sensing or runtime implementation is claimed."
+    },
+    {
+      "sourceId": "pdf:Х-06",
+      "sourceTitle": "Хранитель историй",
+      "type": "trial",
+      "page": 20,
+      "sourceObservation": "ИСПЫТАНИЕ ХРАНИТЕЛЯ Х-06 Хранитель историй После общего сбора попроси одного игрока пересказать смешной момент раунда.",
+      "decision": "rework",
+      "targetIds": [
+        "T010"
+      ],
+      "reason": "Domestic-horror framing preserves the private objective, two prophecy branches and participant evidence. T006 uses a distinct fictional cue, not the real stop signal. T007 uses folded empty household cloth. No sensing or runtime implementation is claimed."
+    },
+    {
+      "sourceId": "pdf:Х-07",
+      "sourceTitle": "Невидимая публика",
+      "type": "trial",
+      "page": 20,
+      "sourceObservation": "ИСПЫТАНИЕ ХРАНИТЕЛЯ Х-07 Невидимая публика На протяжении проверки комментируй результаты как ведущий таинственного шоу.",
+      "decision": "replace",
+      "targetIds": [
+        "T007"
+      ],
+      "reason": "A voluntary gaze response replaces acceptance of a bundle. Both private branches use explicit human reports, with no object or inferred observation. Authored adaptation under the later no-props instruction; no commercial text or supernatural fact is implied."
+    },
+    {
+      "sourceId": "pdf:Х-08",
+      "sourceTitle": "Ритуальная пауза",
+      "type": "trial",
+      "page": 20,
+      "sourceObservation": "ИСПЫТАНИЕ ХРАНИТЕЛЯ Х-08 Ритуальная пауза Перед проверкой попроси всех пять секунд молчать.",
+      "decision": "rework",
+      "targetIds": [
+        "T006"
+      ],
+      "reason": "Domestic-horror framing preserves the private objective, two prophecy branches and participant evidence. T006 uses a distinct fictional cue, not the real stop signal. T007 uses folded empty household cloth. No sensing or runtime implementation is claimed."
+    },
+    {
+      "sourceId": "pdf:Х-09",
+      "sourceTitle": "Тёмный архив",
+      "type": "trial",
+      "page": 20,
+      "sourceObservation": "ИСПЫТАНИЕ ХРАНИТЕЛЯ Х-09 Тёмный архив Запомни имена трёх игроков и назови их перед окончанием раунда.",
+      "decision": "rework",
+      "targetIds": [
+        "T008"
+      ],
+      "reason": "Domestic-horror framing preserves the private objective, two prophecy branches and participant evidence. T006 uses a distinct fictional cue, not the real stop signal. T007 uses folded empty household cloth. No sensing or runtime implementation is claimed."
+    },
+    {
+      "sourceId": "pdf:Х-10",
+      "sourceTitle": "Легенда места",
+      "type": "trial",
+      "page": 21,
+      "sourceObservation": "ИСПЫТАНИЕ ХРАНИТЕЛЯ Х-10 Легенда места Сочини одну фразу, которая объясняет, почему заражённые вернулись именно сегодня.",
+      "decision": "replace",
+      "targetIds": [
+        "T010"
+      ],
+      "reason": "Domestic-horror framing preserves the private objective, two prophecy branches and participant evidence. T006 uses a distinct fictional cue, not the real stop signal. T007 uses folded empty household cloth. No sensing or runtime implementation is claimed."
+    },
+    {
+      "sourceId": "pdf:Х-11",
+      "sourceTitle": "Последний сигнал",
+      "type": "trial",
+      "page": 21,
+      "sourceObservation": "ИСПЫТАНИЕ ХРАНИТЕЛЯ Х-11 Последний сигнал Заверши раунд словами собственного сочинения в стиле финала страшной сказки.",
+      "decision": "replace",
+      "targetIds": [
+        "T011"
+      ],
+      "reason": "Domestic-horror framing preserves the private objective, two prophecy branches and participant evidence. T006 uses a distinct fictional cue, not the real stop signal. T007 uses folded empty household cloth. No sensing or runtime implementation is claimed."
+    },
+    {
+      "sourceId": "pdf:И-01",
+      "sourceTitle": "Дом без часов",
+      "type": "story",
+      "page": 22,
+      "sourceObservation": "ИСТОРИЯ И-01 Дом без часов Ночью из дома исчезли все часы. Никто больше не уверен, сколько времени прошло. Где-то в комнатах слышны шаги, повторяющиеся с невозможной точностью. Экзорцисты должны вернуть дому чувство времени.",
+      "decision": "rework",
+      "targetIds": [
+        "S006"
+      ],
+      "reason": "Original newly authored domestic prologue, inspired by the cited motifs without reproducing a source plot. It introduces no assignment dependency, physical prop, staged mandatory event or new objective."
+    },
+    {
+      "sourceId": "pdf:И-02",
+      "sourceTitle": "Отель последнего гостя",
+      "type": "story",
+      "page": 22,
+      "sourceObservation": "ИСТОРИЯ И-02 Отель последнего гостя В старом отеле постоянно заняты пустые номера. Заражённые притворяются жильцами, а гости не помнят, когда въехали. До рассвета нужно понять, кто здесь на самом деле.",
+      "decision": "rework",
+      "targetIds": [
+        "S002"
+      ],
+      "reason": "Original newly authored domestic prologue, inspired by the cited motifs without reproducing a source plot. It introduces no assignment dependency, physical prop, staged mandatory event or new objective."
+    },
+    {
+      "sourceId": "pdf:И-03",
+      "sourceTitle": "Театр забытых ролей",
+      "type": "story",
+      "page": 22,
+      "sourceObservation": "ИСТОРИЯ И-03 Театр забытых ролей После закрытия театра актёры исчезли, но репетиция продолжается. На сцене звучат голоса людей, которых никто не видит. Экзорцистам предстоит остановить представление.",
+      "decision": "rework",
+      "targetIds": [
+        "S003"
+      ],
+      "reason": "Original newly authored domestic prologue, inspired by the cited motifs without reproducing a source plot. It introduces no assignment dependency, physical prop, staged mandatory event or new objective."
+    },
+    {
+      "sourceId": "pdf:И-04",
+      "sourceTitle": "Станция без поезда",
+      "type": "story",
+      "page": 22,
+      "sourceObservation": "ИСТОРИЯ И-04 Станция без поезда Каждую ночь на заброшенной станции объявляют прибытие несуществующего состава. Пассажиры-тени бродят по залу ожидания. Найдите тех, кому пора домой.",
+      "decision": "rework",
+      "targetIds": [
+        "S004"
+      ],
+      "reason": "Original newly authored domestic prologue, inspired by the cited motifs without reproducing a source plot. It introduces no assignment dependency, physical prop, staged mandatory event or new objective."
+    },
+    {
+      "sourceId": "pdf:И-05",
+      "sourceTitle": "Библиотека шёпота",
+      "type": "story",
+      "page": 22,
+      "sourceObservation": "ИСТОРИЯ И-05 Библиотека шёпота Книги в библиотеке сами перелистывают страницы, а из-за полок доносятся чужие истории. Заражённые ждут, когда кто-нибудь доскажет их незаконченные фразы.",
+      "decision": "rework",
+      "targetIds": [
+        "S006"
+      ],
+      "reason": "Original newly authored domestic prologue, inspired by the cited motifs without reproducing a source plot. It introduces no assignment dependency, physical prop, staged mandatory event or new objective."
+    },
+    {
+      "sourceId": "pdf:И-06",
+      "sourceTitle": "Праздник в пустом саду",
+      "type": "story",
+      "page": 22,
+      "sourceObservation": "ИСТОРИЯ И-06 Праздник в пустом саду В саду загораются невидимые гирлянды и слышится давно забытая музыка. Заражённые гости не хотят расходиться. Экзорцистам предстоит завершить этот праздник.",
+      "decision": "rework",
+      "targetIds": [
+        "S005"
+      ],
+      "reason": "Original newly authored domestic prologue, inspired by the cited motifs without reproducing a source plot. It introduces no assignment dependency, physical prop, staged mandatory event or new objective."
+    },
+    {
+      "sourceId": "runtime:p01",
+      "sourceTitle": "Частота пустого дома",
+      "type": "possessed",
+      "page": null,
+      "sourceObservation": "Спокойно повторяйте: «Здесь никто не принимает сигнал». Между повторами делайте паузу.",
+      "decision": "rework",
+      "targetIds": [
+        "P015"
+      ],
+      "reason": "Deliberate interruption strengthens the silencing voice; a visible willing listener lets the witness finish. The completion is a whole episode, not a hidden sentence. Domestic-horror revision: replace. Literary connections are thematic; capture and release are authored rules."
+    },
+    {
+      "sourceId": "runtime:p02",
+      "sourceTitle": "Лишний пассажир",
+      "type": "possessed",
+      "page": null,
+      "sourceObservation": "Говорите встречным, что невидимый поезд всё ещё не прибыл. Оставайтесь на месте.",
+      "decision": "replace",
+      "targetIds": [
+        "P029"
+      ],
+      "reason": "Repeating the incomplete return joins it; a complete short forward walk supplies its end. Domestic-horror revision: adapt. Literary connections are thematic; capture and release are authored rules."
+    },
+    {
+      "sourceId": "runtime:p03",
+      "sourceTitle": "Отсчёт наоборот",
+      "type": "possessed",
+      "page": null,
+      "sourceObservation": "Негромко называйте числа от пяти до одного и начинайте заново.",
+      "decision": "replace",
+      "targetIds": [
+        "P071"
+      ],
+      "reason": "Addressing only the absent double accepts replacement; a completed farewell followed by greeting the visible person separates them. No reversed gesture list remains. Domestic-horror revision: replace. Literary connections are thematic; capture and release are authored rules."
+    },
+    {
+      "sourceId": "runtime:p04",
+      "sourceTitle": "Неназванный гость",
+      "type": "possessed",
+      "page": null,
+      "sourceObservation": "Смотрите в сторону пустого пространства рядом с собой и говорите: «Гостя забыли представить».",
+      "decision": "rework",
+      "targetIds": [
+        "P009",
+        "P010"
+      ],
+      "reason": "Demanding a real identity strengthens the invasive exchange; keeping the first fictional name resists replacement. Domestic-horror revision: retain_core. Literary connections are thematic; capture and release are authored rules. Denying the visible actor’s concern sustains it; addressing the specified empty place acknowledges a separate guest. Domestic-horror revision: retain_core. Literary connections are thematic; capture and release are authored rules."
+    },
+    {
+      "sourceId": "runtime:p05",
+      "sourceTitle": "Пустое расписание",
+      "type": "possessed",
+      "page": null,
+      "sourceObservation": "Повторяйте: «Я помню вчера. Я помню завтра. А сегодня пропало».",
+      "decision": "replace",
+      "targetIds": [
+        "P050"
+      ],
+      "reason": "Forcing fictional access accepts the false return; an observed empty-handed greeting followed by permission completes a recognized arrival. The physical route is always passable. Domestic-horror revision: replace. Literary connections are thematic; capture and release are authored rules."
+    },
+    {
+      "sourceId": "runtime:p06",
+      "sourceTitle": "Сторож без смены",
+      "type": "possessed",
+      "page": null,
+      "sourceObservation": "Говорите: «Смена не закончена», будто охраняете невидимый пост. Никому не преграждайте путь.",
+      "decision": "replace",
+      "targetIds": [
+        "P026"
+      ],
+      "reason": "User explicitly preserves seeing one’s own face in an existing house mirror. It is neither carried nor staged, and no one must turn or touch it. Authored adaptation under the later no-props instruction; no commercial text or supernatural fact is implied."
+    },
+    {
+      "sourceId": "runtime:p07",
+      "sourceTitle": "Три пустых места",
+      "type": "possessed",
+      "page": null,
+      "sourceObservation": "По очереди называйте три времени года, каждый раз забывая одно: «Зима, весна, лето…».",
+      "decision": "replace",
+      "targetIds": [
+        "P075"
+      ],
+      "reason": "Taking the observer’s place sustains domination; a visible screen across its sightline lets the person straighten. No actual shadow, strain or support of body weight is required. Domestic-horror revision: replace. Literary connections are thematic; capture and release are authored rules."
+    },
+    {
+      "sourceId": "runtime:p08",
+      "sourceTitle": "Незакрытая скобка",
+      "type": "possessed",
+      "page": null,
+      "sourceObservation": "Говорите короткими обрывками: «Начало есть… конец потерялся…».",
+      "decision": "rework",
+      "targetIds": [
+        "P008"
+      ],
+      "reason": "Reinviting sustains access; closing the mimed opening and withdrawing permission breaks it. This access rule is authored, not asserted as a universal rule in the literary sources. Domestic-horror revision: replace. Literary connections are thematic; capture and release are authored rules."
+    },
+    {
+      "sourceId": "runtime:p09",
+      "sourceTitle": "Хранитель двух цветов",
+      "type": "possessed",
+      "page": null,
+      "sourceObservation": "Повторяйте: «Одного цвета мало. Двух хватит, чтобы вспомнить мир».",
+      "decision": "replace",
+      "targetIds": [
+        "P031"
+      ],
+      "reason": "An extra place in the household is indicated spatially; no table or cups are required. Authored adaptation under the later no-props instruction; no commercial text or supernatural fact is implied."
+    },
+    {
+      "sourceId": "runtime:p10",
+      "sourceTitle": "Забытое возвращение",
+      "type": "possessed",
+      "page": null,
+      "sourceObservation": "Спрашивайте: «Как возвращаются те, кого ждали?». Не просите никого куда-либо идти.",
+      "decision": "replace",
+      "targetIds": [
+        "P006"
+      ],
+      "reason": "Two independent unintrusive passes acknowledge the boundary without entering the old event. Domestic-horror revision: adapt. Literary connections are thematic; capture and release are authored rules."
+    },
+    {
+      "sourceId": "runtime:p11",
+      "sourceTitle": "Архив знакомых слов",
+      "type": "possessed",
+      "page": null,
+      "sourceObservation": "Говорите: «Архив пуст. Оставь в нём три мирных слова».",
+      "decision": "replace",
+      "targetIds": [
+        "P039"
+      ],
+      "reason": "An existing house mirror is blocked by the rescuer’s body, without moving or covering it with an object. Authored adaptation under the later no-props instruction; no commercial text or supernatural fact is implied."
+    },
+    {
+      "sourceId": "runtime:p12",
+      "sourceTitle": "Письмо без адреса",
+      "type": "possessed",
+      "page": null,
+      "sourceObservation": "Повторяйте: «Письмо пришло. Некому сказать, что оно получено». Ничего не ищите и не передавайте.",
+      "decision": "replace",
+      "targetIds": [
+        "P015"
+      ],
+      "reason": "Deliberate interruption strengthens the silencing voice; a visible willing listener lets the witness finish. The completion is a whole episode, not a hidden sentence. Domestic-horror revision: replace. Literary connections are thematic; capture and release are authored rules."
+    },
+    {
+      "sourceId": "runtime:e01",
+      "sourceTitle": "Свидетель сигнала",
+      "type": "exorcist",
+      "page": null,
+      "sourceObservation": "Existing optional mission; title and owning src/server/cards.ts identify the original entry. Its after-search/base-report template is not exported as playable content.",
+      "decision": "replace",
+      "targetIds": [
+        "E032"
+      ],
+      "reason": "Two actually heard sounds are reproduced, not invented as proof of a presence. Domestic-horror revision: retain_core."
+    },
+    {
+      "sourceId": "runtime:e02",
+      "sourceTitle": "Карта голосов",
+      "type": "exorcist",
+      "page": null,
+      "sourceObservation": "Existing optional mission; title and owning src/server/cards.ts identify the original entry. Its after-search/base-report template is not exported as playable content.",
+      "decision": "replace",
+      "targetIds": [
+        "E028"
+      ],
+      "reason": "Recall three existing spatial landmarks rather than objects or prepared markers. Authored adaptation under the later no-props instruction; no commercial text or supernatural fact is implied."
+    },
+    {
+      "sourceId": "runtime:e03",
+      "sourceTitle": "Знак возвращения",
+      "type": "exorcist",
+      "page": null,
+      "sourceObservation": "Existing optional mission; title and owning src/server/cards.ts identify the original entry. Its after-search/base-report template is not exported as playable content.",
+      "decision": "replace",
+      "targetIds": [
+        "E025"
+      ],
+      "reason": "Actual before/after observation supplies evidence without delaying a freed person. Domestic-horror revision: retain_core."
+    },
+    {
+      "sourceId": "runtime:e04",
+      "sourceTitle": "Точное наблюдение",
+      "type": "exorcist",
+      "page": null,
+      "sourceObservation": "Existing optional mission; title and owning src/server/cards.ts identify the original entry. Its after-search/base-report template is not exported as playable content.",
+      "decision": "rework",
+      "targetIds": [
+        "E024"
+      ],
+      "reason": "One observed pose is reproduced after withdrawing, rather than performing a whole possessed mission. Domestic-horror revision: retain_core."
+    },
+    {
+      "sourceId": "runtime:e05",
+      "sourceTitle": "Хроника помощи",
+      "type": "exorcist",
+      "page": null,
+      "sourceObservation": "Existing optional mission; title and owning src/server/cards.ts identify the original entry. Its after-search/base-report template is not exported as playable content.",
+      "decision": "replace",
+      "targetIds": [
+        "E026"
+      ],
+      "reason": "An actual physical rescue, not words alone, must fit the one-hand constraint. The mission can remain incomplete. Domestic-horror revision: retain_core."
+    },
+    {
+      "sourceId": "runtime:e06",
+      "sourceTitle": "Тихая поддержка",
+      "type": "exorcist",
+      "page": null,
+      "sourceObservation": "Existing optional mission; title and owning src/server/cards.ts identify the original entry. Its after-search/base-report template is not exported as playable content.",
+      "decision": "replace",
+      "targetIds": [
+        "E007"
+      ],
+      "reason": "The two-part greeting has a social recipient and completion, not arbitrary finger arithmetic. Domestic-horror revision: adapt."
+    },
+    {
+      "sourceId": "runtime:e07",
+      "sourceTitle": "Один добрый вопрос",
+      "type": "exorcist",
+      "page": null,
+      "sourceObservation": "Existing optional mission; title and owning src/server/cards.ts identify the original entry. Its after-search/base-report template is not exported as playable content.",
+      "decision": "rework",
+      "targetIds": [
+        "E026"
+      ],
+      "reason": "An actual physical rescue, not words alone, must fit the one-hand constraint. The mission can remain incomplete. Domestic-horror revision: retain_core."
+    },
+    {
+      "sourceId": "runtime:e08",
+      "sourceTitle": "Память пространства",
+      "type": "exorcist",
+      "page": null,
+      "sourceObservation": "Existing optional mission; title and owning src/server/cards.ts identify the original entry. Its after-search/base-report template is not exported as playable content.",
+      "decision": "rework",
+      "targetIds": [
+        "E040"
+      ],
+      "reason": "Two real entrance landmarks are inspected on independent visits. Domestic-horror revision: retain_core."
+    },
+    {
+      "sourceId": "runtime:e09",
+      "sourceTitle": "Надёжный рассказчик",
+      "type": "exorcist",
+      "page": null,
+      "sourceObservation": "Existing optional mission; title and owning src/server/cards.ts identify the original entry. Its after-search/base-report template is not exported as playable content.",
+      "decision": "replace",
+      "targetIds": [
+        "E022"
+      ],
+      "reason": "An ordinary act and a changed repeat create an episode rather than an unrelated three-sentence exercise. Domestic-horror revision: adapt."
+    },
+    {
+      "sourceId": "runtime:e10",
+      "sourceTitle": "Слово спокойствия",
+      "type": "exorcist",
+      "page": null,
+      "sourceObservation": "Existing optional mission; title and owning src/server/cards.ts identify the original entry. Its after-search/base-report template is not exported as playable content.",
+      "decision": "replace",
+      "targetIds": [
+        "E030"
+      ],
+      "reason": "The recipient explicitly confirms fear; silence and a startle are never inferred evidence. Domestic-horror revision: retain_core."
+    },
+    {
+      "sourceId": "runtime:e11",
+      "sourceTitle": "Собранная история",
+      "type": "exorcist",
+      "page": null,
+      "sourceObservation": "Existing optional mission; title and owning src/server/cards.ts identify the original entry. Its after-search/base-report template is not exported as playable content.",
+      "decision": "replace",
+      "targetIds": [
+        "E023"
+      ],
+      "reason": "Recognition is checked against the source participant’s invented image, not supernatural perception. Domestic-horror revision: adapt."
+    },
+    {
+      "sourceId": "runtime:e12",
+      "sourceTitle": "Возвращение без потерь",
+      "type": "exorcist",
+      "page": null,
+      "sourceObservation": "Existing optional mission; title and owning src/server/cards.ts identify the original entry. Its after-search/base-report template is not exported as playable content.",
+      "decision": "replace",
+      "targetIds": [
+        "E004"
+      ],
+      "reason": "A fictional name is immediately used in a new address; no genuine identity or card is exposed. Domestic-horror revision: retain_core."
+    },
+    {
+      "sourceId": "runtime:p13",
+      "sourceTitle": "Радио без приветствия",
+      "type": "possessed",
+      "page": null,
+      "sourceObservation": "Негромко повторяйте: «Приёмная открыта, но никто не поздоровался».",
+      "decision": "replace",
+      "targetIds": [
+        "P027"
+      ],
+      "reason": "Copying the stuck greeting retains it; a full visible greeting supplies the missing opening. Domestic-horror revision: adapt. Literary connections are thematic; capture and release are authored rules."
+    },
+    {
+      "sourceId": "runtime:p14",
+      "sourceTitle": "Забытый берег",
+      "type": "possessed",
+      "page": null,
+      "sourceObservation": "Повторяйте: «Река есть, а берега потерялись».",
+      "decision": "replace",
+      "targetIds": [
+        "P043"
+      ],
+      "reason": "Claiming the missing resident’s role from the wrong side joins the false return; an actual relocated voice completes the expected arrival. Domestic-horror revision: replace. Literary connections are thematic; capture and release are authored rules."
+    },
+    {
+      "sourceId": "runtime:p15",
+      "sourceTitle": "Потерянное эхо",
+      "type": "possessed",
+      "page": null,
+      "sourceObservation": "Говорите: «Моё эхо не вернулось», затем негромко произносите «Дом».",
+      "decision": "replace",
+      "targetIds": [
+        "P017"
+      ],
+      "reason": "The actor and rescuer use their own body for sound at two positions, not two prepared surfaces. Authored adaptation under the later no-props instruction; no commercial text or supernatural fact is implied."
+    },
+    {
+      "sourceId": "runtime:p16",
+      "sourceTitle": "Часы без полудня",
+      "type": "possessed",
+      "page": null,
+      "sourceObservation": "Повторяйте: «Утро прошло, вечер не пришёл».",
+      "decision": "replace",
+      "targetIds": [
+        "P014"
+      ],
+      "reason": "An unfinished care routine is acted over empty space. Removing its imagined bed is a visible completed pantomime, not manipulation of cloth. Authored adaptation under the later no-props instruction; no commercial text or supernatural fact is implied."
+    },
+    {
+      "sourceId": "runtime:p17",
+      "sourceTitle": "Добрый сторож",
+      "type": "possessed",
+      "page": null,
+      "sourceObservation": "Говорите: «Я не помню ни одного доброго пожелания».",
+      "decision": "replace",
+      "targetIds": [
+        "P001"
+      ],
+      "reason": "Joining the song sustains it; a direct request to stop addresses the singer as a person. Domestic-horror revision: retain_core. Literary connections are thematic; capture and release are authored rules."
+    },
+    {
+      "sourceId": "runtime:p18",
+      "sourceTitle": "Открытая дверь эфира",
+      "type": "possessed",
+      "page": null,
+      "sourceObservation": "Повторяйте: «В эфире сквозняк, дверь забыли закрыть». Не трогайте настоящие двери.",
+      "decision": "replace",
+      "targetIds": [
+        "P006"
+      ],
+      "reason": "Two independent unintrusive passes acknowledge the boundary without entering the old event. Domestic-horror revision: adapt. Literary connections are thematic; capture and release are authored rules."
+    },
+    {
+      "sourceId": "runtime:p19",
+      "sourceTitle": "Безымянная тишина",
+      "type": "possessed",
+      "page": null,
+      "sourceObservation": "Тихо говорите: «Мне забыли назвать тишину».",
+      "decision": "replace",
+      "targetIds": [
+        "P019"
+      ],
+      "reason": "Shushing reinforces the seal; visibly removing one’s own mimed seal gives a model of release. Domestic-horror revision: retain_core. Literary connections are thematic; capture and release are authored rules."
+    },
+    {
+      "sourceId": "runtime:p20",
+      "sourceTitle": "Лампа памяти",
+      "type": "possessed",
+      "page": null,
+      "sourceObservation": "Повторяйте: «Невидимой лампе забыли дать свет». Не используйте предметы.",
+      "decision": "rework",
+      "targetIds": [
+        "P067"
+      ],
+      "reason": "Offering brighter inspection sustains it; a short stationary screen covering interrupts exposure. Domestic-horror revision: retain_core. Literary connections are thematic; capture and release are authored rules."
+    },
+    {
+      "sourceId": "runtime:p21",
+      "sourceTitle": "Два объявления",
+      "type": "possessed",
+      "page": null,
+      "sourceObservation": "Чередуйте: «Поезд задержан» и «Пассажир забыт».",
+      "decision": "replace",
+      "targetIds": [
+        "P049"
+      ],
+      "reason": "Whistled answering accepts the call; an ordinary voice with a visible empty hand restores a human greeting. No musical accuracy or real gate is needed. Domestic-horror revision: replace. Literary connections are thematic; capture and release are authored rules."
+    },
+    {
+      "sourceId": "runtime:p22",
+      "sourceTitle": "Архив двух полок",
+      "type": "possessed",
+      "page": null,
+      "sourceObservation": "Говорите: «На первой полке пусто. На второй нет названия».",
+      "decision": "replace",
+      "targetIds": [
+        "P041"
+      ],
+      "reason": "Reopening repeats the interrupted move; fastening the already-closed case finishes the departure. No real luggage or exact password is needed. Domestic-horror revision: replace. Literary connections are thematic; capture and release are authored rules."
+    },
+    {
+      "sourceId": "runtime:p23",
+      "sourceTitle": "Смена маяка",
+      "type": "possessed",
+      "page": null,
+      "sourceObservation": "Чередуйте: «Берег не виден» и «Смотритель не сменился».",
+      "decision": "replace",
+      "targetIds": [
+        "P066"
+      ],
+      "reason": "Inviting it to stay binds it; drawing its attention from body to empty space and an isolated lit hand gives an exit. No moving shadow or invisible projection is claimed. Domestic-horror revision: replace. Literary connections are thematic; capture and release are authored rules."
+    },
+    {
+      "sourceId": "runtime:p24",
+      "sourceTitle": "Письмо к утру",
+      "type": "possessed",
+      "page": null,
+      "sourceObservation": "Повторяйте: «Письму нужны адрес и ответ».",
+      "decision": "replace",
+      "targetIds": [
+        "P034"
+      ],
+      "reason": "The unfinished offering is transferred and released through empty-hand pantomime, without money or fabric. Authored adaptation under the later no-props instruction; no commercial text or supernatural fact is implied."
+    },
+    {
+      "sourceId": "runtime:p25",
+      "sourceTitle": "Разорванный календарь",
+      "type": "possessed",
+      "page": null,
+      "sourceObservation": "Говорите: «Сначала был день, а потом пропало время года».",
+      "decision": "replace",
+      "targetIds": [
+        "P069"
+      ],
+      "reason": "The enclosing curtain is represented by the actor’s hands only, with no fabric or window operation. Authored adaptation under the later no-props instruction; no commercial text or supernatural fact is implied."
+    },
+    {
+      "sourceId": "runtime:p26",
+      "sourceTitle": "Двойное эхо",
+      "type": "possessed",
+      "page": null,
+      "sourceObservation": "Негромко повторяйте «Окно, берег», выдерживая паузу.",
+      "decision": "replace",
+      "targetIds": [
+        "P074"
+      ],
+      "reason": "Repeating the echo accepts borrowed speech; a clearly heard address without a visible speaking mouth breaks its coupling to the visitor’s lips. This is an authored performance rule, not an actual ghost effect."
+    },
+    {
+      "sourceId": "runtime:p27",
+      "sourceTitle": "Комната двух ответов",
+      "type": "possessed",
+      "page": null,
+      "sourceObservation": "Спрашивайте: «Где мы встретимся? Что там делать?». Не уходите с места.",
+      "decision": "replace",
+      "targetIds": [
+        "P043"
+      ],
+      "reason": "Claiming the missing resident’s role from the wrong side joins the false return; an actual relocated voice completes the expected arrival. Domestic-horror revision: replace. Literary connections are thematic; capture and release are authored rules."
+    },
+    {
+      "sourceId": "runtime:p28",
+      "sourceTitle": "Незавершённая передача",
+      "type": "possessed",
+      "page": null,
+      "sourceObservation": "Говорите: «Сначала позывной. После него нужна подпись».",
+      "decision": "replace",
+      "targetIds": [
+        "P009"
+      ],
+      "reason": "Demanding a real identity strengthens the invasive exchange; keeping the first fictional name resists replacement. Domestic-horror revision: retain_core. Literary connections are thematic; capture and release are authored rules."
+    },
+    {
+      "sourceId": "runtime:p29",
+      "sourceTitle": "Хранитель пары",
+      "type": "possessed",
+      "page": null,
+      "sourceObservation": "Повторяйте: «Одно слово тёплое, другое — нет».",
+      "decision": "replace",
+      "targetIds": [
+        "P059"
+      ],
+      "reason": "Warmth is acknowledged through a brief agreed shoulder-to-shoulder presence, without cloth or other equipment. Authored adaptation under the later no-props instruction; no commercial text or supernatural fact is implied."
+    },
+    {
+      "sourceId": "runtime:p30",
+      "sourceTitle": "Билет туда и обратно",
+      "type": "possessed",
+      "page": null,
+      "sourceObservation": "Повторяйте: «Отправление помню, возвращение потерял».",
+      "decision": "replace",
+      "targetIds": [
+        "P046"
+      ],
+      "reason": "Deliberate following extends the track; a transverse crossing breaks its direction. There is no stone arrangement or need for visible footprints. Domestic-horror revision: replace. Literary connections are thematic; capture and release are authored rules."
+    },
+    {
+      "sourceId": "runtime:p31",
+      "sourceTitle": "Словарь добрых слов",
+      "type": "possessed",
+      "page": null,
+      "sourceObservation": "Говорите: «Словарь просит два разных пожелания».",
+      "decision": "replace",
+      "targetIds": [
+        "P054"
+      ],
+      "reason": "The habitual cross-handed greeting joins the mismatch; matching the offered left hand restores the actor’s own orientation. Domestic-horror revision: retain_core. Literary connections are thematic; capture and release are authored rules."
+    },
+    {
+      "sourceId": "runtime:p32",
+      "sourceTitle": "Два времени суток",
+      "type": "possessed",
+      "page": null,
+      "sourceObservation": "Повторяйте: «После ночи пропало утро, после дня — вечер».",
+      "decision": "replace",
+      "targetIds": [
+        "P011"
+      ],
+      "reason": "Accepting the imposed identity admits replacement; asserting a separate fictional identity ends the mistaken recognition. Unlike P009, remembering a first name is not the task. Domestic-horror revision: replace. Literary connections are thematic; capture and release are authored rules."
+    },
+    {
+      "sourceId": "runtime:p33",
+      "sourceTitle": "Приёмная тишины",
+      "type": "possessed",
+      "page": null,
+      "sourceObservation": "Говорите: «Сначала нужно войти в эфир, потом закрыть его».",
+      "decision": "replace",
+      "targetIds": [
+        "P016"
+      ],
+      "reason": "An abrupt interruption separates the voices; a shared ordinary exhalation reunites them without a pitch test. Domestic-horror revision: adapt. Literary connections are thematic; capture and release are authored rules."
+    },
+    {
+      "sourceId": "runtime:p34",
+      "sourceTitle": "Невидимая библиотека",
+      "type": "possessed",
+      "page": null,
+      "sourceObservation": "Повторяйте: «Книге не хватает названия и читателя».",
+      "decision": "replace",
+      "targetIds": [
+        "P041"
+      ],
+      "reason": "Reopening repeats the interrupted move; fastening the already-closed case finishes the departure. No real luggage or exact password is needed. Domestic-horror revision: replace. Literary connections are thematic; capture and release are authored rules."
+    },
+    {
+      "sourceId": "runtime:p35",
+      "sourceTitle": "Прогноз пустого дома",
+      "type": "possessed",
+      "page": null,
+      "sourceObservation": "Говорите: «Сегодняшней погоде забыли дать имя и конец».",
+      "decision": "replace",
+      "targetIds": [
+        "P045"
+      ],
+      "reason": "Knocking calls further; silent listening through the visible hand withdrawal completes the attention. Domestic-horror revision: retain_core. Literary connections are thematic; capture and release are authored rules."
+    },
+    {
+      "sourceId": "runtime:p36",
+      "sourceTitle": "Рамка без картины",
+      "type": "possessed",
+      "page": null,
+      "sourceObservation": "Повторяйте: «В картине потерялись цвет и название».",
+      "decision": "replace",
+      "targetIds": [
+        "P032"
+      ],
+      "reason": "Transferring the alien trace accepts it; witnessing both hands rejoined interrupts the split. Contact is light, negotiated and requires only one rescuer hand. Domestic-horror revision: replace. Literary connections are thematic; capture and release are authored rules."
+    },
+    {
+      "sourceId": "runtime:p37",
+      "sourceTitle": "Дежурство у окна",
+      "type": "possessed",
+      "page": null,
+      "sourceObservation": "Говорите: «Окно закрыто, но дежурство продолжается». Ничего не трогайте.",
+      "decision": "replace",
+      "targetIds": [
+        "P069"
+      ],
+      "reason": "The enclosing curtain is represented by the actor’s hands only, with no fabric or window operation. Authored adaptation under the later no-props instruction; no commercial text or supernatural fact is implied."
+    },
+    {
+      "sourceId": "runtime:p38",
+      "sourceTitle": "Сломанный указатель",
+      "type": "possessed",
+      "page": null,
+      "sourceObservation": "Повторяйте: «Вверху забыли небо. Внизу забыли землю».",
+      "decision": "replace",
+      "targetIds": [
+        "P011"
+      ],
+      "reason": "Accepting the imposed identity admits replacement; asserting a separate fictional identity ends the mistaken recognition. Unlike P009, remembering a first name is not the task. Domestic-horror revision: replace. Literary connections are thematic; capture and release are authored rules."
+    },
+    {
+      "sourceId": "runtime:p39",
+      "sourceTitle": "Запись без даты",
+      "type": "possessed",
+      "page": null,
+      "sourceObservation": "Говорите: «Запись нельзя закончить без дня и подписи».",
+      "decision": "replace",
+      "targetIds": [
+        "P050"
+      ],
+      "reason": "Forcing fictional access accepts the false return; an observed empty-handed greeting followed by permission completes a recognized arrival. The physical route is always passable. Domestic-horror revision: replace. Literary connections are thematic; capture and release are authored rules."
+    },
+    {
+      "sourceId": "runtime:p40",
+      "sourceTitle": "Два ключа эфира",
+      "type": "possessed",
+      "page": null,
+      "sourceObservation": "Повторяйте: «Первый ключ — спасибо. Второй — разрешение».",
+      "decision": "replace",
+      "targetIds": [
+        "P060"
+      ],
+      "reason": "Taking the sleeve preserves a trailing hold; a brief agreed side-by-side elbow greeting completes companionship without joint travel. Domestic-horror revision: adapt. Literary connections are thematic; capture and release are authored rules."
+    },
+    {
+      "sourceId": "runtime:p41",
+      "sourceTitle": "Три станции",
+      "type": "possessed",
+      "page": null,
+      "sourceObservation": "Негромко повторяйте: «Лес, река, дом. Маршрут пропал».",
+      "decision": "replace",
+      "targetIds": [
+        "P046"
+      ],
+      "reason": "Deliberate following extends the track; a transverse crossing breaks its direction. There is no stone arrangement or need for visible footprints. Domestic-horror revision: replace. Literary connections are thematic; capture and release are authored rules."
+    },
+    {
+      "sourceId": "runtime:p42",
+      "sourceTitle": "Архив обратного эха",
+      "type": "possessed",
+      "page": null,
+      "sourceObservation": "Говорите: «Свет, голос, дом. Эхо забыло обратный путь».",
+      "decision": "replace",
+      "targetIds": [
+        "P074"
+      ],
+      "reason": "Repeating the echo accepts borrowed speech; a clearly heard address without a visible speaking mouth breaks its coupling to the visitor’s lips. This is an authored performance rule, not an actual ghost effect."
+    },
+    {
+      "sourceId": "runtime:p43",
+      "sourceTitle": "Три отметки смотрителя",
+      "type": "possessed",
+      "page": null,
+      "sourceObservation": "Говорите: «Смотрителю нужны имя, сигнал и конец смены».",
+      "decision": "replace",
+      "targetIds": [
+        "P075"
+      ],
+      "reason": "Taking the observer’s place sustains domination; a visible screen across its sightline lets the person straighten. No actual shadow, strain or support of body weight is required. Domestic-horror revision: replace. Literary connections are thematic; capture and release are authored rules."
+    },
+    {
+      "sourceId": "runtime:p44",
+      "sourceTitle": "Календарь возвращения",
+      "type": "possessed",
+      "page": null,
+      "sourceObservation": "Повторяйте: «Вчера потерялось. Сегодня не подписано. Завтра закрыто».",
+      "decision": "replace",
+      "targetIds": [
+        "P070"
+      ],
+      "reason": "Outlining preserves the detached trace; linking one’s own chest and a whole hand at that place returns it to a living owner. Unlike P061 this uses no person-to-person palm contact. Domestic-horror revision: replace. Literary connections are thematic; capture and release are authored rules."
+    },
+    {
+      "sourceId": "runtime:p45",
+      "sourceTitle": "Письмо трёх слов",
+      "type": "possessed",
+      "page": null,
+      "sourceObservation": "Повторяйте: «Дом, покой, утро. Это нужно сохранить».",
+      "decision": "replace",
+      "targetIds": [
+        "P015"
+      ],
+      "reason": "Deliberate interruption strengthens the silencing voice; a visible willing listener lets the witness finish. The completion is a whole episode, not a hidden sentence. Domestic-horror revision: replace. Literary connections are thematic; capture and release are authored rules."
+    },
+    {
+      "sourceId": "runtime:p46",
+      "sourceTitle": "Последний прогноз",
+      "type": "possessed",
+      "page": null,
+      "sourceObservation": "Говорите: «Сначала туман. Затем ветер. Потом не хватает света».",
+      "decision": "replace",
+      "targetIds": [
+        "P053"
+      ],
+      "reason": "Offering one’s place provides a host; an audible ground contact and completed rising gesture let the trapped sound emerge without occupying someone. This is an authored symbolic release. Domestic-horror revision: replace. Literary connections are thematic; capture and release are authored rules."
+    },
+    {
+      "sourceId": "runtime:p47",
+      "sourceTitle": "Книга трёх страниц",
+      "type": "possessed",
+      "page": null,
+      "sourceObservation": "Повторяйте: «Первая — имя, вторая — дом, третья не закрыта».",
+      "decision": "replace",
+      "targetIds": [
+        "P035"
+      ],
+      "reason": "Repeated changes accept the replacement; an unchanged face through two passes provides a stable identity. Unlike P024, movement timing is not the puzzle. Domestic-horror revision: replace. Literary connections are thematic; capture and release are authored rules."
+    },
+    {
+      "sourceId": "runtime:p48",
+      "sourceTitle": "Частота семи",
+      "type": "possessed",
+      "page": null,
+      "sourceObservation": "Негромко называйте «Семь, пять, три» и повторяйте после паузы.",
+      "decision": "replace",
+      "targetIds": [
+        "P013"
+      ],
+      "reason": "Copying voiceless motion joins the loop; supplying its missing audible consequence completes it. No fixed beat sequence or reversed pattern is required. Domestic-horror revision: replace. Literary connections are thematic; capture and release are authored rules."
+    },
+    {
+      "sourceId": "runtime:p49",
+      "sourceTitle": "Три потерянных цвета",
+      "type": "possessed",
+      "page": null,
+      "sourceObservation": "Повторяйте: «Красный, синий, белый. Последний должен стать первым».",
+      "decision": "replace",
+      "targetIds": [
+        "P052"
+      ],
+      "reason": "Tracing the spread accepts it; a complete outward sweep expels it. The direction follows the visible bodily intrusion, not an abstract reversed sequence. Domestic-horror revision: replace. Literary connections are thematic; capture and release are authored rules."
+    },
+    {
+      "sourceId": "runtime:p50",
+      "sourceTitle": "Опись мирных вещей",
+      "type": "possessed",
+      "page": null,
+      "sourceObservation": "Говорите: «В описи нет ни мебели, ни посуды, ни одежды».",
+      "decision": "replace",
+      "targetIds": [
+        "P037"
+      ],
+      "reason": "The performer’s own hand is the acted voice channel. A noncontact covering gesture closes it; no cup is present. Authored adaptation under the later no-props instruction; no commercial text or supernatural fact is implied."
+    },
+    {
+      "sourceId": "runtime:p51",
+      "sourceTitle": "Рассвет по частям",
+      "type": "possessed",
+      "page": null,
+      "sourceObservation": "Повторяйте: «Сначала темно. Потом светлеет. Что приходит после?».",
+      "decision": "replace",
+      "targetIds": [
+        "P038"
+      ],
+      "reason": "Encouraging continued sleep gives the intruder time; eliciting the resident’s own account of the present room wakes them. No special candle or factual quiz is used. Domestic-horror revision: replace. Literary connections are thematic; capture and release are authored rules."
+    },
+    {
+      "sourceId": "runtime:p52",
+      "sourceTitle": "Трёхстрочный пропуск",
+      "type": "possessed",
+      "page": null,
+      "sourceObservation": "Говорите: «Пропуску нужны приветствие, имя и разрешение».",
+      "decision": "replace",
+      "targetIds": [
+        "P027"
+      ],
+      "reason": "Copying the stuck greeting retains it; a full visible greeting supplies the missing opening. Domestic-horror revision: adapt. Literary connections are thematic; capture and release are authored rules."
+    },
+    {
+      "sourceId": "runtime:p53",
+      "sourceTitle": "Память времён года",
+      "type": "possessed",
+      "page": null,
+      "sourceObservation": "Повторяйте: «Лето, осень, зима. Что было до и будет после?».",
+      "decision": "replace",
+      "targetIds": [
+        "P051"
+      ],
+      "reason": "Circling pursues the tree’s claim; simultaneous contact and withdrawal return both hands together. Domestic-horror revision: adapt. Literary connections are thematic; capture and release are authored rules."
+    },
+    {
+      "sourceId": "runtime:p54",
+      "sourceTitle": "Маршрут письма",
+      "type": "possessed",
+      "page": null,
+      "sourceObservation": "Повторяйте: «Отправитель — дом. Получатель — утро. Нужен ответ».",
+      "decision": "replace",
+      "targetIds": [
+        "P040"
+      ],
+      "reason": "Speaking into the actor’s listening channel joins the intrusion; making one’s own outward listening channel restores a separate listener. Domestic-horror revision: adapt. Literary connections are thematic; capture and release are authored rules."
+    },
+    {
+      "sourceId": "runtime:p55",
+      "sourceTitle": "Сигнал через паузу",
+      "type": "possessed",
+      "page": null,
+      "sourceObservation": "Говорите: «Свет, тень, покой. Среднее слово мешает передаче».",
+      "decision": "replace",
+      "targetIds": [
+        "P068"
+      ],
+      "reason": "A real hand casts the shadow instead of a figurine. No independent shadow motion is claimed. Authored adaptation under the later no-props instruction; no commercial text or supernatural fact is implied."
+    },
+    {
+      "sourceId": "runtime:p56",
+      "sourceTitle": "Три спокойных обещания",
+      "type": "possessed",
+      "page": null,
+      "sourceObservation": "Повторяйте: «Меня услышат? Мне помогут? Я вернусь?».",
+      "decision": "replace",
+      "targetIds": [
+        "P063"
+      ],
+      "reason": "Offering hand support pursues the absent hold; independent back-to-back contact occupies the threatened space. Domestic-horror revision: retain_core. Literary connections are thematic; capture and release are authored rules."
+    },
+    {
+      "sourceId": "runtime:p57",
+      "sourceTitle": "Голоса старого приёмника",
+      "type": "possessed",
+      "page": null,
+      "sourceObservation": "Говорите: «Первый голос — утро, второй — вечер, третий — ночь».",
+      "decision": "rework",
+      "targetIds": [
+        "P071"
+      ],
+      "reason": "Addressing only the absent double accepts replacement; a completed farewell followed by greeting the visible person separates them. No reversed gesture list remains. Domestic-horror revision: replace. Literary connections are thematic; capture and release are authored rules."
+    },
+    {
+      "sourceId": "runtime:p58",
+      "sourceTitle": "Дежурный по истории",
+      "type": "possessed",
+      "page": null,
+      "sourceObservation": "Повторяйте: «Начало потеряло середину, середина — конец».",
+      "decision": "replace",
+      "targetIds": [
+        "P073"
+      ],
+      "reason": "Answering as two people feeds the split; two clear gestures give one person’s coherent identity and destination. Domestic-horror revision: retain_core. Literary connections are thematic; capture and release are authored rules."
+    },
+    {
+      "sourceId": "runtime:p59",
+      "sourceTitle": "Объявление для дома",
+      "type": "possessed",
+      "page": null,
+      "sourceObservation": "Говорите: «В объявлении забыли адрес, новость и подпись».",
+      "decision": "replace",
+      "targetIds": [
+        "P030"
+      ],
+      "reason": "The requested spinner is unchanged; the location must already have enough space, without moving or preparing furniture. Authored adaptation under the later no-props instruction; no commercial text or supernatural fact is implied."
+    },
+    {
+      "sourceId": "runtime:p60",
+      "sourceTitle": "Последняя строка эфира",
+      "type": "possessed",
+      "page": null,
+      "sourceObservation": "Негромко повторяйте «Один, два, три. Кто закроет эфир?».",
+      "decision": "rework",
+      "targetIds": [
+        "P075"
+      ],
+      "reason": "Taking the observer’s place sustains domination; a visible screen across its sightline lets the person straighten. No actual shadow, strain or support of body weight is required. Domestic-horror revision: replace. Literary connections are thematic; capture and release are authored rules."
+    },
+    {
+      "sourceId": "runtime:e13",
+      "sourceTitle": "Две детали записи",
+      "type": "exorcist",
+      "page": null,
+      "sourceObservation": "Existing optional mission; title and owning src/server/cards.ts identify the original entry. Its after-search/base-report template is not exported as playable content.",
+      "decision": "replace",
+      "targetIds": [
+        "E039"
+      ],
+      "reason": "Ground attention in five real spatial details, not a collection of objects. Authored adaptation under the later no-props instruction; no commercial text or supernatural fact is implied."
+    },
+    {
+      "sourceId": "runtime:e14",
+      "sourceTitle": "Начало и помощь",
+      "type": "exorcist",
+      "page": null,
+      "sourceObservation": "Existing optional mission; title and owning src/server/cards.ts identify the original entry. Its after-search/base-report template is not exported as playable content.",
+      "decision": "replace",
+      "targetIds": [
+        "E027"
+      ],
+      "reason": "A genuine nonverbal rescue is required, with consent outside fiction. Domestic-horror revision: retain_core."
+    },
+    {
+      "sourceId": "runtime:e15",
+      "sourceTitle": "Два спокойных эпизода",
+      "type": "exorcist",
+      "page": null,
+      "sourceObservation": "Existing optional mission; title and owning src/server/cards.ts identify the original entry. Its after-search/base-report template is not exported as playable content.",
+      "decision": "replace",
+      "targetIds": [
+        "E025"
+      ],
+      "reason": "Actual before/after observation supplies evidence without delaying a freed person. Domestic-horror revision: retain_core."
+    },
+    {
+      "sourceId": "runtime:e16",
+      "sourceTitle": "Слова и ответ",
+      "type": "exorcist",
+      "page": null,
+      "sourceObservation": "Existing optional mission; title and owning src/server/cards.ts identify the original entry. Its after-search/base-report template is not exported as playable content.",
+      "decision": "replace",
+      "targetIds": [
+        "E003"
+      ],
+      "reason": "The completed action identifies who actually answered rather than requiring question-only speech or a real supernatural response. Domestic-horror revision: replace."
+    },
+    {
+      "sourceId": "runtime:e17",
+      "sourceTitle": "Порядок пути",
+      "type": "exorcist",
+      "page": null,
+      "sourceObservation": "Existing optional mission; title and owning src/server/cards.ts identify the original entry. Its after-search/base-report template is not exported as playable content.",
+      "decision": "rework",
+      "targetIds": [
+        "E028"
+      ],
+      "reason": "Recall three existing spatial landmarks rather than objects or prepared markers. Authored adaptation under the later no-props instruction; no commercial text or supernatural fact is implied."
+    },
+    {
+      "sourceId": "runtime:e18",
+      "sourceTitle": "Две благодарности",
+      "type": "exorcist",
+      "page": null,
+      "sourceObservation": "Existing optional mission; title and owning src/server/cards.ts identify the original entry. Its after-search/base-report template is not exported as playable content.",
+      "decision": "replace",
+      "targetIds": [
+        "E035"
+      ],
+      "reason": "A real voluntary response completes navigation; no escort or exact spell is needed. Domestic-horror revision: adapt."
+    },
+    {
+      "sourceId": "runtime:e19",
+      "sourceTitle": "Название и смысл",
+      "type": "exorcist",
+      "page": null,
+      "sourceObservation": "Existing optional mission; title and owning src/server/cards.ts identify the original entry. Its after-search/base-report template is not exported as playable content.",
+      "decision": "replace",
+      "targetIds": [
+        "E022"
+      ],
+      "reason": "An ordinary act and a changed repeat create an episode rather than an unrelated three-sentence exercise. Domestic-horror revision: adapt."
+    },
+    {
+      "sourceId": "runtime:e20",
+      "sourceTitle": "Тихая хроника",
+      "type": "exorcist",
+      "page": null,
+      "sourceObservation": "Existing optional mission; title and owning src/server/cards.ts identify the original entry. Its after-search/base-report template is not exported as playable content.",
+      "decision": "rework",
+      "targetIds": [
+        "E025"
+      ],
+      "reason": "Actual before/after observation supplies evidence without delaying a freed person. Domestic-horror revision: retain_core."
+    },
+    {
+      "sourceId": "runtime:e21",
+      "sourceTitle": "До и после сигнала",
+      "type": "exorcist",
+      "page": null,
+      "sourceObservation": "Existing optional mission; title and owning src/server/cards.ts identify the original entry. Its after-search/base-report template is not exported as playable content.",
+      "decision": "replace",
+      "targetIds": [
+        "E009"
+      ],
+      "reason": "A repeated entrance gesture has a physical trigger and does not block navigation. Domestic-horror revision: retain_core."
+    },
+    {
+      "sourceId": "runtime:e22",
+      "sourceTitle": "Три кадра поиска",
+      "type": "exorcist",
+      "page": null,
+      "sourceObservation": "Existing optional mission; title and owning src/server/cards.ts identify the original entry. Its after-search/base-report template is not exported as playable content.",
+      "decision": "replace",
+      "targetIds": [
+        "E024"
+      ],
+      "reason": "One observed pose is reproduced after withdrawing, rather than performing a whole possessed mission. Domestic-horror revision: retain_core."
+    },
+    {
+      "sourceId": "runtime:e23",
+      "sourceTitle": "Путь рассказчика",
+      "type": "exorcist",
+      "page": null,
+      "sourceObservation": "Existing optional mission; title and owning src/server/cards.ts identify the original entry. Its after-search/base-report template is not exported as playable content.",
+      "decision": "rework",
+      "targetIds": [
+        "E010"
+      ],
+      "reason": "Actual independent visits verify a homecoming path; no party coalition or written map is introduced. Domestic-horror revision: adapt."
+    },
+    {
+      "sourceId": "runtime:e24",
+      "sourceTitle": "Причина и разгадка",
+      "type": "exorcist",
+      "page": null,
+      "sourceObservation": "Existing optional mission; title and owning src/server/cards.ts identify the original entry. Its after-search/base-report template is not exported as playable content.",
+      "decision": "replace",
+      "targetIds": [
+        "E026"
+      ],
+      "reason": "An actual physical rescue, not words alone, must fit the one-hand constraint. The mission can remain incomplete. Domestic-horror revision: retain_core."
+    },
+    {
+      "sourceId": "runtime:e25",
+      "sourceTitle": "Три мирных слова",
+      "type": "exorcist",
+      "page": null,
+      "sourceObservation": "Existing optional mission; title and owning src/server/cards.ts identify the original entry. Its after-search/base-report template is not exported as playable content.",
+      "decision": "replace",
+      "targetIds": [
+        "E005"
+      ],
+      "reason": "A complete protective act replaces rhyme composition. It does not automatically rescue an unrelated possessed group. Domestic-horror revision: replace."
+    },
+    {
+      "sourceId": "runtime:e26",
+      "sourceTitle": "Запись для утра",
+      "type": "exorcist",
+      "page": null,
+      "sourceObservation": "Existing optional mission; title and owning src/server/cards.ts identify the original entry. Its after-search/base-report template is not exported as playable content.",
+      "decision": "rework",
+      "targetIds": [
+        "E022"
+      ],
+      "reason": "An ordinary act and a changed repeat create an episode rather than an unrelated three-sentence exercise. Domestic-horror revision: adapt."
+    },
+    {
+      "sourceId": "runtime:e27",
+      "sourceTitle": "Сравнение сигналов",
+      "type": "exorcist",
+      "page": null,
+      "sourceObservation": "Existing optional mission; title and owning src/server/cards.ts identify the original entry. Its after-search/base-report template is not exported as playable content.",
+      "decision": "rework",
+      "targetIds": [
+        "E032"
+      ],
+      "reason": "Two actually heard sounds are reproduced, not invented as proof of a presence. Domestic-horror revision: retain_core."
+    },
+    {
+      "sourceId": "runtime:e28",
+      "sourceTitle": "Обратная хроника",
+      "type": "exorcist",
+      "page": null,
+      "sourceObservation": "Existing optional mission; title and owning src/server/cards.ts identify the original entry. Its after-search/base-report template is not exported as playable content.",
+      "decision": "replace",
+      "targetIds": [
+        "E034"
+      ],
+      "reason": "A voluntary comparison of one speaker’s ordinary and performed voice replaces reverse word order. Unlike E004 there is no fictional-name exchange or repeated address."
+    },
+    {
+      "sourceId": "runtime:e29",
+      "sourceTitle": "Память о помощи",
+      "type": "exorcist",
+      "page": null,
+      "sourceObservation": "Existing optional mission; title and owning src/server/cards.ts identify the original entry. Its after-search/base-report template is not exported as playable content.",
+      "decision": "replace",
+      "targetIds": [
+        "E023"
+      ],
+      "reason": "Recognition is checked against the source participant’s invented image, not supernatural perception. Domestic-horror revision: adapt."
+    },
+    {
+      "sourceId": "runtime:e30",
+      "sourceTitle": "Последний заголовок",
+      "type": "exorcist",
+      "page": null,
+      "sourceObservation": "Existing optional mission; title and owning src/server/cards.ts identify the original entry. Its after-search/base-report template is not exported as playable content.",
+      "decision": "replace",
+      "targetIds": [
+        "E041"
+      ],
+      "reason": "The invented omen remains explicitly fiction and does not create a new game rule. Domestic-horror revision: retain_core."
+    },
+    {
+      "sourceId": "runtime:no-names",
+      "sourceTitle": "Имена стёрты",
+      "type": "prophecy",
+      "page": null,
+      "sourceObservation": "На базе не произносите имена и прозвища участников.",
+      "decision": "keep_basis",
+      "targetIds": [
+        "R005"
+      ],
+      "reason": "Existing rule, trigger, action and scope preserved verbatim. The domestic fiction connection is thematic; it creates no additional restriction."
+    },
+    {
+      "sourceId": "runtime:formal",
+      "sourceTitle": "Чужие лица",
+      "type": "prophecy",
+      "page": null,
+      "sourceObservation": "На базе обращайтесь к другим участникам на «вы».",
+      "decision": "keep_basis",
+      "targetIds": [
+        "R006"
+      ],
+      "reason": "Existing rule, trigger, action and scope preserved verbatim. The domestic fiction connection is thematic; it creates no additional restriction."
+    },
+    {
+      "sourceId": "runtime:hand",
+      "sourceTitle": "Право голоса",
+      "type": "prophecy",
+      "page": null,
+      "sourceObservation": "Перед каждой репликой на базе поднимайте ладонь. После начала реплики её можно опустить.",
+      "decision": "keep_basis",
+      "targetIds": [
+        "R004"
+      ],
+      "reason": "Existing rule, trigger, action and scope preserved verbatim. The domestic fiction connection is thematic; it creates no additional restriction."
+    },
+    {
+      "sourceId": "runtime:over",
+      "sourceTitle": "Неизвестная частота",
+      "type": "prophecy",
+      "page": null,
+      "sourceObservation": "Каждую реплику на базе завершайте словом «Приём».",
+      "decision": "rework",
+      "targetIds": [
+        "R003"
+      ],
+      "reason": "Existing rule, trigger, action and scope preserved verbatim. The domestic fiction connection is thematic; it creates no additional restriction."
+    },
+    {
+      "sourceId": "runtime:here",
+      "sourceTitle": "Ответ из темноты",
+      "type": "prophecy",
+      "page": null,
+      "sourceObservation": "Отвечая на вопрос на базе, начинайте со слов «Я здесь».",
+      "decision": "keep_basis",
+      "targetIds": [
+        "R007"
+      ],
+      "reason": "Existing rule, trigger, action and scope preserved verbatim. The domestic fiction connection is thematic; it creates no additional restriction."
+    },
+    {
+      "sourceId": "runtime:returned",
+      "sourceTitle": "Порог помнит",
+      "type": "prophecy",
+      "page": null,
+      "sourceObservation": "После возвращения на базу перед обычным разговором скажите «Я вернулся».",
+      "decision": "keep_basis",
+      "targetIds": [
+        "R010"
+      ],
+      "reason": "Existing rule, trigger, action and scope preserved verbatim. The domestic fiction connection is thematic; it creates no additional restriction."
+    },
+    {
+      "sourceId": "runtime:door",
+      "sourceTitle": "Дом отпускает",
+      "type": "prophecy",
+      "page": null,
+      "sourceObservation": "Дверь открыта. Дух больше не держит вас в этом доме.",
+      "decision": "keep_basis",
+      "targetIds": [
+        "R011"
+      ],
+      "reason": "Existing rule, trigger, action and scope preserved verbatim. The domestic fiction connection is thematic; it creates no additional restriction."
+    },
+    {
+      "sourceId": "original:01.01",
+      "sourceTitle": "Детская песенка",
+      "type": "possessed",
+      "page": 10,
+      "sourceObservation": "Visible full behavior and release: a quiet children’s song stops when a medium asks it to stop. No capture trigger is printed in the visible example.",
+      "decision": "rework",
+      "targetIds": [
+        "P001"
+      ],
+      "reason": "Joining the song sustains it; a direct request to stop addresses the singer as a person. Domestic-horror revision: retain_core. Literary connections are thematic; capture and release are authored rules."
+    },
+    {
+      "sourceId": "original:01.17",
+      "sourceTitle": "Передвинутый предмет",
+      "type": "possessed",
+      "page": 16,
+      "sourceObservation": "Visible full example: point to a moved object; a touch without picking up captures; picking up releases.",
+      "decision": "rework",
+      "targetIds": [
+        "P002"
+      ],
+      "reason": "The involuntary returning hand is stopped by a visible noncontact barrier; no cup or cloth is used. Authored adaptation under the later no-props instruction; no commercial text or supernatural fact is implied."
+    },
+    {
+      "sourceId": "original:01.25",
+      "sourceTitle": "Мне холодно",
+      "type": "possessed",
+      "page": 16,
+      "sourceObservation": "Partly obscured card: cold behavior and the silent-touch capture fragment are visible. No unseen release wording is reconstructed.",
+      "decision": "rework",
+      "targetIds": [
+        "P003",
+        "P059"
+      ],
+      "reason": "Wordless partial contact maintains estrangement; both accepted hands with human address restore connection. Domestic-horror revision: retain_core. Literary connections are thematic; capture and release are authored rules. Warmth is acknowledged through a brief agreed shoulder-to-shoulder presence, without cloth or other equipment. Authored adaptation under the later no-props instruction; no commercial text or supernatural fact is implied."
+    },
+    {
+      "sourceId": "original:01.36",
+      "sourceTitle": "Приглашение потанцевать",
+      "type": "possessed",
+      "page": 6,
+      "sourceObservation": "Visible behavior, contact subset marker and refusal release. No capture trigger is printed in the visible example.",
+      "decision": "rework",
+      "targetIds": [
+        "P004"
+      ],
+      "reason": "Accepting and dancing joins it; a clear in-fiction refusal breaks the invitation. Real consent refusal is always outside scoring. Domestic-horror revision: retain_core. Literary connections are thematic; capture and release are authored rules."
+    },
+    {
+      "sourceId": "original:01.39",
+      "sourceTitle": "Приглашение обнять",
+      "type": "possessed",
+      "page": 6,
+      "sourceObservation": "Visible invitation, contact marker and accepting-medium release; the exact unseen material is not inferred.",
+      "decision": "rework",
+      "targetIds": [
+        "P005"
+      ],
+      "reason": "Substituting another social exchange repeats the delay; accepting the embrace invitation completes farewell without compelling contact. Domestic-horror revision: retain_core. Literary connections are thematic; capture and release are authored rules."
+    },
+    {
+      "sourceId": "original:01.46",
+      "sourceTitle": "Мелодия на телефоне",
+      "type": "possessed",
+      "page": 6,
+      "sourceObservation": "Visible harder-subset example: play audio on the phone; asking why releases.",
+      "decision": "rework",
+      "targetIds": [
+        "P007"
+      ],
+      "reason": "Treating it as a louder recording preserves the loop; asking its purpose recognizes an intended listener. Domestic-horror revision: retain_core. Literary connections are thematic; capture and release are authored rules."
+    },
+    {
+      "sourceId": "original:01.56",
+      "sourceTitle": "Не открывайте дверь",
+      "type": "possessed",
+      "page": 6,
+      "sourceObservation": "Visible indoor example: sit near a door; two exorcists passing without trying to open it release.",
+      "decision": "rework",
+      "targetIds": [
+        "P006"
+      ],
+      "reason": "Two independent unintrusive passes acknowledge the boundary without entering the old event. Domestic-horror revision: adapt. Literary connections are thematic; capture and release are authored rules."
+    },
+    {
+      "sourceId": "original:02.01",
+      "sourceTitle": "Опущенная голова",
+      "type": "exorcist",
+      "page": 10,
+      "sourceObservation": "The upside-down card is readable after rotation: keep the head lowered until checking.",
+      "decision": "rework",
+      "targetIds": [
+        "E042"
+      ],
+      "reason": "A bounded farewell and independent departure replace a repeated bowed-head gesture. No joint movement or delayed rescue is required. Domestic-horror revision: replace."
+    },
+    {
+      "sourceId": "original:02.25",
+      "sourceTitle": "Разговаривать с собой",
+      "type": "exorcist",
+      "page": 16,
+      "sourceObservation": "Visible full example: talk to oneself until checking, with the Dwelling deposit symbol.",
+      "decision": "rework",
+      "targetIds": [
+        "E001"
+      ],
+      "reason": "The on-site offering is made at an agreed empty place, without a vessel, marker or physical deposit. Authored adaptation under the later no-props instruction; no commercial text or supernatural fact is implied."
+    },
+    {
+      "sourceId": "original:03.01",
+      "sourceTitle": "Осветить одержимого",
+      "type": "trial",
+      "page": 7,
+      "sourceObservation": "Visible original trial: ask an exorcist to find and illuminate a possessed medium. Branches depend on whether the exorcist returns.",
+      "decision": "rework",
+      "targetIds": [
+        "P064",
+        "T001"
+      ],
+      "reason": "Performing an overhead inspection sustains exposure; a low stable light permits voluntary uncovering. Domestic-horror revision: retain_core. Literary connections are thematic; capture and release are authored rules. Domestic-horror framing preserves the private objective, two prophecy branches and participant evidence. T006 uses a distinct fictional cue, not the real stop signal. T007 uses folded empty household cloth. No sensing or runtime implementation is claimed."
+    },
+    {
+      "sourceId": "original:03.02",
+      "sourceTitle": "Напугать первых двух",
+      "type": "trial",
+      "page": 15,
+      "sourceObservation": "Visible full trial: the Master leaves with light off and tries to frighten the first two mediums; thresholds are at least one and both.",
+      "decision": "rework",
+      "targetIds": [
+        "E030",
+        "T002"
+      ],
+      "reason": "The recipient explicitly confirms fear; silence and a startle are never inferred evidence. Domestic-horror revision: retain_core. Domestic-horror framing preserves the private objective, two prophecy branches and participant evidence. T006 uses a distinct fictional cue, not the real stop signal. T007 uses folded empty household cloth. No sensing or runtime implementation is claimed."
+    },
+    {
+      "sourceId": "original:03.08",
+      "sourceTitle": "Не разговаривать с Мастером",
+      "type": "trial",
+      "page": 10,
+      "sourceObservation": "Rotated example: forbid one exorcist from talking to the accompanying Master. At 0–1 an address leads to a scream and the Master’s return; at 2 no address succeeds. This is not a ban on the word ritual.",
+      "decision": "rework",
+      "targetIds": [
+        "T003"
+      ],
+      "reason": "Domestic-horror framing preserves the private objective, two prophecy branches and participant evidence. T006 uses a distinct fictional cue, not the real stop signal. T007 uses folded empty household cloth. No sensing or runtime implementation is claimed."
+    },
+    {
+      "sourceId": "original:03.11",
+      "sourceTitle": "Принести Обитель",
+      "type": "trial",
+      "page": 13,
+      "sourceObservation": "Visible full trial and explanation: bring and return the Dwelling at 0–1; failure to return or bring it at 2.",
+      "decision": "rework",
+      "targetIds": [
+        "T004"
+      ],
+      "reason": "The user removes the physical Dwelling. The original delivery/return structure is adapted as an on-site call, early return with a remembered fictional name, and a second visit; inverted late scoring and the one-off early-return exception remain. Authored adaptation under the later no-props instruction; no commercial text or supernatural fact is implied."
+    },
+    {
+      "sourceId": "original:04.02",
+      "sourceTitle": "Маленькая девочка",
+      "type": "story",
+      "page": 15,
+      "sourceObservation": "Visible story motif: a little girl appears in photographs and a house is disturbed by children’s voices.",
+      "decision": "rework",
+      "targetIds": [
+        "S001"
+      ],
+      "reason": "Original newly authored domestic prologue, inspired by the cited motifs without reproducing a source plot. It introduces no assignment dependency, physical prop, staged mandatory event or new objective."
+    },
+    {
+      "sourceId": "original:04.04",
+      "sourceTitle": "Проклятый лес",
+      "type": "story",
+      "page": 15,
+      "sourceObservation": "Partly obscured original: outdoor cursed-forest setting is visible; obscured prose is not reconstructed.",
+      "decision": "rework",
+      "targetIds": [
+        "S004"
+      ],
+      "reason": "Original newly authored domestic prologue, inspired by the cited motifs without reproducing a source plot. It introduces no assignment dependency, physical prop, staged mandatory event or new objective."
+    },
+    {
+      "sourceId": "original:05.01",
+      "sourceTitle": "Прикрывать рот",
+      "type": "prophecy",
+      "page": 10,
+      "sourceObservation": "Visible table-only cover-mouth-while-speaking condition.",
+      "decision": "rework",
+      "targetIds": [
+        "R001"
+      ],
+      "reason": "Existing rule, trigger, action and scope preserved verbatim. The domestic fiction connection is thematic; it creates no additional restriction."
+    },
+    {
+      "sourceId": "original:05.02",
+      "sourceTitle": "Прошептать «Уходи»",
+      "type": "prophecy",
+      "page": 11,
+      "sourceObservation": "Visible full table-only response to hearing the word exorcist.",
+      "decision": "rework",
+      "targetIds": [
+        "R002"
+      ],
+      "reason": "Existing rule, trigger, action and scope preserved verbatim. The domestic fiction connection is thematic; it creates no additional restriction."
+    },
+    {
+      "sourceId": "original:05.03",
+      "sourceTitle": "Завершать фразы",
+      "type": "prophecy",
+      "page": 10,
+      "sourceObservation": "Visible table-only condition to finish spoken phrases with the plea for help.",
+      "decision": "rework",
+      "targetIds": [
+        "R003"
+      ],
+      "reason": "Existing rule, trigger, action and scope preserved verbatim. The domestic fiction connection is thematic; it creates no additional restriction."
+    },
+    {
+      "sourceId": "original:05.11",
+      "sourceTitle": "Финальная дверь",
+      "type": "prophecy",
+      "page": 10,
+      "sourceObservation": "Visible final door ending; no new ongoing rule.",
+      "decision": "rework",
+      "targetIds": [
+        "R011"
+      ],
+      "reason": "Existing rule, trigger, action and scope preserved verbatim. The domestic fiction connection is thematic; it creates no additional restriction."
+    },
+    {
+      "sourceId": "user:angel",
+      "sourceTitle": "Двигается без взгляда и замирает под наблюдением",
+      "type": "possessed",
+      "page": null,
+      "sourceObservation": "User request, 2026-11-03: a possessed performer follows an exorcist while unobserved and freezes on being noticed, like the angels in Doctor Who.",
+      "decision": "rework",
+      "targetIds": [
+        "P026"
+      ],
+      "reason": "Deliberately hiding both eyes relinquishes observation; the actor’s actual reflected gaze arrests the intruder. The reflection rule is ours, not a verbatim television rule. Domestic-horror revision: retain_core. Literary connections are thematic; capture and release are authored rules."
+    },
+    {
+      "sourceId": "user:spinner",
+      "sourceTitle": "Вращается с вытянутыми руками и не реагирует",
+      "type": "possessed",
+      "page": null,
+      "sourceObservation": "User request, 2026-11-03: a possessed performer turns around their own axis in the center of a room with arms extended sideways and ignores in-fiction interaction.",
+      "decision": "rework",
+      "targetIds": [
+        "P030"
+      ],
+      "reason": "A completed same-direction orbit joins it; a completed opposite-direction orbit interrupts it. The user explicitly requested this retained movement exception. Domestic-horror revision: retain_core. Literary connections are thematic; capture and release are authored rules."
+    },
+    {
+      "sourceId": "user:paper-free",
+      "sourceTitle": "Без бумаги, распечаток и бумажных жетонов",
+      "type": "collection",
+      "page": null,
+      "sourceObservation": "User instruction, 2026-11-03: no paper is present in the physical game; review paper tokens and related card dependencies after adding the two behaviors.",
+      "decision": "rework",
+      "targetIds": [
+        "E001",
+        "E014",
+        "E015",
+        "E016",
+        "E017",
+        "E018",
+        "E020",
+        "E023",
+        "E028",
+        "E031",
+        "E033",
+        "E038",
+        "M001",
+        "M002",
+        "P002",
+        "P032",
+        "P034",
+        "P035",
+        "P036",
+        "P037",
+        "P038",
+        "P039",
+        "P040",
+        "P041",
+        "P042",
+        "P043",
+        "P044",
+        "P068",
+        "P070",
+        "P075",
+        "T004",
+        "T007"
+      ],
+      "reason": "Self-directed speech and a real vocal offering give the mission a sender and destination. Domestic-horror revision: retain_core. A real silent visit ends in the specified rim touch; no paper deposit is required. Domestic-horror revision: retain_core. A remembered name is spoken at the actual dwelling, not submitted remotely instead of a visit. Domestic-horror revision: retain_core. The on-site offering has a personal sender and a physical completion. Domestic-horror revision: adapt. The empty-hand journey and final turn form an on-site offering; no mission token or extra reward exists. Domestic-horror revision: adapt. Exterior contact, a step away and an address form one episode without handling nonexistent cards. Domestic-horror revision: retain_core. Actual receptacle and support observations replace counts of nonexistent physical cards. Domestic-horror revision: adapt. Recognition is checked against the source participant’s invented image, not supernatural perception. Domestic-horror revision: adapt. The mental reconstruction has real referents; it is distinct from E040 route scouting and demands no written map. Domestic-horror revision: adapt. The task completes a source/echo/present episode, not an abstract transported finger ring. No exact words or reversed order are tested. Domestic-horror revision: replace. This ends a self-authored habitual act; the cloth rolling exercise is removed. It is not a route or object-fold task. Domestic-horror revision: replace. A completed carried return differs from E017’s empty-hand offering and E013’s two ownership declarations. Domestic-horror revision: adapt. Target-rule reference updated for shared object staging, free story mixing and existing paper-free household props. No runtime controls are asserted. Target-rule reference updated for shared object staging, free story mixing and existing paper-free household props. No runtime controls are asserted. Claiming the item transfers the attachment; moving its whole resting place releases the repeated return. The actor visibly moves it; no autonomous motion is claimed. Domestic-horror revision: replace. Literary connections are thematic; capture and release are authored rules. Transferring the alien trace accepts it; witnessing both hands rejoined interrupts the split. Contact is light, negotiated and requires only one rescuer hand. Domestic-horror revision: replace. Literary connections are thematic; capture and release are authored rules. Pocketing appropriates the debt; leaving the offered coin and removing both hands finishes payment. Domestic-horror revision: adapt. Literary connections are thematic; capture and release are authored rules. Repeated changes accept the replacement; an unchanged face through two passes provides a stable identity. Unlike P024, movement timing is not the puzzle. Domestic-horror revision: replace. Literary connections are thematic; capture and release are authored rules. Opening breaks the scene’s boundary; answering its closed lid and listening completes the exchange. Domestic-horror revision: retain_core. Literary connections are thematic; capture and release are authored rules. Answering lends the channel a second voice; capping and setting it down closes it. Only the performer produces the sound. Domestic-horror revision: replace. Literary connections are thematic; capture and release are authored rules. Encouraging continued sleep gives the intruder time; eliciting the resident’s own account of the present room wakes them. No special candle or factual quiz is used. Domestic-horror revision: replace. Literary connections are thematic; capture and release are authored rules. Inspecting one’s own face accepts the channel; turning its reflective surface down closes it. Domestic-horror revision: retain_core. Literary connections are thematic; capture and release are authored rules. Speaking into the actor’s listening channel joins the intrusion; making one’s own outward listening channel restores a separate listener. Domestic-horror revision: adapt. Literary connections are thematic; capture and release are authored rules. Reopening repeats the interrupted move; fastening the already-closed case finishes the departure. No real luggage or exact password is needed. Domestic-horror revision: replace. Literary connections are thematic; capture and release are authored rules. Peeking and concealing restores the secret; completely uncovering and separating the cloth ends it. Domestic-horror revision: retain_core. Literary connections are thematic; capture and release are authored rules. Claiming the missing resident’s role from the wrong side joins the false return; an actual relocated voice completes the expected arrival. Domestic-horror revision: replace. Literary connections are thematic; capture and release are authored rules. Eviction repeats displacement; recognizing the resident as the one who grants permission restores ownership. Unlike P011, the rescuer rejects no identity imposed on them. Domestic-horror revision: replace. Literary connections are thematic; capture and release are authored rules. Turning the object preserves the light relation; moving the real light changes the trace while leaving its owner still. No impossible independent shadow is claimed. Domestic-horror revision: adapt. Literary connections are thematic; capture and release are authored rules. Outlining preserves the detached trace; linking one’s own chest and a whole hand at that place returns it to a living owner. Unlike P061 this uses no person-to-person palm contact. Domestic-horror revision: replace. Literary connections are thematic; capture and release are authored rules. Taking the observer’s place sustains domination; a visible screen across its sightline lets the person straighten. No actual shadow, strain or support of body weight is required. Domestic-horror revision: replace. Literary connections are thematic; capture and release are authored rules. Domestic-horror framing preserves the private objective, two prophecy branches and participant evidence. T006 uses a distinct fictional cue, not the real stop signal. T007 uses folded empty household cloth. No sensing or runtime implementation is claimed. Domestic-horror framing preserves the private objective, two prophecy branches and participant evidence. T006 uses a distinct fictional cue, not the real stop signal. T007 uses folded empty household cloth. No sensing or runtime implementation is claimed."
+    },
+    {
+      "sourceId": "user:domestic-horror",
+      "sourceTitle": "Переработка на основе домашнего хоррора",
+      "type": "editorial_revision",
+      "page": null,
+      "sourceObservation": "User approved revision of both authored collections: human-written domestic horror, common household props, free story mixing, 147 primary cards and 38 one-for-one variants.",
+      "decision": "rework",
+      "targetIds": [
+        "P001",
+        "P002",
+        "P003",
+        "P004",
+        "P005",
+        "P006",
+        "P007",
+        "P008",
+        "P009",
+        "P010",
+        "P011",
+        "P012",
+        "P013",
+        "P014",
+        "P015",
+        "P016",
+        "P017",
+        "P018",
+        "P019",
+        "P020",
+        "P021",
+        "P022",
+        "P023",
+        "P024",
+        "P025",
+        "P026",
+        "P027",
+        "P028",
+        "P029",
+        "P030",
+        "P031",
+        "P032",
+        "P033",
+        "P034",
+        "P035",
+        "P036",
+        "P037",
+        "P038",
+        "P039",
+        "P040",
+        "P041",
+        "P042",
+        "P043",
+        "P044",
+        "P045",
+        "P046",
+        "P047",
+        "P048",
+        "P049",
+        "P050",
+        "P051",
+        "P052",
+        "P053",
+        "P054",
+        "P055",
+        "P056",
+        "P057",
+        "P058",
+        "P059",
+        "P060",
+        "P061",
+        "P062",
+        "P063",
+        "P064",
+        "P065",
+        "P066",
+        "P067",
+        "P068",
+        "P069",
+        "P070",
+        "P071",
+        "P072",
+        "P073",
+        "P074",
+        "P075",
+        "E001",
+        "E002",
+        "E003",
+        "E004",
+        "E005",
+        "E006",
+        "E007",
+        "E008",
+        "E009",
+        "E010",
+        "E011",
+        "E012",
+        "E013",
+        "E014",
+        "E015",
+        "E016",
+        "E017",
+        "E018",
+        "E019",
+        "E020",
+        "E021",
+        "E022",
+        "E023",
+        "E024",
+        "E025",
+        "E026",
+        "E027",
+        "E028",
+        "E029",
+        "E030",
+        "E031",
+        "E032",
+        "E033",
+        "E034",
+        "E035",
+        "E036",
+        "E037",
+        "E038",
+        "E039",
+        "E040",
+        "E041",
+        "E042",
+        "T001",
+        "T002",
+        "T003",
+        "T004",
+        "T005",
+        "T006",
+        "T007",
+        "T008",
+        "T009",
+        "T010",
+        "T011",
+        "R001",
+        "R002",
+        "R003",
+        "R004",
+        "R005",
+        "R006",
+        "R007",
+        "R008",
+        "R009",
+        "R010",
+        "R011",
+        "S001",
+        "S002",
+        "S003",
+        "S004",
+        "S005",
+        "S006",
+        "M001",
+        "M002"
+      ],
+      "reason": "Explicit user instruction authorizes the new domestic-horror content revision; it does not authorize runtime integration."
+    },
+    {
+      "sourceId": "user:no-exorcist-loadout",
+      "sourceTitle": "Экзорцисты без дополнительного снаряжения",
+      "type": "editorial_revision",
+      "page": null,
+      "sourceObservation": "User requires removing special items that exorcists must deliberately carry with them.",
+      "decision": "rework",
+      "targetIds": [
+        "E013",
+        "E019",
+        "E038",
+        "P023",
+        "P026",
+        "P059",
+        "T007",
+        "M001"
+      ],
+      "reason": "Replace carried-object missions and explicitly stage required scene props in their locations. Preserve a phone as the only required carried equipment."
+    },
+    {
+      "sourceId": "user:no-task-props",
+      "sourceTitle": "Задания без подготовленных предметов",
+      "type": "editorial_revision",
+      "page": null,
+      "sourceObservation": "User rejects pre-positioned objects as well as carried equipment and prefers no task props at all.",
+      "decision": "rework",
+      "targetIds": [
+        "E001",
+        "E011",
+        "E013",
+        "E014",
+        "E015",
+        "E016",
+        "E017",
+        "E018",
+        "E019",
+        "E020",
+        "E028",
+        "E039",
+        "M001",
+        "M002",
+        "P002",
+        "P014",
+        "P017",
+        "P023",
+        "P025",
+        "P028",
+        "P030",
+        "P031",
+        "P033",
+        "P034",
+        "P036",
+        "P037",
+        "P039",
+        "P042",
+        "P047",
+        "P048",
+        "P059",
+        "P068",
+        "P069",
+        "T004",
+        "T007",
+        "P067",
+        "E037"
+      ],
+      "reason": "Later user instruction supersedes earlier equipment-dependent authoring. No runtime integration is included."
+    },
+    {
+      "sourceId": "user:house-mirror",
+      "sourceTitle": "Ангел видит себя в обычном зеркале дома",
+      "type": "editorial_revision",
+      "page": null,
+      "sourceObservation": "User explicitly retains the angel’s release by simply seeing itself in an existing house mirror.",
+      "decision": "rework",
+      "targetIds": [
+        "P026"
+      ],
+      "reason": "Later user instruction supersedes earlier equipment-dependent authoring. No runtime integration is included."
+    }
+  ],
+  "sourceTextPolicy": "Source observations describe historical supplied material. References there to paper are not active equipment requirements; current card bodies and requirements are authoritative."
+}

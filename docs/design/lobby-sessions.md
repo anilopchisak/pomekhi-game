@@ -1,5 +1,7 @@
 # Lobby membership and recovery
 
+> The executable uses the [first-game design](first-game.md). Below, older round, dealing, scoring and schema behavior applies to compatibility fixtures; shared foundation behavior still applies.
+
 Status: implemented locally saved room with private-card reading and timed rounds. See [round design](rounds.md) for clock, pause and late-join behavior.
 
 ## Ownership and contract

@@ -1,0 +1,28 @@
+const candleD=CD.components;
+const scenes=[
+{id:'A01',title:'Результат подтверждён',body:'Четыре успеха сохранены. Показываем шаги ритуала.',candles:[13,2,3],remaining:46,step:0,next:'A02'},
+{id:'A02',title:'Первый шаг',body:'Свеча переходит с А на Б.',candles:[12,3,3],remaining:45,step:1,next:'A03'},
+{id:'A03',title:'Второй шаг',body:'Каждый успех двигает одну свечу на одну позицию.',candles:[11,4,3],remaining:44,step:2,next:'A04'},
+{id:'A04',title:'Третий шаг',body:'Подтверждённый результат не начисляется повторно.',candles:[10,5,3],remaining:43,step:3,next:'A05'},
+{id:'A05',title:'Четыре шага сделаны',body:'Осталось 42 шага. Закрытые прорицания ещё не раскрыты.',candles:[9,6,3],remaining:42,step:4},
+{id:'A06',title:'Последняя свеча',body:'Один шаг до выхода из ритуала.',candles:[0,0,1],remaining:1,final:true,next:'A07'},
+{id:'A07',title:'Свеча вышла из ритуала',body:'Пламя гаснет. Результат партии сохранён.',candles:[0,0,0],remaining:0,final:true,out:true},
+{id:'A08',title:'Позиция А свободна',body:'После ухода последней свечи открывается прорицание.',candles:[0,15,3],remaining:33,reveal:false,next:'A09'},
+{id:'A09',title:'Прорицание открыто',body:'Его условие действует у стола. Остальные карты закрыты.',candles:[0,15,3],remaining:33,reveal:true},
+{id:'A10',title:'Один шаг назад',body:'Подтверждённый штраф: свеча возвращается с Б на А.',candles:[10,5,3],remaining:43,step:3,penalty:true},
+{id:'A11',title:'Просмотр на паузе',body:'Декоративное движение остановлено. Результат уже сохранён.',candles:[9,6,3],remaining:42,step:4,paused:true},
+{id:'A12',title:'Уменьшенное движение',body:'Сразу показываем итог. Перемещения и перевороты отключены.',candles:[9,6,3],remaining:42,step:4,reduced:true},
+{id:'B01',title:'Три успеха сохранены',body:'Отклонённая запись исключена из результата.',candles:[13,2,3],remaining:46,step:0,next:'B02'},
+{id:'B02',title:'Первый шаг',body:'Одна свеча переходит с А на Б.',candles:[12,3,3],remaining:45,step:1,next:'B03'},
+{id:'B03',title:'Второй шаг',body:'Два из трёх подтверждённых успехов.',candles:[11,4,3],remaining:44,step:2,next:'B04'},
+{id:'B04',title:'Три шага сделаны',body:'Осталось 43 шага до завершения ритуала.',candles:[10,5,3],remaining:43,step:3}
+];
+for(let index=0;index<scenes.length;index++){const s=scenes[index];s.kind='motion';s.phase='РИТУАЛ · РЕЗУЛЬТАТ СОХРАНЁН';s.primary=s.paused?'Продолжить просмотр':s.next?'Пауза анимации':'Следующая раздача';s.secondary=s.reduced?'К партии':'Пропустить анимацию';const f=await host(s,index+40);f.x=80+(index%3)*1580;f.y=33000+Math.floor(index/3)*1000;const center=f.findOne(n=>n.name==='Current phase');const w=center.width-64;const board=box('Ritual positions',w,196,null,'HORIZONTAL',0,12);center.insertChild(3,board);const sw=(w-24)/3;for(let j=0;j<3;j++){const col=add(board,box('Prophecy '+j,sw,196,'raised','VERTICAL',12,8));border(col,j===0&&s.reveal?'action':'border');await text(col,['А · Первое прорицание','Б · Второе прорицание','В · Последняя дверь'][j],'Small','muted',sw-24);await text(col,String(s.candles[j]),'Title','candle',sw-24);if(s.reveal&&j===0){await text(col,'ОТКРЫТО','Code','action',sw-24);await text(col,'Шаблон: проверенный текст прорицания','Small','muted',sw-24);}else{await text(col,'Закрыто','Small','muted',sw-24);}}
+ const stageSlot=(stage,slot)=>({x:stage*(sw+12)+14+(slot%7)*23,y:105+Math.floor(slot/7)*38});const positions=[];
+ if(s.final){for(let i=0;i<18;i++)positions.push(i===17&&!s.out?{stage:2,slot:0,visible:true}:{stage:2,slot:0,visible:false});}
+ else if(s.id==='A08'||s.id==='A09'){for(let i=0;i<18;i++)positions.push(i<15?{stage:1,slot:i,visible:true}:{stage:2,slot:i-15,visible:true});}
+ else {for(let i=0;i<18;i++){if(i<13)positions.push(i<(s.step??0)?{stage:1,slot:2+i,visible:true}:{stage:0,slot:i-(s.step??0),visible:true});else if(i<15)positions.push({stage:1,slot:i-13,visible:true});else positions.push({stage:2,slot:i-15,visible:true});}}
+ for(let i=0;i<18;i++){const c=await getcmp(candleD.Still);const n=c.createInstance();add(board,n);n.rescale(.34);n.name='Candle '+String(i+1).padStart(2,'0');n.layoutPositioning='ABSOLUTE';const pos=stageSlot(positions[i].stage,positions[i].slot);n.x=pos.x;n.y=pos.y;n.opacity=positions[i].visible?1:0;if(s.out&&i===17)n.y=40;created.push(n.id);}
+}
+for(const s of scenes){const f=await figma.getNodeByIdAsync(nodes[s.id]);if(s.next)await link(f,nodes[s.next],'NAVIGATE',s.id==='A08'?.5:.45,{type:'AFTER_TIMEOUT',timeout:.18},true);}
+return {createdNodeIds:created,nodes,actions,scenes:scenes.map(s=>({id:s.id,next:s.next,counts:s.candles,remaining:s.remaining}))};

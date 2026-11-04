@@ -228,6 +228,30 @@
         "deck usage, capacity and fallback",
         "bulk import/export and atomic schema migration"
       ]
+    },
+    {
+      "id": "first-game",
+      "path": "docs/design/first-game.md",
+      "sources": [
+        "src/server/game.ts",
+        "src/server/search.ts",
+        "src/server/round-sync.ts",
+        "src/server/dealing.ts",
+        "src/server/ritual.ts",
+        "src/server/first-game-content.ts",
+        "src/server/session-format.ts",
+        "src/server/session-store.ts",
+        "src/shared/protocol.ts"
+      ],
+      "prefixes": [
+        "src/client/pages/host/",
+        "src/client/pages/player/",
+        "src/client/shared/ui/"
+      ],
+      "reviewWhen": [
+        "first-game lifecycle, retained possession and physical confirmation",
+        "candle accounting, private projections or schema six recovery"
+      ]
     }
   ]
 }

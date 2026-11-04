@@ -1,5 +1,7 @@
 # Card catalog and room deck cycles
 
+> The executable uses the [first-game design](first-game.md). Below, older round, dealing, scoring and schema behavior applies to compatibility fixtures; shared foundation behavior still applies.
+
 Status: implemented. Catalog editing is organizer-only; issued cards and scored outcomes are immutable copies.
 
 ## Owners and lifetime

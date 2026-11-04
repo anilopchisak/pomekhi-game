@@ -1,0 +1,12 @@
+{
+  "destination": "https://pixso.net/app/design/PvAwgT1U6s5Oj8tX7ShmIA",
+  "sourceAudit": "../oderzhimye-ux/mechanics-audit-2026-11-03/AUDIT.md",
+  "sourceSha256": "4f7429a3d94e04e06812180be650d1d5663125388c6c8f80dcdd2c29de2f2dc7",
+  "startedAt": "2026-11-03T18:26:37.197633+00:00",
+  "priority": [
+    "F01 phase-preserving cards",
+    "F02 repeated-round and resume recall",
+    "F03 ritual and terminal state continuity"
+  ],
+  "scope": "Editable Pixso design, prototypes, and specification only; no application runtime changes. Preserve legacy Figma files and comments."
+}

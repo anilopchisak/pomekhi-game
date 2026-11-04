@@ -15,3 +15,54 @@
 @media (prefers-reduced-motion: no-preference) { .frame[data-effects=true] .banner { animation: tune .65s ease-out; } }
 @keyframes tune { from { opacity: .4; transform: translateX(2px); } to { opacity: 1; transform: none; } }
 @media (prefers-reduced-motion: reduce) { .frame[data-effects=true]::after { background: none; } }
+
+.ritualRoom { display: grid; grid-template-columns: minmax(0, 1fr); gap: 1rem; align-items: start; }
+.mainScene { min-width: 0; }
+.ritualRoom .mainScene [role=timer] { font-size: clamp(2.5rem, 6vw, 4rem); color: #d8c6f8; }
+.saveNote { margin: .4rem 0; color: #c4b8d0; font-size: .9rem; }
+.prologue { white-space: pre-line; max-width: 62ch; }
+@media (min-width: 64rem) {
+  .ritualRoom { grid-template-columns: minmax(12rem, .85fr) minmax(0, 2fr) minmax(15rem, 1fr); }
+}
+
+.frame[data-first-game=true] > main { padding: clamp(1rem, 2vw, 1.5rem); }
+.frame[data-first-game=true]::after { background: repeating-linear-gradient(transparent 0 3px, #0001 3px 4px); }
+.frame[data-first-game=true] > main > header { gap: .5rem 1rem; align-items: center; min-height: 3.5rem; }
+.frame[data-first-game=true] header h1 { font-size: clamp(1.15rem, 2vw, 1.4rem); }
+.frame[data-first-game=true] header code { font-size: 1rem; }
+.frame[data-first-game=true] header button { margin: 0; }
+.roomIdentity, .tools { display: flex; align-items: center; flex-wrap: wrap; gap: .5rem; font-size: .875rem; }
+.tools { margin-inline-start: auto; }
+.tools output { padding: .55rem .85rem; border: 1px solid #857395; border-radius: .55rem; font-size: 1.45rem; color: #f2eafa; font-variant-numeric: tabular-nums; }
+.frame[data-first-game=true] .tools button, .frame[data-first-game=true] .roomIdentity button { background: #211b2c; color: #f1ebf8; }
+.ritualRoom > section, .ritualRoom .mainScene > section { margin: 0; }
+.ritualRoom .mainScene { display: flex; flex-direction: column; min-height: 0; padding: clamp(1rem, 2vw, 2rem); border: 1px solid #756486; border-radius: .7rem; background: #191522; }
+.ritualRoom .mainScene > section:first-child { border: 0; padding: 0; background: transparent; }
+.ritualRoom .mainScene > section:first-child h3 { margin: .35rem 0; font-size: clamp(1.7rem, 3.3vw, 3rem); }
+.ritualRoom .mainScene p { margin: .5rem 0; }
+.ritualRoom .mainScene > section:first-child > p:first-child { color: #c3aee6; font-size: .82rem; }
+.phaseMark { display: grid; place-items: center; position: relative; width: clamp(4rem, 14vh, 8rem); aspect-ratio: 1; margin: clamp(.5rem, 3vh, 1.5rem) auto; color: #d8b875; font-size: 2rem; border: 1px solid #8e79a0; border-radius: 50%; }
+.roster { display: flex; flex-direction: column; min-height: 0; }
+.roster h3 { margin: 0 0 .65rem; }
+.roster ol { list-style: none; padding: 0; margin: 0; overflow: auto; overscroll-behavior: contain; }
+.roster ol:focus-visible, .sceneWork:focus-visible { outline: 2px solid #cdb4ed; outline-offset: 2px; }
+.roster ol li { display: grid; grid-template-columns: 1.6rem minmax(0, 1fr) minmax(0, .65fr); gap: .3rem; padding: .34rem 0; border-color: #3c3149; }
+.roster li > :first-child { min-width: 0; }
+.roster small { display: block; line-height: 1.2; }
+.roster strong { display: block; font-size: .9rem; line-height: 1.25; }
+.seat { color: #c3aee6; font: .8rem ui-monospace, monospace; }
+.playerState { text-align: end; color: #c3aee6; }
+.sceneWork { min-height: 0; overflow: auto; overscroll-behavior: contain; }
+.sceneWork > section { margin: .6rem 0; padding: .8rem; }
+.primary { margin-top: auto; }
+.primary [aria-label="Управление раундом"] { display: flex; flex-wrap: wrap; gap: .45rem; padding-top: .65rem; }
+.primary [aria-label="Управление раундом"] > button { flex: 1 1 auto; margin: 0; }
+.primary [aria-label="Управление раундом"] > p { width: 100%; }
+@media (min-width: 64rem) {
+  .ritualRoom { grid-template-columns: minmax(13rem, 1.05fr) minmax(0, 2.1fr) minmax(14.5rem, .86fr); height: calc(100dvh - 8.5rem); min-height: 30rem; align-items: stretch; }
+  .ritualRoom > section:last-child { min-height: 0; overflow: auto; }
+  .ritualRoom .prologue { max-height: 13dvh; overflow: auto; }
+}
+
+.phaseMark::before { content: ''; position: absolute; bottom: 24%; width: 18%; height: 38%; border-radius: .2rem; background: linear-gradient(90deg, #96753c, #e1c589 58%, #be9c58); }
+.phaseMark::after { content: ''; position: absolute; bottom: 63%; width: 13%; height: 17%; border-radius: 65% 35% 60% 40%; transform: rotate(18deg); background: #f4d79b; box-shadow: 0 0 1rem #d8a54e; }

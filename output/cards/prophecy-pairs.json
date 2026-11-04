@@ -1,0 +1,2492 @@
+{
+  "format": "pomekhi.prophecy-pair-review",
+  "version": 1,
+  "pairCount": 45,
+  "scenarioCount": 225,
+  "limit": "All 45 ordinary pairs have explicit witnesses in five scenarios. This checks the authored trigger model, not every possible utterance, accessibility need or physical table arrangement. The model must be reviewed with future wording changes.",
+  "pairs": [
+    {
+      "left": "R001",
+      "right": "R002",
+      "status": "compatible_in_bounded_editorial_model",
+      "notes": [
+        "The whispered response addresses a spirit. It may take the other rule’s prefix or suffix; it never repeats the trigger word."
+      ],
+      "witnesses": [
+        {
+          "event": "ordinary",
+          "utterance": "Вы можете начинать.",
+          "before": [],
+          "during": [
+            "cover_mouth_with_one_hand"
+          ],
+          "after": [],
+          "volume": "ordinary"
+        },
+        {
+          "event": "answer",
+          "utterance": "Да, всё готово.",
+          "before": [],
+          "during": [
+            "cover_mouth_with_one_hand"
+          ],
+          "after": [],
+          "volume": "ordinary"
+        },
+        {
+          "event": "heard_exorcist",
+          "utterance": "Уходи.",
+          "before": [],
+          "during": [
+            "cover_mouth_with_one_hand"
+          ],
+          "after": [],
+          "volume": "whisper"
+        },
+        {
+          "event": "arrival",
+          "utterance": "Я вернулся.",
+          "before": [],
+          "during": [
+            "cover_mouth_with_one_hand"
+          ],
+          "after": [],
+          "volume": "ordinary"
+        },
+        {
+          "event": "candles",
+          "utterance": "",
+          "before": [],
+          "during": [],
+          "after": [],
+          "volume": "ordinary"
+        }
+      ]
+    },
+    {
+      "left": "R001",
+      "right": "R003",
+      "status": "compatible_in_bounded_editorial_model",
+      "notes": [
+        "Both obligations can be satisfied: positional/gesture conditions and speech clauses use independent channels or nonconflicting phrase positions."
+      ],
+      "witnesses": [
+        {
+          "event": "ordinary",
+          "utterance": "Вы можете начинать. Помоги нам.",
+          "before": [],
+          "during": [
+            "cover_mouth_with_one_hand"
+          ],
+          "after": [],
+          "volume": "ordinary"
+        },
+        {
+          "event": "answer",
+          "utterance": "Да, всё готово. Помоги нам.",
+          "before": [],
+          "during": [
+            "cover_mouth_with_one_hand"
+          ],
+          "after": [],
+          "volume": "ordinary"
+        },
+        {
+          "event": "heard_exorcist",
+          "utterance": "Уходи. Помоги нам.",
+          "before": [],
+          "during": [
+            "cover_mouth_with_one_hand"
+          ],
+          "after": [],
+          "volume": "ordinary"
+        },
+        {
+          "event": "arrival",
+          "utterance": "Я вернулся. Помоги нам.",
+          "before": [],
+          "during": [
+            "cover_mouth_with_one_hand"
+          ],
+          "after": [],
+          "volume": "ordinary"
+        },
+        {
+          "event": "candles",
+          "utterance": "",
+          "before": [],
+          "during": [],
+          "after": [],
+          "volume": "ordinary"
+        }
+      ]
+    },
+    {
+      "left": "R001",
+      "right": "R004",
+      "status": "compatible_in_bounded_editorial_model",
+      "notes": [
+        "Raise the same hand first, then use it to cover the mouth; no third hand is needed."
+      ],
+      "witnesses": [
+        {
+          "event": "ordinary",
+          "utterance": "Вы можете начинать.",
+          "before": [
+            "raise_then_lower_hand"
+          ],
+          "during": [
+            "cover_mouth_with_one_hand"
+          ],
+          "after": [],
+          "volume": "ordinary"
+        },
+        {
+          "event": "answer",
+          "utterance": "Да, всё готово.",
+          "before": [
+            "raise_then_lower_hand"
+          ],
+          "during": [
+            "cover_mouth_with_one_hand"
+          ],
+          "after": [],
+          "volume": "ordinary"
+        },
+        {
+          "event": "heard_exorcist",
+          "utterance": "Уходи.",
+          "before": [
+            "raise_then_lower_hand"
+          ],
+          "during": [
+            "cover_mouth_with_one_hand"
+          ],
+          "after": [],
+          "volume": "ordinary"
+        },
+        {
+          "event": "arrival",
+          "utterance": "Я вернулся.",
+          "before": [
+            "raise_then_lower_hand"
+          ],
+          "during": [
+            "cover_mouth_with_one_hand"
+          ],
+          "after": [],
+          "volume": "ordinary"
+        },
+        {
+          "event": "candles",
+          "utterance": "",
+          "before": [],
+          "during": [],
+          "after": [],
+          "volume": "ordinary"
+        }
+      ]
+    },
+    {
+      "left": "R001",
+      "right": "R005",
+      "status": "compatible_in_bounded_editorial_model",
+      "notes": [
+        "Both obligations can be satisfied: positional/gesture conditions and speech clauses use independent channels or nonconflicting phrase positions."
+      ],
+      "witnesses": [
+        {
+          "event": "ordinary",
+          "utterance": "Вы можете начинать.",
+          "before": [],
+          "during": [
+            "cover_mouth_with_one_hand"
+          ],
+          "after": [],
+          "volume": "ordinary"
+        },
+        {
+          "event": "answer",
+          "utterance": "Да, всё готово.",
+          "before": [],
+          "during": [
+            "cover_mouth_with_one_hand"
+          ],
+          "after": [],
+          "volume": "ordinary"
+        },
+        {
+          "event": "heard_exorcist",
+          "utterance": "Уходи.",
+          "before": [],
+          "during": [
+            "cover_mouth_with_one_hand"
+          ],
+          "after": [],
+          "volume": "ordinary"
+        },
+        {
+          "event": "arrival",
+          "utterance": "Я вернулся.",
+          "before": [],
+          "during": [
+            "cover_mouth_with_one_hand"
+          ],
+          "after": [],
+          "volume": "ordinary"
+        },
+        {
+          "event": "candles",
+          "utterance": "",
+          "before": [],
+          "during": [],
+          "after": [],
+          "volume": "ordinary"
+        }
+      ]
+    },
+    {
+      "left": "R001",
+      "right": "R006",
+      "status": "compatible_in_bounded_editorial_model",
+      "notes": [
+        "Both obligations can be satisfied: positional/gesture conditions and speech clauses use independent channels or nonconflicting phrase positions."
+      ],
+      "witnesses": [
+        {
+          "event": "ordinary",
+          "utterance": "Вы можете начинать.",
+          "before": [],
+          "during": [
+            "cover_mouth_with_one_hand"
+          ],
+          "after": [],
+          "volume": "ordinary"
+        },
+        {
+          "event": "answer",
+          "utterance": "Да, всё готово.",
+          "before": [],
+          "during": [
+            "cover_mouth_with_one_hand"
+          ],
+          "after": [],
+          "volume": "ordinary"
+        },
+        {
+          "event": "heard_exorcist",
+          "utterance": "Уходи.",
+          "before": [],
+          "during": [
+            "cover_mouth_with_one_hand"
+          ],
+          "after": [],
+          "volume": "ordinary"
+        },
+        {
+          "event": "arrival",
+          "utterance": "Я вернулся.",
+          "before": [],
+          "during": [
+            "cover_mouth_with_one_hand"
+          ],
+          "after": [],
+          "volume": "ordinary"
+        },
+        {
+          "event": "candles",
+          "utterance": "",
+          "before": [],
+          "during": [],
+          "after": [],
+          "volume": "ordinary"
+        }
+      ]
+    },
+    {
+      "left": "R001",
+      "right": "R007",
+      "status": "compatible_in_bounded_editorial_model",
+      "notes": [
+        "Both obligations can be satisfied: positional/gesture conditions and speech clauses use independent channels or nonconflicting phrase positions."
+      ],
+      "witnesses": [
+        {
+          "event": "ordinary",
+          "utterance": "Вы можете начинать.",
+          "before": [],
+          "during": [
+            "cover_mouth_with_one_hand"
+          ],
+          "after": [],
+          "volume": "ordinary"
+        },
+        {
+          "event": "answer",
+          "utterance": "Я здесь. Да, всё готово.",
+          "before": [],
+          "during": [
+            "cover_mouth_with_one_hand"
+          ],
+          "after": [],
+          "volume": "ordinary"
+        },
+        {
+          "event": "heard_exorcist",
+          "utterance": "Я здесь. Уходи.",
+          "before": [],
+          "during": [
+            "cover_mouth_with_one_hand"
+          ],
+          "after": [],
+          "volume": "ordinary"
+        },
+        {
+          "event": "arrival",
+          "utterance": "Я вернулся.",
+          "before": [],
+          "during": [
+            "cover_mouth_with_one_hand"
+          ],
+          "after": [],
+          "volume": "ordinary"
+        },
+        {
+          "event": "candles",
+          "utterance": "",
+          "before": [],
+          "during": [],
+          "after": [],
+          "volume": "ordinary"
+        }
+      ]
+    },
+    {
+      "left": "R001",
+      "right": "R008",
+      "status": "compatible_in_bounded_editorial_model",
+      "notes": [
+        "Both obligations can be satisfied: positional/gesture conditions and speech clauses use independent channels or nonconflicting phrase positions."
+      ],
+      "witnesses": [
+        {
+          "event": "ordinary",
+          "utterance": "Вы можете начинать.",
+          "before": [],
+          "during": [
+            "cover_mouth_with_one_hand",
+            "look_at_ritual_board"
+          ],
+          "after": [],
+          "volume": "ordinary"
+        },
+        {
+          "event": "answer",
+          "utterance": "Да, всё готово.",
+          "before": [],
+          "during": [
+            "cover_mouth_with_one_hand",
+            "look_at_ritual_board"
+          ],
+          "after": [],
+          "volume": "ordinary"
+        },
+        {
+          "event": "heard_exorcist",
+          "utterance": "Уходи.",
+          "before": [],
+          "during": [
+            "cover_mouth_with_one_hand",
+            "look_at_ritual_board"
+          ],
+          "after": [],
+          "volume": "ordinary"
+        },
+        {
+          "event": "arrival",
+          "utterance": "Я вернулся.",
+          "before": [],
+          "during": [
+            "cover_mouth_with_one_hand",
+            "look_at_ritual_board"
+          ],
+          "after": [],
+          "volume": "ordinary"
+        },
+        {
+          "event": "candles",
+          "utterance": "",
+          "before": [],
+          "during": [],
+          "after": [],
+          "volume": "ordinary"
+        }
+      ]
+    },
+    {
+      "left": "R001",
+      "right": "R009",
+      "status": "compatible_in_bounded_editorial_model",
+      "notes": [
+        "The chest gesture follows the candle batch; speech gestures occur at a different trigger."
+      ],
+      "witnesses": [
+        {
+          "event": "ordinary",
+          "utterance": "Вы можете начинать.",
+          "before": [],
+          "during": [
+            "cover_mouth_with_one_hand"
+          ],
+          "after": [],
+          "volume": "ordinary"
+        },
+        {
+          "event": "answer",
+          "utterance": "Да, всё готово.",
+          "before": [],
+          "during": [
+            "cover_mouth_with_one_hand"
+          ],
+          "after": [],
+          "volume": "ordinary"
+        },
+        {
+          "event": "heard_exorcist",
+          "utterance": "Уходи.",
+          "before": [],
+          "during": [
+            "cover_mouth_with_one_hand"
+          ],
+          "after": [],
+          "volume": "ordinary"
+        },
+        {
+          "event": "arrival",
+          "utterance": "Я вернулся.",
+          "before": [],
+          "during": [
+            "cover_mouth_with_one_hand"
+          ],
+          "after": [],
+          "volume": "ordinary"
+        },
+        {
+          "event": "candles",
+          "utterance": "",
+          "before": [],
+          "during": [],
+          "after": [
+            "touch_own_chest_once"
+          ],
+          "volume": "ordinary"
+        }
+      ]
+    },
+    {
+      "left": "R001",
+      "right": "R010",
+      "status": "compatible_in_bounded_editorial_model",
+      "notes": [
+        "The arrival declaration is made before ordinary conversation and obeys the other speech condition."
+      ],
+      "witnesses": [
+        {
+          "event": "ordinary",
+          "utterance": "Вы можете начинать.",
+          "before": [],
+          "during": [
+            "cover_mouth_with_one_hand"
+          ],
+          "after": [],
+          "volume": "ordinary"
+        },
+        {
+          "event": "answer",
+          "utterance": "Да, всё готово.",
+          "before": [],
+          "during": [
+            "cover_mouth_with_one_hand"
+          ],
+          "after": [],
+          "volume": "ordinary"
+        },
+        {
+          "event": "heard_exorcist",
+          "utterance": "Уходи.",
+          "before": [],
+          "during": [
+            "cover_mouth_with_one_hand"
+          ],
+          "after": [],
+          "volume": "ordinary"
+        },
+        {
+          "event": "arrival",
+          "utterance": "Я вернулся.",
+          "before": [],
+          "during": [
+            "cover_mouth_with_one_hand"
+          ],
+          "after": [],
+          "volume": "ordinary"
+        },
+        {
+          "event": "candles",
+          "utterance": "",
+          "before": [],
+          "during": [],
+          "after": [],
+          "volume": "ordinary"
+        }
+      ]
+    },
+    {
+      "left": "R002",
+      "right": "R003",
+      "status": "compatible_in_bounded_editorial_model",
+      "notes": [
+        "The whispered response addresses a spirit. It may take the other rule’s prefix or suffix; it never repeats the trigger word."
+      ],
+      "witnesses": [
+        {
+          "event": "ordinary",
+          "utterance": "Вы можете начинать. Помоги нам.",
+          "before": [],
+          "during": [],
+          "after": [],
+          "volume": "ordinary"
+        },
+        {
+          "event": "answer",
+          "utterance": "Да, всё готово. Помоги нам.",
+          "before": [],
+          "during": [],
+          "after": [],
+          "volume": "ordinary"
+        },
+        {
+          "event": "heard_exorcist",
+          "utterance": "Уходи. Помоги нам.",
+          "before": [],
+          "during": [],
+          "after": [],
+          "volume": "whisper"
+        },
+        {
+          "event": "arrival",
+          "utterance": "Я вернулся. Помоги нам.",
+          "before": [],
+          "during": [],
+          "after": [],
+          "volume": "ordinary"
+        },
+        {
+          "event": "candles",
+          "utterance": "",
+          "before": [],
+          "during": [],
+          "after": [],
+          "volume": "ordinary"
+        }
+      ]
+    },
+    {
+      "left": "R002",
+      "right": "R004",
+      "status": "compatible_in_bounded_editorial_model",
+      "notes": [
+        "The whispered response addresses a spirit. It may take the other rule’s prefix or suffix; it never repeats the trigger word."
+      ],
+      "witnesses": [
+        {
+          "event": "ordinary",
+          "utterance": "Вы можете начинать.",
+          "before": [
+            "raise_then_lower_hand"
+          ],
+          "during": [],
+          "after": [],
+          "volume": "ordinary"
+        },
+        {
+          "event": "answer",
+          "utterance": "Да, всё готово.",
+          "before": [
+            "raise_then_lower_hand"
+          ],
+          "during": [],
+          "after": [],
+          "volume": "ordinary"
+        },
+        {
+          "event": "heard_exorcist",
+          "utterance": "Уходи.",
+          "before": [
+            "raise_then_lower_hand"
+          ],
+          "during": [],
+          "after": [],
+          "volume": "whisper"
+        },
+        {
+          "event": "arrival",
+          "utterance": "Я вернулся.",
+          "before": [
+            "raise_then_lower_hand"
+          ],
+          "during": [],
+          "after": [],
+          "volume": "ordinary"
+        },
+        {
+          "event": "candles",
+          "utterance": "",
+          "before": [],
+          "during": [],
+          "after": [],
+          "volume": "ordinary"
+        }
+      ]
+    },
+    {
+      "left": "R002",
+      "right": "R005",
+      "status": "compatible_in_bounded_editorial_model",
+      "notes": [
+        "The whispered response addresses a spirit. It may take the other rule’s prefix or suffix; it never repeats the trigger word."
+      ],
+      "witnesses": [
+        {
+          "event": "ordinary",
+          "utterance": "Вы можете начинать.",
+          "before": [],
+          "during": [],
+          "after": [],
+          "volume": "ordinary"
+        },
+        {
+          "event": "answer",
+          "utterance": "Да, всё готово.",
+          "before": [],
+          "during": [],
+          "after": [],
+          "volume": "ordinary"
+        },
+        {
+          "event": "heard_exorcist",
+          "utterance": "Уходи.",
+          "before": [],
+          "during": [],
+          "after": [],
+          "volume": "whisper"
+        },
+        {
+          "event": "arrival",
+          "utterance": "Я вернулся.",
+          "before": [],
+          "during": [],
+          "after": [],
+          "volume": "ordinary"
+        },
+        {
+          "event": "candles",
+          "utterance": "",
+          "before": [],
+          "during": [],
+          "after": [],
+          "volume": "ordinary"
+        }
+      ]
+    },
+    {
+      "left": "R002",
+      "right": "R006",
+      "status": "compatible_in_bounded_editorial_model",
+      "notes": [
+        "The whispered response addresses a spirit. It may take the other rule’s prefix or suffix; it never repeats the trigger word."
+      ],
+      "witnesses": [
+        {
+          "event": "ordinary",
+          "utterance": "Вы можете начинать.",
+          "before": [],
+          "during": [],
+          "after": [],
+          "volume": "ordinary"
+        },
+        {
+          "event": "answer",
+          "utterance": "Да, всё готово.",
+          "before": [],
+          "during": [],
+          "after": [],
+          "volume": "ordinary"
+        },
+        {
+          "event": "heard_exorcist",
+          "utterance": "Уходи.",
+          "before": [],
+          "during": [],
+          "after": [],
+          "volume": "whisper"
+        },
+        {
+          "event": "arrival",
+          "utterance": "Я вернулся.",
+          "before": [],
+          "during": [],
+          "after": [],
+          "volume": "ordinary"
+        },
+        {
+          "event": "candles",
+          "utterance": "",
+          "before": [],
+          "during": [],
+          "after": [],
+          "volume": "ordinary"
+        }
+      ]
+    },
+    {
+      "left": "R002",
+      "right": "R007",
+      "status": "compatible_in_bounded_editorial_model",
+      "notes": [
+        "The whispered response addresses a spirit. It may take the other rule’s prefix or suffix; it never repeats the trigger word."
+      ],
+      "witnesses": [
+        {
+          "event": "ordinary",
+          "utterance": "Вы можете начинать.",
+          "before": [],
+          "during": [],
+          "after": [],
+          "volume": "ordinary"
+        },
+        {
+          "event": "answer",
+          "utterance": "Я здесь. Да, всё готово.",
+          "before": [],
+          "during": [],
+          "after": [],
+          "volume": "ordinary"
+        },
+        {
+          "event": "heard_exorcist",
+          "utterance": "Я здесь. Уходи.",
+          "before": [],
+          "during": [],
+          "after": [],
+          "volume": "whisper"
+        },
+        {
+          "event": "arrival",
+          "utterance": "Я вернулся.",
+          "before": [],
+          "during": [],
+          "after": [],
+          "volume": "ordinary"
+        },
+        {
+          "event": "candles",
+          "utterance": "",
+          "before": [],
+          "during": [],
+          "after": [],
+          "volume": "ordinary"
+        }
+      ]
+    },
+    {
+      "left": "R002",
+      "right": "R008",
+      "status": "compatible_in_bounded_editorial_model",
+      "notes": [
+        "The whispered response addresses a spirit. It may take the other rule’s prefix or suffix; it never repeats the trigger word."
+      ],
+      "witnesses": [
+        {
+          "event": "ordinary",
+          "utterance": "Вы можете начинать.",
+          "before": [],
+          "during": [
+            "look_at_ritual_board"
+          ],
+          "after": [],
+          "volume": "ordinary"
+        },
+        {
+          "event": "answer",
+          "utterance": "Да, всё готово.",
+          "before": [],
+          "during": [
+            "look_at_ritual_board"
+          ],
+          "after": [],
+          "volume": "ordinary"
+        },
+        {
+          "event": "heard_exorcist",
+          "utterance": "Уходи.",
+          "before": [],
+          "during": [
+            "look_at_ritual_board"
+          ],
+          "after": [],
+          "volume": "whisper"
+        },
+        {
+          "event": "arrival",
+          "utterance": "Я вернулся.",
+          "before": [],
+          "during": [
+            "look_at_ritual_board"
+          ],
+          "after": [],
+          "volume": "ordinary"
+        },
+        {
+          "event": "candles",
+          "utterance": "",
+          "before": [],
+          "during": [],
+          "after": [],
+          "volume": "ordinary"
+        }
+      ]
+    },
+    {
+      "left": "R002",
+      "right": "R009",
+      "status": "compatible_in_bounded_editorial_model",
+      "notes": [
+        "The whispered response addresses a spirit. It may take the other rule’s prefix or suffix; it never repeats the trigger word.",
+        "The chest gesture follows the candle batch; speech gestures occur at a different trigger."
+      ],
+      "witnesses": [
+        {
+          "event": "ordinary",
+          "utterance": "Вы можете начинать.",
+          "before": [],
+          "during": [],
+          "after": [],
+          "volume": "ordinary"
+        },
+        {
+          "event": "answer",
+          "utterance": "Да, всё готово.",
+          "before": [],
+          "during": [],
+          "after": [],
+          "volume": "ordinary"
+        },
+        {
+          "event": "heard_exorcist",
+          "utterance": "Уходи.",
+          "before": [],
+          "during": [],
+          "after": [],
+          "volume": "whisper"
+        },
+        {
+          "event": "arrival",
+          "utterance": "Я вернулся.",
+          "before": [],
+          "during": [],
+          "after": [],
+          "volume": "ordinary"
+        },
+        {
+          "event": "candles",
+          "utterance": "",
+          "before": [],
+          "during": [],
+          "after": [
+            "touch_own_chest_once"
+          ],
+          "volume": "ordinary"
+        }
+      ]
+    },
+    {
+      "left": "R002",
+      "right": "R010",
+      "status": "compatible_in_bounded_editorial_model",
+      "notes": [
+        "The whispered response addresses a spirit. It may take the other rule’s prefix or suffix; it never repeats the trigger word.",
+        "The arrival declaration is made before ordinary conversation and obeys the other speech condition."
+      ],
+      "witnesses": [
+        {
+          "event": "ordinary",
+          "utterance": "Вы можете начинать.",
+          "before": [],
+          "during": [],
+          "after": [],
+          "volume": "ordinary"
+        },
+        {
+          "event": "answer",
+          "utterance": "Да, всё готово.",
+          "before": [],
+          "during": [],
+          "after": [],
+          "volume": "ordinary"
+        },
+        {
+          "event": "heard_exorcist",
+          "utterance": "Уходи.",
+          "before": [],
+          "during": [],
+          "after": [],
+          "volume": "whisper"
+        },
+        {
+          "event": "arrival",
+          "utterance": "Я вернулся.",
+          "before": [],
+          "during": [],
+          "after": [],
+          "volume": "ordinary"
+        },
+        {
+          "event": "candles",
+          "utterance": "",
+          "before": [],
+          "during": [],
+          "after": [],
+          "volume": "ordinary"
+        }
+      ]
+    },
+    {
+      "left": "R003",
+      "right": "R004",
+      "status": "compatible_in_bounded_editorial_model",
+      "notes": [
+        "Both obligations can be satisfied: positional/gesture conditions and speech clauses use independent channels or nonconflicting phrase positions."
+      ],
+      "witnesses": [
+        {
+          "event": "ordinary",
+          "utterance": "Вы можете начинать. Помоги нам.",
+          "before": [
+            "raise_then_lower_hand"
+          ],
+          "during": [],
+          "after": [],
+          "volume": "ordinary"
+        },
+        {
+          "event": "answer",
+          "utterance": "Да, всё готово. Помоги нам.",
+          "before": [
+            "raise_then_lower_hand"
+          ],
+          "during": [],
+          "after": [],
+          "volume": "ordinary"
+        },
+        {
+          "event": "heard_exorcist",
+          "utterance": "Уходи. Помоги нам.",
+          "before": [
+            "raise_then_lower_hand"
+          ],
+          "during": [],
+          "after": [],
+          "volume": "ordinary"
+        },
+        {
+          "event": "arrival",
+          "utterance": "Я вернулся. Помоги нам.",
+          "before": [
+            "raise_then_lower_hand"
+          ],
+          "during": [],
+          "after": [],
+          "volume": "ordinary"
+        },
+        {
+          "event": "candles",
+          "utterance": "",
+          "before": [],
+          "during": [],
+          "after": [],
+          "volume": "ordinary"
+        }
+      ]
+    },
+    {
+      "left": "R003",
+      "right": "R005",
+      "status": "compatible_in_bounded_editorial_model",
+      "notes": [
+        "Both obligations can be satisfied: positional/gesture conditions and speech clauses use independent channels or nonconflicting phrase positions."
+      ],
+      "witnesses": [
+        {
+          "event": "ordinary",
+          "utterance": "Вы можете начинать. Помоги нам.",
+          "before": [],
+          "during": [],
+          "after": [],
+          "volume": "ordinary"
+        },
+        {
+          "event": "answer",
+          "utterance": "Да, всё готово. Помоги нам.",
+          "before": [],
+          "during": [],
+          "after": [],
+          "volume": "ordinary"
+        },
+        {
+          "event": "heard_exorcist",
+          "utterance": "Уходи. Помоги нам.",
+          "before": [],
+          "during": [],
+          "after": [],
+          "volume": "ordinary"
+        },
+        {
+          "event": "arrival",
+          "utterance": "Я вернулся. Помоги нам.",
+          "before": [],
+          "during": [],
+          "after": [],
+          "volume": "ordinary"
+        },
+        {
+          "event": "candles",
+          "utterance": "",
+          "before": [],
+          "during": [],
+          "after": [],
+          "volume": "ordinary"
+        }
+      ]
+    },
+    {
+      "left": "R003",
+      "right": "R006",
+      "status": "compatible_in_bounded_editorial_model",
+      "notes": [
+        "The singular closing appeal addresses a spirit, while formal address applies only to mediums."
+      ],
+      "witnesses": [
+        {
+          "event": "ordinary",
+          "utterance": "Вы можете начинать. Помоги нам.",
+          "before": [],
+          "during": [],
+          "after": [],
+          "volume": "ordinary"
+        },
+        {
+          "event": "answer",
+          "utterance": "Да, всё готово. Помоги нам.",
+          "before": [],
+          "during": [],
+          "after": [],
+          "volume": "ordinary"
+        },
+        {
+          "event": "heard_exorcist",
+          "utterance": "Уходи. Помоги нам.",
+          "before": [],
+          "during": [],
+          "after": [],
+          "volume": "ordinary"
+        },
+        {
+          "event": "arrival",
+          "utterance": "Я вернулся. Помоги нам.",
+          "before": [],
+          "during": [],
+          "after": [],
+          "volume": "ordinary"
+        },
+        {
+          "event": "candles",
+          "utterance": "",
+          "before": [],
+          "during": [],
+          "after": [],
+          "volume": "ordinary"
+        }
+      ]
+    },
+    {
+      "left": "R003",
+      "right": "R007",
+      "status": "compatible_in_bounded_editorial_model",
+      "notes": [
+        "Both obligations can be satisfied: positional/gesture conditions and speech clauses use independent channels or nonconflicting phrase positions."
+      ],
+      "witnesses": [
+        {
+          "event": "ordinary",
+          "utterance": "Вы можете начинать. Помоги нам.",
+          "before": [],
+          "during": [],
+          "after": [],
+          "volume": "ordinary"
+        },
+        {
+          "event": "answer",
+          "utterance": "Я здесь. Да, всё готово. Помоги нам.",
+          "before": [],
+          "during": [],
+          "after": [],
+          "volume": "ordinary"
+        },
+        {
+          "event": "heard_exorcist",
+          "utterance": "Я здесь. Уходи. Помоги нам.",
+          "before": [],
+          "during": [],
+          "after": [],
+          "volume": "ordinary"
+        },
+        {
+          "event": "arrival",
+          "utterance": "Я вернулся. Помоги нам.",
+          "before": [],
+          "during": [],
+          "after": [],
+          "volume": "ordinary"
+        },
+        {
+          "event": "candles",
+          "utterance": "",
+          "before": [],
+          "during": [],
+          "after": [],
+          "volume": "ordinary"
+        }
+      ]
+    },
+    {
+      "left": "R003",
+      "right": "R008",
+      "status": "compatible_in_bounded_editorial_model",
+      "notes": [
+        "Both obligations can be satisfied: positional/gesture conditions and speech clauses use independent channels or nonconflicting phrase positions."
+      ],
+      "witnesses": [
+        {
+          "event": "ordinary",
+          "utterance": "Вы можете начинать. Помоги нам.",
+          "before": [],
+          "during": [
+            "look_at_ritual_board"
+          ],
+          "after": [],
+          "volume": "ordinary"
+        },
+        {
+          "event": "answer",
+          "utterance": "Да, всё готово. Помоги нам.",
+          "before": [],
+          "during": [
+            "look_at_ritual_board"
+          ],
+          "after": [],
+          "volume": "ordinary"
+        },
+        {
+          "event": "heard_exorcist",
+          "utterance": "Уходи. Помоги нам.",
+          "before": [],
+          "during": [
+            "look_at_ritual_board"
+          ],
+          "after": [],
+          "volume": "ordinary"
+        },
+        {
+          "event": "arrival",
+          "utterance": "Я вернулся. Помоги нам.",
+          "before": [],
+          "during": [
+            "look_at_ritual_board"
+          ],
+          "after": [],
+          "volume": "ordinary"
+        },
+        {
+          "event": "candles",
+          "utterance": "",
+          "before": [],
+          "during": [],
+          "after": [],
+          "volume": "ordinary"
+        }
+      ]
+    },
+    {
+      "left": "R003",
+      "right": "R009",
+      "status": "compatible_in_bounded_editorial_model",
+      "notes": [
+        "The chest gesture follows the candle batch; speech gestures occur at a different trigger."
+      ],
+      "witnesses": [
+        {
+          "event": "ordinary",
+          "utterance": "Вы можете начинать. Помоги нам.",
+          "before": [],
+          "during": [],
+          "after": [],
+          "volume": "ordinary"
+        },
+        {
+          "event": "answer",
+          "utterance": "Да, всё готово. Помоги нам.",
+          "before": [],
+          "during": [],
+          "after": [],
+          "volume": "ordinary"
+        },
+        {
+          "event": "heard_exorcist",
+          "utterance": "Уходи. Помоги нам.",
+          "before": [],
+          "during": [],
+          "after": [],
+          "volume": "ordinary"
+        },
+        {
+          "event": "arrival",
+          "utterance": "Я вернулся. Помоги нам.",
+          "before": [],
+          "during": [],
+          "after": [],
+          "volume": "ordinary"
+        },
+        {
+          "event": "candles",
+          "utterance": "",
+          "before": [],
+          "during": [],
+          "after": [
+            "touch_own_chest_once"
+          ],
+          "volume": "ordinary"
+        }
+      ]
+    },
+    {
+      "left": "R003",
+      "right": "R010",
+      "status": "compatible_in_bounded_editorial_model",
+      "notes": [
+        "The arrival declaration is made before ordinary conversation and obeys the other speech condition."
+      ],
+      "witnesses": [
+        {
+          "event": "ordinary",
+          "utterance": "Вы можете начинать. Помоги нам.",
+          "before": [],
+          "during": [],
+          "after": [],
+          "volume": "ordinary"
+        },
+        {
+          "event": "answer",
+          "utterance": "Да, всё готово. Помоги нам.",
+          "before": [],
+          "during": [],
+          "after": [],
+          "volume": "ordinary"
+        },
+        {
+          "event": "heard_exorcist",
+          "utterance": "Уходи. Помоги нам.",
+          "before": [],
+          "during": [],
+          "after": [],
+          "volume": "ordinary"
+        },
+        {
+          "event": "arrival",
+          "utterance": "Я вернулся. Помоги нам.",
+          "before": [],
+          "during": [],
+          "after": [],
+          "volume": "ordinary"
+        },
+        {
+          "event": "candles",
+          "utterance": "",
+          "before": [],
+          "during": [],
+          "after": [],
+          "volume": "ordinary"
+        }
+      ]
+    },
+    {
+      "left": "R004",
+      "right": "R005",
+      "status": "compatible_in_bounded_editorial_model",
+      "notes": [
+        "Both obligations can be satisfied: positional/gesture conditions and speech clauses use independent channels or nonconflicting phrase positions."
+      ],
+      "witnesses": [
+        {
+          "event": "ordinary",
+          "utterance": "Вы можете начинать.",
+          "before": [
+            "raise_then_lower_hand"
+          ],
+          "during": [],
+          "after": [],
+          "volume": "ordinary"
+        },
+        {
+          "event": "answer",
+          "utterance": "Да, всё готово.",
+          "before": [
+            "raise_then_lower_hand"
+          ],
+          "during": [],
+          "after": [],
+          "volume": "ordinary"
+        },
+        {
+          "event": "heard_exorcist",
+          "utterance": "Уходи.",
+          "before": [
+            "raise_then_lower_hand"
+          ],
+          "during": [],
+          "after": [],
+          "volume": "ordinary"
+        },
+        {
+          "event": "arrival",
+          "utterance": "Я вернулся.",
+          "before": [
+            "raise_then_lower_hand"
+          ],
+          "during": [],
+          "after": [],
+          "volume": "ordinary"
+        },
+        {
+          "event": "candles",
+          "utterance": "",
+          "before": [],
+          "during": [],
+          "after": [],
+          "volume": "ordinary"
+        }
+      ]
+    },
+    {
+      "left": "R004",
+      "right": "R006",
+      "status": "compatible_in_bounded_editorial_model",
+      "notes": [
+        "Both obligations can be satisfied: positional/gesture conditions and speech clauses use independent channels or nonconflicting phrase positions."
+      ],
+      "witnesses": [
+        {
+          "event": "ordinary",
+          "utterance": "Вы можете начинать.",
+          "before": [
+            "raise_then_lower_hand"
+          ],
+          "during": [],
+          "after": [],
+          "volume": "ordinary"
+        },
+        {
+          "event": "answer",
+          "utterance": "Да, всё готово.",
+          "before": [
+            "raise_then_lower_hand"
+          ],
+          "during": [],
+          "after": [],
+          "volume": "ordinary"
+        },
+        {
+          "event": "heard_exorcist",
+          "utterance": "Уходи.",
+          "before": [
+            "raise_then_lower_hand"
+          ],
+          "during": [],
+          "after": [],
+          "volume": "ordinary"
+        },
+        {
+          "event": "arrival",
+          "utterance": "Я вернулся.",
+          "before": [
+            "raise_then_lower_hand"
+          ],
+          "during": [],
+          "after": [],
+          "volume": "ordinary"
+        },
+        {
+          "event": "candles",
+          "utterance": "",
+          "before": [],
+          "during": [],
+          "after": [],
+          "volume": "ordinary"
+        }
+      ]
+    },
+    {
+      "left": "R004",
+      "right": "R007",
+      "status": "compatible_in_bounded_editorial_model",
+      "notes": [
+        "Both obligations can be satisfied: positional/gesture conditions and speech clauses use independent channels or nonconflicting phrase positions."
+      ],
+      "witnesses": [
+        {
+          "event": "ordinary",
+          "utterance": "Вы можете начинать.",
+          "before": [
+            "raise_then_lower_hand"
+          ],
+          "during": [],
+          "after": [],
+          "volume": "ordinary"
+        },
+        {
+          "event": "answer",
+          "utterance": "Я здесь. Да, всё готово.",
+          "before": [
+            "raise_then_lower_hand"
+          ],
+          "during": [],
+          "after": [],
+          "volume": "ordinary"
+        },
+        {
+          "event": "heard_exorcist",
+          "utterance": "Я здесь. Уходи.",
+          "before": [
+            "raise_then_lower_hand"
+          ],
+          "during": [],
+          "after": [],
+          "volume": "ordinary"
+        },
+        {
+          "event": "arrival",
+          "utterance": "Я вернулся.",
+          "before": [
+            "raise_then_lower_hand"
+          ],
+          "during": [],
+          "after": [],
+          "volume": "ordinary"
+        },
+        {
+          "event": "candles",
+          "utterance": "",
+          "before": [],
+          "during": [],
+          "after": [],
+          "volume": "ordinary"
+        }
+      ]
+    },
+    {
+      "left": "R004",
+      "right": "R008",
+      "status": "compatible_in_bounded_editorial_model",
+      "notes": [
+        "Both obligations can be satisfied: positional/gesture conditions and speech clauses use independent channels or nonconflicting phrase positions."
+      ],
+      "witnesses": [
+        {
+          "event": "ordinary",
+          "utterance": "Вы можете начинать.",
+          "before": [
+            "raise_then_lower_hand"
+          ],
+          "during": [
+            "look_at_ritual_board"
+          ],
+          "after": [],
+          "volume": "ordinary"
+        },
+        {
+          "event": "answer",
+          "utterance": "Да, всё готово.",
+          "before": [
+            "raise_then_lower_hand"
+          ],
+          "during": [
+            "look_at_ritual_board"
+          ],
+          "after": [],
+          "volume": "ordinary"
+        },
+        {
+          "event": "heard_exorcist",
+          "utterance": "Уходи.",
+          "before": [
+            "raise_then_lower_hand"
+          ],
+          "during": [
+            "look_at_ritual_board"
+          ],
+          "after": [],
+          "volume": "ordinary"
+        },
+        {
+          "event": "arrival",
+          "utterance": "Я вернулся.",
+          "before": [
+            "raise_then_lower_hand"
+          ],
+          "during": [
+            "look_at_ritual_board"
+          ],
+          "after": [],
+          "volume": "ordinary"
+        },
+        {
+          "event": "candles",
+          "utterance": "",
+          "before": [],
+          "during": [],
+          "after": [],
+          "volume": "ordinary"
+        }
+      ]
+    },
+    {
+      "left": "R004",
+      "right": "R009",
+      "status": "compatible_in_bounded_editorial_model",
+      "notes": [
+        "The chest gesture follows the candle batch; speech gestures occur at a different trigger."
+      ],
+      "witnesses": [
+        {
+          "event": "ordinary",
+          "utterance": "Вы можете начинать.",
+          "before": [
+            "raise_then_lower_hand"
+          ],
+          "during": [],
+          "after": [],
+          "volume": "ordinary"
+        },
+        {
+          "event": "answer",
+          "utterance": "Да, всё готово.",
+          "before": [
+            "raise_then_lower_hand"
+          ],
+          "during": [],
+          "after": [],
+          "volume": "ordinary"
+        },
+        {
+          "event": "heard_exorcist",
+          "utterance": "Уходи.",
+          "before": [
+            "raise_then_lower_hand"
+          ],
+          "during": [],
+          "after": [],
+          "volume": "ordinary"
+        },
+        {
+          "event": "arrival",
+          "utterance": "Я вернулся.",
+          "before": [
+            "raise_then_lower_hand"
+          ],
+          "during": [],
+          "after": [],
+          "volume": "ordinary"
+        },
+        {
+          "event": "candles",
+          "utterance": "",
+          "before": [],
+          "during": [],
+          "after": [
+            "touch_own_chest_once"
+          ],
+          "volume": "ordinary"
+        }
+      ]
+    },
+    {
+      "left": "R004",
+      "right": "R010",
+      "status": "compatible_in_bounded_editorial_model",
+      "notes": [
+        "The arrival declaration is made before ordinary conversation and obeys the other speech condition."
+      ],
+      "witnesses": [
+        {
+          "event": "ordinary",
+          "utterance": "Вы можете начинать.",
+          "before": [
+            "raise_then_lower_hand"
+          ],
+          "during": [],
+          "after": [],
+          "volume": "ordinary"
+        },
+        {
+          "event": "answer",
+          "utterance": "Да, всё готово.",
+          "before": [
+            "raise_then_lower_hand"
+          ],
+          "during": [],
+          "after": [],
+          "volume": "ordinary"
+        },
+        {
+          "event": "heard_exorcist",
+          "utterance": "Уходи.",
+          "before": [
+            "raise_then_lower_hand"
+          ],
+          "during": [],
+          "after": [],
+          "volume": "ordinary"
+        },
+        {
+          "event": "arrival",
+          "utterance": "Я вернулся.",
+          "before": [
+            "raise_then_lower_hand"
+          ],
+          "during": [],
+          "after": [],
+          "volume": "ordinary"
+        },
+        {
+          "event": "candles",
+          "utterance": "",
+          "before": [],
+          "during": [],
+          "after": [],
+          "volume": "ordinary"
+        }
+      ]
+    },
+    {
+      "left": "R005",
+      "right": "R006",
+      "status": "compatible_in_bounded_editorial_model",
+      "notes": [
+        "Both obligations can be satisfied: positional/gesture conditions and speech clauses use independent channels or nonconflicting phrase positions."
+      ],
+      "witnesses": [
+        {
+          "event": "ordinary",
+          "utterance": "Вы можете начинать.",
+          "before": [],
+          "during": [],
+          "after": [],
+          "volume": "ordinary"
+        },
+        {
+          "event": "answer",
+          "utterance": "Да, всё готово.",
+          "before": [],
+          "during": [],
+          "after": [],
+          "volume": "ordinary"
+        },
+        {
+          "event": "heard_exorcist",
+          "utterance": "Уходи.",
+          "before": [],
+          "during": [],
+          "after": [],
+          "volume": "ordinary"
+        },
+        {
+          "event": "arrival",
+          "utterance": "Я вернулся.",
+          "before": [],
+          "during": [],
+          "after": [],
+          "volume": "ordinary"
+        },
+        {
+          "event": "candles",
+          "utterance": "",
+          "before": [],
+          "during": [],
+          "after": [],
+          "volume": "ordinary"
+        }
+      ]
+    },
+    {
+      "left": "R005",
+      "right": "R007",
+      "status": "compatible_in_bounded_editorial_model",
+      "notes": [
+        "Both obligations can be satisfied: positional/gesture conditions and speech clauses use independent channels or nonconflicting phrase positions."
+      ],
+      "witnesses": [
+        {
+          "event": "ordinary",
+          "utterance": "Вы можете начинать.",
+          "before": [],
+          "during": [],
+          "after": [],
+          "volume": "ordinary"
+        },
+        {
+          "event": "answer",
+          "utterance": "Я здесь. Да, всё готово.",
+          "before": [],
+          "during": [],
+          "after": [],
+          "volume": "ordinary"
+        },
+        {
+          "event": "heard_exorcist",
+          "utterance": "Я здесь. Уходи.",
+          "before": [],
+          "during": [],
+          "after": [],
+          "volume": "ordinary"
+        },
+        {
+          "event": "arrival",
+          "utterance": "Я вернулся.",
+          "before": [],
+          "during": [],
+          "after": [],
+          "volume": "ordinary"
+        },
+        {
+          "event": "candles",
+          "utterance": "",
+          "before": [],
+          "during": [],
+          "after": [],
+          "volume": "ordinary"
+        }
+      ]
+    },
+    {
+      "left": "R005",
+      "right": "R008",
+      "status": "compatible_in_bounded_editorial_model",
+      "notes": [
+        "Both obligations can be satisfied: positional/gesture conditions and speech clauses use independent channels or nonconflicting phrase positions."
+      ],
+      "witnesses": [
+        {
+          "event": "ordinary",
+          "utterance": "Вы можете начинать.",
+          "before": [],
+          "during": [
+            "look_at_ritual_board"
+          ],
+          "after": [],
+          "volume": "ordinary"
+        },
+        {
+          "event": "answer",
+          "utterance": "Да, всё готово.",
+          "before": [],
+          "during": [
+            "look_at_ritual_board"
+          ],
+          "after": [],
+          "volume": "ordinary"
+        },
+        {
+          "event": "heard_exorcist",
+          "utterance": "Уходи.",
+          "before": [],
+          "during": [
+            "look_at_ritual_board"
+          ],
+          "after": [],
+          "volume": "ordinary"
+        },
+        {
+          "event": "arrival",
+          "utterance": "Я вернулся.",
+          "before": [],
+          "during": [
+            "look_at_ritual_board"
+          ],
+          "after": [],
+          "volume": "ordinary"
+        },
+        {
+          "event": "candles",
+          "utterance": "",
+          "before": [],
+          "during": [],
+          "after": [],
+          "volume": "ordinary"
+        }
+      ]
+    },
+    {
+      "left": "R005",
+      "right": "R009",
+      "status": "compatible_in_bounded_editorial_model",
+      "notes": [
+        "The chest gesture follows the candle batch; speech gestures occur at a different trigger."
+      ],
+      "witnesses": [
+        {
+          "event": "ordinary",
+          "utterance": "Вы можете начинать.",
+          "before": [],
+          "during": [],
+          "after": [],
+          "volume": "ordinary"
+        },
+        {
+          "event": "answer",
+          "utterance": "Да, всё готово.",
+          "before": [],
+          "during": [],
+          "after": [],
+          "volume": "ordinary"
+        },
+        {
+          "event": "heard_exorcist",
+          "utterance": "Уходи.",
+          "before": [],
+          "during": [],
+          "after": [],
+          "volume": "ordinary"
+        },
+        {
+          "event": "arrival",
+          "utterance": "Я вернулся.",
+          "before": [],
+          "during": [],
+          "after": [],
+          "volume": "ordinary"
+        },
+        {
+          "event": "candles",
+          "utterance": "",
+          "before": [],
+          "during": [],
+          "after": [
+            "touch_own_chest_once"
+          ],
+          "volume": "ordinary"
+        }
+      ]
+    },
+    {
+      "left": "R005",
+      "right": "R010",
+      "status": "compatible_in_bounded_editorial_model",
+      "notes": [
+        "The arrival declaration is made before ordinary conversation and obeys the other speech condition."
+      ],
+      "witnesses": [
+        {
+          "event": "ordinary",
+          "utterance": "Вы можете начинать.",
+          "before": [],
+          "during": [],
+          "after": [],
+          "volume": "ordinary"
+        },
+        {
+          "event": "answer",
+          "utterance": "Да, всё готово.",
+          "before": [],
+          "during": [],
+          "after": [],
+          "volume": "ordinary"
+        },
+        {
+          "event": "heard_exorcist",
+          "utterance": "Уходи.",
+          "before": [],
+          "during": [],
+          "after": [],
+          "volume": "ordinary"
+        },
+        {
+          "event": "arrival",
+          "utterance": "Я вернулся.",
+          "before": [],
+          "during": [],
+          "after": [],
+          "volume": "ordinary"
+        },
+        {
+          "event": "candles",
+          "utterance": "",
+          "before": [],
+          "during": [],
+          "after": [],
+          "volume": "ordinary"
+        }
+      ]
+    },
+    {
+      "left": "R006",
+      "right": "R007",
+      "status": "compatible_in_bounded_editorial_model",
+      "notes": [
+        "Both obligations can be satisfied: positional/gesture conditions and speech clauses use independent channels or nonconflicting phrase positions."
+      ],
+      "witnesses": [
+        {
+          "event": "ordinary",
+          "utterance": "Вы можете начинать.",
+          "before": [],
+          "during": [],
+          "after": [],
+          "volume": "ordinary"
+        },
+        {
+          "event": "answer",
+          "utterance": "Я здесь. Да, всё готово.",
+          "before": [],
+          "during": [],
+          "after": [],
+          "volume": "ordinary"
+        },
+        {
+          "event": "heard_exorcist",
+          "utterance": "Я здесь. Уходи.",
+          "before": [],
+          "during": [],
+          "after": [],
+          "volume": "ordinary"
+        },
+        {
+          "event": "arrival",
+          "utterance": "Я вернулся.",
+          "before": [],
+          "during": [],
+          "after": [],
+          "volume": "ordinary"
+        },
+        {
+          "event": "candles",
+          "utterance": "",
+          "before": [],
+          "during": [],
+          "after": [],
+          "volume": "ordinary"
+        }
+      ]
+    },
+    {
+      "left": "R006",
+      "right": "R008",
+      "status": "compatible_in_bounded_editorial_model",
+      "notes": [
+        "Both obligations can be satisfied: positional/gesture conditions and speech clauses use independent channels or nonconflicting phrase positions."
+      ],
+      "witnesses": [
+        {
+          "event": "ordinary",
+          "utterance": "Вы можете начинать.",
+          "before": [],
+          "during": [
+            "look_at_ritual_board"
+          ],
+          "after": [],
+          "volume": "ordinary"
+        },
+        {
+          "event": "answer",
+          "utterance": "Да, всё готово.",
+          "before": [],
+          "during": [
+            "look_at_ritual_board"
+          ],
+          "after": [],
+          "volume": "ordinary"
+        },
+        {
+          "event": "heard_exorcist",
+          "utterance": "Уходи.",
+          "before": [],
+          "during": [
+            "look_at_ritual_board"
+          ],
+          "after": [],
+          "volume": "ordinary"
+        },
+        {
+          "event": "arrival",
+          "utterance": "Я вернулся.",
+          "before": [],
+          "during": [
+            "look_at_ritual_board"
+          ],
+          "after": [],
+          "volume": "ordinary"
+        },
+        {
+          "event": "candles",
+          "utterance": "",
+          "before": [],
+          "during": [],
+          "after": [],
+          "volume": "ordinary"
+        }
+      ]
+    },
+    {
+      "left": "R006",
+      "right": "R009",
+      "status": "compatible_in_bounded_editorial_model",
+      "notes": [
+        "The chest gesture follows the candle batch; speech gestures occur at a different trigger."
+      ],
+      "witnesses": [
+        {
+          "event": "ordinary",
+          "utterance": "Вы можете начинать.",
+          "before": [],
+          "during": [],
+          "after": [],
+          "volume": "ordinary"
+        },
+        {
+          "event": "answer",
+          "utterance": "Да, всё готово.",
+          "before": [],
+          "during": [],
+          "after": [],
+          "volume": "ordinary"
+        },
+        {
+          "event": "heard_exorcist",
+          "utterance": "Уходи.",
+          "before": [],
+          "during": [],
+          "after": [],
+          "volume": "ordinary"
+        },
+        {
+          "event": "arrival",
+          "utterance": "Я вернулся.",
+          "before": [],
+          "during": [],
+          "after": [],
+          "volume": "ordinary"
+        },
+        {
+          "event": "candles",
+          "utterance": "",
+          "before": [],
+          "during": [],
+          "after": [
+            "touch_own_chest_once"
+          ],
+          "volume": "ordinary"
+        }
+      ]
+    },
+    {
+      "left": "R006",
+      "right": "R010",
+      "status": "compatible_in_bounded_editorial_model",
+      "notes": [
+        "The arrival declaration is made before ordinary conversation and obeys the other speech condition."
+      ],
+      "witnesses": [
+        {
+          "event": "ordinary",
+          "utterance": "Вы можете начинать.",
+          "before": [],
+          "during": [],
+          "after": [],
+          "volume": "ordinary"
+        },
+        {
+          "event": "answer",
+          "utterance": "Да, всё готово.",
+          "before": [],
+          "during": [],
+          "after": [],
+          "volume": "ordinary"
+        },
+        {
+          "event": "heard_exorcist",
+          "utterance": "Уходи.",
+          "before": [],
+          "during": [],
+          "after": [],
+          "volume": "ordinary"
+        },
+        {
+          "event": "arrival",
+          "utterance": "Я вернулся.",
+          "before": [],
+          "during": [],
+          "after": [],
+          "volume": "ordinary"
+        },
+        {
+          "event": "candles",
+          "utterance": "",
+          "before": [],
+          "during": [],
+          "after": [],
+          "volume": "ordinary"
+        }
+      ]
+    },
+    {
+      "left": "R007",
+      "right": "R008",
+      "status": "compatible_in_bounded_editorial_model",
+      "notes": [
+        "Both obligations can be satisfied: positional/gesture conditions and speech clauses use independent channels or nonconflicting phrase positions."
+      ],
+      "witnesses": [
+        {
+          "event": "ordinary",
+          "utterance": "Вы можете начинать.",
+          "before": [],
+          "during": [
+            "look_at_ritual_board"
+          ],
+          "after": [],
+          "volume": "ordinary"
+        },
+        {
+          "event": "answer",
+          "utterance": "Я здесь. Да, всё готово.",
+          "before": [],
+          "during": [
+            "look_at_ritual_board"
+          ],
+          "after": [],
+          "volume": "ordinary"
+        },
+        {
+          "event": "heard_exorcist",
+          "utterance": "Я здесь. Уходи.",
+          "before": [],
+          "during": [
+            "look_at_ritual_board"
+          ],
+          "after": [],
+          "volume": "ordinary"
+        },
+        {
+          "event": "arrival",
+          "utterance": "Я вернулся.",
+          "before": [],
+          "during": [
+            "look_at_ritual_board"
+          ],
+          "after": [],
+          "volume": "ordinary"
+        },
+        {
+          "event": "candles",
+          "utterance": "",
+          "before": [],
+          "during": [],
+          "after": [],
+          "volume": "ordinary"
+        }
+      ]
+    },
+    {
+      "left": "R007",
+      "right": "R009",
+      "status": "compatible_in_bounded_editorial_model",
+      "notes": [
+        "The chest gesture follows the candle batch; speech gestures occur at a different trigger."
+      ],
+      "witnesses": [
+        {
+          "event": "ordinary",
+          "utterance": "Вы можете начинать.",
+          "before": [],
+          "during": [],
+          "after": [],
+          "volume": "ordinary"
+        },
+        {
+          "event": "answer",
+          "utterance": "Я здесь. Да, всё готово.",
+          "before": [],
+          "during": [],
+          "after": [],
+          "volume": "ordinary"
+        },
+        {
+          "event": "heard_exorcist",
+          "utterance": "Я здесь. Уходи.",
+          "before": [],
+          "during": [],
+          "after": [],
+          "volume": "ordinary"
+        },
+        {
+          "event": "arrival",
+          "utterance": "Я вернулся.",
+          "before": [],
+          "during": [],
+          "after": [],
+          "volume": "ordinary"
+        },
+        {
+          "event": "candles",
+          "utterance": "",
+          "before": [],
+          "during": [],
+          "after": [
+            "touch_own_chest_once"
+          ],
+          "volume": "ordinary"
+        }
+      ]
+    },
+    {
+      "left": "R007",
+      "right": "R010",
+      "status": "compatible_in_bounded_editorial_model",
+      "notes": [
+        "The arrival declaration is made before ordinary conversation and obeys the other speech condition."
+      ],
+      "witnesses": [
+        {
+          "event": "ordinary",
+          "utterance": "Вы можете начинать.",
+          "before": [],
+          "during": [],
+          "after": [],
+          "volume": "ordinary"
+        },
+        {
+          "event": "answer",
+          "utterance": "Я здесь. Да, всё готово.",
+          "before": [],
+          "during": [],
+          "after": [],
+          "volume": "ordinary"
+        },
+        {
+          "event": "heard_exorcist",
+          "utterance": "Я здесь. Уходи.",
+          "before": [],
+          "during": [],
+          "after": [],
+          "volume": "ordinary"
+        },
+        {
+          "event": "arrival",
+          "utterance": "Я вернулся.",
+          "before": [],
+          "during": [],
+          "after": [],
+          "volume": "ordinary"
+        },
+        {
+          "event": "candles",
+          "utterance": "",
+          "before": [],
+          "during": [],
+          "after": [],
+          "volume": "ordinary"
+        }
+      ]
+    },
+    {
+      "left": "R008",
+      "right": "R009",
+      "status": "compatible_in_bounded_editorial_model",
+      "notes": [
+        "The chest gesture follows the candle batch; speech gestures occur at a different trigger."
+      ],
+      "witnesses": [
+        {
+          "event": "ordinary",
+          "utterance": "Вы можете начинать.",
+          "before": [],
+          "during": [
+            "look_at_ritual_board"
+          ],
+          "after": [],
+          "volume": "ordinary"
+        },
+        {
+          "event": "answer",
+          "utterance": "Да, всё готово.",
+          "before": [],
+          "during": [
+            "look_at_ritual_board"
+          ],
+          "after": [],
+          "volume": "ordinary"
+        },
+        {
+          "event": "heard_exorcist",
+          "utterance": "Уходи.",
+          "before": [],
+          "during": [
+            "look_at_ritual_board"
+          ],
+          "after": [],
+          "volume": "ordinary"
+        },
+        {
+          "event": "arrival",
+          "utterance": "Я вернулся.",
+          "before": [],
+          "during": [
+            "look_at_ritual_board"
+          ],
+          "after": [],
+          "volume": "ordinary"
+        },
+        {
+          "event": "candles",
+          "utterance": "",
+          "before": [],
+          "during": [],
+          "after": [
+            "touch_own_chest_once"
+          ],
+          "volume": "ordinary"
+        }
+      ]
+    },
+    {
+      "left": "R008",
+      "right": "R010",
+      "status": "compatible_in_bounded_editorial_model",
+      "notes": [
+        "The arrival declaration is made before ordinary conversation and obeys the other speech condition."
+      ],
+      "witnesses": [
+        {
+          "event": "ordinary",
+          "utterance": "Вы можете начинать.",
+          "before": [],
+          "during": [
+            "look_at_ritual_board"
+          ],
+          "after": [],
+          "volume": "ordinary"
+        },
+        {
+          "event": "answer",
+          "utterance": "Да, всё готово.",
+          "before": [],
+          "during": [
+            "look_at_ritual_board"
+          ],
+          "after": [],
+          "volume": "ordinary"
+        },
+        {
+          "event": "heard_exorcist",
+          "utterance": "Уходи.",
+          "before": [],
+          "during": [
+            "look_at_ritual_board"
+          ],
+          "after": [],
+          "volume": "ordinary"
+        },
+        {
+          "event": "arrival",
+          "utterance": "Я вернулся.",
+          "before": [],
+          "during": [
+            "look_at_ritual_board"
+          ],
+          "after": [],
+          "volume": "ordinary"
+        },
+        {
+          "event": "candles",
+          "utterance": "",
+          "before": [],
+          "during": [],
+          "after": [],
+          "volume": "ordinary"
+        }
+      ]
+    },
+    {
+      "left": "R009",
+      "right": "R010",
+      "status": "compatible_in_bounded_editorial_model",
+      "notes": [
+        "The arrival declaration is made before ordinary conversation and obeys the other speech condition.",
+        "The chest gesture follows the candle batch; speech gestures occur at a different trigger."
+      ],
+      "witnesses": [
+        {
+          "event": "ordinary",
+          "utterance": "Вы можете начинать.",
+          "before": [],
+          "during": [],
+          "after": [],
+          "volume": "ordinary"
+        },
+        {
+          "event": "answer",
+          "utterance": "Да, всё готово.",
+          "before": [],
+          "during": [],
+          "after": [],
+          "volume": "ordinary"
+        },
+        {
+          "event": "heard_exorcist",
+          "utterance": "Уходи.",
+          "before": [],
+          "during": [],
+          "after": [],
+          "volume": "ordinary"
+        },
+        {
+          "event": "arrival",
+          "utterance": "Я вернулся.",
+          "before": [],
+          "during": [],
+          "after": [],
+          "volume": "ordinary"
+        },
+        {
+          "event": "candles",
+          "utterance": "",
+          "before": [],
+          "during": [],
+          "after": [
+            "touch_own_chest_once"
+          ],
+          "volume": "ordinary"
+        }
+      ]
+    }
+  ]
+}

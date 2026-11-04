@@ -1,0 +1,163 @@
+const page=await figma.getNodeByIdAsync(D.pages.screens);await figma.setCurrentPageAsync(page);
+const nodes={},actions={};
+const record=(screen,name,node)=>{(actions[screen]??={})[name]=node.id;return node;};
+const people=['Анна','Миша','Даша','Никита','Оля','Саша','Илья','Александра Константинопольская','Артём','Полина','Лев','Мария'];
+async function host(s,index){
+ const W=s.width??1440,H=s.height??900;
+ const f=box(s.id+' · '+s.title,W,H,'canvas','VERTICAL',32,24);f.x=80+(index%4)*1560;f.y=80+Math.floor(index/4)*1040;page.appendChild(f);f.cornerRadius=0;nodes[s.id]=f.id;
+ const nav=box('Room navigation',W-64,56,null,'HORIZONTAL',0,16);f.appendChild(nav);nav.counterAxisAlignItems='CENTER';
+ await text(nav,'ПОМЕХИ','Heading','text',220);record(s.id,'room',await button(nav,'POM427  ↗','Neutral','Default',170));
+ await text(nav,'●  Связь установлена','Small','green',W-64-220-170-310-64);
+ record(s.id,'help',await button(nav,'Как играть','Neutral','Default',130));record(s.id,'settings',await button(nav,'Настройки','Neutral','Default',130));
+ const line=box('Top divider',W-64,1,'border','HORIZONTAL',0,0);f.appendChild(line);
+ const content=box('Room workspace',W-64,H-145,null,'HORIZONTAL',0,24);f.appendChild(content);
+ const roster=box('Participants',280,H-145,'surface','VERTICAL',20,s.players===12?4:12);border(roster);content.appendChild(roster);
+ await text(roster,'Участники · '+(s.empty?'0':s.players??7)+'/12','Heading');
+ if(s.empty){await text(roster,'Пригласите друзей по QR-коду или ссылке.','Body','muted');}else for(let i=0;i<(s.players??7);i++){
+  const title=people[i]+(i===0?' · вы':'');
+  const role=['reading','placement','search','pause','return','result','sync','review','won','lost','ritual','freeplay','aborted','recovered','stopped'].includes(s.kind)?(i<3?'Одержимый':'Экзорцист'):'Роль после раздачи';
+  const row=await component(roster,'Player row',title,role+(s.kind==='reading'?' · '+(i<6?'Готов':'Читает'):i===5?' · нет связи':''),240,s.players===12?43:64);
+  if(s.kind==='reading'&&i===0){const b=await button(roster,'↻','Neutral','Default',44);b.name='Action / Replace Anna card — tooltip: Заменить карточку';record(s.id,'replace',b);}
+ }
+ if(!s.empty)await text(roster,'Роли исходные. Задания видны только владельцам.','Small','muted');
+ const cw=W-64-280-260-48;
+ const center=box('Current phase',cw,H-145,'surface','VERTICAL',32,16);border(center);content.appendChild(center);
+ await tag(center,s.eyebrow??'РАУНД 1 / 7','amber',Math.min(cw-64,240));
+ await text(center,s.title,'Title');if(s.body)await text(center,s.body,'Body','muted');
+ if(s.timer){const tm=await text(center,s.timer,'Timer');tm.textAlignHorizontal='CENTER';await text(center,s.instruction??'Двигайтесь шагом. Следите за сигналами ноутбука.','Body');}
+ if(s.kind==='onboarding'){for(const [a,b]of [['01  Создайте комнату','Одна комната для всей компании.'],['02  Пригласите участников','Организатор тоже входит с телефона.'],['03  Подготовьте игру','Договоритесь о территории и месте сбора.'],['04  Раздайте карточки','Игроки читают, вы запускаете раунд.']]){await rule(center,a,b);}}
+ if(s.kind==='auth'){await field(center,'Код организатора','••••••••••••','Код из окна запуска. Это не код комнаты.');}
+ if(s.kind==='reading'){await notice(center,'Прочитали 6 из 7','Чтение без таймера. Раунд начинается только с ноутбука.');}
+ if(['result','tutorial','sync','review'].includes(s.kind)){
+  const metric=box('Round metrics',cw-64,90,'raised','HORIZONTAL',16,16);center.appendChild(metric);await text(metric,'2 / 3\nОсвобождено групп','Label','text',(cw-112)/2);await text(metric,'2 / 4\nМиссий выполнено','Label','text',(cw-112)/2);
+  await text(center,s.kind==='tutorial'?'Учебный результат: 4 успеха. В общий зачёт не входит.':'2 группы + 2 миссии = 4 шага ритуала после подтверждения.','Body','muted');
+  await notice(center,s.kind==='sync'?'1 телефон ещё не отправил действия':s.kind==='review'?'1 действие требует разбора':'Все действия получены',s.kind==='sync'?'Ждём Сашу. Можно закрыть ожидание с предупреждением.':s.kind==='review'?'Никита · Освобождение группы · запись после потери связи.':'Подтверждение закроет этот результат для изменений.');
+ }
+ if(s.kind==='recovered')await notice(center,'Партия восстановлена на паузе','Карточки и оставшееся время сохранены. Проверьте участников перед продолжением.');
+ if(s.kind==='ritual'){await rule(center,'Открыто правило: «Чужие лица»','У ноутбука обращайтесь друг к другу на «вы». Правила, безопасность и технические вопросы не штрафуются.');}
+ if(s.kind==='aborted')await notice(center,'Без зачёта','Этот раунд не меняет результат и сложность. Все возвращаются к ноутбуку.');
+ if(s.error)await notice(center,s.error,s.detail??'Ваши данные сохранены. Повторите действие после восстановления.','red');
+ if(s.primary)record(s.id,'primary',await button(center,s.primary,'Primary',s.blocked?'Disabled':'Default'));
+ if(s.secondary)record(s.id,'secondary',await button(center,s.secondary,'Neutral'));
+ if(s.timer)record(s.id,'fullscreen',await button(center,'⤢  Полный экран','Neutral'));
+ const ritual=box('Shared ritual',260,H-145,'surface','VERTICAL',20,16);border(ritual);content.appendChild(ritual);
+ await text(ritual,s.endless?'Свободная игра':'Освободите дом','Heading');
+ await text(ritual,s.endless?'Раунды без ограничения. Ритуал выключен.':s.kind==='tutorial'?'Пробный раунд не двигает свечи. Ритуал начнётся с основной игры.':'Каждая спасённая группа и зачтённая миссия — один шаг свечи.','Small','muted');
+ if(!s.endless){await text(ritual,s.kind==='won'?'0':s.kind==='lost'?'5':s.kind==='ritual'?'24':'28','Hero',s.kind==='won'?'green':'amber');await text(ritual,'шагов осталось','Small','muted');
+ const stages=box('Candle route',220,112,'raised','HORIZONTAL',12,8);ritual.appendChild(stages);
+ const amounts=s.kind==='won'?['0','0','0']:s.kind==='lost'?['0','1','3']:s.kind==='ritual'?['3','6','3']:['7','2','3'];
+ for(const [j,label]of ['A','Б','В'].entries()){const q=box('Candle stage '+label,60,88,null,'VERTICAL',4,8);stages.appendChild(q);await text(q,'◉ '+amounts[j],'Code','amber',52);await text(q,label,'Small','muted',52);}
+ await text(ritual,'A → Б → В → выход\nЗакрытые правила откроются по ходу ритуала.','Small','muted');
+ record(s.id,'ritual',await button(ritual,'Как работает ритуал','Neutral'));
+ }
+ await text(ritual,'Раунд: '+(s.kind==='tutorial'?'учебный':'1 из 7')+'\nУровень 1 · заражение вкл.','Small','muted');
+ return f;
+}
+async function modal(s,index){
+ const f=await host({...s,kind:'reading',title:'Все готовы к началу',body:'Прочитайте карточки на телефонах.',primary:'Начать раунд'},index);
+ const shade=figma.createRectangle();shade.name='Modal scrim';shade.resize(f.width,f.height);shade.fills=[{type:'SOLID',color:{r:0,g:0,b:0},opacity:0.72}];f.appendChild(shade);shade.layoutPositioning='ABSOLUTE';shade.x=0;shade.y=0;created.push(shade.id);
+ const w=s.kind==='editor'?1120:Math.min(820,f.width-160),mh=s.kind==='editor'?760:Math.min(760,f.height-100);
+ const m=box('Dialog / '+s.title,w,mh,'surface','VERTICAL',32,16);border(m);f.appendChild(m);m.layoutPositioning='ABSOLUTE';m.x=(f.width-w)/2;m.y=(f.height-mh)/2;
+ const head=box('Dialog header',w-64,56,null,'HORIZONTAL',0,16);m.appendChild(head);await text(head,s.title,'Heading','text',w-128);record(s.id,'close',await button(head,'×','Neutral','Default',48));
+ const body=box('Scrollable dialog content',w-64,mh-192,null,'VERTICAL',0,16);body.clipsContent=true;body.overflowDirection='VERTICAL';m.appendChild(body);
+ if(s.kind==='invite'){
+  await text(body,s.lan?'Все устройства — в одной сети':'Подключитесь с телефона','Title');
+  await text(body,'Код комнаты: POM427','Code','amber');
+  const qr=box('QR / demo invitation',180,180,'text','VERTICAL',0,0);body.appendChild(qr);
+  const svg=figma.createNodeFromSvg(QR_SVG);qr.appendChild(svg);svg.resize(180,180);created.push(svg.id);
+  await field(body,'Ссылка для участников',s.lan?'http://192.168.1.8:3000/?room=POM427':'https://pomekhi.example/?room=POM427','Демонстрационный адрес в макете. В приложении используется реальное приглашение.');
+  await text(body,'Организатор тоже входит с телефона. Ноутбук не занимает место.','Body','muted');
+ }else if(s.kind==='settings'){
+  await text(body,'Партия     Время     Звук и атмосфера','Label','amber');
+  await field(body,'Количество раундов',s.endless?'Без ограничения':'7 обычных + пробный');
+  await field(body,'Сложность','Начальная 1 → максимальная 3');
+  await field(body,'Заражение','Включено · с пробного раунда');
+  await field(body,'Время фаз','Расстановка 45 с · Поиск 3 мин · Возвращение 45 с');
+  await text(body,'Пробный раунд: включён\nРитуал: '+(s.endless?'выключен в бесконечном режиме':'включён'),'Body');
+  await notice(body,'Часть настроек фиксируется до начала','После раздачи длина и сложность недоступны. До первого старта отмените раздачу, чтобы их изменить.');
+  record(s.id,'sound',await button(body,'Звук и атмосфера','Neutral'));
+ }else if(s.kind==='sound'){
+  await text(body,'Звук играет на этом ноутбуке','Body');
+  for(const [a,b]of [['Фон','12%  ━━━●━━━━━━━━'],['Сигналы фаз','20%  ━━━━━●━━━━━━'],['Эффекты','10%  ━━●━━━━━━━━━']])await field(body,a,b);
+  await text(body,'Помехи по краям экрана: включены\nРедкие эффекты телефонов: по согласию игроков','Body');
+  record(s.id,'test',await button(body,'Проверить звук','Neutral'));
+ }else if(s.kind==='help'||s.kind==='ritualhelp'){
+  for(const [a,b]of s.rules??[])await rule(body,a,b);
+ }else if(s.kind==='editor'){
+  const cols=box('Editor split',w-64,mh-220,null,'HORIZONTAL',0,24);body.appendChild(cols);
+  const list=box('Card list',300,mh-220,'raised','VERTICAL',16,12);cols.appendChild(list);
+  await text(list,'90 заданий · тексты скрыты','Label');await text(list,'Одержимые  ·  Уровень 1','Small','amber');
+  for(const id of ['p01','p02','p03','p04'])record(s.id,id,await button(list,id+' · открыть','Neutral'));
+  record(s.id,'new',await button(list,'+ Новая карточка','Neutral'));
+  const ed=box('Card form',w-388,mh-220,null,'VERTICAL',0,12);ed.clipsContent=true;ed.overflowDirection='VERTICAL';cols.appendChild(ed);
+  if(s.editorState==='closed'){await text(ed,'Откройте банк осознанно','Title');await text(ed,'Здесь можно увидеть секретные задания. Выданные карточки останутся прежними.','Body','muted');record(s.id,'openBank',await button(ed,'Открыть банк заданий'));}
+  else if(s.editorState==='empty'){await text(ed,'Заданий пока нет','Title');await text(ed,'Добавьте карточку или импортируйте банк. Нехватка заданий не запустит частичную раздачу.','Body');}
+  else if(s.editorState==='import'){await text(ed,'Сравнение импорта','Title');await text(ed,'Добавлено 2 · Изменено 3 · Удалено 0\nЗамена затронет следующие раздачи.','Body');record(s.id,'backup',await button(ed,'Скачать текущий банк','Neutral'));}
+  else{await field(ed,'Название',s.mission?'Свидетель сигнала':'Частота пустого дома');await field(ed,'Роль и сложность',s.mission?'Экзорцист · Уровень 1':'Одержимый · Уровень 1');
+   for(const [a,b]of s.mission?[['Дополнительная миссия','Запомните одну необычную фразу одержимого. После поиска перескажите её у ноутбука.']]:[['Поведение','Спокойно повторяйте: «Здесь никто не принимает сигнал».'],['Подсказка','Скажи: «Сигнал принят».'],['Освобождение','Экзорцист говорит: «Сигнал принят».'],['Заражение','Экзорцист вслух предлагает включить фонарик.']])await field(ed,a,b);
+  }
+ }else if(s.kind==='review'){
+  await notice(body,'Никита · Освобождение группы','Запись пришла после возвращения. Проверьте с участниками, когда было выполнено действие.');
+  await field(body,'Место в последовательности','Перед заражением Анны');
+  await text(body,'Задания участников здесь не раскрываются.','Body','muted');
+  record(s.id,'reject',await button(body,'Не засчитывать','Danger'));
+ }else if(s.kind==='confirm'){await text(body,s.body,'Body');}
+ if(s.error)await notice(body,s.error,s.detail??'Правки не потеряны. Исправьте ошибку и повторите.','red');
+ if(s.readOnly)await notice(body,'Только просмотр','Редактирование доступно до раздачи, между раундами и после партии.');
+ record(s.id,'submit',await button(m,s.primary??'Готово','Primary',s.readOnly?'Disabled':'Default'));
+ return f;
+}
+async function phone(s,index){
+ const W=s.width??390,H=s.height??844;
+ const f=box(s.id+' · '+s.title,W,H,'canvas','VERTICAL',20,16);f.x=80+(index%8)*500;f.y=15800+Math.floor(index/8)*1000;f.cornerRadius=24;f.clipsContent=true;page.appendChild(f);nodes[s.id]=f.id;
+ const top=box('Phone status',W-40,24,null,'HORIZONTAL',0,8);f.appendChild(top);await text(top,'ПОМЕХИ','Label','text',W-140);await text(top,s.offline?'Нет связи':'● На связи','Small',s.offline?'amber':'green',92);
+ await text(f,s.eyebrow??'РАУНД 1 / 7 · ПОИСК','Code','amber');
+ await text(f,s.title,'Heading');if(s.instruction)await text(f,s.instruction,'Small','muted');
+ if(s.timer){const t=await text(f,s.timer,'Title','text');t.fontName={family:'IBM Plex Mono',style:'Medium'};}
+ const bottomHeight=64;
+ const contentHeight=H-f.paddingTop-f.paddingBottom-24-23-31-(s.instruction?50:0)-(s.timer?61:0)-bottomHeight-7*16-112-(s.notice?92:0);
+ const body=box('Personal card scroll',W-40,Math.max(190,contentHeight),'surface','VERTICAL',20,12);border(body);body.clipsContent=true;body.overflowDirection='VERTICAL';f.appendChild(body);
+ if(s.kind==='join'){
+  await text(body,'Войдите в комнату','Title');if(!s.invitation)await field(body,'Код комнаты','POM427');await field(body,'Ваше имя','Анна');await text(body,'Без аккаунта. Ваше место сохранится в этом браузере.','Small','muted');
+ }else if(s.kind==='closed'){
+  await text(body,'Карточка только для вас','Heading');await text(body,'Откройте её, когда никто не смотрит на ваш экран.','Body','muted');record(s.id,'reveal',await button(body,'Открыть карточку'));
+ }else if(s.kind==='room'){
+  await text(body,'Комната POM427','Heading');await text(body,'Вы — Анна · Участников 7/12','Body');await text(body,'Анна · Миша · Даша\nНикита · Оля · Саша · Илья','Body','muted');record(s.id,'withdraw',await button(body,'Пропустить этот раунд','Neutral'));record(s.id,'leave',await button(body,'Выйти из комнаты','Danger'));
+ }else if(s.kind==='settings'){
+  await text(body,'Личные настройки','Heading');await field(body,'Эффекты телефона','Выключены · включить добровольно');await field(body,'Громкость','15% · максимум 30%');await text(body,'Пауза, скрытие вкладки и потеря связи отменяют ожидающий эффект.','Small','muted');record(s.id,'soundTest',await button(body,'Включить и проверить','Neutral'));
+ }else if(s.kind==='targets'){
+  await text(body,'Кого заразить?','Heading');await text(body,'Только активные экзорцисты. Сначала выполните условие на своей карточке.','Small','muted');
+  if(s.empty)await notice(body,'Нет доступных целей','Поиск мог уже закончиться. Дождитесь актуального состояния.');
+  else for(const name of ['Никита','Оля','Саша'])record(s.id,name,await button(body,name,'Neutral'));
+ }else if(s.kind==='help'){
+  await rule(body,'Главное — освобождать','Экзорцист помогает одержимому выполнить условие. Одержимый отмечает освобождение всей группы.');await rule(body,'Миссия — дополнительно','Она необязательна и не должна задерживать помощь. Заражение лишает зачёта миссии.');await rule(body,'Общая цель — ритуал','После подтверждения итогов группа и миссия дают по одному шагу свечи.');
+ }else if(s.kind==='result'){
+  await text(body,'Вклад команды','Heading');await text(body,'2 группы + 2 миссии','Heading','amber');await text(body,'4 шага ритуала после подтверждения. Пока итог предварительный, можно дополнить миссию.','Body','muted');
+ }else if(s.kind==='waiting'||s.kind==='released'||s.kind==='paused'||s.kind==='ended'){
+  await text(body,s.message??'Оставайтесь у ноутбука','Heading');await text(body,s.detail??'Следующий этап объявит общий экран.','Body','muted');
+ }else{
+  await tag(body,s.role==='exorcist'?'ЭКЗОРЦИСТ':s.captured?'ЗАРАЖЁННЫЙ':'ОДЕРЖИМЫЙ',s.captured?'red':'amber',Math.min(190,W-80));
+  await text(body,s.role==='exorcist'?'Свидетель сигнала':'Частота пустого дома','Heading');
+  if(s.role==='exorcist'){
+   await rule(body,'ОСНОВНАЯ ЦЕЛЬ','Ищите одержимых и помогайте им освободиться.');
+   await rule(body,'ДОПОЛНИТЕЛЬНАЯ МИССИЯ','Запомните одну необычную фразу одержимого. После поиска перескажите её у ноутбука.');
+   await text(body,'Миссия необязательна. Не задерживайте помощь. При заражении её зачёт теряется.','Small','muted');
+  }else{
+   await rule(body,'ЧТО ДЕЛАТЬ','Спокойно повторяйте: «Здесь никто не принимает сигнал». Между повторами делайте паузу.');
+   await rule(body,'ПОДСКАЗКА ЭКЗОРЦИСТУ','Скажи, что сигнал получен: «Сигнал принят».');
+   await rule(body,'КАК ВАС ОСВОБОДИТЬ','Экзорцист произносит: «Сигнал принят».');
+   if(!s.noInfection)await rule(body,'УСЛОВИЕ ЗАРАЖЕНИЯ','Экзорцист вслух предлагает включить фонарик. Включать его не нужно.');
+  }
+  record(s.id,'hide',await button(body,'Скрыть карточку','Neutral'));
+ }
+ if(s.notice)await component(f,'Status',s.notice,s.noticeBody??'Сверьтесь с общим экраном.',W-40,76);
+ if(s.error)await notice(body,s.error,s.detail??'Карточка и введённые данные сохранены.','red');
+ const controls=box('Primary actions',W-40,112,null,'VERTICAL',0,8);f.appendChild(controls);
+ if(s.primary)record(s.id,'primary',await button(controls,s.primary,'Primary',s.blocked?'Disabled':'Default'));
+ if(s.secondary)record(s.id,'secondary',await button(controls,s.secondary,'Neutral',s.secondaryBlocked?'Disabled':'Default'));
+ const nav=await component(f,'Bottom navigation','POM427','Комната     Настройки     Как играть',W-40,64);nav.name='Fixed bottom navigation';
+ nav.layoutPositioning='ABSOLUTE';nav.x=20;nav.y=H-80;
+ const areas=box('Navigation hit areas',W-40,64,null,'HORIZONTAL',0,0);f.appendChild(areas);areas.layoutPositioning='ABSOLUTE';areas.x=20;areas.y=H-80;
+ for(const name of ['room','settings','help']){const a=box('Action / '+name,(W-40)/3,64,null,'VERTICAL',0,0);areas.appendChild(a);record(s.id,name,a);}
+ return f;
+}

@@ -8,7 +8,7 @@ import { createRoundSync, validateRoundSync } from './round-sync.js';
 import { validDifficulty, validSettings, isTimedPhase } from './game.js';
 
 /** Private disk contract. Never import this module from the browser or wire protocol. */
-export interface SavedSession { schemaVersion: 5; lobby: SavedLobby }
+export interface SavedSession { schemaVersion: 5 | 6; lobby: SavedLobby }
 function requireValue(condition: unknown): asserts condition { if (!condition) throw new Error('Invalid or incompatible session file.'); }
 function object(value: unknown): Record<string, unknown> { requireValue(value && typeof value === 'object' && !Array.isArray(value)); return value as Record<string, unknown>; }
 function array(value: unknown, limit = 100000): unknown[] { requireValue(Array.isArray(value) && value.length <= limit); return value; }
@@ -30,6 +30,31 @@ function assignment(value: unknown): Assignment {
   if (card.role === 'possessed') requireValue(['behavior', 'clue', 'releaseCondition', 'infectionCondition'].every(k => text(card[k])));
   else requireValue(card.role === 'exorcist' && text(card.mission));
   return value as Assignment;
+}
+
+function validateRetained(value: unknown) {
+  const retained = array(value, 12).map(object);
+  const members = new Set<string>(), groups = new Set<string>();
+  for (const g of retained) {
+    const original = assignment(g.assignment);
+    requireValue(text(g.origin, 256) && g.id === original.id && original.card.role === 'possessed' && !groups.has(original.id) && nullableText(g.location));
+    groups.add(original.id);
+    const people = pairs(g.members, 12);
+    requireValue(people.length > 0);
+    for (const [id, a] of people) {
+      requireValue(!members.has(id)); members.add(id);
+      requireValue(id === g.origin ? assignment(a).id === original.id : assignment(a).card.role === 'exorcist');
+    }
+  }
+  return { members, groups };
+}
+function validateSearchBase(base: Record<string, unknown>, zones: string[]) {
+  const { members, groups } = validateRetained(base.retained);
+  const roster = pairs(base.roster, 12).map(([id, a]) => [id, assignment(a)] as const);
+  for (const [id, a] of roster) if (!members.has(id) && a.card.role === 'possessed') { requireValue(!groups.has(a.id)); groups.add(a.id); }
+  requireValue([...members].every(id => roster.some(([playerId]) => playerId === id)));
+  for (const [id, location] of pairs(base.locations, 12)) requireValue(groups.has(id) && typeof location === 'string' && zones.includes(location));
+  return [...groups];
 }
 
 function validatePlan(value: unknown, historical = false) {
@@ -85,7 +110,8 @@ export function validateSession(value: unknown): SavedSession {
       deal.usage ??= [...usage].map(([key, ids]) => [key, [...ids]]);
     }
   }
-  requireValue(saved.schemaVersion === 5);
+  requireValue(saved.schemaVersion === 5 || saved.schemaVersion === 6);
+  const firstGame = saved.schemaVersion === 6;
   const lobby = object(saved.lobby); requireValue(integer(lobby.revision));
   validateSavedCatalog(lobby.catalog);
   const codes = strings(lobby.usedCodes); requireValue(codes.every(v => /^[A-Z2-9]{6}$/.test(v)));
@@ -106,11 +132,28 @@ export function validateSession(value: unknown): SavedSession {
   const venue = object(game.venue); requireValue(text(venue.base, 64));
   requireValue(array(venue.zones, 12).every(z => text(z, 64)));
   requireValue(new Set([venue.base, ...venue.zones as string[]].map(v => (v as string).trim().toLocaleLowerCase('ru'))).size === (venue.zones as string[]).length + 1);
+  const zones = venue.zones as string[];
+  if (firstGame) {
+    const state = object(game.firstGame);
+    const { members } = validateRetained(state.retained);
+    requireValue(typeof state.locked === 'boolean' && (!game.started || state.locked) && [...members].every(id => ids.includes(id)));
+    requireValue(strings(state.waitingFree, 12).every(id => ids.includes(id) && !members.has(id)));
+    if (state.story !== undefined) {
+      const story = object(state.story); requireValue(text(story.title, 120) && text(story.prologue, 4000));
+    }
+    for (const [id, status] of pairs(state.presence, 12)) requireValue(ids.includes(id) && (status === 'at_base' || status === 'in_group'));
+    if (venue.order !== undefined) requireValue(strings(venue.order, 12).every(id => ids.includes(id)));
+    if (state.locked) {
+      const dwelling = object(venue.dwelling);
+      requireValue(state.story && zones.includes(dwelling.zone as string) && text(dwelling.place, 64) && text(venue.storyId, 40) && typeof venue.harder === 'boolean' && Array.isArray(venue.order));
+    }
+  } else requireValue(game.firstGame === undefined);
   if (game.roundSync !== null) {
+    if (firstGame) validateSearchBase(object(object(game.roundSync).base), zones);
     validateRoundSync(game.roundSync, game.roundId);
     const rebuilt = createRoundSync(game.roundSync, () => 'validation-only').current().exportState();
     const actual = object(game.search);
-    requireValue(JSON.stringify(rebuilt.roster) === JSON.stringify(actual.roster) && JSON.stringify(rebuilt.events) === JSON.stringify(actual.events) && rebuilt.finalized === actual.finalized);
+    requireValue(JSON.stringify(rebuilt.roster) === JSON.stringify(actual.roster) && JSON.stringify(rebuilt.events) === JSON.stringify(actual.events) && rebuilt.finalized === actual.finalized && JSON.stringify(rebuilt.retained) === JSON.stringify(actual.retained) && JSON.stringify(rebuilt.locations) === JSON.stringify(actual.locations));
   }
   const deal = object(game.dealing);
   for (const [key, ids] of pairs(deal.usage, 6)) { requireValue(/^(possessed|exorcist):[123]$/.test(key)); strings(ids); }
@@ -123,7 +166,7 @@ export function validateSession(value: unknown): SavedSession {
   requireValue(['lobby', 'between_rounds'].includes(game.waitingPhase as string));
   requireValue(['started', 'paused', 'rosterChanged', 'lastRoundAborted'].every(k => typeof game[k] === 'boolean') && duration(game.activeMs));
   requireValue(game.pauseReason === null || ['organizer', 'organizer_disconnected', 'participant_left', 'clock_gap', 'server_restarted', 'storage_error'].includes(game.pauseReason as string));
-  requireValue(nullableText(game.roundId) && nullableText(deal.dealId) && (deal.initialPossessedCount === null || integer(deal.initialPossessedCount) && deal.initialPossessedCount >= 1 && deal.initialPossessedCount <= 6));
+  requireValue(nullableText(game.roundId) && nullableText(deal.dealId) && (deal.initialPossessedCount === null || integer(deal.initialPossessedCount) && deal.initialPossessedCount >= (firstGame ? 0 : 1) && deal.initialPossessedCount <= 6));
   const assignments = pairs(deal.assignments, 12).map(([id, a]) => { requireValue(ids.includes(id)); return [id, assignment(a)] as const; });
   requireValue(new Set(assignments.map(([, a]) => a.id)).size === assignments.length && new Set(assignments.map(([, a]) => a.card.id)).size === assignments.length);
   requireValue(deal.dealId !== null || assignments.length === 0);
@@ -131,6 +174,8 @@ export function validateSession(value: unknown): SavedSession {
   if (game.phase === 'reading') requireValue(deal.dealId !== null && game.roundId === null);
   if (game.phase === 'lobby') requireValue(deal.dealId === null && game.roundId === null && !game.started);
   const settings = object(game.settings);
+  if (firstGame) requireValue(settings.ritualEnabled === true && settings.roundLimit === 7 && settings.tutorialEnabled === false &&
+    settings.placementSeconds === 45 && settings.searchSeconds === 240 && settings.infectionMode === 'on' && settings.initialDifficulty === 3 && settings.maximumDifficulty === 3);
   if (plan?.kind === 'tutorial') requireValue(settings.tutorialEnabled === true);
   requireValue(deal.dealId !== null || plan === null);
   if (plan && (game.phase === 'reading' || isTimedPhase(game.phase as Parameters<typeof isTimedPhase>[0])))
@@ -138,7 +183,7 @@ export function validateSession(value: unknown): SavedSession {
   const active = strings(game.activePlayerIds, 12);
   const original = strings(game.originalPossessed, 12); requireValue(original.every(id => ids.includes(id)));
   for (const [id, count] of pairs(game.history, 12)) requireValue(ids.includes(id) && integer(count) && count <= game.completedRounds);
-  const timed = isTimedPhase(game.phase as Parameters<typeof isTimedPhase>[0]);
+  const timed = isTimedPhase(game.phase as Parameters<typeof isTimedPhase>[0]) && (!firstGame || game.phase !== 'return');
   requireValue(!timed || active.every(id => ids.includes(id)));
   requireValue(timed ? duration(game.remainingMs) && game.remainingMs <= 3600000 && text(game.roundId, 256) && game.started : game.remainingMs === null && game.paused === false && game.pauseReason === null);
   requireValue(!timed || (game.paused ? game.pauseReason !== null : game.pauseReason === null));
@@ -157,10 +202,10 @@ export function validateSession(value: unknown): SavedSession {
   else {
     const search = object(game.search); requireValue(search.roundId === game.roundId && integer(search.version) && typeof search.finalized === 'boolean');
     const roster = pairs(search.roster, 12).map(([id, a]) => [id, assignment(a)] as const);
-    requireValue(roster.length >= 4 && new Set(roster.map(([, a]) => a.id)).size === roster.length && new Set(roster.map(([, a]) => a.card.id)).size === roster.length);
-    const rosterIds = roster.map(([id]) => id), groups = roster.filter(([, a]) => a.card.role === 'possessed').map(([id]) => id);
-    requireValue(groups.length >= 1 && groups.length <= Math.floor(roster.length / 2));
-    requireValue(active.every(id => rosterIds.includes(id)) && original.every(id => groups.includes(id)));
+    requireValue(roster.length >= (firstGame ? 1 : 4) && new Set(roster.map(([, a]) => a.id)).size === roster.length && (firstGame || new Set(roster.map(([, a]) => a.card.id)).size === roster.length));
+    const rosterIds = roster.map(([id]) => id), groups = firstGame ? validateSearchBase(search, zones) : roster.filter(([, a]) => a.card.role === 'possessed').map(([id]) => id);
+    requireValue(firstGame || groups.length >= 1 && groups.length <= Math.floor(roster.length / 2));
+    requireValue(active.every(id => rosterIds.includes(id)) && original.every(id => firstGame ? roster.some(([playerId, a]) => playerId === id && a.card.role === 'possessed') : groups.includes(id)));
     const events = array(search.events).map(v => object(v)); requireValue(new Set(events.map(e => e.id)).size === events.length);
     for (const e of events) {
       const a = object(e.action); requireValue(text(e.id, 256) && typeof e.undone === 'boolean' && rosterIds.includes(a.actor as string));
@@ -174,7 +219,8 @@ export function validateSession(value: unknown): SavedSession {
     // Reconstruct effective actions through the real rule boundary, including dependency keys.
     const typed = game.search as SavedSearch;
     let eventId = '';
-    const replay = createSearch(typed.roundId, new Map(typed.roster), () => eventId);
+    const replay = createSearch(typed.roundId, new Map(typed.roster), () => eventId, typed.retained);
+    if (firstGame) replay.restore({ ...typed, events: [], version: 0, finalized: false }, false);
     let effective = 0;
     for (const e of typed.events) {
       if (e.undone) continue;
@@ -197,12 +243,14 @@ export function validateSession(value: unknown): SavedSession {
   requireValue(game.freeplayFrom === null || integer(game.freeplayFrom) && game.freeplayFrom <= results.length && settings.roundLimit === null && settings.ritualEnabled === false);
   if (game.ritual !== null) {
     validateRitual(game.ritual);
-    const ritual = game.ritual, projection = createRitual(ritual, () => 'validation').snapshot();
+    const ritual = game.ritual;
+    requireValue(Boolean(ritual.firstGame) === firstGame);
+    const projection = createRitual(ritual, () => 'validation').snapshot();
     requireValue(ritual.roundLimit === game.progressionRounds);
     const expected = results.slice(0, game.freeplayFrom === null ? results.length : game.freeplayFrom as number).filter(r => r.kind === 'regular' && r.status === 'final');
     const applied = ritual.events.filter(e => e.kind === 'round');
     requireValue(applied.length === expected.length && applied.every((e, i) => e.id === expected[i].roundId && e.number === expected[i].number && e.successes === Number(expected[i].rescuedGroups) + Number(expected[i].missions)));
-    const initial = results.find(r => r.kind === 'regular');
+    const initial = results.find(r => r.kind === 'regular' && r.status !== 'aborted');
     if (initial) requireValue(ritual.players === Number(initial.totalGroups) + Number(initial.totalMissions));
     requireValue(projection.outcome === 'playing' ? settings.ritualEnabled === true && game.freeplayFrom === null && game.phase !== 'finished'
       : game.freeplayFrom !== null || game.phase === 'finished' && settings.ritualEnabled === true);

@@ -1,0 +1,26 @@
+{
+  "type": "pomekhi-task-result",
+  "taskId": "mvzkykzkqu7pzblte78",
+  "ok": true,
+  "result": {
+    "changed": [
+      "X08",
+      "X09",
+      "X10",
+      "G05",
+      "X13",
+      "X14",
+      "X15",
+      "X16",
+      "X17",
+      "X18",
+      "X19",
+      "X20",
+      "X21",
+      "X22",
+      "X23",
+      "X24"
+    ],
+    "initialOverlay": "17:22360"
+  }
+}

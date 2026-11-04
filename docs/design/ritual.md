@@ -1,5 +1,7 @@
 # Shared ritual and confirmed outcomes
 
+> The executable uses the [first-game design](first-game.md). Below, older round, dealing, scoring and schema behavior applies to compatibility fixtures; shared foundation behavior still applies.
+
 Status: implemented. The game remains cooperative without a separate human master. [Product requirements](../product/README.md) own intended rules; [the protocol](../../src/shared/protocol.ts) owns public wire shapes.
 
 ## Owners and interface

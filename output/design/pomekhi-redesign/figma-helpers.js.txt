@@ -1,0 +1,36 @@
+const D = DESIGN_STATE;
+const created = [];
+const vars = {};
+for (const [name, id] of Object.entries(D.variables)) vars[name] = await figma.variables.getVariableByIdAsync(id);
+await Promise.all([{family:'Golos Text',style:'Regular'},{family:'Golos Text',style:'Medium'},{family:'Golos Text',style:'Bold'},{family:'IBM Plex Mono',style:'Medium'}].map(f=>figma.loadFontAsync(f)));
+const paint = key => figma.variables.setBoundVariableForPaint({type:'SOLID',color:{r:0,g:0,b:0}},'color',vars['color/'+key]);
+function box(name,w,h,bg='surface',direction='VERTICAL',pad=24,gap=16) {
+ const n=typeof figma.createAutoLayout==='function'?figma.createAutoLayout(direction):figma.createFrame();n.layoutMode=direction;n.name=name;n.resize(w,h);n.primaryAxisSizingMode='FIXED';n.counterAxisSizingMode='FIXED';n.fills=bg?[paint(bg)]:[];n.clipsContent=false;
+ n.paddingTop=n.paddingBottom=n.paddingLeft=n.paddingRight=pad;n.itemSpacing=gap;
+ if(vars['space/'+pad])for(const k of ['paddingTop','paddingBottom','paddingLeft','paddingRight'])n.setBoundVariable(k,vars['space/'+pad]);
+ if(vars['space/'+gap])n.setBoundVariable('itemSpacing',vars['space/'+gap]);
+ n.cornerRadius=16;for(const k of ['topLeftRadius','topRightRadius','bottomLeftRadius','bottomRightRadius'])n.setBoundVariable(k,vars['radius/16']);
+ created.push(n.id);return n;
+}
+async function text(parent,content,style='Body',color='text',width) {
+ const n=figma.createText();n.name=style+' / '+String(content).slice(0,48);n.fontName={family:style==='Timer'||style==='Code'?'IBM Plex Mono':'Golos Text',style:['Hero','Title'].includes(style)?'Bold':['Label','Heading','Timer','Code'].includes(style)?'Medium':'Regular'};
+ await n.setTextStyleIdAsync(D.styles[style]);n.characters=String(content);n.fills=[paint(color)];n.textAutoResize='HEIGHT';parent.appendChild(n);
+ n.resize(width??Math.max(40,parent.width-parent.paddingLeft-parent.paddingRight),n.height);n.layoutSizingHorizontal='FIXED';n.layoutSizingVertical='HUG';created.push(n.id);return n;
+}
+function fill(parent,child){parent.appendChild(child);child.layoutSizingHorizontal='FILL';return child;}
+function hug(n){n.primaryAxisSizingMode='AUTO';return n;}
+function border(n){n.strokes=[paint('border')];n.strokeWeight=1;return n;}
+async function button(parent,label,tone='Primary',state='Default',w) {
+ const id=D.components?.buttons?.[tone+'/'+state];
+ const c=await figma.getNodeByIdAsync(id);if(!c)throw Error('Missing button '+tone+'/'+state);
+ const n=c.createInstance();n.name='Action / '+label;parent.appendChild(n);n.resize(w??Math.max(120,parent.width-parent.paddingLeft-parent.paddingRight),48);
+ const tx=n.findAll(x=>x.type==='TEXT');for(const t of tx){await Promise.all(t.getStyledTextSegments(['fontName']).map(s=>figma.loadFontAsync(s.fontName)));t.characters=label;}
+ created.push(n.id);return n;
+}
+async function tag(parent,label,color='amber',w=150) {const n=box('Badge / '+label,w,28,'raised','HORIZONTAL',4,4);parent.appendChild(n);n.cornerRadius=8;await text(n,label,'Small',color,w-8);return n;}
+async function field(parent,label,value,note) {const g=box('Field / '+label,parent.width-parent.paddingLeft-parent.paddingRight,104,null,'VERTICAL',0,8);hug(g);parent.appendChild(g);await text(g,label,'Label','muted');const b=box('Input',g.width,48,'raised','HORIZONTAL',12,8);border(b);g.appendChild(b);await text(b,value,'Body','text',b.width-24);if(note)await text(g,note,'Small','muted');return g;}
+async function notice(parent,title,body,tone='amber') {const n=box('Notice / '+title,parent.width-parent.paddingLeft-parent.paddingRight,110,'raised','VERTICAL',16,8);hug(n);parent.appendChild(n);await text(n,title,'Label',tone);if(body)await text(n,body,'Small','muted');return n;}
+async function sectionTitle(parent,eyebrow,title,body) {if(eyebrow)await text(parent,eyebrow,'Code','amber');await text(parent,title,'Title');if(body)await text(parent,body,'Body','muted');}
+async function rule(parent,label,body){await text(parent,label,'Label','amber');await text(parent,body,'Body');}
+async function connect(node,target,navigation='NAVIGATE') {await node.setReactionsAsync([{trigger:{type:'ON_CLICK'},actions:[{type:'NODE',destinationId:target.id??target,navigation,transition:{type:'DISSOLVE',easing:{type:'EASE_OUT'},duration:0.15},resetScrollPosition:true}]}]);}
+async function component(parent,name,title,body,w,h){const c=await figma.getNodeByIdAsync(D.components[name]);const n=c.createInstance();parent.appendChild(n);n.resize(w,h);const ts=n.findAll(x=>x.type==='TEXT');for(let j=0;j<ts.length;j++){const t=ts[j];await Promise.all(t.getStyledTextSegments(['fontName']).map(s=>figma.loadFontAsync(s.fontName)));t.characters=j===0?title:body;t.resize(w-32,t.height);t.textAutoResize='HEIGHT';}created.push(n.id);return n;}

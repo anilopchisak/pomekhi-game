@@ -64,12 +64,13 @@ export function CatalogEditor({ request, disabled, editable, generation }: {
       <label>Сложность<select disabled={locked} value={draft.card.difficulty} onChange={e => setDraft({ ...draft, card: { ...draft.card, difficulty: Number(e.target.value) as Difficulty } })}>{[1, 2, 3].map(n => <option key={n}>{n}</option>)}</select></label>
       <label>Название<input required maxLength={120} disabled={locked} value={draft.card.title} onChange={e => setDraft({ ...draft, card: { ...draft.card, title: e.target.value } })} /></label>
       {(draft.card.role === 'possessed' ? [['behavior', 'Поведение'], ['clue', 'Подсказка'], ['releaseCondition', 'Условие освобождения'], ['infectionCondition', 'Условие заражения']] : [['mission', 'Дополнительная миссия']]).map(([key, label]) => <label key={key}>{label}<textarea required maxLength={2000} disabled={locked} value={(draft.card as unknown as Record<string, string>)[key]} onChange={e => setDraft({ ...draft, card: { ...draft.card, [key]: e.target.value } })} /></label>)}
+      <label><input type="checkbox" disabled={locked} checked={draft.card.harder ?? false} onChange={e => setDraft({ ...draft, card: { ...draft.card, harder: e.target.checked } })} /> Только с набором «Сложнее»</label>
       <label><input type="checkbox" disabled={locked} checked={draft.enabled} onChange={e => setDraft({ ...draft, enabled: e.target.checked })} /> Использовать карточку</label>
       <button disabled={locked}>Сохранить карточку</button><button type="button" onClick={() => setDraft(undefined)}>Скрыть карточку</button>
     </form>}
     {catalog && <>
       <p>Ревизия банка: {catalog.revision}. Всего карточек: {rows.length}. Включено: {rows.filter(e => e.enabled).length}.</p>
-      <p>Для раздачи нужны уникальные карточки каждого участника и по одной запасной на роль. При нехватке текущего уровня используются более простые; ниже указаны запасы каждого уровня.</p>
+      <p>Для раздачи нужны уникальные карточки. Уровни ниже — метки банка. В первой партии уровень не меняется от раунда к раунду.</p>
       <ul>{(['possessed', 'exorcist'] as const).flatMap(r => [1, 2, 3].map(t => <li key={`${r}:${t}`}>{r === 'possessed' ? 'Одержимые' : 'Экзорцисты'} · уровень {t}: {rows.filter(e => e.enabled && e.card.role === r && e.card.difficulty === t).length}</li>))}</ul>
       <label>Роль карточек<select value={role} onChange={e => setRole(e.target.value)}><option value="all">Все роли</option><option value="possessed">Одержимые</option><option value="exorcist">Экзорцисты</option></select></label>
       <label>Уровень карточек<select value={level} onChange={e => setLevel(e.target.value)}><option value="all">Все уровни</option>{[1, 2, 3].map(n => <option key={n}>{n}</option>)}</select></label>

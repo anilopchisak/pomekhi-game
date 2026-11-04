@@ -1,0 +1,474 @@
+[
+  {
+    "id": "01",
+    "mechanic": "5-12 humans; organizer participates; computer has no player slot",
+    "status": "Represented",
+    "screens": [
+      "L02",
+      "L04",
+      "L27"
+    ],
+    "assessment": "Twelve-player layouts and admission limits are present; live balance remains outside a mockup."
+  },
+  {
+    "id": "02",
+    "mechanic": "Room invitation, join, private identity and organizer authorization",
+    "status": "Represented",
+    "screens": [
+      "L03",
+      "L30",
+      "L31",
+      "P03",
+      "P04",
+      "P05",
+      "P48",
+      "P49"
+    ],
+    "assessment": "Representative happy/error states and a scannable prototype invitation exist."
+  },
+  {
+    "id": "03",
+    "mechanic": "Agree boundaries, separate ritual room and exploration locations",
+    "status": "Represented",
+    "screens": [
+      "L05"
+    ],
+    "assessment": "Preparation names the spaces and approximately six locations for twelve players."
+  },
+  {
+    "id": "04",
+    "mechanic": "Prop-free Dwelling, three private digital missions and on-site offering",
+    "status": "Conflict",
+    "screens": [
+      "L05",
+      "M13"
+    ],
+    "assessment": "L05 still requires a vessel and three physical missions. No offering specimen or three-record digital preparation is shown."
+  },
+  {
+    "id": "05",
+    "mechanic": "Individual light, possession darkness and exorcist lighting",
+    "status": "Partial",
+    "screens": [
+      "P14",
+      "P15",
+      "P18",
+      "P40",
+      "M03"
+    ],
+    "assessment": "Dim-screen concealment and released-player light-on copy exist. The possessed/infected light-off instruction and ordinary flashlight restriction are absent from the screen corpus."
+  },
+  {
+    "id": "06",
+    "mechanic": "Separate shuffled decks, discard piles and stable hidden selections",
+    "status": "Partial",
+    "screens": [
+      "L07",
+      "L14",
+      "L25"
+    ],
+    "assessment": "Dealing/exhaustion specimens exist. Hidden deck/discard lifetime and Dwelling selection need a development specification; they do not require public secret-management controls."
+  },
+  {
+    "id": "07",
+    "mechanic": "Combine permitted indoor/outdoor/contact/harder subsets",
+    "status": "Partial",
+    "screens": [
+      "M23"
+    ],
+    "assessment": "Included/excluded categories are text lines. There is no selection control, changed state or apply-result specimen."
+  },
+  {
+    "id": "08",
+    "mechanic": "Choose environment-appropriate opening story and read prologue",
+    "status": "Partial",
+    "screens": [
+      "L06",
+      "M34"
+    ],
+    "assessment": "The visible story button has no reaction; M34 is a placeholder reachable only from review navigation."
+  },
+  {
+    "id": "09",
+    "mechanic": "First-game trial suppression versus ordinary seven-round play",
+    "status": "Partial",
+    "screens": [
+      "M02",
+      "L26"
+    ],
+    "assessment": "First-game suppression is explained; no mode selector or ordinary-mode configuration route is shown."
+  },
+  {
+    "id": "10",
+    "mechanic": "Alternating roles, reorder table before dealing, returner-only alternation",
+    "status": "Partial",
+    "screens": [
+      "L04",
+      "L07",
+      "L43"
+    ],
+    "assessment": "Alternating roster examples and reorder copy exist; the reorder interaction and resulting reassignment are not demonstrated."
+  },
+  {
+    "id": "11",
+    "mechanic": "Untimed private reading and complete assignment text",
+    "status": "Represented",
+    "screens": [
+      "P08",
+      "P09"
+    ],
+    "assessment": "Full authored e06/p03 specimens are readable and independently scrollable; this does not establish original-deck fidelity."
+  },
+  {
+    "id": "12",
+    "mechanic": "Concealment preserves phase and permitted actions",
+    "status": "Conflict",
+    "screens": [
+      "P08W320",
+      "P53W320",
+      "P01W320",
+      "P14W320",
+      "P40W320"
+    ],
+    "assessment": "Reading or placement can reach an active-card state through conceal/open, enabling round actions prematurely."
+  },
+  {
+    "id": "13",
+    "mechanic": "Before-start replacement preserves role and resets only recipient readiness",
+    "status": "Represented",
+    "screens": [
+      "L07",
+      "M05",
+      "L07R00",
+      "M05I11"
+    ],
+    "assessment": "All twelve recipients have representative replacement branches; the affected player re-reads."
+  },
+  {
+    "id": "14",
+    "mechanic": "Placement timing and role-specific waiting instructions",
+    "status": "Partial",
+    "screens": [
+      "L08",
+      "P13",
+      "P14"
+    ],
+    "assessment": "Laptop placement transition is 45s; phone placement transitions are 3s despite the 45s timer specimen."
+  },
+  {
+    "id": "15",
+    "mechanic": "Solo exploration, primary rescue and optional private mission",
+    "status": "Represented",
+    "screens": [
+      "P01",
+      "P02",
+      "M03"
+    ],
+    "assessment": "The core instructions and role-specific actions are present."
+  },
+  {
+    "id": "16",
+    "mechanic": "Infection: eligible active exorcists, empty list and unavailable target",
+    "status": "Represented",
+    "screens": [
+      "P21",
+      "P22",
+      "P23",
+      "M12"
+    ],
+    "assessment": "The state set exists; empty/raced-target cases are review specimens rather than linked asynchronous simulations."
+  },
+  {
+    "id": "17",
+    "mechanic": "Infected player copies the infecting group assignment; pending/error/retry",
+    "status": "Represented",
+    "screens": [
+      "P15",
+      "P16",
+      "P56",
+      "P57",
+      "P58",
+      "M27"
+    ],
+    "assessment": "All three phone widths have the same full p03 task, waiting/error and conceal/reopen states."
+  },
+  {
+    "id": "18",
+    "mechanic": "Same-task/location group release and immediate return without further actions",
+    "status": "Represented",
+    "screens": [
+      "M11",
+      "P17",
+      "P18"
+    ],
+    "assessment": "Group release is explicitly explained. Live correlated updates to several phones are outside Figma."
+  },
+  {
+    "id": "19",
+    "mechanic": "No exorcist mission credit after infection, even after release",
+    "status": "Partial",
+    "screens": [
+      "P15",
+      "P44",
+      "L12"
+    ],
+    "assessment": "The rule is written; P44 is isolated from the normal report/release flow and the reversal of an already-recorded mission is not demonstrated."
+  },
+  {
+    "id": "20",
+    "mechanic": "Normal recall addresses free players; unresolved groups stay",
+    "status": "Partial",
+    "screens": [
+      "L09",
+      "P29",
+      "P30"
+    ],
+    "assessment": "Correct separate instructions exist; retained-phone recall is not connected into the ordinary phase sequence."
+  },
+  {
+    "id": "21",
+    "mechanic": "Early round recall after reported coalition/excessive conversation",
+    "status": "Missing",
+    "screens": [
+      "L42",
+      "L01"
+    ],
+    "assessment": "No report/early-ritual action exists; pause and whole-party stop are distinct operations and do not replace it."
+  },
+  {
+    "id": "22",
+    "mechanic": "Retain unresolved assignments, groups and locations into the next deal",
+    "status": "Partial",
+    "screens": [
+      "L14",
+      "L43",
+      "L47",
+      "L45",
+      "P31"
+    ],
+    "assessment": "The host route demonstrates a subset deal, but the second active round has no recall/check transition and the retained phone is standalone."
+  },
+  {
+    "id": "23",
+    "mechanic": "A sole free returner becomes an exorcist and can continue",
+    "status": "Partial",
+    "screens": [
+      "L15",
+      "L44",
+      "L46"
+    ],
+    "assessment": "The scenario is drawn and internally linked; it starts only from the review catalog and has no subsequent checking route."
+  },
+  {
+    "id": "24",
+    "mechanic": "Synchronize phone journals, review conflicts and seal results before motion",
+    "status": "Represented",
+    "screens": [
+      "L10",
+      "L11",
+      "M25",
+      "L12",
+      "M06",
+      "A01"
+    ],
+    "assessment": "The sampled approve/reject result flow preserves confirmation-before-presentation."
+  },
+  {
+    "id": "25",
+    "mechanic": "Missing phone acknowledgement is not a physical result",
+    "status": "Partial",
+    "screens": [
+      "L37",
+      "M26"
+    ],
+    "assessment": "The warning is correct. The only recovery action returns to the canonical all-phones-received example; explicit offline resolution is unspecified."
+  },
+  {
+    "id": "26",
+    "mechanic": "Causal correction of mission, infection and release reports",
+    "status": "Partial",
+    "screens": [
+      "P20",
+      "M28",
+      "P45"
+    ],
+    "assessment": "Only mission undo is connected. Infection/release correction and the dependent-event blocked-undo branch lack complete entry paths."
+  },
+  {
+    "id": "27",
+    "mechanic": "Once-only rescue credit; no credit per infected copy; delayed rescue credit",
+    "status": "Represented",
+    "screens": [
+      "M11",
+      "L12",
+      "M25",
+      "L14"
+    ],
+    "assessment": "The accounting invariant is stated and used in examples. Durable arbitrary event combinations require implementation tests."
+  },
+  {
+    "id": "28",
+    "mechanic": "Seven hidden Master trials and addressed private instructions",
+    "status": "Partial",
+    "screens": [
+      "P42",
+      "P43",
+      "L28"
+    ],
+    "assessment": "Only generic placeholders exist; no concrete instruction, outcome input, 0/1-versus-2-prophecy branch or seven-trial sequence is specified."
+  },
+  {
+    "id": "29",
+    "mechanic": "N+1/2/3 candles, including eighteen candles and 46 steps at twelve humans",
+    "status": "Represented",
+    "screens": [
+      "L01",
+      "L32",
+      "L33",
+      "M04"
+    ],
+    "assessment": "Five/seven/twelve-player specimens and the twelve-player formula are present."
+  },
+  {
+    "id": "30",
+    "mechanic": "Sequential leftmost candle progress, reveal and exit; pause/skip motion",
+    "status": "Represented",
+    "screens": [
+      "A01",
+      "A02",
+      "A05",
+      "A06",
+      "A07",
+      "A08",
+      "A09",
+      "A03P",
+      "A12"
+    ],
+    "assessment": "Native forward/reveal/exit and reduced-motion specimens exist; score is specified as committed before animation."
+  },
+  {
+    "id": "31",
+    "mechanic": "Closed prophecy privacy and persistent access to revealed conditions",
+    "status": "Partial",
+    "screens": [
+      "A10",
+      "M40",
+      "M41",
+      "M43",
+      "M44P",
+      "M44VP"
+    ],
+    "assessment": "Shared-screen conditions are reopenable. Phone overviews provide only all-closed or all-open states, with no active one/two-revealed route."
+  },
+  {
+    "id": "32",
+    "mechanic": "Report prophecy violation, review it and apply a backward candle step",
+    "status": "Missing",
+    "screens": [
+      "A10B",
+      "A10"
+    ],
+    "assessment": "The backward animation exists, but there is no violation-report/confirmation input in the game UI. Tie/A-largest interpretations remain intentionally unresolved."
+  },
+  {
+    "id": "33",
+    "mechanic": "Carry ritual progress, round and revealed conditions across transitions",
+    "status": "Conflict",
+    "screens": [
+      "A10",
+      "L14",
+      "L16",
+      "L39"
+    ],
+    "assessment": "A10 -> L14 changes 34 steps and an open prophecy into 42 steps and closed cards. Terminal outcomes share an initial-state history specimen."
+  },
+  {
+    "id": "34",
+    "mechanic": "Round expiry and normal recall after pause, restart and later rounds",
+    "status": "Conflict",
+    "screens": [
+      "L42",
+      "L20",
+      "L01",
+      "L45",
+      "L46"
+    ],
+    "assessment": "Only L42 has the 240s recall reaction. Resume enters L01, and L45/L46 have no phase-expiry navigation."
+  },
+  {
+    "id": "35",
+    "mechanic": "Victory, seventh-check defeat, total-possession defeat and explicit stop",
+    "status": "Partial",
+    "screens": [
+      "L16",
+      "L17",
+      "L18",
+      "L19",
+      "L38",
+      "L39"
+    ],
+    "assessment": "Distinct screens and the already-free-player exception exist. Endings are not all connected and final history does not retain their outcome/progress."
+  },
+  {
+    "id": "36",
+    "mechanic": "Offline own-phone records, group continuity and paused disk recovery",
+    "status": "Partial",
+    "screens": [
+      "P24",
+      "P25",
+      "P39",
+      "L21",
+      "P56",
+      "P57"
+    ],
+    "assessment": "Representative connectivity/recovery states exist; restored phase and clock continuity are not consistently demonstrated."
+  },
+  {
+    "id": "37",
+    "mechanic": "Late admission, skip next deal and leave without discarding an active task",
+    "status": "Represented",
+    "screens": [
+      "P33",
+      "P34",
+      "P35",
+      "M08",
+      "M08A"
+    ],
+    "assessment": "States and active-task restrictions are present. Arbitrary admission combinations are not simulated."
+  },
+  {
+    "id": "38",
+    "mechanic": "Card/trial priority over common rules, technical-help and emergency exceptions",
+    "status": "Partial",
+    "screens": [
+      "P01",
+      "M24",
+      "M14"
+    ],
+    "assessment": "Technical help and stop are available, but the teaching does not explain full card-versus-prophecy precedence and its exclusions."
+  },
+  {
+    "id": "39",
+    "mechanic": "Sound permissions and textual phase announcements",
+    "status": "Represented",
+    "screens": [
+      "M07",
+      "L36",
+      "P46"
+    ],
+    "assessment": "Volume/block states and textual alternatives are shown. Actual audio delivery and licensing are deferred."
+  },
+  {
+    "id": "40",
+    "mechanic": "Complete verified missions, prophecies, stories and adapted trials",
+    "status": "Source dependent",
+    "screens": [
+      "M18",
+      "M31",
+      "M34",
+      "M40",
+      "P42"
+    ],
+    "assessment": "The bank preserves 90 authored IDs. Only p03/e06 are full UI specimens; story/trial content is incomplete and prophecy examples are explicitly unverified adaptations."
+  }
+]

@@ -1,117 +1,172 @@
-# Game requirements and implementation status
+# Target game rules
 
-Source: the user's game-planning decisions in this chat before the project setup request. These are intended rules, not claims that the scaffold implements them. Current requests can revise them explicitly.
+Accepted direction: reproduce the rules of Oderzhimye, replacing the human Great Master with the computer. The organizer remains a playing medium. [Current implementation](current-implementation.md) describes the shipped first-game variant and the remaining differences. Technical [design documents](../design/README.md) describe that implementation until their mechanisms are changed.
 
-## Implemented now
+The [player rulebook in Russian](../../output/player-rules/RULES-RU.md) explains these target rules in plain language. It is a target rulebook, not an instruction manual for the current build. For gameplay explanations, player documentation and rule changes, agents follow the [game rules workflow](../agent/game-rules.md) to select and verify the applicable ruleset.
 
-The browser provides an organizer panel and a phone lobby. One locally saved room supports up to 12 participants, code/name entry, HTTPS invitations with locally generated QR, separate organizer authorization, participant removal/leave and identity recovery after reconnect or refresh. The organizer joins from a phone; the laptop does not consume a slot. A full restart restores the last saved lobby and phone credentials; the organizer code changes. HTTP health and Socket.IO readiness retain the foundation-stage contract; the authorized lobby snapshot establishes actual membership.
+## Authority and adaptation boundary
 
-Private-card dealing and untimed reading are implemented with a 90-card three-level bank. Players reveal/hide cards, mark readiness and request replacements; the organizer replaces one card, reshuffles all roles/cards or cancels. Timed rounds, pause, finite/endless parties and short laptop signals are implemented. Release/infection, mission scoring, undo and team results are implemented. Paused disk recovery, durable offline actions, synchronization review, named zones and local invitations are implemented. Shared candles, revealed prophecies and ritual victory/defeat are implemented. Procedural atmosphere, broadcast and optional phone effects are implemented. The editable persistent catalog and room deck cycles are implemented. Recorded music and voice remain future work. See [lobby design](../design/lobby-sessions.md) for current authorization and recovery behavior.
+The reference is the supplied 16-page Russian Oderzhimye rulebook, also available through the [publisher's rules page](https://nizagams.ru/rules/oderzhimye/). Page references below identify that rulebook. The user's instruction of 2026-11-03 makes original-rule fidelity the target; previous custom mechanics do not remain requirements merely because they are implemented.
 
-[The shared protocol](../../src/shared/protocol.ts) owns current wire shapes. Add game wire contracts with their implementation owner, rather than treating prose as an already published API.
+Preserve original preparation, roles, movement, mission conditions, capture, release, persistent possession, checking, candles, prophecies, victory and defeat. Change only what is needed to replace the Great Master with software and to record the same physical play through private phones. The computer is not a medium, does not occupy a player slot and cannot be captured.
 
-## Participants and access
+Necessary computer adaptations are identified below. Unresolved interpretations are listed separately and must not be presented as original rules. Additional horror tiers, new mission families, branching stories, extra rituals and balance changes from the earlier audit are proposals, not accepted rules in this revision.
 
-The organizer participates. The laptop provides the shared display and is the only place for dealing cards, starting rounds, pausing and changing stages. Phones provide private cards and game actions. Players join through a link/QR code, room code and name without accounts.
+The user's later instruction of 2026-11-03 explicitly requires paper-free play. Physical mission cards, printed copies, paper tokens, drawing sheets and cardboard task props are therefore excluded. Phones retain private cards; a Dwelling offering becomes an on-site card-defined act plus an honest report. This is a user-authorized adaptation of the original physical deposit, not a quotation from the rulebook. The first-game variant includes authored on-site offering missions.
 
-The primary deployment is a local laptop server plus free Tuna access over mobile Internet. A separate LAN launch supports a shared hotspot without a tunnel when clients can reach the laptop. Windows and macOS are laptop targets; iOS Safari and Android Chrome are phone targets. No paid hosting or runtime AI service is required. The organizer's Tuna session stays in the system keyring, outside the game. ngrok is an optional manual fallback following the switch to Tuna.
+The user's subsequent instruction of 2026-11-03 also removes carried and pre-positioned task props. Play uses bodies, voices, phones and naturally available spaces. The Spirit Dwelling is an agreed empty place. Existing house mirrors are an explicit exception: the follower is released by actually seeing its own face; no mirror is brought, turned or staged. Object-dependent authored missions and trials are adapted explicitly rather than presented as unchanged original cards. Use the authored prop-free cards available for this variant.
 
-## Roles and round lifecycle
+The PDF contains examples, not every commercial card. Do not invent missing card text or claim the existing authored bank reproduces the original decks. Exact card-level alignment requires the corresponding original content; the game structure below is established by the rulebook.
 
-Original possessed players receive private behavior, a clue, a release condition and an infection trigger when enabled. Exorcists receive a small optional private mission in addition to releasing possessed players. Initial role selection is uniform for a chosen possessed count. Later overall deals favor members with fewer completed possessed rounds, with random ties. Preview reshuffles and aborted rounds do not count as played rounds.
+## Participants and physical setup
 
-The laptop deals cards first. Reading is untimed. Readiness indicators never start the timer. A person then starts the round on the laptop. A configurable placement head start lets possessed players leave the base before exorcists. Search and return phases advance automatically.
+All human participants are mediums; the organizer sets up the application and plays on the same terms as everyone else. A shared laptop hosts the computer Master and ritual display. Phones provide private cards and reports of physical actions. Computer administration must not turn the organizer into a separate acting Master.
 
-Participants may walk alone or in pairs; solo search is preferred, not mandatory. Tasks require no running, stairs, binding, compulsory physical contact or special props. Search zones have editable names; the base is distinct from those zones.
+The boxed game is advertised for 6-12 people including its human Master. With that role replaced, the direct equivalent is 5-11 human mediums plus the computer. The approved UX/UI design extends the target to 5-12 human mediums, including the organizer, with the computer taking no player slot. The twelve-human extension requires separate live balance validation; the current application's 4-12-human capacity is not a target balance guarantee. At twelve humans, the unchanged N+1/2/3 formula starts with 13/2/3 candles: 18 virtual candles and 46 forward steps before penalties. This capacity is implemented for the first-game variant.
 
-Participants judge physical actions on trust. A possessed participant reports release or selects a exorcist to infect. The infected exorcist joins that original possessed player's group and receives its behavior. One successful release clears the group. Score the original possessed player at most once, regardless of group size.
+Choose a familiar, safe playing area and agree its boundaries. Use approximately half as many locations as mediums; the rulebook suggests about 4-6 locations in typical play. Designate a ritual room with the ritual table, distinct from exploration locations (page 4).
 
-Released participants return to base until search ends. End search early when all originals are released or no exorcist can continue. Infection resets after each round; nobody is eliminated from later rounds.
+Choose a remote or particularly unsettling place within a permitted location for the Spirit Dwelling and agree its position verbally. No vessel, marker or prepared item is placed there. The original puts three random exorcist mission cards inside the game box (pages 2 and 4); in the accepted prop-free adaptation those three mission records stay private and digital, associated with the agreed place. This provides no additional draw, point or reward. Original deposit-symbol missions become an on-site gesture or spoken address while the player retains their phone.
 
-Exorcists report mission completion themselves. Count missions separately from rescues, without individual rankings. A mission performed during search can be reported before the next deal. Software does not judge live physical completion.
+Each medium has an individual light source. Use dim phone screens by default; ordinary bright phone flashlights are excluded. The original permits alternative portable light sources with reduced brightness when phones cannot be used (page 2).
 
-## Settings and progression
+## Decks and ritual preparation
 
-Seven normal rounds are the default, with configurable count and endless mode. An optional tutorial precedes these rounds, uses level 1 and enables infection in on mode. It includes role instructions and a full manually started practice round. Tutorial outcomes remain visible but contribute neither normal round count, team totals/active time nor possessed-role history. Aborted attempts repeat the same progression position.
+The original contains 75 possessed missions, 42 exorcist missions, 11 Master trials, 6 story cards, 11 prophecy cards including the final door card, and 17 candle tokens (page 3). Counts describe the source game, not the current digital bank.
 
-Initial and maximum difficulty are configurable from 1 to 3, initially 1 and 3. For normal round i within the original horizon N, use initial + round((maximum - initial) * (i - 1) / (N - 1)); a one-round party starts at the initial level. Default levels are 1, 1, 2, 2, 2, 3, 3. Tutorial, difficulty range and length cannot change while cards are issued or after the first start. Before that start, cancel reading to reconfigure.
+Include all ordinary possessed cards. Add indoor, outdoor, physical-contact and harder-card subsets only when they fit the setting and the group's agreement. These subsets may be combined (page 6). There is no mandatory three-level difficulty progression and no automatic increase in horror intensity.
 
-Infection defaults to on, including tutorial and the first normal round. Off disables it throughout. Auto is an explicit alternative: tutorial has no infection, then infection begins at normal round max(2, ceil(0.75 * N)), round six for seven rounds. The choice persists until changed. Infection mode and durations remain editable before starts; changing durations alone preserves an already issued effective infection flag.
+Prepare the ritual as follows (pages 5-6):
 
-In endless mode the opening seven rounds provide progression, then the selected ceiling remains. A finite bank is reused after exhaustion; endless mode does not mean infinitely unique or AI-generated tasks. A finished finite party can continue with extra rounds at its selected ceiling, without recalculating the original horizon.
+1. Shuffle exorcist missions and possessed missions separately. Maintain their separate discard piles.
+2. Select two random ordinary prophecy cards for A and B, face down. Place the final door prophecy in C, face down. A/B/C are the protocol's labels for the three positions printed in the Russian rulebook.
+3. For N human mediums, place N+1 candles on A, two on B and three on C. The computer replaces the Master and is not included in N. Seven human mediums therefore start with 8/2/3 candles, requiring 31 forward steps, before penalties.
+4. Shuffle the Master trials and select seven for the party, one per round. Their computer adaptations preserve hidden conditions and effects; they are not ordinary exorcist missions.
+5. Select one story fitting the environment, or choose randomly. Read its prologue before the first round. The original supplies opening stories, not a mandatory branching campaign.
 
-Implemented defaults: 45-second placement head start, three-minute search, 45-second return, tutorial enabled, low initial difficulty and high maximum difficulty. The primary party has seven players and three original possessed players. The current dealing range is 4-12 players, including offline members, with at least two exorcists and no more original possessed players than exorcists at an overall deal. Its default possessed count is min(3, floor(n/2)). Phase durations are implemented; see [timed-round design](../design/rounds.md). This initial balance does not constrain future infection.
+The computer stores the chosen story, prophecy cards, trial order and issued mission content. Reloading must not reroll hidden information or undo earned progress.
 
-The final summary shows team rescues, completed additional missions, results per round and active time excluding breaks. There is no personal leaderboard. The confirmed ritual adds a shared victory/defeat objective for new finite parties.
+## Seven rounds and three phases
 
-## Current reading behavior
+The party has seven rounds. Each round consists of preparation, exorcism and checking (page 4). Digital reading, placement, recall and review screens are subdivisions of these phases; they do not change who may act or return.
 
-An overall deal randomly assigns the selected number of possessed and one unique card per member at the round difficulty or a simpler fallback. A full shuffle issues new cards to every member, resets readiness/requests and may change roles. An individual replacement preserves the role and resets only its recipient. Requests clear readiness; withdrawing a request does not restore it. All-ready never starts gameplay.
+### Preparation
 
-Late participants during reading receive one role/card without changing existing assignments or readiness. Restore fewer than two exorcists first, then a missing possessed role; otherwise randomly select an allowed role, forcing exorcist when possessed are at least as numerous. Leave/removal deletes only the departing assignment. If the remaining composition is unsuitable, show a generic warning; keep everyone's cards until the organizer reshuffles or cancels. Cancel retains membership.
+Deal alternating exorcist and possessed mission cards in order around the ritual table, starting with an exorcist. Participants read privately and conceal their cards. Changing position at the table between rounds changes which role they receive (page 7). The computer uses an explicit virtual table order in place of a physical dealer; it must preserve this alternation rather than introduce fairness-weighted role selection.
 
-Cards are initially closed and become closed again after refresh or replacement. Brief reconnection retains the open screen. Server-held card/readiness survive browser recovery through the existing participant key. Public metadata excludes roles, card content and changing actual role counts; the count setting applies to a new overall deal. See [dealing design](../design/dealing.md).
+Unreleased possessed and captured mediums remain in their locations and keep their mission. Only free mediums at the ritual table take part in the next deal. This returner-only dealing follows the combined instructions on pages 7, 9 and 14; the digital edge cases are made explicit below.
 
-## Implemented round controls
+The computer selects the next hidden trial. Before the first exorcism it presents the selected story. It then tells exorcists to remain at the table while newly possessed mediums go to their chosen allowed locations. Exorcists may discuss strategy during preparation. The computer announces when they may leave to explore.
 
-The lifecycle is lobby, reading, placement, search, return, break and finished. Only the three timed phases advance automatically. Each new deal and start is manual. Defaults are seven rounds and 45/180/45 seconds. Initial finite count accepts 1-99 or endless; length/mode lock at first start. Durations accept 1-3600 seconds and remain editable before later rounds. A finite finished party can add one extra round, while endless mode can finish manually in a break. The final display shows team rescues, missions, captured-player counts and active time.
+Reading is untimed. No person needs to expose a private card to the organizer to receive ordinary instructions. A request for accessibility, technical help or a stop is outside the fiction and is never a capture trigger or prophecy violation.
 
-Start requires valid assignments and no replacement requests; unready/offline members require confirmation. Pause freezes the phase and exact remainder, directing players to stop and wait safely. The last organizer-panel disconnect, a storage failure and a long laptop clock/control gap pause automatically. Player departure, removal, withdrawal and phone disconnect do not pause. Resume remains manual; a changed roster requires confirmation, and an empty active roster can only abort. Early search finish starts the full return timer. Return completion credits the round; confirmed abort enters a break without credit and instructs everyone to return to base.
+### Exorcism
 
-New timed-phase arrivals wait for the next deal, including during pause. Existing participants restore their card/current phase. Card/readiness changes and reshuffles are available only during reading. Previous cards remain readable during breaks until new cards are dealt. Short quiet signals play only on an explicitly selected laptop panel with volume/mute; browser recovery does not replay them. Phones play only explicitly enabled rare personal effects during normal search. Full restart restores the party and pauses active phases. See [round design](../design/rounds.md) for ownership and time recovery.
+Possessed mediums stay in their selected location, turn off their light source once positioned and perform their card. They cannot leave or return to the ritual room until released. Captured exorcists remain with their captor and copy the same mission (pages 8 and 14).
 
-## Implemented search actions and results
+Exorcists move alone. Coalitions and joint exploration are forbidden, but brief conversation when participants meet is allowed. Their primary goal is to release possessed mediums; they may also attempt their private mission before checking. They keep their light source on unless a card specifically instructs otherwise. They cannot return to the ritual room before the ritual call unless an applicable mission or trial overrides that restriction (pages 8, 12 and 14).
 
-Before each start, the organizer can choose automatic, on or off infection mode; the issued round exposes its effective infection flag. Each possessed card has an original infection condition. Any active possessed/captured group member can capture a still-active exorcist, after selecting their name and confirming. Any group member can report group release. Released players return to base without acting again. Capture removes mission credit even if the mission was already completed; release does not restore it.
+The possessed performer judges physical release and capture. If an exorcist meets the release condition, the released medium thanks them, turns on their light and immediately returns to the ritual room without interacting with others. Release of a possessed or captured medium also releases mediums in that location performing the same mission (page 8).
 
-Players can undo their latest effective action only without dependent subsequent events. Undo never reopens search. All new gameplay stops on pause; bookkeeping undo remains possible. Search returns automatically when no active exorcist or no active possessed group remains. Public screens reveal no current progress before return finishes.
+If an exorcist meets a card's capture condition, the possessed performer tells them to turn off their light and repeat the behavior, then explains or shows that mission. The captured exorcist remains with the group until release. Possession and capture do not expire at a round boundary.
 
-Return completion creates provisional team results with fixed starting denominators and time excluding pauses. Missions may be reported until a successful next deal, manual party finish or explicit result finalization seals the row. The last finite round stays provisional until sealed. Aborted attempts are displayed separately and excluded from team totals. Departures retain history/denominators, and remaining captured members can continue their group. See [search design](../design/search-actions.md).
+The original does not impose an exact exorcism duration; approximately four minutes is guidance. The Master decides when to call the ritual and must end exorcism immediately on observing excessive conversation or coalitions. Players must not set their own timers or alarms (page 9). The computer replaces the Master's timing decision with an authoritative clock and a clear global recall announcement. A participant report supplies facts the computer cannot observe. A fixed visible phone countdown is not an original requirement. The user-approved digital interface now shows placement and exorcism countdowns on the shared laptop and private phones. Design specimens use 45 seconds for placement and four minutes for exorcism; these are interface defaults, not exact durations imposed by the original. Reading and checking remain untimed. Pause freezes remaining time; a disconnected view shows unknown time until it receives an authoritative snapshot. The first-game runtime implements these timer defaults.
 
-## Shared ritual
+At the normal ritual call, free exorcists return immediately. Already released mediums remain at the table. Unreleased possessed and captured mediums stay in their existing locations. A global recall of everyone is reserved for party termination, an emergency stop or a technical interruption that requires regrouping.
 
-New finite parties enable the ritual by default; it can be disabled before the first deal. Endless mode is freeplay without a ritual. At the first normal start freeze the goal using the actual roster, including offline players. Seven players/seven rounds start with 7/2/3 candles on A/B/C, requiring 28 steps. Other lengths and rosters use the scaling formula in [ritual design](../design/ritual.md). This initial balance requires a live rehearsal.
+### Checking
 
-One confirmed rescued original group or eligible mission moves one candle one position: A, then B, then C, then out. The program opens two distinct original base-only prophecy rules and a final release card in order. Open rules accumulate and remain open after penalties. Players report violations at base; an authorized panel applies one backward step from the largest eligible pile, breaking ties toward the farthest. The latest penalty can be corrected until another start or confirmation. Required announcements, rules, technical recovery and safety communication are exempt.
+Returning mediums discard their completed assignment as appropriate and report their result. Checking records completed play; it is not extra time to perform a new mission at base (pages 8-9).
 
-After return, synchronize phones and resolve conflicts or force-close waiting. Then explicitly confirm the round before a new deal or party finish. Preview reveals no hidden prophecy. Confirmation seals the result, advances once and checks immediate victory before last-round defeat. Tutorial/aborted attempts earn no progress. Full capture does not end the party. Early manual finish is stopped. A confirmed continuation allows separate freeplay results while retaining the immutable ritual outcome. See [ritual design](../design/ritual.md).
+- Each released possessed mission contributes one success.
+- Each exorcist who completed their mission and was not captured contributes one success.
+- A captured exorcist contributes no success for that assignment even if their mission was completed before capture or they were subsequently released.
+- The computer contributes the trial result required by that round's adapted Master card.
 
-## Task bank and editor
+For digital accounting, each original possessed assignment can earn its rescue credit once, including when it survives into a later round. Captives copying that assignment do not create extra rescue credits. Reporting an action twice, reconnecting or confirming the same result again cannot award another success.
 
-Ship original tasks rather than copying commercial card text. The implemented bank has 60 possessed tasks (20 at each level) and 30 exorcist missions (12 at level 1, 9 at level 2, 9 at level 3). Existing card IDs remain stable. Selection prefers the current level, then the nearest simpler level, so 11 exorcists can receive unique cards. Level 1 uses a simple action; level 2 uses linked actions; level 3 uses short sequences or memory. Possessed cards include optional infection conditions. Release conditions need actionable clues. Extra missions must not sabotage the main rescue goal.
+Reconcile physical reports and delayed phone records before sealing the result. Players may remain physically in their locations while reporting; synchronization does not require unreleased groups to return to the table. A missing phone acknowledgement is not evidence that its owner is possessed, free or absent.
 
-A separate laptop editor adds, edits, disables, imports and exports tasks. Organizers can launch without opening the bank and spoiling themselves. Edits apply to later deals, not issued cards. Cards can be replaced before start. Participants may opt out of their own round without leaving the room. This is not a rescue; other group members continue and prior achievements remain.
+Each success moves one candle one position to the right. Resolve the ritual and ending conditions before preparing another round.
 
-## Atmosphere and recovery
+## Persistent possession and the next deal
 
-The shared screen resembles an old television and a strange recording: readable text, restrained interference and short unsettling inserts. Phone instructions remain dark and readable without interference over text.
+Retain each unresolved mission, its possessed/captured members and physical location between rounds. The next preparation neither clears these groups nor redeals their members. Members do not gain a new mission merely because a new numbered round begins.
 
-Search uses quiet suspense, whispers, knocks and interference without sharp volume jumps. Gathering may include mild unexpected visual inserts. Effects can be disabled. Ambient sound and phase signals play on one selected laptop panel; phones may opt into rare short effects. Voice remains planned; implemented short signals distinguish phase transitions and briefly duck the ambient background.
+Deal to the returning subset in virtual table order, starting with an exorcist. One returning medium therefore receives an exorcist card and can attempt to free retained groups. The minimum size for starting a party must not prevent a later deal to fewer returners. Do not force at least two exorcists or restore a global possessed/exorcist ratio by releasing or redealing unresolved groups.
 
-The server owns phases, deadlines, assignments and results. Blocking or refreshing a phone restores its previous assignment and current phase, without re-dealing. Prevent duplicate state changes and scores. Organizer commands and delayed scare events must not replay automatically after reconnecting. Stable player journal entries are resent and reconciled explicitly.
+For example, seven mediums begin with four exorcists and three possessed. If two possessed are released and the third captures an exorcist, five mediums are available at the table and two remain in one unresolved group. The next deal gives new cards only to those five. If later only one medium is free, that medium can continue as the sole newly dealt exorcist.
 
-Save state locally. After restart recover the last saved game on pause rather than replaying missed activity. Organizer controls require separate authorization. Public snapshots and client bundles must not contain the bank or other players' private conditions.
+## Candles and prophecies
 
-## Offline participation and synchronization
+Always move candles from the leftmost nonempty prophecy position: A to B, then B to C, then C off the board. Empty A before moving from B, and empty B before moving from C. Reveal cleared prophecy cards in order during checking (pages 10-11).
 
-Players can record release, infection, received-infection notices, missions, withdrawal and causal undo without a connection. IndexedDB commits before showing a provisional effect. The phone keeps its own authorized view only; other participants and the timer are marked unconfirmed. Read a source card physically after a received infection; the full new card arrives after synchronization. Reconnect restores identity before sending stable event IDs and obtaining receipts.
+Opened prophecy conditions apply to all mediums at the ritual table until the party ends. A and B accumulate. The computer, replacing the Master, is exempt. Its announcements and interface must explain the active conditions without exposing unopened cards.
 
-After return all frozen participants, including withdrawn members, must confirm synchronization before the next deal or finalization. Conflicts go to organizer review without card content. The organizer may explicitly close waiting with a warning; later actions cannot change a closed score. The server persists accepted events, review decisions and waiting confirmations in schema version 4. See [offline design](../design/offline-play.md) for timing, ordering and recovery rules.
+When a medium ignores an active prophecy, call attention to the violation and apply the original one-step backward candle rule. Select the pile with the most candles, considering candles already off the board as described on page 11. A candle cannot be moved off the left edge from A. Do not silently replace this with a larger penalty, lost score, newly hidden prophecy or an invented tie rule. The remaining interpretation cases are listed below.
 
-## Acceptance
+Mission and trial effects override conflicting base rules and prophecy effects, as in the original (page 12). Technical communication and an emergency stop must remain possible regardless of an in-fiction speech restriction.
 
-Next implementation stages: voice, recorded music and the optional spirit-box extension. Lobby membership, private cards, untimed reading, timed rounds and browser credential recovery are implemented. Each stage adds actual tests and updates implementation status.
+## Victory and defeat
 
-Required external scenarios include Windows/macOS startup, iOS/Android lock-and-return, dim-light readability, voice audibility in all zones, and actual mobile-carrier/Tuna access. Foundation integration tests do not establish these acceptance results.
+The team must reveal all three prophecy cards and remove all their candles no later than the end of round seven. If candles remain after the seventh check, the team loses. If no medium can return to the ritual table when called because everyone is possessed/captured, the team loses (pages 3 and 10).
 
-## Implemented atmosphere
+Count already returned freed mediums when determining whether anyone remains available. Capturing every currently searching exorcist does not by itself establish total-party defeat. Disconnects, unreconciled events and unconfirmed return reports must not be converted automatically into captivity or defeat.
 
-Broadcast at /?screen=display uses organizer authorization and shows public phase, timer, ritual and post-return results without game controls. The host can enable CRT edge effects or fullscreen; phones retain readable cards. Reduced motion disables decorative animation. Procedural audio needs no files or Internet: quiet reading/breaks, tense placement/search, calmer return and silence on pause/finish. Separate background/signal/effect levels and mute are local to the selected panel.
+On victory, defeat or an explicit stop, clearly recall everyone and close the party. No new round or freeplay can revise its result. Endless play, extra scored rounds and continuing a lost party with reset roles are not part of the original-rules game.
 
-Phone effects are optional. Each player explicitly enables and hears a sample, with a 15-percent default and 30-percent maximum slider. A regular search of at least 40 seconds gives each eligible sound owner a 50-percent chance of one 0.3-0.7-second effect between second 20 and the final 10 seconds. Tutorial has none. Hidden tabs, pause, disconnect, release, withdrawal and disabled sound cancel pending effects without replay or a replacement draw. The organizer can disable all phone effects; server recovery leaves that switch off. See [atmosphere design](../design/atmosphere.md).
+## Computer Great Master
 
-## Implemented catalog and deck history
+The computer owns administration formerly performed by the human Master: dealing, private trial selection, story delivery, start and recall announcements, checking, candle movement, prophecy revelation and ending adjudication.
 
-The organizer opens /?screen=editor explicitly. Titles/tasks remain concealed until a card is opened. Add/edit role, difficulty, text or enabled state; JSON export/import transfers the whole bank after comparison and confirmation. Changes are allowed without a room, in lobby, breaks and finished state; issued reading/timed cards remain unchanged. The catalog persists between rooms and restarts. Standard reset replaces edits but retains room usage. Full corrupted-save recovery reset also resets the catalog after an explicit warning.
+Preserve these trial properties (pages 6 and 13):
 
-Every issuance consumes the room role/level cycle, including tutorial, reshuffles, replacements and canceled rounds. Exhausted pools cycle at the same difficulty before simpler fallback. Unique current cards, the recipient's previous-card exclusion and one spare per role remain required. Invalid capacity/admission fails without partial state. New rooms reset usage, not the edited bank. Schema 5 preserves catalog, usage and retry identity. See [catalog design](../design/card-catalog.md).
+- Seven selected trials provide the seven-round sequence.
+- Trial instructions and scoring conditions remain hidden except for the specific instruction an affected medium must receive.
+- Apply the card's appropriate outcome for zero/one versus two opened prophecies. Do not substitute a flat automatic bonus.
+- Announce the trial result at checking without requiring the organizer to inspect private conditions.
+- The computer is not captured, does not receive a normal medium mission and does not earn credit merely for issuing an announcement or playing a sound.
+
+Use honest participant reports for physical facts the Master would observe. Affected players receive private instructions and report what happened; conflicting evidence stays subject to explicit review. The computer must not pretend to have heard speech, tracked locations or observed fear.
+
+Preserve a feasible original trial directly. If a trial requires the Master to walk, follow or personally frighten someone, give it an individually documented computer adaptation preserving its instruction, hidden objective and result as closely as possible. Such adaptations must be identified as adaptations, not verbatim original cards. Removing the entire trial system would remove a game mechanic beyond the authorized replacement of the Master.
+
+The computer provides card-specific explanations for ordinary interpretation questions. Original cases not resolved by the supplied material remain explicit questions for card-level review, rather than discretionary new scoring by the organizer.
+
+A phone screen substitutes for a physical card; a private near-black view can substitute for concealing it during possession. Temporary access to a card or action must not change role or score. Browsers cannot guarantee an extinguished backlight, background sound delivery or physical location, so accessible presentation and participant confirmation are required.
+
+For a prop-free Dwelling offering, the medium must actually reach the agreed empty place and perform the card's stated gesture or phrase. They retain their phone and leave no object. The future application records an explicit report; until that mechanism exists, editorial walkthroughs use an honest report at checking. A remote report alone does not establish arrival. Do not introduce camera, location or proximity claims, additional card draws, points or rewards as substitutes. A trial formerly requiring the Dwelling to be carried is individually adapted as an on-site call, an explicitly permitted early return with a remembered fictional address, and a return visit. Its physical actions need reports; the computer does not hear or observe them.
+
+## First game and permitted subsets
+
+The original first-game variant lasts seven rounds but suppresses Master trial effects throughout. The selected trials only count rounds; the computer still manages dealing, announcements, prophecies and candles (page 12). It earns no replacement automatic success for a suppressed trial.
+
+The optional harder, indoor, outdoor and physical-contact subsets remain available according to page 6. Agree the applicable subsets before preparing the deck. A brief explanation of phone controls is application onboarding, not an additional scored or obligatory tutorial round.
+
+Pairs, endless mode, arbitrary round counts, global capture-off settings, escalating difficulty, horror-level progression, new plot mechanics and extra rituals are outside this original-rules target. Existing software options do not make them accepted default rules. Any later variant must be approved and labeled separately.
+
+## Preserved technical requirements
+
+Keep private cards, organizer authorization, durable own-phone reports, causal correction, explicit result review and paused restart recovery. The server remains authoritative for recorded state; participants judge physical actions. Technical recovery must restore the same assignment and unresolved possession without rerolling or replaying atmosphere events.
+
+Retain local laptop hosting, free Tuna access or LAN access, no mandatory accounts and no paid runtime AI service. These deployment choices support the same physical game; they do not grant new game abilities.
+
+The first-game executable writes a separate private save. Existing round-reset parties are not migrated; the editable author catalog can be preserved.
+
+## Remaining source interpretation work
+
+The following are implementation questions, not permission to change the rest of the rules:
+
+- Obtain complete original card conditions before claiming complete deck fidelity; document each necessary Master-card adaptation individually.
+- Confirm the original backward-penalty behavior for equal largest piles and the case where A alone is largest. The PDF prohibits removing a candle from A but does not provide a complete digital tie/fallback algorithm.
+- Confirm exact timing for selecting a trial's prophecy-count branch and handling an original trial whose intended target becomes unavailable. Do not reroll after an outcome is known.
+- Confirm any unusual same-mission/same-location case involving independent original assignments, while preserving the explicit group-release rule on page 8.
+- Confirm whether a completed ritual ends immediately or is formally announced at the end of that check; do not require meaningless extra rounds after an established victory.
+
+Returner-only dealing and once-only credit across rounds are explicit digital readings of the original persistence rules. Preserve their documented examples unless a more specific original ruling establishes otherwise.
+
+## Implementation gaps and acceptance
+
+The executable implements persistent possession, returner-only dealing, the original candle budget and the prop-free Dwelling for the first-game variant. The authored card bank is an adaptation. Active Master trials and full original-deck fidelity remain future work. Voice and recorded music remain unimplemented presentation work.
+
+Future alignment must verify persistent groups across multiple checks; a sole returning rescuer; total capture with and without an already freed medium; once-only late rescue credit; invalid mission credit after capture; original candle setup plus trial outcomes; first-game suppression; retained private state through restart; and delayed-event reconciliation without forcing captive return. Validate actual movement, lighting, audibility and phone interruption on real devices separately from software tests.

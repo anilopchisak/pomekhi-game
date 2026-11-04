@@ -1,0 +1,18 @@
+{
+  "jsonrpc": "2.0",
+  "id": 5527693,
+  "result": {
+    "content": [
+      {
+        "type": "text",
+        "text": "{\"error\":\"The font \\\"{\\\"family\\\":\\\"Golos Text\\\",\\\"style\\\":\\\"Regular\\\",\\\"hash\\\":\\\"\\\"}\\\" Not a valid font\",\"rollback\":{\"status\":\"attempted\"}}"
+      }
+    ],
+    "structuredContent": {
+      "error": "The font \"{\"family\":\"Golos Text\",\"style\":\"Regular\",\"hash\":\"\"}\" Not a valid font",
+      "rollback": {
+        "status": "attempted"
+      }
+    }
+  }
+}

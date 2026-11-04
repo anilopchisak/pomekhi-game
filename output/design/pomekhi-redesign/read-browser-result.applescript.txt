@@ -1,0 +1,10 @@
+tell application "Safari" to activate
+delay 0.5
+do shell script "osascript -l JavaScript /Users/pokasich/Personal/game/game_project/output/design/pomekhi-redesign/native-click.jxa.txt 800 700"
+delay 0.2
+tell application "System Events" to tell process "Safari"
+ keystroke "a" using command down
+ keystroke "c" using command down
+end tell
+delay 0.5
+return the clipboard

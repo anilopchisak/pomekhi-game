@@ -1,0 +1,78 @@
+{
+  "jsonrpc": "2.0",
+  "id": 4511052,
+  "result": {
+    "content": [
+      {
+        "type": "text",
+        "text": "{\"error\":\"Prototype setter did not update destination\",\"actual\":{\"action\":{\"destinationId\":\"3:123\",\"navigation\":\"NAVIGATE\",\"transition\":{\"easing\":{\"type\":\"INOUT_CUBIC\"},\"type\":\"DISSOLVE\"},\"type\":\"NODE\"},\"actions\":[{\"destinationId\":\"3:123\",\"navigation\":\"NAVIGATE\",\"transition\":{\"easing\":{\"type\":\"INOUT_CUBIC\"},\"type\":\"DISSOLVE\"},\"type\":\"INTERNAL_NODE\"}],\"trigger\":{\"delayMs\":0,\"type\":\"ON_CLICK\"}},\"attempted\":{\"action\":{\"destinationId\":\"3:14223\",\"navigation\":\"NAVIGATE\",\"transition\":{\"easing\":{\"type\":\"INOUT_CUBIC\"},\"type\":\"DISSOLVE\"},\"type\":\"NODE\"},\"actions\":[{\"destinationId\":\"3:14223\",\"navigation\":\"NAVIGATE\",\"transition\":{\"easing\":{\"type\":\"INOUT_CUBIC\"},\"type\":\"DISSOLVE\"},\"type\":\"INTERNAL_NODE\"}],\"trigger\":{\"delayMs\":0,\"type\":\"ON_CLICK\"}},\"rollback\":{\"status\":\"attempted\"}}"
+      }
+    ],
+    "structuredContent": {
+      "actual": {
+        "action": {
+          "destinationId": "3:123",
+          "navigation": "NAVIGATE",
+          "transition": {
+            "easing": {
+              "type": "INOUT_CUBIC"
+            },
+            "type": "DISSOLVE"
+          },
+          "type": "NODE"
+        },
+        "actions": [
+          {
+            "destinationId": "3:123",
+            "navigation": "NAVIGATE",
+            "transition": {
+              "easing": {
+                "type": "INOUT_CUBIC"
+              },
+              "type": "DISSOLVE"
+            },
+            "type": "INTERNAL_NODE"
+          }
+        ],
+        "trigger": {
+          "delayMs": 0,
+          "type": "ON_CLICK"
+        }
+      },
+      "attempted": {
+        "action": {
+          "destinationId": "3:14223",
+          "navigation": "NAVIGATE",
+          "transition": {
+            "easing": {
+              "type": "INOUT_CUBIC"
+            },
+            "type": "DISSOLVE"
+          },
+          "type": "NODE"
+        },
+        "actions": [
+          {
+            "destinationId": "3:14223",
+            "navigation": "NAVIGATE",
+            "transition": {
+              "easing": {
+                "type": "INOUT_CUBIC"
+              },
+              "type": "DISSOLVE"
+            },
+            "type": "INTERNAL_NODE"
+          }
+        ],
+        "trigger": {
+          "delayMs": 0,
+          "type": "ON_CLICK"
+        }
+      },
+      "error": "Prototype setter did not update destination",
+      "rollback": {
+        "status": "attempted"
+      }
+    }
+  }
+}

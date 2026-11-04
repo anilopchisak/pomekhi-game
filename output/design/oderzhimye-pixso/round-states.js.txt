@@ -1,0 +1,94 @@
+await Promise.all([...['Regular','Medium','Bold'].map(style=>pixso.loadFontAsync({family:'Inter',style})),pixso.loadFontAsync({family:'IBM Plex Mono',style:'Medium',hash:'ac0c3464000d8fb6175b85f8fa3e30a3fb8351fe'})]);
+const page = pixso.getNodeById('3:3');
+const section = pixso.createSection();
+section.name = '07 · Аудит · повторный раунд и история ритуала';
+page.appendChild(section);
+section.x=0;
+section.y=Math.max(...page.children.filter(n=>n.id!==section.id).map(n=>n.y+n.height))+160;
+section.resizeWithoutConstraints(4420,3710);
+const frames=[];
+function cloneRoot(key, name) {
+  const root=pixso.getNodeById(R.nodes[key]).clone();
+  section.appendChild(root);
+  root.name=name;
+  root.x=36+(frames.length%3)*1460;
+  root.y=56+Math.floor(frames.length/3)*895;
+  frames.push({id:root.id,name,source:key,w:root.width,h:root.height});
+  return root;
+}
+function textNode(root, value) {
+  const node=root.findOne(n=>n.type==='TEXT'&&n.characters===value);
+  if(!node)throw Error('Missing text '+value);
+  return node;
+}
+function write(node,value){
+  if(node.fontName.family==='Golos Text')node.fontName={family:'Inter',style:node.fontName.style};
+  node.characters=value;
+  if(node.characters!==value)throw Error('Text mismatch '+node.id);
+}
+function phase(root){return root.findOne(n=>n.name==='Current phase');}
+function ritual(root){return root.findOne(n=>n.name==='Ritual · compact progress');}
+function mainBody(root,copy){
+  const node=phase(root).children.find(n=>n.type==='TEXT'&&n.name.startsWith('Body'));
+  if(!node)throw Error('Missing phase body');
+  write(node,copy);
+}
+function snapshot(root,reference){
+  const old=ritual(root);
+  const parent=old.parent;
+  const pos=parent.children.findIndex(n=>n.id===old.id);
+  const replacement=ritual(pixso.getNodeById(R.nodes[reference])).clone();
+  parent.insertChild(pos,replacement);
+  old.remove();
+  return replacement;
+}
+function label(root,old,newValue){write(textNode(root,old),newValue);}
+function round(panel,number){
+ const badge=panel.children.find(n=>n.name.startsWith('Tag /'));
+ const copy=panel.children.find(n=>n.name.startsWith('Small / Осталось')).clone();
+ badge.visible=false;
+ panel.insertChild(panel.children.findIndex(n=>n.id===badge.id)+1,copy);
+ copy.name='Round indicator';
+ write(copy,number+' / 7 РАУНДОВ');
+}
+for(const [key,title,body] of [
+ ['L09','R2 · Призыв · свободные к столу','Свободные возвращаются к ноутбуку. Четверо в двух неосвобождённых группах остаются на местах с прежними заданиями.'],
+ ['L10','R2 · Получение записей','Ведущий получает записи раунда 2. Если телефон не ответил, уточните статус игрока. Отсутствие связи не означает пленение.'],
+ ['L11','R2 · Разбор записи','Никита сообщил о миссии после потери связи. Сверьте физическое действие, связь с заданием и право на зачёт.'],
+ ['L12','R2 · Подтверждение результата','Четыре освобождённых задания и две допустимые миссии дают шесть шагов. Испытания в первой партии выключены.']
+]){
+  const n=cloneRoot(key,title);
+  round(snapshot(n,'L45'),2);
+  mainBody(n,body);
+  if(key==='L12')write(phase(n).findOne(t=>t.type==='TEXT'&&t.name==='Title / 2'),'4');
+}
+const r3=cloneRoot('L14','R3 · Новая раздача · 36 шагов');
+const r3panel=ritual(r3);
+round(r3panel,3);
+label(r3panel,'42','36');
+const r3tiles=r3panel.findAll(n=>n.name.startsWith('Action /')&&n.name.includes('прорицание'));
+const a=r3tiles.find(n=>n.findOne(t=>t.type==='TEXT'&&t.characters==='9'));
+const b=r3tiles.find(n=>n.findOne(t=>t.type==='TEXT'&&t.characters==='6'));
+label(a,'9','3');
+label(b,'6','12');
+const r5=cloneRoot('L14','R5 · Раздача после штрафа · 34 шага');
+const r5panel=snapshot(r5,'A10');
+round(r5panel,5);
+mainBody(r5,'Свободные получают новые задания. Две неосвобождённые группы остаются на местах. Первое прорицание действует, хотя к нему вернулась свеча.');
+for(const [key,title,body] of [
+ ['L16','Победа','Ритуал завершён. Все свечи погасли, три прорицания открыты. Партия завершена.'],
+ ['L17','Поражение после 7-го раунда','Партия завершена после седьмой сверки. Оставшиеся свечи и открытые прорицания видны справа.'],
+ ['L18','Поражение · вся группа в плену','Сверка подтвердила, что свободных игроков не осталось. Последнее подтверждённое состояние ритуала сохранено.'],
+ ['L19','Партия остановлена','Партия остановлена без присуждения победы или поражения. Сохранено состояние на момент остановки.']
+]){
+  const n=cloneRoot('L39','История · '+title);
+  round(snapshot(n,key),key==='L17'||key==='L16'?7:1);
+  const p=phase(n);
+  label(p,'История этой партии',title);
+  mainBody(n,body);
+  const stats=p.findOne(t=>t.type==='TEXT'&&t.characters==='Освобождения');
+  if(stats?.parent?.parent)stats.parent.parent.visible=false;
+  const invariant=p.findOne(t=>t.type==='TEXT'&&t.characters.startsWith('Задание учитывается один раз'));
+  if(invariant)invariant.visible=false;
+}
+return{verified:frames.every(f=>pixso.getNodeById(f.id).parent.id===section.id),section:section.id,frames};

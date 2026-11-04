@@ -1,0 +1,938 @@
+[
+  {
+    "id": "H01",
+    "original": "Пульт / Вход организатора",
+    "decision": "redesigned",
+    "target": "H01",
+    "nativeNode": "17:13894",
+    "nativeStatus": "created",
+    "reason": "Preserve the state invariant with the new navigation and copy."
+  },
+  {
+    "id": "H02",
+    "original": "Ошибки / Неверный код организатора",
+    "decision": "redesigned",
+    "target": "H02",
+    "nativeNode": "17:13965",
+    "nativeStatus": "created",
+    "reason": "Preserve the state invariant with the new navigation and copy."
+  },
+  {
+    "id": "H03",
+    "original": "Пульт / Авторизован, комната ещё не создана",
+    "decision": "redesigned",
+    "target": "H03",
+    "nativeNode": "17:14039",
+    "nativeStatus": "created",
+    "reason": "Preserve the state invariant with the new navigation and copy."
+  },
+  {
+    "id": "H04",
+    "original": "Пульт / Пустая комната и недоступная раздача",
+    "decision": "redesigned",
+    "target": "H04",
+    "nativeNode": "17:14112",
+    "nativeStatus": "created",
+    "reason": "Preserve the state invariant with the new navigation and copy."
+  },
+  {
+    "id": "H05",
+    "original": "Ошибки / Ошибка адреса приглашения",
+    "decision": "redesigned",
+    "target": "H05",
+    "nativeNode": "17:21035",
+    "nativeStatus": "created",
+    "reason": "Preserve the state invariant with the new navigation and copy."
+  },
+  {
+    "id": "H06",
+    "original": "Пульт / Приглашение через HTTPS: ссылка и QR",
+    "decision": "redesigned",
+    "target": "H06",
+    "nativeNode": "17:14293",
+    "nativeStatus": "created",
+    "reason": "Preserve the state invariant with the new navigation and copy."
+  },
+  {
+    "id": "H07",
+    "original": "Пульт / Локальное приглашение",
+    "decision": "redesigned",
+    "target": "H07",
+    "nativeNode": "17:14421",
+    "nativeStatus": "created",
+    "reason": "Preserve the state invariant with the new navigation and copy."
+  },
+  {
+    "id": "H08",
+    "original": "Пульт / Все настройки партии по умолчанию",
+    "decision": "redesigned",
+    "target": "H08",
+    "nativeNode": "17:14549",
+    "nativeStatus": "created",
+    "reason": "Preserve the state invariant with the new navigation and copy."
+  },
+  {
+    "id": "H09",
+    "original": "Пульт / Настройка бесконечного режима",
+    "decision": "redesigned",
+    "target": "H09",
+    "nativeNode": "17:14693",
+    "nativeStatus": "created",
+    "reason": "Preserve the state invariant with the new navigation and copy."
+  },
+  {
+    "id": "D01",
+    "original": "Эфир / Вход в режим «Эфир»",
+    "decision": "merged-into-room",
+    "target": "H01",
+    "nativeNode": "17:13894",
+    "nativeStatus": "created",
+    "reason": "The shared timer and laptop controls now use one room surface."
+  },
+  {
+    "id": "D02",
+    "original": "Эфир / Эфир до раздачи",
+    "decision": "merged-into-room",
+    "target": "H10",
+    "nativeNode": "17:14817",
+    "nativeStatus": "created",
+    "reason": "The shared timer and laptop controls now use one room surface."
+  },
+  {
+    "id": "E01",
+    "original": "Редактор / Редактор: банк ещё не открыт",
+    "decision": "redesigned",
+    "target": "E01",
+    "nativeNode": "17:18279",
+    "nativeStatus": "created",
+    "reason": "Preserve the state invariant with the new navigation and copy."
+  },
+  {
+    "id": "E02",
+    "original": "Редактор / Редактор: список со скрытыми текстами",
+    "decision": "redesigned",
+    "target": "E02",
+    "nativeNode": "17:18444",
+    "nativeStatus": "created",
+    "reason": "Preserve the state invariant with the new navigation and copy."
+  },
+  {
+    "id": "E03",
+    "original": "Редактор / Фильтры банка",
+    "decision": "redesigned",
+    "target": "E03",
+    "nativeNode": "17:18624",
+    "nativeStatus": "created",
+    "reason": "Preserve the state invariant with the new navigation and copy."
+  },
+  {
+    "id": "E04",
+    "original": "Редактор / Редактирование карточки одержимого",
+    "decision": "redesigned",
+    "target": "E04",
+    "nativeNode": "17:18804",
+    "nativeStatus": "created",
+    "reason": "Preserve the state invariant with the new navigation and copy."
+  },
+  {
+    "id": "E05",
+    "original": "Редактор / Редактирование миссии экзорциста",
+    "decision": "redesigned",
+    "target": "E05",
+    "nativeNode": "17:18984",
+    "nativeStatus": "created",
+    "reason": "Preserve the state invariant with the new navigation and copy."
+  },
+  {
+    "id": "E06",
+    "original": "Редактор / Новая карточка",
+    "decision": "redesigned",
+    "target": "E06",
+    "nativeNode": "17:19152",
+    "nativeStatus": "created",
+    "reason": "Preserve the state invariant with the new navigation and copy."
+  },
+  {
+    "id": "E07",
+    "original": "Редактор / Конфликт ревизий с сохранённым черновиком",
+    "decision": "redesigned",
+    "target": "E07",
+    "nativeNode": "17:19332",
+    "nativeStatus": "created",
+    "reason": "Preserve the state invariant with the new navigation and copy."
+  },
+  {
+    "id": "E08",
+    "original": "Ошибки / Ошибка файла импорта",
+    "decision": "redesigned",
+    "target": "E08",
+    "nativeNode": "17:19518",
+    "nativeStatus": "created",
+    "reason": "Preserve the state invariant with the new navigation and copy."
+  },
+  {
+    "id": "E09",
+    "original": "Редактор / Предварительное сравнение импорта",
+    "decision": "redesigned",
+    "target": "E09",
+    "nativeNode": "17:19704",
+    "nativeStatus": "created",
+    "reason": "Preserve the state invariant with the new navigation and copy."
+  },
+  {
+    "id": "P01",
+    "original": "Телефон / Вход игрока без приглашения",
+    "decision": "redesigned",
+    "target": "P01",
+    "nativeNode": "17:20210",
+    "nativeStatus": "created",
+    "reason": "Preserve the state invariant with the new navigation and copy."
+  },
+  {
+    "id": "P02",
+    "original": "Ошибки / Неверный код комнаты",
+    "decision": "redesigned",
+    "target": "P02",
+    "nativeNode": "17:20242",
+    "nativeStatus": "created",
+    "reason": "Preserve the state invariant with the new navigation and copy."
+  },
+  {
+    "id": "P03",
+    "original": "Телефон / Вход по приглашению",
+    "decision": "redesigned",
+    "target": "P03",
+    "nativeNode": "17:20277",
+    "nativeStatus": "created",
+    "reason": "Preserve the state invariant with the new navigation and copy."
+  },
+  {
+    "id": "P04",
+    "original": "Ошибки / Имя уже занято",
+    "decision": "redesigned",
+    "target": "P04",
+    "nativeNode": "17:20305",
+    "nativeStatus": "created",
+    "reason": "Preserve the state invariant with the new navigation and copy."
+  },
+  {
+    "id": "P05",
+    "original": "Телефон / Лобби игрока, ожидание раздачи",
+    "decision": "redesigned",
+    "target": "P05",
+    "nativeNode": "17:20340",
+    "nativeStatus": "created",
+    "reason": "Preserve the state invariant with the new navigation and copy."
+  },
+  {
+    "id": "H10",
+    "original": "Пульт / Комната с семью участниками",
+    "decision": "redesigned",
+    "target": "H10",
+    "nativeNode": "17:14817",
+    "nativeStatus": "created",
+    "reason": "Preserve the state invariant with the new navigation and copy."
+  },
+  {
+    "id": "P06",
+    "original": "Телефон / Карточка закрыта перед чтением",
+    "decision": "redesigned",
+    "target": "P06",
+    "nativeNode": "17:20364",
+    "nativeStatus": "created",
+    "reason": "Preserve the state invariant with the new navigation and copy."
+  },
+  {
+    "id": "P07",
+    "original": "Телефон / Карточка одержимого в обучении",
+    "decision": "redesigned",
+    "target": "P07",
+    "nativeNode": "17:20396",
+    "nativeStatus": "created",
+    "reason": "Preserve the state invariant with the new navigation and copy."
+  },
+  {
+    "id": "P08",
+    "original": "Телефон / Карточка экзорциста в обучении",
+    "decision": "redesigned",
+    "target": "P08",
+    "nativeNode": "17:20444",
+    "nativeStatus": "created",
+    "reason": "Preserve the state invariant with the new navigation and copy."
+  },
+  {
+    "id": "P09",
+    "original": "Телефон / Игрок прочитал карточку",
+    "decision": "redesigned",
+    "target": "P09",
+    "nativeNode": "17:20489",
+    "nativeStatus": "created",
+    "reason": "Preserve the state invariant with the new navigation and copy."
+  },
+  {
+    "id": "P10",
+    "original": "Телефон / Запрос замены на телефоне",
+    "decision": "removed-request-ui",
+    "target": "P09",
+    "nativeNode": "17:20489",
+    "nativeStatus": "created",
+    "reason": "Player replacement request removed; replacement belongs to laptop."
+  },
+  {
+    "id": "H11",
+    "original": "Пульт / Чтение: готовность и запрос замены",
+    "decision": "redesigned",
+    "target": "H11",
+    "nativeNode": "17:14911",
+    "nativeStatus": "created",
+    "reason": "Preserve the state invariant with the new navigation and copy."
+  },
+  {
+    "id": "P11",
+    "original": "Телефон / Новая карточка снова закрыта",
+    "decision": "redesigned",
+    "target": "P11",
+    "nativeNode": "17:20537",
+    "nativeStatus": "created",
+    "reason": "Preserve the state invariant with the new navigation and copy."
+  },
+  {
+    "id": "E10",
+    "original": "Редактор / Редактор во время чтения: только просмотр",
+    "decision": "redesigned",
+    "target": "E10",
+    "nativeNode": "17:19869",
+    "nativeStatus": "created",
+    "reason": "Preserve the state invariant with the new navigation and copy."
+  },
+  {
+    "id": "H12",
+    "original": "Пульт / Управление во время расстановки",
+    "decision": "redesigned",
+    "target": "H12",
+    "nativeNode": "17:15015",
+    "nativeStatus": "created",
+    "reason": "Preserve the state invariant with the new navigation and copy."
+  },
+  {
+    "id": "D03",
+    "original": "Эфир / Эфир: расстановка",
+    "decision": "merged-into-room",
+    "target": "H12",
+    "nativeNode": "17:15015",
+    "nativeStatus": "created",
+    "reason": "The shared timer and laptop controls now use one room surface."
+  },
+  {
+    "id": "P12",
+    "original": "Телефон / Расстановка: инструкция одержимому",
+    "decision": "redesigned",
+    "target": "P12",
+    "nativeNode": "17:20569",
+    "nativeStatus": "created",
+    "reason": "Preserve the state invariant with the new navigation and copy."
+  },
+  {
+    "id": "P13",
+    "original": "Телефон / Расстановка: экзорцист ждёт на базе",
+    "decision": "redesigned",
+    "target": "P13",
+    "nativeNode": "17:20618",
+    "nativeStatus": "created",
+    "reason": "Preserve the state invariant with the new navigation and copy."
+  },
+  {
+    "id": "D04",
+    "original": "Эфир / Эфир: поиск",
+    "decision": "merged-into-room",
+    "target": "X01",
+    "nativeNode": "17:16324",
+    "nativeStatus": "created",
+    "reason": "The shared timer and laptop controls now use one room surface."
+  },
+  {
+    "id": "P14",
+    "original": "Телефон / Поиск: действия одержимого",
+    "decision": "redesigned",
+    "target": "P14",
+    "nativeNode": "17:20657",
+    "nativeStatus": "created",
+    "reason": "Preserve the state invariant with the new navigation and copy."
+  },
+  {
+    "id": "P15",
+    "original": "Телефон / Поиск: действия экзорциста",
+    "decision": "redesigned",
+    "target": "P15",
+    "nativeNode": "17:20706",
+    "nativeStatus": "created",
+    "reason": "Preserve the state invariant with the new navigation and copy."
+  },
+  {
+    "id": "P16",
+    "original": "Телефон / Миссия отмечена выполненной",
+    "decision": "redesigned",
+    "target": "P16",
+    "nativeNode": "17:20752",
+    "nativeStatus": "created",
+    "reason": "Preserve the state invariant with the new navigation and copy."
+  },
+  {
+    "id": "P18",
+    "original": "Телефон / Личная карточка заражённого",
+    "decision": "redesigned",
+    "target": "P18",
+    "nativeNode": "17:20845",
+    "nativeStatus": "created",
+    "reason": "Preserve the state invariant with the new navigation and copy."
+  },
+  {
+    "id": "P19",
+    "original": "Телефон / Отмена заблокирована зависимым действием",
+    "decision": "redesigned",
+    "target": "P19",
+    "nativeNode": "17:20893",
+    "nativeStatus": "created",
+    "reason": "Preserve the state invariant with the new navigation and copy."
+  },
+  {
+    "id": "P20",
+    "original": "Телефон / Группа освобождена, миссия не восстанавливается",
+    "decision": "redesigned",
+    "target": "P20",
+    "nativeNode": "17:20917",
+    "nativeStatus": "created",
+    "reason": "Preserve the state invariant with the new navigation and copy."
+  },
+  {
+    "id": "D05",
+    "original": "Эфир / Эфир: пауза",
+    "decision": "merged-into-room",
+    "target": "H13",
+    "nativeNode": "17:15117",
+    "nativeStatus": "created",
+    "reason": "The shared timer and laptop controls now use one room surface."
+  },
+  {
+    "id": "H13",
+    "original": "Пульт / Пульт: пауза и доступные действия",
+    "decision": "redesigned",
+    "target": "H13",
+    "nativeNode": "17:15117",
+    "nativeStatus": "created",
+    "reason": "Preserve the state invariant with the new navigation and copy."
+  },
+  {
+    "id": "P21",
+    "original": "Телефон / Пауза на телефоне",
+    "decision": "redesigned",
+    "target": "P21",
+    "nativeNode": "17:20941",
+    "nativeStatus": "created",
+    "reason": "Preserve the state invariant with the new navigation and copy."
+  },
+  {
+    "id": "P22",
+    "original": "Телефон / Добровольный пропуск текущего раунда",
+    "decision": "redesigned",
+    "target": "P22",
+    "nativeNode": "17:20967",
+    "nativeStatus": "created",
+    "reason": "Preserve the state invariant with the new navigation and copy."
+  },
+  {
+    "id": "P23",
+    "original": "Телефон / Поздний участник ждёт следующей раздачи",
+    "decision": "redesigned",
+    "target": "P23",
+    "nativeNode": "12:2647",
+    "nativeStatus": "created",
+    "reason": "Preserve the state invariant with the new navigation and copy."
+  },
+  {
+    "id": "P24",
+    "original": "Телефон / Нет связи: сохранённая карточка и неподтверждённый таймер",
+    "decision": "redesigned",
+    "target": "P24",
+    "nativeNode": "12:2675",
+    "nativeStatus": "created",
+    "reason": "Preserve the state invariant with the new navigation and copy."
+  },
+  {
+    "id": "P25",
+    "original": "Телефон / Офлайн-действие сохранено на телефоне",
+    "decision": "redesigned",
+    "target": "P25",
+    "nativeNode": "17:20991",
+    "nativeStatus": "created",
+    "reason": "Preserve the state invariant with the new navigation and copy."
+  },
+  {
+    "id": "D06",
+    "original": "Эфир / Эфир: возвращение",
+    "decision": "merged-into-room",
+    "target": "X02",
+    "nativeNode": "17:16426",
+    "nativeStatus": "created",
+    "reason": "The shared timer and laptop controls now use one room surface."
+  },
+  {
+    "id": "P26",
+    "original": "Телефон / Возвращение на базу",
+    "decision": "redesigned",
+    "target": "P26",
+    "nativeNode": "12:2725",
+    "nativeStatus": "created",
+    "reason": "Preserve the state invariant with the new navigation and copy."
+  },
+  {
+    "id": "H14",
+    "original": "Пульт / База: ожидание синхронизации",
+    "decision": "redesigned",
+    "target": "H14",
+    "nativeNode": "17:15219",
+    "nativeStatus": "created",
+    "reason": "Preserve the state invariant with the new navigation and copy."
+  },
+  {
+    "id": "P27",
+    "original": "Телефон / Действие требует разбора",
+    "decision": "redesigned",
+    "target": "P27",
+    "nativeNode": "12:2750",
+    "nativeStatus": "created",
+    "reason": "Preserve the state invariant with the new navigation and copy."
+  },
+  {
+    "id": "H15",
+    "original": "Пульт / Разбор запоздалого действия",
+    "decision": "redesigned",
+    "target": "H15",
+    "nativeNode": "17:15320",
+    "nativeStatus": "created",
+    "reason": "Preserve the state invariant with the new navigation and copy."
+  },
+  {
+    "id": "P28",
+    "original": "Телефон / Отклонённое действие на телефоне",
+    "decision": "redesigned",
+    "target": "P28",
+    "nativeNode": "12:2778",
+    "nativeStatus": "created",
+    "reason": "Preserve the state invariant with the new navigation and copy."
+  },
+  {
+    "id": "H16",
+    "original": "Пульт / Предварительный результат обучения",
+    "decision": "redesigned",
+    "target": "H16",
+    "nativeNode": "17:15451",
+    "nativeStatus": "created",
+    "reason": "Preserve the state invariant with the new navigation and copy."
+  },
+  {
+    "id": "D07",
+    "original": "Эфир / Обучение завершено без продвижения ритуала",
+    "decision": "merged-into-room",
+    "target": "H16",
+    "nativeNode": "17:15451",
+    "nativeStatus": "created",
+    "reason": "The shared timer and laptop controls now use one room surface."
+  },
+  {
+    "id": "P29",
+    "original": "Телефон / Удаление организатором",
+    "decision": "redesigned",
+    "target": "P29",
+    "nativeNode": "12:2806",
+    "nativeStatus": "created",
+    "reason": "Preserve the state invariant with the new navigation and copy."
+  },
+  {
+    "id": "P30",
+    "original": "Телефон / Обычный раунд: карточка одержимого",
+    "decision": "redesigned",
+    "target": "P30",
+    "nativeNode": "12:2830",
+    "nativeStatus": "created",
+    "reason": "Preserve the state invariant with the new navigation and copy."
+  },
+  {
+    "id": "P31",
+    "original": "Телефон / Телефонные эффекты включены",
+    "decision": "redesigned",
+    "target": "P31",
+    "nativeNode": "12:2878",
+    "nativeStatus": "created",
+    "reason": "Preserve the state invariant with the new navigation and copy."
+  },
+  {
+    "id": "D08",
+    "original": "Эфир / Обычный ритуал на паузе",
+    "decision": "merged-into-room",
+    "target": "H13",
+    "nativeNode": "17:15117",
+    "nativeStatus": "created",
+    "reason": "The shared timer and laptop controls now use one room surface."
+  },
+  {
+    "id": "D09",
+    "original": "Эфир / Предварительное продвижение свечей",
+    "decision": "merged-into-room",
+    "target": "H17",
+    "nativeNode": "17:15544",
+    "nativeStatus": "created",
+    "reason": "The shared timer and laptop controls now use one room surface."
+  },
+  {
+    "id": "H17",
+    "original": "Пульт / Подтверждение результатов перед новой раздачей",
+    "decision": "redesigned",
+    "target": "H17",
+    "nativeNode": "17:15544",
+    "nativeStatus": "created",
+    "reason": "Preserve the state invariant with the new navigation and copy."
+  },
+  {
+    "id": "P32",
+    "original": "Телефон / Результаты на телефоне до фиксации",
+    "decision": "redesigned",
+    "target": "P32",
+    "nativeNode": "12:2917",
+    "nativeStatus": "created",
+    "reason": "Preserve the state invariant with the new navigation and copy."
+  },
+  {
+    "id": "D10",
+    "original": "Эфир / Открытое прорицание и прогресс свечей",
+    "decision": "merged-into-room",
+    "target": "X03",
+    "nativeNode": "17:16521",
+    "nativeStatus": "created",
+    "reason": "The shared timer and laptop controls now use one room surface."
+  },
+  {
+    "id": "H18",
+    "original": "Пульт / Штрафы ритуала",
+    "decision": "redesigned",
+    "target": "H18",
+    "nativeNode": "17:15644",
+    "nativeStatus": "created",
+    "reason": "Preserve the state invariant with the new navigation and copy."
+  },
+  {
+    "id": "D11",
+    "original": "Эфир / Свеча возвращена штрафом",
+    "decision": "merged-into-room",
+    "target": "H18",
+    "nativeNode": "17:15644",
+    "nativeStatus": "created",
+    "reason": "The shared timer and laptop controls now use one room surface."
+  },
+  {
+    "id": "G01",
+    "original": "Восстановление / После перезапуска: новый вход организатора",
+    "decision": "merged",
+    "target": "H01",
+    "nativeNode": "17:13894",
+    "nativeStatus": "created",
+    "reason": "Preserve the state invariant with the new navigation and copy."
+  },
+  {
+    "id": "G02",
+    "original": "Восстановление / Восстановленная партия и статус сохранения",
+    "decision": "redesigned",
+    "target": "G02",
+    "nativeNode": "17:17444",
+    "nativeStatus": "created",
+    "reason": "Preserve the state invariant with the new navigation and copy."
+  },
+  {
+    "id": "P33",
+    "original": "Восстановление / Телефон восстановил участника и карточку",
+    "decision": "redesigned",
+    "target": "P33",
+    "nativeNode": "12:2943",
+    "nativeStatus": "created",
+    "reason": "Preserve the state invariant with the new navigation and copy."
+  },
+  {
+    "id": "D12",
+    "original": "Эфир / Победа: дом освобождён",
+    "decision": "merged-into-room",
+    "target": "H19",
+    "nativeNode": "17:15740",
+    "nativeStatus": "created",
+    "reason": "The shared timer and laptop controls now use one room surface."
+  },
+  {
+    "id": "H19",
+    "original": "Пульт / Пульт после победы",
+    "decision": "redesigned",
+    "target": "H19",
+    "nativeNode": "17:15740",
+    "nativeStatus": "created",
+    "reason": "Preserve the state invariant with the new navigation and copy."
+  },
+  {
+    "id": "P34",
+    "original": "Телефон / Финальный результат на телефоне",
+    "decision": "redesigned",
+    "target": "P34",
+    "nativeNode": "12:2977",
+    "nativeStatus": "created",
+    "reason": "Preserve the state invariant with the new navigation and copy."
+  },
+  {
+    "id": "H20",
+    "original": "Пульт / Продолжение свободной игры",
+    "decision": "redesigned",
+    "target": "H20",
+    "nativeNode": "17:15834",
+    "nativeStatus": "created",
+    "reason": "Preserve the state invariant with the new navigation and copy."
+  },
+  {
+    "id": "D13",
+    "original": "Эфир / Свободные раунды с сохранённым исходом",
+    "decision": "merged-into-room",
+    "target": "H20",
+    "nativeNode": "17:15834",
+    "nativeStatus": "created",
+    "reason": "The shared timer and laptop controls now use one room surface."
+  },
+  {
+    "id": "G03",
+    "original": "Восстановление / Активный раунд восстановлен на паузе",
+    "decision": "redesigned",
+    "target": "G03",
+    "nativeNode": "17:17534",
+    "nativeStatus": "created",
+    "reason": "Preserve the state invariant with the new navigation and copy."
+  },
+  {
+    "id": "P35",
+    "original": "Восстановление / Пауза после перезапуска на телефоне",
+    "decision": "redesigned",
+    "target": "P35",
+    "nativeNode": "12:3002",
+    "nativeStatus": "created",
+    "reason": "Preserve the state invariant with the new navigation and copy."
+  },
+  {
+    "id": "D14",
+    "original": "Эфир / Звуковые и визуальные настройки эфира",
+    "decision": "merged-into-room",
+    "target": "X04",
+    "nativeNode": "17:16610",
+    "nativeStatus": "created",
+    "reason": "The shared timer and laptop controls now use one room surface."
+  },
+  {
+    "id": "H21",
+    "original": "Пульт / Раунд отменён без зачёта",
+    "decision": "redesigned",
+    "target": "H21",
+    "nativeNode": "17:15908",
+    "nativeStatus": "created",
+    "reason": "Preserve the state invariant with the new navigation and copy."
+  },
+  {
+    "id": "P36",
+    "original": "Телефон / Комната закрыта: возвращение ко входу",
+    "decision": "redesigned",
+    "target": "P36",
+    "nativeNode": "12:3027",
+    "nativeStatus": "created",
+    "reason": "Preserve the state invariant with the new navigation and copy."
+  },
+  {
+    "id": "D15",
+    "original": "Эфир / Эфир ждёт новую комнату",
+    "decision": "merged-into-room",
+    "target": "H03",
+    "nativeNode": "17:14039",
+    "nativeStatus": "created",
+    "reason": "The shared timer and laptop controls now use one room surface."
+  },
+  {
+    "id": "D16",
+    "original": "Эфир / Поражение после последнего подтверждённого раунда",
+    "decision": "merged-into-room",
+    "target": "H22",
+    "nativeNode": "17:15997",
+    "nativeStatus": "created",
+    "reason": "The shared timer and laptop controls now use one room surface."
+  },
+  {
+    "id": "H22",
+    "original": "Пульт / Пульт: поражение и свободное продолжение",
+    "decision": "redesigned",
+    "target": "H22",
+    "nativeNode": "17:15997",
+    "nativeStatus": "created",
+    "reason": "Preserve the state invariant with the new navigation and copy."
+  },
+  {
+    "id": "D17",
+    "original": "Эфир / Партия прервана организатором",
+    "decision": "merged-into-room",
+    "target": "X05",
+    "nativeNode": "17:16747",
+    "nativeStatus": "created",
+    "reason": "The shared timer and laptop controls now use one room surface."
+  },
+  {
+    "id": "G04",
+    "original": "Восстановление / Ошибка записи: игра остановлена",
+    "decision": "redesigned",
+    "target": "G04",
+    "nativeNode": "17:17632",
+    "nativeStatus": "created",
+    "reason": "Preserve the state invariant with the new navigation and copy."
+  },
+  {
+    "id": "G05",
+    "original": "Восстановление / Ошибка загрузки: повтор и подтверждаемый сброс",
+    "decision": "redesigned",
+    "target": "G05",
+    "nativeNode": "17:17737",
+    "nativeStatus": "created",
+    "reason": "Preserve the state invariant with the new navigation and copy."
+  },
+  {
+    "id": "E11",
+    "original": "Редактор / Пустой банк",
+    "decision": "redesigned",
+    "target": "E11",
+    "nativeNode": "17:20052",
+    "nativeStatus": "created",
+    "reason": "Preserve the state invariant with the new navigation and copy."
+  },
+  {
+    "id": "G06",
+    "original": "Ошибки / Недостаточно карточек для состава",
+    "decision": "redesigned",
+    "target": "G06",
+    "nativeNode": "17:17854",
+    "nativeStatus": "created",
+    "reason": "Preserve the state invariant with the new navigation and copy."
+  },
+  {
+    "id": "P37",
+    "original": "Ошибки / Комната заполнена: двенадцать мест заняты",
+    "decision": "redesigned",
+    "target": "P37",
+    "nativeNode": "12:3051",
+    "nativeStatus": "created",
+    "reason": "Preserve the state invariant with the new navigation and copy."
+  },
+  {
+    "id": "P38",
+    "original": "Ошибки / Телефон не может воспроизвести звук",
+    "decision": "redesigned",
+    "target": "P38",
+    "nativeNode": "12:3086",
+    "nativeStatus": "created",
+    "reason": "Preserve the state invariant with the new navigation and copy."
+  },
+  {
+    "id": "P39",
+    "original": "Телефон / Добровольный выход из комнаты",
+    "decision": "redesigned",
+    "target": "P39",
+    "nativeNode": "12:3128",
+    "nativeStatus": "created",
+    "reason": "Preserve the state invariant with the new navigation and copy."
+  },
+  {
+    "id": "G07",
+    "original": "Ошибки / Первый вход без подключения",
+    "decision": "merged",
+    "target": "PX06",
+    "nativeNode": "12:3379",
+    "nativeStatus": "created",
+    "reason": "Preserve the state invariant with the new navigation and copy."
+  },
+  {
+    "id": "G08",
+    "original": "Ошибки / Пульт без связи: команды недоступны",
+    "decision": "redesigned",
+    "target": "G08",
+    "nativeNode": "17:17943",
+    "nativeStatus": "created",
+    "reason": "Preserve the state invariant with the new navigation and copy."
+  },
+  {
+    "id": "G09",
+    "original": "Ошибки / На ноутбуке недоступен звук",
+    "decision": "redesigned",
+    "target": "G09",
+    "nativeNode": "17:18041",
+    "nativeStatus": "created",
+    "reason": "Preserve the state invariant with the new navigation and copy."
+  },
+  {
+    "id": "P40",
+    "original": "Телефон / Офлайн-сообщение о полученном заражении",
+    "decision": "redesigned",
+    "target": "P40",
+    "nativeNode": "12:3152",
+    "nativeStatus": "created",
+    "reason": "Preserve the state invariant with the new navigation and copy."
+  },
+  {
+    "id": "G10",
+    "original": "Восстановление / Автопауза при потере последней панели",
+    "decision": "redesigned",
+    "target": "G10",
+    "nativeNode": "17:18184",
+    "nativeStatus": "created",
+    "reason": "Preserve the state invariant with the new navigation and copy."
+  },
+  {
+    "id": "D18",
+    "original": "Эфир / Бесконечный поиск без ритуала",
+    "decision": "merged-into-room",
+    "target": "H23",
+    "nativeNode": "17:16091",
+    "nativeStatus": "created",
+    "reason": "The shared timer and laptop controls now use one room surface."
+  },
+  {
+    "id": "H23",
+    "original": "Пульт / Бесконечный режим: управление",
+    "decision": "redesigned",
+    "target": "H23",
+    "nativeNode": "17:16091",
+    "nativeStatus": "created",
+    "reason": "Preserve the state invariant with the new navigation and copy."
+  },
+  {
+    "id": "H24",
+    "original": "Пульт / Конечная партия без ритуала завершена",
+    "decision": "redesigned",
+    "target": "H24",
+    "nativeNode": "17:16173",
+    "nativeStatus": "created",
+    "reason": "Preserve the state invariant with the new navigation and copy."
+  },
+  {
+    "id": "H25",
+    "original": "Пульт / Добавлен дополнительный раунд",
+    "decision": "redesigned",
+    "target": "H25",
+    "nativeNode": "17:16247",
+    "nativeStatus": "created",
+    "reason": "Preserve the state invariant with the new navigation and copy."
+  },
+  {
+    "id": "P17",
+    "original": "Телефон / Заражение: потерян зачёт миссии",
+    "decision": "redesigned",
+    "target": "P17",
+    "nativeNode": "17:20797",
+    "nativeStatus": "created",
+    "reason": "Preserve the state invariant with the new navigation and copy."
+  }
+]

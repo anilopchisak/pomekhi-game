@@ -1,0 +1,24 @@
+.scene > section { border: 0; padding: 0; background: transparent; margin: .75rem 0; }
+.scene > section > :first-child { font-size: .78rem; color: #c3aee6; }
+.scene > section > div > h3 { margin: .4rem 0; font-size: clamp(1.25rem, 5vw, 1.65rem); }
+.scene > section > p { margin: .4rem 0 .8rem; }
+.scene .personal { margin: 0; padding: 0; border: 0; background: transparent; }
+.toolbar { display: grid; grid-template-columns: 3rem minmax(0, 1fr) 3rem; width: 100%; gap: .45rem; }
+.toolbar button { margin: 0; min-width: 0; padding-inline: .4rem; background: #211b2c; color: #f1ebf8; }
+.connection { margin-inline-start: auto; color: #c9bdd5; font-size: .82rem; }
+.role { width: fit-content; padding: .18rem .5rem; border-radius: .4rem; background: #30253e; color: #cebaf1; font-size: .82rem; }
+.cardBody { border: 1px solid #857395; border-radius: .7rem; background: #191522; padding: 1rem; }
+.cardBody[data-hidden=true] { display: grid; align-items: center; min-block-size: clamp(9rem, 34dvh, 21rem); }
+.cardBody h4 { margin: 0 0 .5rem; font-size: 1.22rem; color: #cfb8f4; }
+.cardBody p { margin: .6rem 0; }
+.fullAction { width: 100%; }
+.journal { font-size: .9rem; color: #d5c6e5; }
+.offline { display: flex; align-items: center; gap: .5rem; margin: .55rem 0; color: #e1cdb7; font-size: .82rem; }
+.offline button { flex: 0 0 auto; max-width: 50%; margin: 0; padding: .35rem .45rem; font-size: .8rem; }
+.scene:not([data-phase=reading]) .cardBody[data-hidden=true] { min-block-size: clamp(7rem, 23dvh, 12rem); }
+.scene > section[aria-label] { border: 0; padding: 0; background: transparent; margin: .75rem 0; }
+.scene .personal[aria-label] { margin: 0; padding: 0; border: 0; background: transparent; }
+.scene [aria-label="Игровые действия"] > button { min-width: min(100%, 12rem); }
+.scene .fullAction { margin-inline: 0; }
+.scene .personal > button:not(.fullAction) { font-size: .87rem; }
+.scene .personal > p[role=status] { margin: .5rem 0; font-size: .9rem; }

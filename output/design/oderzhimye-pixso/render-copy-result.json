@@ -1,0 +1,18 @@
+{
+  "jsonrpc": "2.0",
+  "id": 5143150,
+  "result": {
+    "content": [
+      {
+        "type": "text",
+        "text": "{\"error\":\"Error: Font or text mismatch 3:303\\nSource (eval_script line 5): for(const {id}of copies)update(pixso.getNodeById(id));\\n    at update (mcp-evaluate-script.js)\\n    at <anonymous> (mcp-evaluate-script.js:6)\\n\",\"rollback\":{\"status\":\"attempted\"}}"
+      }
+    ],
+    "structuredContent": {
+      "error": "Error: Font or text mismatch 3:303\nSource (eval_script line 5): for(const {id}of copies)update(pixso.getNodeById(id));\n    at update (mcp-evaluate-script.js)\n    at <anonymous> (mcp-evaluate-script.js:6)\n",
+      "rollback": {
+        "status": "attempted"
+      }
+    }
+  }
+}

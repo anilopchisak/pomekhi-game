@@ -1,0 +1,204 @@
+{
+  "entryRoots": [
+    "L02",
+    "P03"
+  ],
+  "reached": [
+    "A01",
+    "A01P",
+    "A02",
+    "A02P",
+    "A03",
+    "A03P",
+    "A04",
+    "A04P",
+    "A05",
+    "B01",
+    "B01P",
+    "B02",
+    "B02P",
+    "B03",
+    "B03P",
+    "B04",
+    "L01",
+    "L02",
+    "L03",
+    "L04",
+    "L05",
+    "L06",
+    "L07",
+    "L07R00",
+    "L07R01",
+    "L07R02",
+    "L07R03",
+    "L07R04",
+    "L07R05",
+    "L07R06",
+    "L07R07",
+    "L07R08",
+    "L07R09",
+    "L07R10",
+    "L07R11",
+    "L08",
+    "L09",
+    "L10",
+    "L11",
+    "L12",
+    "L14",
+    "L19",
+    "L20",
+    "L35",
+    "L36",
+    "L40",
+    "L41",
+    "L42",
+    "L43",
+    "L43R0",
+    "L43R1",
+    "L43R2",
+    "L43R3",
+    "L43R4",
+    "L43R5",
+    "L43R6",
+    "L43R7",
+    "L45",
+    "L47",
+    "L48",
+    "L50",
+    "L51",
+    "L52",
+    "M01",
+    "M01P",
+    "M01PA",
+    "M02",
+    "M02F",
+    "M03",
+    "M03P",
+    "M04",
+    "M05",
+    "M05I01",
+    "M05I02",
+    "M05I03",
+    "M05I04",
+    "M05I05",
+    "M05I06",
+    "M05I07",
+    "M05I08",
+    "M05I09",
+    "M05I10",
+    "M05I11",
+    "M05R2I0",
+    "M05R2I1",
+    "M05R2I2",
+    "M05R2I3",
+    "M05R2I4",
+    "M05R2I5",
+    "M05R2I6",
+    "M05R2I7",
+    "M06",
+    "M06R",
+    "M07",
+    "M07P",
+    "M08",
+    "M08A",
+    "M09",
+    "M10",
+    "M14",
+    "M14R2",
+    "M15",
+    "M16",
+    "M17",
+    "M18",
+    "M19",
+    "M20",
+    "M23",
+    "M25",
+    "M30",
+    "M31",
+    "M33",
+    "M43",
+    "M43P",
+    "M44P",
+    "P03",
+    "P05",
+    "P06",
+    "P34",
+    "P35",
+    "P46"
+  ],
+  "focused": [
+    {
+      "key": "L26",
+      "reachableFromMainLaptopOrPhoneEntry": false
+    },
+    {
+      "key": "L28",
+      "reachableFromMainLaptopOrPhoneEntry": false
+    },
+    {
+      "key": "P42",
+      "reachableFromMainLaptopOrPhoneEntry": false
+    },
+    {
+      "key": "P43",
+      "reachableFromMainLaptopOrPhoneEntry": false
+    },
+    {
+      "key": "M34",
+      "reachableFromMainLaptopOrPhoneEntry": false
+    },
+    {
+      "key": "L15",
+      "reachableFromMainLaptopOrPhoneEntry": false
+    },
+    {
+      "key": "L18",
+      "reachableFromMainLaptopOrPhoneEntry": false
+    },
+    {
+      "key": "L17",
+      "reachableFromMainLaptopOrPhoneEntry": false
+    },
+    {
+      "key": "L38",
+      "reachableFromMainLaptopOrPhoneEntry": false
+    },
+    {
+      "key": "P30",
+      "reachableFromMainLaptopOrPhoneEntry": false
+    },
+    {
+      "key": "P31",
+      "reachableFromMainLaptopOrPhoneEntry": false
+    },
+    {
+      "key": "P32",
+      "reachableFromMainLaptopOrPhoneEntry": false
+    },
+    {
+      "key": "P44",
+      "reachableFromMainLaptopOrPhoneEntry": false
+    },
+    {
+      "key": "P45",
+      "reachableFromMainLaptopOrPhoneEntry": false
+    },
+    {
+      "key": "P22",
+      "reachableFromMainLaptopOrPhoneEntry": false
+    },
+    {
+      "key": "P23",
+      "reachableFromMainLaptopOrPhoneEntry": false
+    },
+    {
+      "key": "A10B",
+      "reachableFromMainLaptopOrPhoneEntry": false
+    },
+    {
+      "key": "A10",
+      "reachableFromMainLaptopOrPhoneEntry": false
+    }
+  ],
+  "scope": "Explicit scene navigation only. External multiplayer phase events are not simulated unless represented by a native reaction. Review-catalog Q links are excluded."
+}

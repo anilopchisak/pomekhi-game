@@ -1,0 +1,67 @@
+const page = pixso.getNodeById('3:3');
+const section = pixso.createSection();
+section.name = '06 · Аудит · карточка и фаза';
+page.appendChild(section);
+section.x = 0;
+section.y = Math.max(...page.children.filter(n => n.id !== section.id).map(n => n.y + n.height)) + 160;
+section.resizeWithoutConstraints(2360, 3090);
+const verified = [];
+function changeText(node, oldText, newText) {
+  const text = node.findOne(n => n.type === 'TEXT' && n.characters === oldText);
+  if (!text) throw Error('Missing text: ' + oldText);
+  text.characters = newText;
+  if (text.characters !== newText) throw Error('Text mismatch: ' + text.id);
+}
+function titleAndBody(node, title, body) {
+  const workspace = node.children.find(n => n.name === 'Personal workspace');
+  const direct = workspace.children.filter(n => n.type === 'TEXT');
+  if (direct.length !== 2) throw Error('Unexpected personal workspace');
+  direct[0].characters = title;
+  direct[1].characters = body;
+  if (direct[0].characters !== title || direct[1].characters !== body) throw Error('Personal copy mismatch');
+}
+for (const [i, suffix] of ['', 'W320', 'W430'].entries()) {
+  const sources = ['P52','P12','P01','P40','P53'];
+  const titles = ['Чтение · карточка скрыта','Чтение · карточка скрыта','Расстановка · карточка открыта','Расстановка · карточка скрыта','Нет связи · карточка скрыта'];
+  const bodies = [
+    'Откройте карточку и прочитайте задание. Готовность ещё не подтверждена.',
+    'Откройте карточку и прочитайте задание. Готовность ещё не подтверждена.',
+    'Ждите у стола. Одержимые занимают места. Действия раунда пока недоступны.',
+    'Займите место и выключите свой свет. Открытие задания не меняет этап.',
+    'Карточка сохранена на телефоне. Время и этап уточнятся после восстановления связи.'
+  ];
+  for (let j = 0; j < sources.length; j++) {
+    const source = pixso.getNodeById(R.nodes[sources[j]+suffix]);
+    const node = i === 0 && j === 0 ? pixso.getNodeById('5:13998') : source.clone();
+    section.appendChild(node);
+    node.name = 'PX' + (59+j) + suffix + ' · ' + titles[j] + (j < 2 ? (j === 0 ? ' · экзорцист' : ' · одержимый') : '');
+    node.x = 36 + j * 460;
+    node.y = 56 + i * 1000;
+    titleAndBody(node, titles[j], bodies[j]);
+    const actions = node.children.find(n=>n.name.startsWith('Personal actions'));
+    if (j < 2) {
+      const control = actions.findOne(n=>n.name==='Action / Снять готовность');
+      if (control) control.visible=false;
+    }
+    if (j === 2) {
+      for (const child of actions.children) if (!child.name.includes('Скрыть карточку')) child.visible = false;
+    }
+    if (j === 2 || j === 3) {
+      const timerSource = pixso.getNodeById(R.nodes[(j === 2 ? 'P13' : 'P14')+suffix]).findOne(n=>n.name.startsWith('Phase timer / Расстановка'));
+      const oldTimer=node.findOne(n=>n.name.startsWith('Phase timer'));
+      if (!timerSource || !oldTimer) throw Error('Missing timer');
+      const timer=timerSource.clone();
+      const timerRow=oldTimer.parent;
+      const index=timerRow.children.findIndex(n=>n.id===oldTimer.id);
+      timerRow.insertChild(index,timer);
+      oldTimer.remove();
+    }
+    if (j === 4) {
+      changeText(node,'На связи','Нет связи');
+      const timer=node.findOne(n=>n.name.startsWith('Phase timer'));
+      if(timer)timer.visible=false;
+    }
+    verified.push({key:'PX'+(59+j)+suffix,id:node.id,w:node.width,h:node.height,parent:node.parent.id,body:bodies[j]});
+  }
+}
+return {verified:verified.every(n=>n.parent===section.id),section:section.id,frames:verified};

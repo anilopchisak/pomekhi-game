@@ -1,0 +1,39 @@
+{
+  "events": [
+    {
+      "event": "paused before playback",
+      "key": "A01P"
+    },
+    {
+      "ms": 183,
+      "key": "A01"
+    },
+    {
+      "ms": 579,
+      "key": "A02"
+    },
+    {
+      "event": "pause clicked",
+      "key": "A03P"
+    },
+    {
+      "event": "pause stable",
+      "key": "A03P",
+      "passed": true
+    },
+    {
+      "ms": 5739,
+      "key": "A03"
+    },
+    {
+      "ms": 6155,
+      "key": "A04"
+    },
+    {
+      "ms": 7406,
+      "key": "A05"
+    }
+  ],
+  "final": "A05",
+  "passed": true
+}

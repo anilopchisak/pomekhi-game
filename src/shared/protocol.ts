@@ -44,9 +44,14 @@ export interface PersonalPlay {
   roundId: string; version: number; status: 'exorcist' | 'possessed' | 'captured' | 'released';
   card: PersonalCard; cardKey: string; wasCaptured: boolean; missionCompleted: boolean; missionEligible: boolean;
   undo: { id: string; label: string; available: boolean } | null;
+  location?: string | null;
+  retained?: boolean;
+  targets?: string[];
 }
 interface PlayCommand extends GameCommand { playVersion: number }
-export interface Venue { base: string; zones: string[] }
+export interface Venue { base: string; zones: string[]; dwelling?: { zone: string; place: string }; storyId?: string; harder?: boolean; order?: string[] }
+export type PhysicalStatus = 'at_base' | 'in_group';
+export interface Presence { playerId: string; expected: PhysicalStatus; confirmed: boolean }
 export type OfflineAction =
   | { kind: 'infect'; targetId: string }
   | { kind: 'captured'; by: string }
@@ -62,16 +67,20 @@ export interface EventReceipt { id: string; status: 'accepted' | 'review' | 'rej
 export interface ReviewEvent extends EventReceipt { actor: string; actorName?: string; targetName?: string; dependsOn?: string[]; action: OfflineAction }
 export interface RoundSyncSnapshot { waitingPlayerIds: string[]; waitingPlayers?: { id: string; name: string }[]; conflicts: number; closed: boolean; revision: number }
 export interface PersonalSync { roundId: string; receipts: EventReceipt[]; complete: boolean; withdrawn: boolean }
-export type RitualOutcome = 'playing' | 'won' | 'lost' | 'stopped';
+export type RitualOutcome = 'playing' | 'won' | 'lost' | 'stopped' | 'all_possessed';
 export interface Prophecy { id: string; title: string; rule: string }
 export interface RitualSnapshot {
   players: number; roundLimit: number; target: number; positions: [number, number, number, number];
   remainingSteps: number; outcome: RitualOutcome;
   cards: ({ slot: 'A' | 'B' | 'C'; revealed: false } | { slot: 'A' | 'B' | 'C'; revealed: true; card: Prophecy })[];
   canPenalize: boolean; canUndoPenalty: boolean;
+  penaltyDisputed?: boolean;
+  penaltyPreview?: { source: 1 | 2 | 3; positions: [number, number, number, number]; remainingSteps: number } | null;
   preview: { successes: number; positions: [number, number, number, number]; remainingSteps: number } | null;
 }
 export interface GameSnapshot {
+  firstGame?: true;
+  story?: { title: string; prologue: string };
   ritual: RitualSnapshot | null;
   freeplayFrom: number | null;
   phase: GamePhase;
@@ -100,7 +109,7 @@ export interface GameCue { roomId: string; version: number; phase: GamePhase; ki
 interface GameCommand { roomId: string; requestId: string; gameVersion: number; roundId: string | null }
 
 export type Role = 'possessed' | 'exorcist';
-export type PersonalCard = { id: string; title: string; difficulty: Difficulty } & (
+export type PersonalCard = { id: string; title: string; difficulty: Difficulty; harder?: boolean; offering?: boolean } & (
   | { role: 'possessed'; behavior: string; clue: string; releaseCondition: string; infectionCondition: string }
   | { role: 'exorcist'; mission: string }
 );
@@ -124,8 +133,8 @@ export interface PersistenceStatus {
   mode: 'memory' | 'disk'; state: 'ready' | 'load_error' | 'write_error'; recovered: boolean;
 }
 export type LobbyView = { revision: number; persistence?: PersistenceStatus } & (
-  | { kind: 'organizer'; room: RoomSnapshot | null; audioEnabled: boolean; review?: ReviewEvent[] }
-  | { kind: 'player'; room: RoomSnapshot; playerId: string; audioEnabled?: boolean; assignment: Assignment | null; play: PersonalPlay | null; synchronization?: PersonalSync | null }
+  | { kind: 'organizer'; room: RoomSnapshot | null; audioEnabled: boolean; review?: ReviewEvent[]; roles?: Record<string, Role>; presence?: Presence[]; stories?: { id: string; title: string }[] }
+  | { kind: 'player'; room: RoomSnapshot; playerId: string; audioEnabled?: boolean; assignment: Assignment | null; play: PersonalPlay | null; synchronization?: PersonalSync | null; presence?: Presence }
   | { kind: 'ended'; reason: 'closed' | 'removed' | 'left' }
 );
 
@@ -133,7 +142,8 @@ export type LobbyError = 'CARD_POOL_INSUFFICIENT' | 'STALE_CATALOG' | 'CATALOG_L
   | 'ROOM_NOT_FOUND' | 'ROOM_FULL' | 'NAME_TAKEN' | 'SESSION_EXPIRED'
   | 'INVALID_COMPOSITION' | 'STALE_DEAL' | 'STALE_CARD' | 'REPLACEMENT_PENDING' | 'REQUEST_LIMIT'
   | 'INVALID_PHASE' | 'STALE_GAME' | 'START_WARNING' | 'RESUME_WARNING' | 'SETTINGS_LOCKED'
-  | 'STALE_PLAY' | 'ACTION_UNAVAILABLE' | 'UNDO_DEPENDENCY' | 'RESULTS_FINAL' | 'STORAGE_UNAVAILABLE' | 'SYNC_PENDING' | 'RITUAL_REVIEW_PENDING';
+  | 'STALE_PLAY' | 'ACTION_UNAVAILABLE' | 'UNDO_DEPENDENCY' | 'RESULTS_FINAL' | 'STORAGE_UNAVAILABLE' | 'SYNC_PENDING' | 'RITUAL_REVIEW_PENDING'
+  | 'PREPARATION_REQUIRED' | 'PRESENCE_REQUIRED';
 export type LobbyReply = { ok: true; view: LobbyView } | { ok: false; error: LobbyError };
 
 export interface LobbyInputs {
@@ -171,6 +181,9 @@ export interface LobbyInputs {
   'ritual:undo-penalty': GameCommand;
   'party:freeplay': GameCommand;
   'venue:configure': GameCommand & { venue: Venue };
+  'play:location': GameCommand & { zone: string };
+  'play:presence': GameCommand & { status: PhysicalStatus };
+  'round:presence': GameCommand & { playerId: string; status: PhysicalStatus };
   'play:withdraw': PlayCommand;
   'play:sync': { roomId: string; roundId: string; events: OfflineEvent[] };
   'play:complete': { roomId: string; roundId: string; syncRevision: number };

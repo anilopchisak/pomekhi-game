@@ -1,0 +1,18 @@
+{
+  "jsonrpc": "2.0",
+  "id": 7162203,
+  "result": {
+    "content": [
+      {
+        "type": "text",
+        "text": "{\"error\":\"Error: Resume target mismatch\\nSource (eval_script line 1): const button=pixso.getNodeById(\\\"3:3363\\\");const before=button.reactions;const dest='3:14223';button.reactions=[{trigger:{type:'ON_CLICK'},action:{type:'NODE',destinationId:dest,navigation:'NAVIGATE',transition:{type:'DISSOLVE',duration:0.25,...\\n    at <anonymous> (mcp-evaluate-script.js:2)\\n    at <anonymous> (mcp-evaluate-script.js:3)\\n    at <eval> (mcp-evaluate-script.js:10)\\n\",\"rollback\":{\"status\":\"attempted\"}}"
+      }
+    ],
+    "structuredContent": {
+      "error": "Error: Resume target mismatch\nSource (eval_script line 1): const button=pixso.getNodeById(\"3:3363\");const before=button.reactions;const dest='3:14223';button.reactions=[{trigger:{type:'ON_CLICK'},action:{type:'NODE',destinationId:dest,navigation:'NAVIGATE',transition:{type:'DISSOLVE',duration:0.25,...\n    at <anonymous> (mcp-evaluate-script.js:2)\n    at <anonymous> (mcp-evaluate-script.js:3)\n    at <eval> (mcp-evaluate-script.js:10)\n",
+      "rollback": {
+        "status": "attempted"
+      }
+    }
+  }
+}

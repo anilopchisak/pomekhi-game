@@ -1,0 +1,55 @@
+{
+  "type": "pomekhi-task-result",
+  "taskId": "mvznc7kb143qzjgd1q9",
+  "ok": true,
+  "result": {
+    "phone390": {
+      "id": "17:20657",
+      "w": 390,
+      "h": 844,
+      "image": "phone390.png"
+    },
+    "phone320": {
+      "id": "12:3531",
+      "w": 320,
+      "h": 844,
+      "image": "phone320.png"
+    },
+    "phone430": {
+      "id": "12:3580",
+      "w": 430,
+      "h": 844,
+      "image": "phone430.png"
+    },
+    "reading": {
+      "id": "17:20396",
+      "w": 390,
+      "h": 844,
+      "image": "reading.png"
+    },
+    "ready": {
+      "id": "17:20489",
+      "w": 390,
+      "h": 844,
+      "image": "ready.png"
+    },
+    "invitation": {
+      "id": "17:14112",
+      "w": 1440,
+      "h": 900,
+      "image": "invitation.png"
+    },
+    "review": {
+      "id": "12:7289",
+      "w": 820,
+      "h": 472,
+      "image": "review.png"
+    },
+    "room": {
+      "id": "12:3825",
+      "w": 1366,
+      "h": 768,
+      "image": "room.png"
+    }
+  }
+}

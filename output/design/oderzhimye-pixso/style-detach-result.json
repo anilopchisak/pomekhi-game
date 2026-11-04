@@ -1,0 +1,34 @@
+{
+  "jsonrpc": "2.0",
+  "id": 3972736,
+  "result": {
+    "content": [
+      {
+        "type": "text",
+        "text": "{\"verified\":true,\"before\":{\"font\":{\"family\":\"Golos Text\",\"style\":\"Regular\",\"hash\":\"\"},\"style\":\"3:54\",\"missing\":true},\"after\":{\"font\":{\"family\":\"Inter\",\"style\":\"Regular\",\"hash\":\"d483e2c7f8032c6638d047167efbeba0030f0649\"},\"style\":\"\",\"missing\":false,\"characters\":\"Выберите пустое место вдали от стола. Три случайные миссии Ведущий выдаёт лично на телефоны.\"}}"
+      }
+    ],
+    "structuredContent": {
+      "after": {
+        "font": {
+          "family": "Inter",
+          "style": "Regular",
+          "hash": "d483e2c7f8032c6638d047167efbeba0030f0649"
+        },
+        "style": "",
+        "missing": false,
+        "characters": "Выберите пустое место вдали от стола. Три случайные миссии Ведущий выдаёт лично на телефоны."
+      },
+      "before": {
+        "font": {
+          "family": "Golos Text",
+          "style": "Regular",
+          "hash": ""
+        },
+        "style": "3:54",
+        "missing": true
+      },
+      "verified": true
+    }
+  }
+}

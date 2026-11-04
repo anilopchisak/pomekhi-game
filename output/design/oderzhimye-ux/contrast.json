@@ -1,0 +1,42 @@
+[
+  {
+    "foreground": "text",
+    "background": "canvas",
+    "ratio": 16.95
+  },
+  {
+    "foreground": "text",
+    "background": "surface",
+    "ratio": 15.83
+  },
+  {
+    "foreground": "muted",
+    "background": "raised",
+    "ratio": 7.9
+  },
+  {
+    "foreground": "ink",
+    "background": "action",
+    "ratio": 8.11
+  },
+  {
+    "foreground": "danger",
+    "background": "raised",
+    "ratio": 7.97
+  },
+  {
+    "foreground": "candle",
+    "background": "raised",
+    "ratio": 8.59
+  },
+  {
+    "foreground": "action",
+    "background": "raised",
+    "ratio": 7.41
+  },
+  {
+    "foreground": "border",
+    "background": "raised",
+    "ratio": 3.99
+  }
+]

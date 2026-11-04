@@ -1,2 +1,7 @@
 export { LobbyShell } from './LobbyShell.js';
 export { RoundStatus } from './RoundStatus.js';
+export { RitualBoard } from './RitualBoard.js';
+export { ConfirmButton } from './GameDialog.js';
+export { DialogButton } from './GameDialog.js';
+export { RoundTimer } from './RoundStatus.js';
+export { ResultsSummary } from './ResultsSummary.js';

@@ -1,0 +1,2 @@
+ObjC.import('CoreGraphics');
+function run(argv){const p=$.CGPointMake(Number(argv[0]),Number(argv[1]));$.CGEventPost(0,$.CGEventCreateMouseEvent(null,1,p,0));$.CGEventPost(0,$.CGEventCreateMouseEvent(null,2,p,0));}

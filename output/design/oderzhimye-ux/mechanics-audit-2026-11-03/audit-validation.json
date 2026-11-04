@@ -1,0 +1,13 @@
+{
+  "checkedAt": "2026-11-03T18:13:47.612481+00:00",
+  "checks": {
+    "all_roots_read": true,
+    "coverage_screen_references_exist": true,
+    "reading_routes_to_active_via_hide": true,
+    "penalty_continues_to_reset_specimen": true,
+    "later_round_and_resume_roots_lack_timeout": true,
+    "trial_instruction_has_no_nonreview_inbound": true,
+    "current_rules_match_frozen_snapshot": true
+  },
+  "scope": "Consistency of audit evidence; not game or prototype acceptance."
+}

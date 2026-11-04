@@ -1,52 +1,84 @@
-import { useState } from 'react';
+import { useRef, useState } from 'react';
 import type { LobbyCommand, LobbyInputs, LobbyView, OfflineAction } from '../../../../shared/protocol.js';
 import { gameCommand } from '../../../shared/api/index.js';
+import { ConfirmButton } from '../../../shared/ui/index.js';
 
-export function PlayControls({ view, disabled, run, queue }: {
+export function PlayControls({ view, disabled, run, queue, online = true }: {
   view: Extract<LobbyView, { kind: 'player' }>; disabled: boolean;
   queue?: (action: OfflineAction) => Promise<void>;
+  online?: boolean;
   run: <C extends LobbyCommand>(command: C, input: LobbyInputs[C]) => Promise<void>;
 }) {
-  const [target, setTarget] = useState('');
+  const selectRef = useRef<HTMLSelectElement>(null);
+  const [selection, setSelection] = useState<{ id: string; round: string; role: string }>();
   const { play, room } = view;
   if (!play) return null;
   const game = room.game;
+  const target = selection?.round === play.roundId && selection.role === play.status ? selection.id : '';
   const base = { ...gameCommand(room), playVersion: play.version };
   const mutable = !game.lastRoundAborted && !game.results.some(result => result.roundId === play.roundId && result.status !== 'provisional');
   const searching = game.phase === 'search' && !game.paused && mutable;
   const possessed = play.status === 'possessed' || play.status === 'captured';
+  const offering = game.firstGame && play.card.offering;
   const missionAllowed = mutable && !game.paused && ['search', 'return', 'between_rounds', 'finished'].includes(game.phase);
-  const name = room.players.find(p => p.id === target)?.name;
+  const eligibleIds = game.firstGame && possessed ? play.targets ?? [] : game.activePlayerIds;
+  const eligible = room.players.filter(p => p.id !== view.playerId && eligibleIds.includes(p.id));
+  const name = eligible.find(p => p.id === target)?.name;
+  const unavailable = Boolean(target && !name);
+  const native = !game.firstGame;
+  if (game.firstGame && game.phase === 'finished') return null;
+
+  function choose(id: string) { setSelection({ id, round: play!.roundId, role: play!.status }); }
+  const targetSelect = (label: string) => <label>{label}
+    <select ref={selectRef} value={name ? target : ''} disabled={disabled || !searching} onChange={e => choose(e.target.value)}>
+      <option value="">{eligible.length ? 'Выберите имя' : 'Нет доступных участников'}</option>
+      {eligible.map(p => <option key={p.id} value={p.id}>{p.name}</option>)}
+    </select>
+  </label>;
+
   return <section aria-label="Игровые действия">
-    <h3>{({ exorcist: 'Вы — экзорцист', possessed: 'Вы — одержимый', captured: 'Вы заражены', released: 'Вы освобождены' })[play.status]}</h3>
+    <h3>{({ exorcist: 'Вы — экзорцист', possessed: 'Вы — одержимый', captured: game.firstGame ? 'Вы в плену' : 'Вы заражены', released: 'Вы освобождены' })[play.status]}</h3>
     {play.status === 'captured' && <p>Ваша дополнительная миссия не засчитывается.</p>}
-    {play.wasCaptured && play.status === 'released' && <p>Вы были заражены: дополнительная миссия этого раунда не засчитывается.</p>}
+    {play.wasCaptured && play.status === 'released' && <p>После плена дополнительная миссия этого раунда не засчитывается.</p>}
+    {game.firstGame && searching && unavailable && <p role="status">Этот участник уже недоступен. Выберите имя из обновлённого списка.</p>}
+    {game.firstGame && searching && !online && <p>Список сохранён при последней связи. Отметка дождётся проверки.</p>}
     {queue && play.status === 'exorcist' && game.roundPlan.infectionEnabled && <div>
-      <label>Кто вас заразил<select value={target} disabled={disabled || !searching} onChange={e => setTarget(e.target.value)}><option value="">Выберите имя</option>{room.players.filter(p => p.id !== view.playerId && game.activePlayerIds.includes(p.id)).map(p => <option key={p.id} value={p.id}>{p.name}</option>)}</select></label>
-      <button disabled={disabled || !searching || !target} onClick={() => { if (window.confirm('Вас заразили? Прочитайте карточку этого участника вживую.')) void queue({ kind: 'captured', by: target }); }}>Меня заразили</button>
+      {targetSelect(game.firstGame ? 'Кто взял вас в плен' : 'Кто вас заразил')}
+      <ConfirmButton native={native} title="Сообщить о плене?"
+        description={unavailable ? 'Участник уже недоступен. Вернитесь к списку.' : 'Прочитайте карточку этого участника вживую.'}
+        disabled={disabled || !searching || !name} confirm="Сообщить о плене" fallbackFocus={selectRef}
+        onConfirm={() => void queue({ kind: 'captured', by: target })}>{game.firstGame ? 'Я в плену' : 'Меня заразили'}</ConfirmButton>
     </div>}
     {possessed && <>
-      <button disabled={disabled || !searching} onClick={() => {
-        if (window.confirm('Условие освобождения выполнено? Вся ваша группа будет освобождена и вернётся на базу.')) void (queue ? queue({ kind: 'release' }) : run('play:release', base));
-      }}>Нас освободили</button>
+      {game.firstGame && play.location && <p>Ваша локация: {play.location}.</p>}
+      <ConfirmButton native={native} title="Условие освобождения выполнено?"
+        description="Вся ваша группа освободится и вернётся на базу."
+        confirm="Подтвердить освобождение" disabled={disabled || !searching}
+        onConfirm={() => void (queue ? queue({ kind: 'release' }) : run('play:release', base))}>Нас освободили</ConfirmButton>
       {game.roundPlan.infectionEnabled && <>
-        <label>Кого заразить<select value={target} disabled={disabled || !searching} onChange={event => setTarget(event.target.value)}>
-          <option value="">Выберите имя</option>
-          {room.players.filter(p => p.id !== view.playerId && game.activePlayerIds.includes(p.id)).map(p => <option key={p.id} value={p.id}>{p.name}</option>)}
-        </select></label>
-        <button disabled={disabled || !searching || !name} onClick={() => {
-          if (window.confirm(`Условие заражения выполнено участником «${name}»? Он немедленно присоединится к вашей группе.`)) void (queue ? queue({ kind: 'infect', targetId: target }) : run('play:infect', { ...base, targetId: target }));
-        }}>Заразить выбранного</button>
+        {targetSelect(game.firstGame ? 'Кого взять в плен' : 'Кого заразить')}
+        <ConfirmButton native={native} title={name ? `Взять в плен участника «${name}»?` : 'Участник уже недоступен'}
+          description={unavailable ? 'Вернитесь к обновлённому списку.' : 'Подтвердите, что участник выполнил условие плена. Он присоединится к вашей группе.'}
+          confirm="Подтвердить плен" fallbackFocus={selectRef} cancel={unavailable ? 'Вернуться к списку' : 'Отмена'} disabled={disabled || !searching || !name}
+          onConfirm={() => void (queue ? queue({ kind: 'infect', targetId: target }) : run('play:infect', { ...base, targetId: target }))}>
+          {game.firstGame ? 'Взять в плен' : 'Заразить выбранного'}
+        </ConfirmButton>
       </>}
     </>}
-    {play.missionEligible && <button disabled={disabled || !missionAllowed} onClick={() => {
-      if (window.confirm(play.missionCompleted ? 'Снять отметку выполнения миссии?' : 'Вы выполнили дополнительную миссию?')) void (queue ? queue({ kind: 'mission', completed: !play.missionCompleted }) : run('play:mission', { ...base, completed: !play.missionCompleted }));
-    }}>{play.missionCompleted ? 'Снять отметку миссии' : 'Миссия выполнена'}</button>}
+    {play.missionEligible && <ConfirmButton native={native}
+      title={play.missionCompleted ? 'Снять отметку выполнения миссии?' : 'Подтвердить выполнение миссии?'}
+      description={play.missionCompleted ? undefined : offering ? 'Подтвердите, что лично дошли до Обители и выполнили действие карточки до призыва.' : 'Миссия должна быть выполнена до призыва на базу.'}
+      confirm={play.missionCompleted ? 'Снять отметку' : 'Подтвердить миссию'} disabled={disabled || !missionAllowed}
+      onConfirm={() => void (queue ? queue({ kind: 'mission', completed: !play.missionCompleted }) : run('play:mission', { ...base, completed: !play.missionCompleted }))}>
+      {play.missionCompleted ? 'Снять отметку миссии' : offering ? 'Подтвердить подношение и миссию' : 'Миссия выполнена'}
+    </ConfirmButton>}
     {play.undo && <>
       <p>Последнее действие: {play.undo.label}.</p>
-      <button disabled={disabled || !mutable || !play.undo.available} onClick={() => {
-        if (window.confirm(`Отменить: ${play.undo!.label}? Завершённый поиск не возобновится.`)) void (queue ? queue({ kind: 'undo', actionId: play.undo!.id }) : run('play:undo', { ...base, actionId: play.undo!.id }));
-      }}>Отменить моё последнее действие</button>
+      <ConfirmButton native={native} title={`Отменить: ${play.undo.label}?`} description="Завершённый поиск не возобновится."
+        confirm="Отменить действие" disabled={disabled || !mutable || !play.undo.available}
+        onConfirm={() => void (queue ? queue({ kind: 'undo', actionId: play.undo!.id }) : run('play:undo', { ...base, actionId: play.undo!.id }))}>
+        Отменить моё последнее действие
+      </ConfirmButton>
       {!play.undo.available && mutable && <p>Отмена недоступна: есть зависимые события или результат зафиксирован.</p>}
     </>}
     {!mutable && <p>Результат закрыт для изменений.</p>}

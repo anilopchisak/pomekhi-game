@@ -1,0 +1,29 @@
+{
+  "type": "pomekhi-task-result",
+  "taskId": "mvzl26gvmhn6opfl1ba",
+  "ok": true,
+  "result": {
+    "moved": [
+      "P14",
+      "P15",
+      "P25",
+      "P07",
+      "P08",
+      "P09",
+      "P12",
+      "P13",
+      "P16",
+      "P17",
+      "P18",
+      "P24",
+      "P30",
+      "A01",
+      "A02",
+      "A03",
+      "A04",
+      "L01",
+      "PX15",
+      "PX21"
+    ]
+  }
+}

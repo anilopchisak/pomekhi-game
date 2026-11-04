@@ -1,0 +1,99 @@
+const font={family:'Inter',style:'Regular'};
+const mono={family:'IBM Plex Mono',style:'Medium',hash:'ac0c3464000d8fb6175b85f8fa3e30a3fb8351fe'};
+await Promise.all([font,mono].map(f=>pixso.loadFontAsync(f)));
+const page=pixso.getNodeById('3:3');
+const section=pixso.createSection();
+section.name='09 · Аудит · непрерывность партии';
+page.appendChild(section);
+section.x=0;
+section.y=Math.max(...page.children.filter(n=>n.id!==section.id).map(n=>n.y+n.height))+160;
+section.resizeWithoutConstraints(4420,2780);
+const frames=[];
+function clone(id,name){
+  const n=pixso.getNodeById(id).clone();
+  section.appendChild(n);
+  n.name=name;
+  n.x=36+(frames.length%3)*1460;
+  n.y=56+Math.floor(frames.length/3)*895;
+  frames.push({id:n.id,name});
+  return n;
+}
+function write(text,value){
+  const previous=text.fontName;
+  if(previous.family==='Golos Text'){
+    text.textStyleId='';
+    text.fontName=font;
+    text.fontSize=16;
+    text.lineHeight={unit:'PIXELS',value:24};
+  }
+  text.characters=String(value);
+  if(text.characters!==String(value))throw Error('Text mismatch '+text.id);
+}
+function panel(root){return root.findOne(n=>n.name==='Ritual · compact progress');}
+function setPanel(root,reference){
+  const old=panel(root);
+  const parent=old.parent;
+  const index=parent.children.findIndex(c=>c.id===old.id);
+  const copy=panel(pixso.getNodeById(reference)).clone();
+  parent.insertChild(index,copy);
+  old.remove();
+  return copy;
+}
+function setRound(panel,round){
+  const badge=panel.children.find(n=>n.name.startsWith('Tag /'));
+  const roundText=panel.children.find(n=>n.name==='Round indicator')??panel.children.find(n=>n.name.startsWith('Small / Осталось')).clone();
+  if(roundText.parent.id!==panel.id)panel.insertChild(panel.children.findIndex(n=>n.id===badge.id)+1,roundText);
+  badge.visible=false;
+  roundText.name='Round indicator';
+  write(roundText,round+' / 7 РАУНДОВ');
+  roundText.fontSize=13;
+  roundText.lineHeight={unit:'PIXELS',value:18};
+}
+function setRitual(panel,counts){
+  const candles=panel.children.find(n=>n.name==='Candle route').children;
+  if(candles.length!==3)throw Error('Unexpected candle route');
+  for(const [i,candle]of candles.entries()){
+    const count=candle.findOne(n=>n.type==='TEXT'&&n.name.startsWith('Code /'));
+    write(count,counts[i]);
+    const flame=candle.findOne(n=>n.name==='Flame');
+    const glow=candle.findOne(n=>n.name==='Local glow');
+    if(flame)flame.opacity=counts[i]>0?1:0;
+    if(glow)glow.opacity=counts[i]>0?.08:0;
+  }
+  write(panel.children.find(n=>n.name.startsWith('Metric /')),3*counts[0]+2*counts[1]+counts[2]);
+}
+function body(root,value){
+  write(root.findOne(n=>n.name==='Current phase').children.find(n=>n.type==='TEXT'&&n.name.startsWith('Body')),value);
+}
+function resume(root,component){
+  const timer=root.findOne(n=>n.type==='INSTANCE'&&n.name.startsWith('Phase timer'));
+  timer.swapComponent(pixso.getNodeById(component));
+  const clock=timer.findOne(n=>n.name==='Clock value');
+  if(clock.characters!=='02:18')throw Error('Resume clock mismatch '+clock.characters);
+  return clock.id;
+}
+const original=pixso.getNodeById('3:123');
+const resume1=resume(original,TIMER);
+const resumed=clone('20:11343','R2 · Возобновление с 02:18');
+const resume2=resume(resumed,TIMER);
+body(resumed,'Раунд продолжился с 02:18. Свободные исследуют по одному. Прежние группы сохраняют места и задания.');
+for(const [round,reference,counts,copy] of [
+ [4,'3:10484',[0,10,8],'Первое прорицание открыто и действует у стола. Новые задания получают только свободные. Остальные сохраняют место и группу.'],
+ [5,'3:10484',[0,2,16],'Первое прорицание остаётся открытым. Свободные получают задания в порядке раздачи.'],
+ [6,'3:9569',[0,0,12],'Оба открытых прорицания действуют у стола одновременно. Оставшиеся свечи у последней двери.'],
+ [7,'3:9569',[0,0,4],'Последний раунд. После сверки Ведущий объявит исход партии и позовёт всех к столу.']
+]){
+  const n=clone('3:2208','R'+round+' · Раздача · '+(3*counts[0]+2*counts[1]+counts[2])+' шагов');
+  const ritual=setPanel(n,reference);
+  setRound(ritual,round);
+  setRitual(ritual,counts);
+  body(n,copy);
+}
+const defeat=clone('3:2715','R7 · Поражение · 1 шаг');
+const defeatPanel=setPanel(defeat,'3:9569');
+setRound(defeatPanel,7);
+body(defeat,'После седьмой сверки у последней двери осталась одна свеча. Все возвращаются к столу.');
+const history=pixso.getNodeById('7:15637');
+setRound(setPanel(history,'3:9569'),7);
+body(history,'Партия завершена после седьмой сверки. У последней двери осталась одна свеча, два прорицания открыты.');
+return {verified:true,section:section.id,frames,resume1,resume2,lossHistory:history.id};

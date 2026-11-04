@@ -1,0 +1,69 @@
+{
+  "status": "pass",
+  "cardCount": 147,
+  "counts": {
+    "possessed": 75,
+    "exorcist": 42,
+    "trial": 11,
+    "prophecy": 11,
+    "story": 6,
+    "reference": 2
+  },
+  "sourceEntryCount": 270,
+  "pairCount": 45,
+  "witnessCount": 225,
+  "perPossessedFamily": {
+    "voice": 6,
+    "movement": 7,
+    "contact": 10,
+    "space": 8,
+    "sound": 8,
+    "acting": 8,
+    "pantomime": 7,
+    "rhythm": 2,
+    "gesture": 8,
+    "objects": 1,
+    "observation": 1,
+    "posture": 4,
+    "light": 5
+  },
+  "perSubset": {
+    "indoor": 16,
+    "outdoor": 12,
+    "contact": 14,
+    "harder": 22
+  },
+  "fictionSourceCount": 12,
+  "revisionRecordCount": 185,
+  "inputs": {
+    "cards.json": "a5054fad8b7c2dc2c6c5894cb097fcc7b72b4b2eb10ff65e83d8d7ef17a9fc92",
+    "source-audit.json": "262e255f4d2b28b2cc4c3148172bdf1c48a1247971364bbd1e77eefd04faaa12",
+    "editorial-review.json": "ab20ba4b07afffd897cf17df42b5d55e2fe897c2ce64ebd0502494f0caacf7e5",
+    "build.py": "c198485a58274b0cb053029f633ecbd0cdb5d201485560240a0feb20454cff3f",
+    "fiction-sources.json": "96d6f048a399801a1f56842d44e8e0c87423eeb655e38f2cd23880ffc588fe70",
+    "revision-audit.json": "e8c164b1b15df913f00efe2651c5fb255978efe02fefdb80b192bfaeb9ec4d7c",
+    "research.md": "ca51f1e68bca1c6137a67b11c01da10f7a6404848b256285d416d507cd86c381"
+  },
+  "checks": [
+    "Exact 147-card count and six deck counts.",
+    "Stable unique IDs and titles.",
+    "75 distinct behavior/capture/release records; no missing conditions.",
+    "No helper fields or helper commands in playable content.",
+    "No exact duplicate behavior, capture, release or mission text.",
+    "Source inventory covers 147+90+7+19 historical entries, 7 user requests and every credited target.",
+    "No carried or staged task props; existing house mirrors are the explicit natural-scene exception.",
+    "All 185 revision decisions link intention, causal action and one of 12 fiction sources where applicable.",
+    "Approved 31/18/26 and 20/14/8 primary decisions and 27/9/2 variant decisions are complete.",
+    "Retained outcome contracts and movement editions match baseline hashes or explicit user-authorized preparation amendments; prophecy mechanics are unchanged.",
+    "Paper-free active missions: no printed card, token, cardboard, envelope or drawing sheet is required.",
+    "Optional subset prerequisites and required on-site Dwelling offerings.",
+    "11 trials have private delivery, explicit evidence and two different branches.",
+    "Exactly 10 ordinary prophecies and one final door.",
+    "45 unique ordinary-prophecy pairs with 225 bounded executable witnesses."
+  ],
+  "limitations": [
+    "Text uniqueness is not proof of semantic diversity; see editorial-review.json.",
+    "Finite prophecy witnesses do not cover every utterance or accessibility requirement.",
+    "No live playtest, no physical phone, no LAN/Tuna scenario and no runtime integration."
+  ]
+}

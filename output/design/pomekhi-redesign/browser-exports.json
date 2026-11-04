@@ -1,0 +1,61 @@
+{
+  "type": "pomekhi-task-result",
+  "taskId": "mvzl8gmeayfpqrbgjqf",
+  "ok": true,
+  "result": {
+    "room": {
+      "id": "12:3825",
+      "width": 1366,
+      "height": 768,
+      "image": "room-preview.png"
+    },
+    "phone": {
+      "id": "12:3531",
+      "width": 320,
+      "height": 844,
+      "image": "phone-preview.png"
+    },
+    "editor": {
+      "id": "12:7723",
+      "width": 1120,
+      "height": 760,
+      "image": "editor-preview.png"
+    },
+    "settings": {
+      "id": "12:7179",
+      "width": 820,
+      "height": 760,
+      "image": "settings-preview.png"
+    },
+    "results": {
+      "id": "17:15544",
+      "width": 1440,
+      "height": 900,
+      "image": "results-preview.png"
+    },
+    "stress": {
+      "id": "12:3927",
+      "width": 1366,
+      "height": 768,
+      "image": "stress-preview.png"
+    },
+    "phone430": {
+      "id": "12:3580",
+      "width": 430,
+      "height": 844,
+      "image": "phone430-preview.png"
+    },
+    "long": {
+      "id": "12:5781",
+      "width": 320,
+      "height": 844,
+      "image": "long-preview.png"
+    },
+    "lost": {
+      "id": "15:13796",
+      "width": 1440,
+      "height": 900,
+      "image": "lost-preview.png"
+    }
+  }
+}

@@ -1,0 +1,1 @@
+{"file_key": "PvAwgT1U6s5Oj8tX7ShmIA", "script": "const n=pixso.getNodeById('3:763');const next='Выберите пустое место вдали от стола. Три случайные миссии Ведущий выдаёт лично на телефоны.';const before=n.characters;n.characters=next;if(n.characters!==next)throw Error('Text readback differs');return{verified:true,id:n.id,before,after:n.characters};"}

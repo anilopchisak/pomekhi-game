@@ -1,0 +1,4145 @@
+{
+  "format": "pomekhi.domestic-revision-audit",
+  "version": 1,
+  "scope": "authored banks only; installed runtime is unchanged",
+  "primary": [
+    {
+      "id": "P001",
+      "type": "possessed",
+      "title": "Колыбельная пустой комнаты",
+      "previousTitle": "Колыбельная пустой комнаты",
+      "entityIntent": "Keep a lullaby running for an absent listener.",
+      "causalLink": "Joining the song sustains it; a direct request to stop addresses the singer as a person.",
+      "decision": "retain_core",
+      "mechanic": "ask_singer_to_stop",
+      "inspirations": [
+        "old-nurse"
+      ],
+      "playableChanged": false,
+      "acceptance": "editorially_reviewed_not_playtested"
+    },
+    {
+      "id": "P002",
+      "type": "possessed",
+      "title": "Рука возвращается сама",
+      "previousTitle": "Вещь не на своём месте",
+      "entityIntent": "Keep the wrist returning to a point against its owner’s intention.",
+      "causalLink": "The involuntary returning hand is stopped by a visible noncontact barrier; no cup or cloth is used.",
+      "decision": "replace",
+      "mechanic": "interrupt_returning_wrist_without_touch",
+      "inspirations": [
+        "beckoning",
+        "others"
+      ],
+      "playableChanged": true,
+      "acceptance": "editorially_reviewed_not_playtested",
+      "currentDecision": "adapt_no_props"
+    },
+    {
+      "id": "P003",
+      "type": "possessed",
+      "title": "Холод чужих рук",
+      "previousTitle": "Холод чужих рук",
+      "entityIntent": "Borrow warmth through a person’s hands.",
+      "causalLink": "Wordless partial contact maintains estrangement; both accepted hands with human address restore connection.",
+      "decision": "retain_core",
+      "mechanic": "two_hand_warming_with_speech",
+      "inspirations": [
+        "uninvited"
+      ],
+      "playableChanged": false,
+      "acceptance": "editorially_reviewed_not_playtested"
+    },
+    {
+      "id": "P004",
+      "type": "possessed",
+      "title": "Танец, который не отпускает",
+      "previousTitle": "Танец, который не отпускает",
+      "entityIntent": "Keep a visitor in an endless dance.",
+      "causalLink": "Accepting and dancing joins it; a clear in-fiction refusal breaks the invitation. Real consent refusal is always outside scoring.",
+      "decision": "retain_core",
+      "mechanic": "decline_dance_invitation",
+      "inspirations": [
+        "vourdalak"
+      ],
+      "playableChanged": false,
+      "acceptance": "editorially_reviewed_not_playtested"
+    },
+    {
+      "id": "P005",
+      "type": "possessed",
+      "title": "Объятие на прощание",
+      "previousTitle": "Объятие на прощание",
+      "entityIntent": "Leave without receiving a farewell.",
+      "causalLink": "Substituting another social exchange repeats the delay; accepting the embrace invitation completes farewell without compelling contact.",
+      "decision": "retain_core",
+      "mechanic": "accept_embrace_invitation",
+      "inspirations": [
+        "old-nurse"
+      ],
+      "playableChanged": false,
+      "acceptance": "editorially_reviewed_not_playtested"
+    },
+    {
+      "id": "P006",
+      "type": "possessed",
+      "title": "Не открывай: там ещё живут",
+      "previousTitle": "Та, которую нельзя открывать",
+      "entityIntent": "Keep an old household behind a closed threshold.",
+      "causalLink": "Two independent unintrusive passes acknowledge the boundary without entering the old event.",
+      "decision": "adapt",
+      "mechanic": "two_independent_door_passes",
+      "inspirations": [
+        "monkeys-paw",
+        "empty-house"
+      ],
+      "playableChanged": true,
+      "acceptance": "editorially_reviewed_not_playtested"
+    },
+    {
+      "id": "P007",
+      "type": "possessed",
+      "title": "Запись из соседней жизни",
+      "previousTitle": "Запись из соседней жизни",
+      "entityIntent": "Repeat a tune for an absent household listener.",
+      "causalLink": "Treating it as a louder recording preserves the loop; asking its purpose recognizes an intended listener.",
+      "decision": "retain_core",
+      "mechanic": "ask_purpose_of_performed_melody",
+      "inspirations": [
+        "beckoning"
+      ],
+      "playableChanged": false,
+      "acceptance": "editorially_reviewed_not_playtested"
+    },
+    {
+      "id": "P008",
+      "type": "possessed",
+      "title": "Приглашение ещё действует",
+      "previousTitle": "Обрывок запрета",
+      "entityIntent": "Enter through an invitation that has not been withdrawn.",
+      "causalLink": "Reinviting sustains access; closing the mimed opening and withdrawing permission breaks it. This access rule is authored, not asserted as a universal rule in the literary sources.",
+      "decision": "replace",
+      "mechanic": "withdraw_invitation_and_close_mimed_door",
+      "inspirations": [
+        "monkeys-paw",
+        "vourdalak"
+      ],
+      "playableChanged": true,
+      "acceptance": "editorially_reviewed_not_playtested"
+    },
+    {
+      "id": "P009",
+      "type": "possessed",
+      "title": "Имя, которое не держится",
+      "previousTitle": "Имя, которое не держится",
+      "entityIntent": "Overwrite the person’s identity on each address.",
+      "causalLink": "Demanding a real identity strengthens the invasive exchange; keeping the first fictional name resists replacement.",
+      "decision": "retain_core",
+      "mechanic": "remember_first_fictional_identity",
+      "inspirations": [
+        "jolly-corner"
+      ],
+      "playableChanged": false,
+      "acceptance": "editorially_reviewed_not_playtested"
+    },
+    {
+      "id": "P010",
+      "type": "possessed",
+      "title": "Гость у твоего плеча",
+      "previousTitle": "Гость у твоего плеча",
+      "entityIntent": "Bring an unacknowledged companion into the home.",
+      "causalLink": "Denying the visible actor’s concern sustains it; addressing the specified empty place acknowledges a separate guest.",
+      "decision": "retain_core",
+      "mechanic": "acknowledge_implied_companion",
+      "inspirations": [
+        "turn-screw"
+      ],
+      "playableChanged": false,
+      "acceptance": "editorially_reviewed_not_playtested"
+    },
+    {
+      "id": "P011",
+      "type": "possessed",
+      "title": "Ты похож на прежнего жильца",
+      "previousTitle": "Перевёрнутый дом",
+      "entityIntent": "Replace a visitor with a remembered resident.",
+      "causalLink": "Accepting the imposed identity admits replacement; asserting a separate fictional identity ends the mistaken recognition. Unlike P009, remembering a first name is not the task.",
+      "decision": "replace",
+      "mechanic": "reject_imposed_role_and_name_self",
+      "inspirations": [
+        "jolly-corner",
+        "others"
+      ],
+      "playableChanged": true,
+      "acceptance": "editorially_reviewed_not_playtested"
+    },
+    {
+      "id": "P012",
+      "type": "possessed",
+      "title": "Портрет не помнит лицо",
+      "previousTitle": "Портрет ищет лицо",
+      "entityIntent": "Recover a face missing from the household memory.",
+      "causalLink": "Blocking the frame erases recognition; a visible steady face completes the portrait. No actual painting is needed.",
+      "decision": "adapt",
+      "mechanic": "fill_empty_portrait_frame",
+      "inspirations": [
+        "jolly-corner",
+        "turn-screw"
+      ],
+      "playableChanged": true,
+      "acceptance": "editorially_reviewed_not_playtested"
+    },
+    {
+      "id": "P013",
+      "type": "possessed",
+      "title": "Стук, которого не слышно",
+      "previousTitle": "Последний удар",
+      "entityIntent": "Make an unheard event happen again.",
+      "causalLink": "Copying voiceless motion joins the loop; supplying its missing audible consequence completes it. No fixed beat sequence or reversed pattern is required.",
+      "decision": "replace",
+      "mechanic": "supply_audible_strike_with_silent_knock",
+      "inspirations": [
+        "old-nurse"
+      ],
+      "playableChanged": true,
+      "acceptance": "editorially_reviewed_not_playtested"
+    },
+    {
+      "id": "P014",
+      "type": "possessed",
+      "title": "Укладывает того, кого нет",
+      "previousTitle": "Маятник без остановки",
+      "entityIntent": "Repeat caring for an absent sleeper.",
+      "causalLink": "An unfinished care routine is acted over empty space. Removing its imagined bed is a visible completed pantomime, not manipulation of cloth.",
+      "decision": "replace",
+      "mechanic": "remove_mimed_bed_from_empty_space",
+      "inspirations": [
+        "beckoning",
+        "empty-house"
+      ],
+      "playableChanged": true,
+      "acceptance": "editorially_reviewed_not_playtested",
+      "currentDecision": "adapt_no_props"
+    },
+    {
+      "id": "P015",
+      "type": "possessed",
+      "title": "Не даёт закончить рассказ",
+      "previousTitle": "Радио между станциями",
+      "entityIntent": "Erase a witness by interrupting every attempt to speak.",
+      "causalLink": "Deliberate interruption strengthens the silencing voice; a visible willing listener lets the witness finish. The completion is a whole episode, not a hidden sentence.",
+      "decision": "replace",
+      "mechanic": "hear_completed_witness_episode_with_open_palm",
+      "inspirations": [
+        "empty-house",
+        "uninvited"
+      ],
+      "playableChanged": true,
+      "acceptance": "editorially_reviewed_not_playtested"
+    },
+    {
+      "id": "P016",
+      "type": "possessed",
+      "title": "Дом держит чужой выдох",
+      "previousTitle": "Нота под полом",
+      "entityIntent": "Hold a voice below the living person who made it.",
+      "causalLink": "An abrupt interruption separates the voices; a shared ordinary exhalation reunites them without a pitch test.",
+      "decision": "adapt",
+      "mechanic": "join_sustained_pitch",
+      "inspirations": [
+        "uninvited",
+        "empty-house"
+      ],
+      "playableChanged": true,
+      "acceptance": "editorially_reviewed_not_playtested"
+    },
+    {
+      "id": "P017",
+      "type": "possessed",
+      "title": "Ответ из другого угла",
+      "previousTitle": "Ответ из другого угла",
+      "entityIntent": "Wait for an answer from another part of the home.",
+      "causalLink": "The actor and rescuer use their own body for sound at two positions, not two prepared surfaces.",
+      "decision": "retain_core",
+      "mechanic": "answer_body_taps_from_second_position",
+      "inspirations": [
+        "empty-house"
+      ],
+      "playableChanged": true,
+      "acceptance": "editorially_reviewed_not_playtested",
+      "currentDecision": "adapt_no_props"
+    },
+    {
+      "id": "P018",
+      "type": "possessed",
+      "title": "Шаги, которых нет",
+      "previousTitle": "Шаги, которых нет",
+      "entityIntent": "Continue an unseen approach.",
+      "causalLink": "Physical imitation admits the walking loop; addressing the implied walker gives its approach a stopping point.",
+      "decision": "retain_core",
+      "mechanic": "address_implied_footsteps",
+      "inspirations": [
+        "empty-house"
+      ],
+      "playableChanged": false,
+      "acceptance": "editorially_reviewed_not_playtested"
+    },
+    {
+      "id": "P019",
+      "type": "possessed",
+      "title": "Шёпот под печатью",
+      "previousTitle": "Шёпот под печатью",
+      "entityIntent": "Keep speech under an alien seal.",
+      "causalLink": "Shushing reinforces the seal; visibly removing one’s own mimed seal gives a model of release.",
+      "decision": "retain_core",
+      "mechanic": "mime_removal_of_mouth_seal",
+      "inspirations": [
+        "old-nurse"
+      ],
+      "playableChanged": false,
+      "acceptance": "editorially_reviewed_not_playtested"
+    },
+    {
+      "id": "P020",
+      "type": "possessed",
+      "title": "Улыбка не слышит прощания",
+      "previousTitle": "Смех чужого ребёнка",
+      "entityIntent": "Keep an alien playful voice in an unfinished farewell.",
+      "causalLink": "Joining the acted laughter keeps the voice; a serious reciprocal farewell closes the social exchange.",
+      "decision": "adapt",
+      "mechanic": "serious_reciprocal_bow",
+      "inspirations": [
+        "turn-screw",
+        "jolly-corner"
+      ],
+      "playableChanged": true,
+      "acceptance": "editorially_reviewed_not_playtested"
+    },
+    {
+      "id": "P021",
+      "type": "possessed",
+      "title": "Сердце отвечает не тебе",
+      "previousTitle": "Сбитое сердце",
+      "entityIntent": "Make the body answer an unseen caller.",
+      "causalLink": "Accelerating the answer accepts it; stillness with an ordinary breath restores self-directed rhythm. No physiological result is judged.",
+      "decision": "adapt",
+      "mechanic": "replace_percussion_with_normal_breath",
+      "inspirations": [
+        "uninvited"
+      ],
+      "playableChanged": true,
+      "acceptance": "editorially_reviewed_not_playtested"
+    },
+    {
+      "id": "P022",
+      "type": "possessed",
+      "title": "Нить за рукавом",
+      "previousTitle": "Нить за рукавом",
+      "entityIntent": "Pull a resident by an invisible attachment.",
+      "causalLink": "Tugging accepts the attachment; visibly cutting its mimed line breaks it without contact.",
+      "decision": "retain_core",
+      "mechanic": "sever_mimed_tether",
+      "inspirations": [
+        "beckoning"
+      ],
+      "playableChanged": false,
+      "acceptance": "editorially_reviewed_not_playtested"
+    },
+    {
+      "id": "P023",
+      "type": "possessed",
+      "title": "Отдаёт пустоту и ждёт обратно",
+      "previousTitle": "Узел в воздухе",
+      "entityIntent": "Never complete the return of an invisible loan.",
+      "causalLink": "The lending episode is performed with empty hands; an intended take-and-return is enough, no key is needed.",
+      "decision": "replace",
+      "mechanic": "take_and_return_mimed_loan",
+      "inspirations": [
+        "beckoning",
+        "empty-house"
+      ],
+      "playableChanged": true,
+      "acceptance": "editorially_reviewed_not_playtested",
+      "currentDecision": "adapt_no_props"
+    },
+    {
+      "id": "P024",
+      "type": "possessed",
+      "title": "Отражение с задержкой",
+      "previousTitle": "Отражение с задержкой",
+      "entityIntent": "Keep an image acting after its person stops.",
+      "causalLink": "Following the delayed copy gives it priority; withdrawing both hands and staying still removes its input.",
+      "decision": "retain_core",
+      "mechanic": "remove_input_from_delayed_reflection",
+      "inspirations": [
+        "jolly-corner"
+      ],
+      "playableChanged": false,
+      "acceptance": "editorially_reviewed_not_playtested"
+    },
+    {
+      "id": "P025",
+      "type": "possessed",
+      "title": "Не смеет занять своё место",
+      "previousTitle": "Корона мёртвого короля",
+      "entityIntent": "Displace the resident from their own standing place.",
+      "causalLink": "A resident is displaced from an empty standing place rather than a chair. No furniture is required.",
+      "decision": "replace",
+      "mechanic": "vacate_place_and_admit_actor",
+      "inspirations": [
+        "others",
+        "beckoning"
+      ],
+      "playableChanged": true,
+      "acceptance": "editorially_reviewed_not_playtested",
+      "currentDecision": "adapt_no_props"
+    },
+    {
+      "id": "P026",
+      "type": "possessed",
+      "title": "Ангел при отведённом взгляде",
+      "previousTitle": "Ангел при отведённом взгляде",
+      "entityIntent": "Advance outside observation until confronted with one’s own actual face.",
+      "causalLink": "User explicitly preserves seeing one’s own face in an existing house mirror. It is neither carried nor staged, and no one must turn or touch it.",
+      "decision": "retain_core",
+      "mechanic": "actual_self_view_in_existing_house_mirror",
+      "inspirations": [
+        "blink"
+      ],
+      "playableChanged": true,
+      "acceptance": "editorially_reviewed_not_playtested",
+      "currentDecision": "existing_house_mirror"
+    },
+    {
+      "id": "P027",
+      "type": "possessed",
+      "title": "Не узнаёт собственное приветствие",
+      "previousTitle": "Половина приветствия",
+      "entityIntent": "Prevent a familiar human greeting from completing.",
+      "causalLink": "Copying the stuck greeting retains it; a full visible greeting supplies the missing opening.",
+      "decision": "adapt",
+      "mechanic": "complete_open_hand_shape",
+      "inspirations": [
+        "vourdalak",
+        "others"
+      ],
+      "playableChanged": true,
+      "acceptance": "editorially_reviewed_not_playtested"
+    },
+    {
+      "id": "P028",
+      "type": "possessed",
+      "title": "Место для покойного",
+      "previousTitle": "Место для покойного",
+      "entityIntent": "Wait for an absent visitor to occupy an empty place.",
+      "causalLink": "The missing resident has an empty place, not a seat. Standing and acknowledging a bow completes arrival.",
+      "decision": "retain_core",
+      "mechanic": "occupy_expected_empty_place_and_nod",
+      "inspirations": [
+        "beckoning"
+      ],
+      "playableChanged": true,
+      "acceptance": "editorially_reviewed_not_playtested",
+      "currentDecision": "adapt_no_props"
+    },
+    {
+      "id": "P029",
+      "type": "possessed",
+      "title": "До порога остался один шаг",
+      "previousTitle": "Сломанный марш",
+      "entityIntent": "Restart the last part of a homecoming.",
+      "causalLink": "Repeating the incomplete return joins it; a complete short forward walk supplies its end.",
+      "decision": "adapt",
+      "mechanic": "complete_forward_three_step_march",
+      "inspirations": [
+        "empty-house",
+        "vourdalak"
+      ],
+      "playableChanged": true,
+      "acceptance": "editorially_reviewed_not_playtested"
+    },
+    {
+      "id": "P030",
+      "type": "possessed",
+      "title": "Вращающийся медиум",
+      "previousTitle": "Вращающийся медиум",
+      "entityIntent": "Continue the domestic presence through the actor’s body, voice or gaze rather than a prepared object.",
+      "causalLink": "The requested spinner is unchanged; the location must already have enough space, without moving or preparing furniture.",
+      "decision": "retain_core",
+      "mechanic": "opposite_direction_outer_orbit",
+      "inspirations": [
+        "empty-house"
+      ],
+      "playableChanged": true,
+      "acceptance": "editorially_reviewed_not_playtested",
+      "currentDecision": "adapt_no_props"
+    },
+    {
+      "id": "P031",
+      "type": "possessed",
+      "title": "Считает одного лишнего",
+      "previousTitle": "Чашка вверх дном",
+      "entityIntent": "Admit an extra resident through a third empty place.",
+      "causalLink": "An extra place in the household is indicated spatially; no table or cups are required.",
+      "decision": "replace",
+      "mechanic": "cancel_and_cross_third_empty_place",
+      "inspirations": [
+        "beckoning",
+        "others"
+      ],
+      "playableChanged": true,
+      "acceptance": "editorially_reviewed_not_playtested",
+      "currentDecision": "adapt_no_props"
+    },
+    {
+      "id": "P032",
+      "type": "possessed",
+      "title": "Одна рука считает другую чужой",
+      "previousTitle": "Разлучённые руки",
+      "entityIntent": "Separate a person from ownership of one hand.",
+      "causalLink": "Transferring the alien trace accepts it; witnessing both hands rejoined interrupts the split. Contact is light, negotiated and requires only one rescuer hand.",
+      "decision": "replace",
+      "mechanic": "witness_actor_palms_join_with_single_hand",
+      "inspirations": [
+        "jolly-corner"
+      ],
+      "playableChanged": true,
+      "acceptance": "editorially_reviewed_not_playtested"
+    },
+    {
+      "id": "P033",
+      "type": "possessed",
+      "title": "Пальцы держит чужой узел",
+      "previousTitle": "Затянутый узел",
+      "entityIntent": "Keep the fingers caught in an alien bodily pattern.",
+      "causalLink": "A bodily crossing is held as an imagined knot; opening and separating fingers replaces a real cord.",
+      "decision": "adapt",
+      "mechanic": "uncross_and_spread_own_fingers",
+      "inspirations": [
+        "beckoning"
+      ],
+      "playableChanged": true,
+      "acceptance": "editorially_reviewed_not_playtested",
+      "currentDecision": "adapt_no_props"
+    },
+    {
+      "id": "P034",
+      "type": "possessed",
+      "title": "Последнее подношение не отпускают",
+      "previousTitle": "Монета не может уснуть",
+      "entityIntent": "Prevent the last offering from being released.",
+      "causalLink": "The unfinished offering is transferred and released through empty-hand pantomime, without money or fabric.",
+      "decision": "adapt",
+      "mechanic": "receive_mimed_offering_then_release_open_hand",
+      "inspirations": [
+        "beckoning",
+        "monkeys-paw"
+      ],
+      "playableChanged": true,
+      "acceptance": "editorially_reviewed_not_playtested",
+      "currentDecision": "adapt_no_props"
+    },
+    {
+      "id": "P035",
+      "type": "possessed",
+      "title": "Лицо меняется под ладонью",
+      "previousTitle": "Лицо без взгляда",
+      "entityIntent": "Keep replacing the person’s visible identity.",
+      "causalLink": "Repeated changes accept the replacement; an unchanged face through two passes provides a stable identity. Unlike P024, movement timing is not the puzzle.",
+      "decision": "replace",
+      "mechanic": "keep_expression_across_two_face_passes",
+      "inspirations": [
+        "jolly-corner",
+        "turn-screw"
+      ],
+      "playableChanged": true,
+      "acceptance": "editorially_reviewed_not_playtested"
+    },
+    {
+      "id": "P036",
+      "type": "possessed",
+      "title": "Кто-то стучит в кулаке",
+      "previousTitle": "Шкатулка, которая слушает",
+      "entityIntent": "Wait for an answering sound from a closed hand.",
+      "causalLink": "An acted sound comes from the performer’s closed hand. The answering strike and listening remain physical but need no container.",
+      "decision": "retain_core",
+      "mechanic": "answer_closed_hand_tap_then_listen",
+      "inspirations": [
+        "monkeys-paw"
+      ],
+      "playableChanged": true,
+      "acceptance": "editorially_reviewed_not_playtested",
+      "currentDecision": "adapt_no_props"
+    },
+    {
+      "id": "P037",
+      "type": "possessed",
+      "title": "Плач лежит на ладони",
+      "previousTitle": "Весы вины",
+      "entityIntent": "Use the palm as the source of an absent crying voice.",
+      "causalLink": "The performer’s own hand is the acted voice channel. A noncontact covering gesture closes it; no cup is present.",
+      "decision": "replace",
+      "mechanic": "noncontact_palm_cover_then_lower_together",
+      "inspirations": [
+        "uninvited",
+        "beckoning"
+      ],
+      "playableChanged": true,
+      "acceptance": "editorially_reviewed_not_playtested",
+      "currentDecision": "adapt_no_props"
+    },
+    {
+      "id": "P038",
+      "type": "possessed",
+      "title": "Просыпается не он",
+      "previousTitle": "Упавшая свеча",
+      "entityIntent": "Keep the resident asleep while another presence answers.",
+      "causalLink": "Encouraging continued sleep gives the intruder time; eliciting the resident’s own account of the present room wakes them. No special candle or factual quiz is used.",
+      "decision": "replace",
+      "mechanic": "elicit_present_place_answer_to_wake_actor",
+      "inspirations": [
+        "others",
+        "turn-screw"
+      ],
+      "playableChanged": true,
+      "acceptance": "editorially_reviewed_not_playtested"
+    },
+    {
+      "id": "P039",
+      "type": "possessed",
+      "title": "Лицо удерживает отражение",
+      "previousTitle": "Лицо в серебре",
+      "entityIntent": "Hold a person through their fixed-house reflection.",
+      "causalLink": "An existing house mirror is blocked by the rescuer’s body, without moving or covering it with an object.",
+      "decision": "retain_core",
+      "mechanic": "body_occludes_face_in_fixed_mirror",
+      "inspirations": [
+        "jolly-corner"
+      ],
+      "playableChanged": true,
+      "acceptance": "editorially_reviewed_not_playtested",
+      "currentDecision": "adapt_no_props"
+    },
+    {
+      "id": "P040",
+      "type": "possessed",
+      "title": "Слушает через чужие пальцы",
+      "previousTitle": "Слуховая воронка",
+      "entityIntent": "Let an absent speaker control the channel of listening.",
+      "causalLink": "Speaking into the actor’s listening channel joins the intrusion; making one’s own outward listening channel restores a separate listener.",
+      "decision": "adapt",
+      "mechanic": "correct_mimed_hand_funnel",
+      "inspirations": [
+        "beckoning",
+        "old-nurse"
+      ],
+      "playableChanged": true,
+      "acceptance": "editorially_reviewed_not_playtested"
+    },
+    {
+      "id": "P041",
+      "type": "possessed",
+      "title": "Собирается уйти снова",
+      "previousTitle": "Ложка с другого конца",
+      "entityIntent": "Restart the last departure before it can finish.",
+      "causalLink": "Reopening repeats the interrupted move; fastening the already-closed case finishes the departure. No real luggage or exact password is needed.",
+      "decision": "replace",
+      "mechanic": "latch_mimed_case_and_point_return_route",
+      "inspirations": [
+        "empty-house",
+        "beckoning"
+      ],
+      "playableChanged": true,
+      "acceptance": "editorially_reviewed_not_playtested"
+    },
+    {
+      "id": "P042",
+      "type": "possessed",
+      "title": "Под руками будто кто-то есть",
+      "previousTitle": "То, что под покрывалом",
+      "entityIntent": "Keep an absent shape hidden between the actor’s hands.",
+      "causalLink": "A hidden shape is framed by the actor’s hands over empty space; uncovering is visible pantomime, not handling a prop.",
+      "decision": "retain_core",
+      "mechanic": "lift_mimed_cover_and_show_empty_hand",
+      "inspirations": [
+        "beckoning"
+      ],
+      "playableChanged": true,
+      "acceptance": "editorially_reviewed_not_playtested",
+      "currentDecision": "adapt_no_props"
+    },
+    {
+      "id": "P043",
+      "type": "possessed",
+      "title": "Голос ждут с другой стороны",
+      "previousTitle": "Указатель в стену",
+      "entityIntent": "Keep waiting for an arrival from the old direction.",
+      "causalLink": "Claiming the missing resident’s role from the wrong side joins the false return; an actual relocated voice completes the expected arrival.",
+      "decision": "replace",
+      "mechanic": "address_actor_from_expected_threshold_side",
+      "inspirations": [
+        "empty-house",
+        "vourdalak"
+      ],
+      "playableChanged": true,
+      "acceptance": "editorially_reviewed_not_playtested"
+    },
+    {
+      "id": "P044",
+      "type": "possessed",
+      "title": "Хозяин просит остаться гостем",
+      "previousTitle": "Круг не принимает гостя",
+      "entityIntent": "Displace a resident until they accept being a stranger.",
+      "causalLink": "Eviction repeats displacement; recognizing the resident as the one who grants permission restores ownership. Unlike P011, the rescuer rejects no identity imposed on them.",
+      "decision": "replace",
+      "mechanic": "recognize_host_and_request_passage",
+      "inspirations": [
+        "others",
+        "beckoning"
+      ],
+      "playableChanged": true,
+      "acceptance": "editorially_reviewed_not_playtested"
+    },
+    {
+      "id": "P045",
+      "type": "possessed",
+      "title": "Дерево слышит",
+      "previousTitle": "Дерево слышит",
+      "entityIntent": "Wait for a human ear at the garden tree.",
+      "causalLink": "Knocking calls further; silent listening through the visible hand withdrawal completes the attention.",
+      "decision": "retain_core",
+      "mechanic": "listen_to_tree_without_knocking",
+      "inspirations": [
+        "ash-tree"
+      ],
+      "playableChanged": false,
+      "acceptance": "editorially_reviewed_not_playtested"
+    },
+    {
+      "id": "P046",
+      "type": "possessed",
+      "title": "Чужой след рядом",
+      "previousTitle": "Разорванная тропа",
+      "entityIntent": "Keep a person returning to someone else’s track.",
+      "causalLink": "Deliberate following extends the track; a transverse crossing breaks its direction. There is no stone arrangement or need for visible footprints.",
+      "decision": "replace",
+      "mechanic": "cross_mimed_track_transversely",
+      "inspirations": [
+        "empty-house",
+        "jolly-corner"
+      ],
+      "playableChanged": true,
+      "acceptance": "editorially_reviewed_not_playtested"
+    },
+    {
+      "id": "P047",
+      "type": "possessed",
+      "title": "По другую сторону никого нет",
+      "previousTitle": "Ветви поперёк дороги",
+      "entityIntent": "Prevent a solitary return across a remembered boundary.",
+      "causalLink": "An abandoned person fears crossing a remembered boundary. The rescuer shares one completed step without travelling as a pair.",
+      "decision": "adapt",
+      "mechanic": "complete_one_shared_short_step",
+      "inspirations": [
+        "vourdalak",
+        "old-nurse"
+      ],
+      "playableChanged": true,
+      "acceptance": "editorially_reviewed_not_playtested",
+      "currentDecision": "adapt_no_props"
+    },
+    {
+      "id": "P048",
+      "type": "possessed",
+      "title": "Круг держится на руках",
+      "previousTitle": "Круг, в котором забыли дверь",
+      "entityIntent": "Keep an unseen occupant within a bodily enclosure.",
+      "causalLink": "The closed place is shown by the actor’s body, with no ground marking. A visible opening gesture gives it an exit.",
+      "decision": "adapt",
+      "mechanic": "hand_exits_actor_arm_enclosure",
+      "inspirations": [
+        "old-nurse",
+        "ash-tree"
+      ],
+      "playableChanged": true,
+      "acceptance": "editorially_reviewed_not_playtested",
+      "currentDecision": "adapt_no_props"
+    },
+    {
+      "id": "P049",
+      "type": "possessed",
+      "title": "Калитка отвечает свистом",
+      "previousTitle": "Флажок без ветра",
+      "entityIntent": "Replace a human greeting with an impersonal call.",
+      "causalLink": "Whistled answering accepts the call; an ordinary voice with a visible empty hand restores a human greeting. No musical accuracy or real gate is needed.",
+      "decision": "replace",
+      "mechanic": "answer_whistle_with_human_voice_and_open_hand",
+      "inspirations": [
+        "vourdalak",
+        "turn-screw"
+      ],
+      "playableChanged": true,
+      "acceptance": "editorially_reviewed_not_playtested"
+    },
+    {
+      "id": "P050",
+      "type": "possessed",
+      "title": "Сторож не узнаёт вернувшихся",
+      "previousTitle": "Имя на земле",
+      "entityIntent": "Admit a familiar-looking claimant without recognizing who came back.",
+      "causalLink": "Forcing fictional access accepts the false return; an observed empty-handed greeting followed by permission completes a recognized arrival. The physical route is always passable.",
+      "decision": "replace",
+      "mechanic": "show_open_hands_wait_invitation_and_cross",
+      "inspirations": [
+        "vourdalak"
+      ],
+      "playableChanged": true,
+      "acceptance": "editorially_reviewed_not_playtested"
+    },
+    {
+      "id": "P051",
+      "type": "possessed",
+      "title": "Дерево не отдаёт ладонь",
+      "previousTitle": "Ладони на коре",
+      "entityIntent": "Split a resident’s touch between body and garden.",
+      "causalLink": "Circling pursues the tree’s claim; simultaneous contact and withdrawal return both hands together.",
+      "decision": "adapt",
+      "mechanic": "simultaneous_palms_on_tree",
+      "inspirations": [
+        "ash-tree"
+      ],
+      "playableChanged": true,
+      "acceptance": "editorially_reviewed_not_playtested"
+    },
+    {
+      "id": "P052",
+      "type": "possessed",
+      "title": "Под кожей шевелятся ветви",
+      "previousTitle": "Земля перепутала стороны",
+      "entityIntent": "Spread an imagined crawling presence from the garden into a body.",
+      "causalLink": "Tracing the spread accepts it; a complete outward sweep expels it. The direction follows the visible bodily intrusion, not an abstract reversed sequence.",
+      "decision": "replace",
+      "mechanic": "sweep_and_flick_presence_out_of_own_sleeve",
+      "inspirations": [
+        "ash-tree"
+      ],
+      "playableChanged": true,
+      "acceptance": "editorially_reviewed_not_playtested"
+    },
+    {
+      "id": "P053",
+      "type": "possessed",
+      "title": "Кто ходит под землёй",
+      "previousTitle": "Лист, который улетает",
+      "entityIntent": "Borrow a living person’s place to come up from below.",
+      "causalLink": "Offering one’s place provides a host; an audible ground contact and completed rising gesture let the trapped sound emerge without occupying someone. This is an authored symbolic release.",
+      "decision": "replace",
+      "mechanic": "ground_strike_and_complete_rising_hand",
+      "inspirations": [
+        "ash-tree",
+        "empty-house"
+      ],
+      "playableChanged": true,
+      "acceptance": "editorially_reviewed_not_playtested"
+    },
+    {
+      "id": "P054",
+      "type": "possessed",
+      "title": "Рукопожатие с другой стороны",
+      "previousTitle": "Рукопожатие с другой стороны",
+      "entityIntent": "Recognize people through the wrong-handed social world.",
+      "causalLink": "The habitual cross-handed greeting joins the mismatch; matching the offered left hand restores the actor’s own orientation.",
+      "decision": "retain_core",
+      "mechanic": "left_to_left_handshake",
+      "inspirations": [
+        "jolly-corner"
+      ],
+      "playableChanged": false,
+      "acceptance": "editorially_reviewed_not_playtested"
+    },
+    {
+      "id": "P055",
+      "type": "possessed",
+      "title": "Кто-то остался на плечах",
+      "previousTitle": "Тяжесть на плечах",
+      "entityIntent": "Keep an unseen burden on a resident.",
+      "causalLink": "Offering to take it accepts the burden; a negotiated symbolic lifting from both shoulders removes it without force.",
+      "decision": "adapt",
+      "mechanic": "lift_imaginary_weight_from_shoulders",
+      "inspirations": [
+        "uninvited",
+        "turn-screw"
+      ],
+      "playableChanged": true,
+      "acceptance": "editorially_reviewed_not_playtested"
+    },
+    {
+      "id": "P056",
+      "type": "possessed",
+      "title": "Запястье ждёт ответа",
+      "previousTitle": "Пульс не своего тела",
+      "entityIntent": "Make the person doubt that the offered hand is their own.",
+      "causalLink": "A social handshake accepts the estranged hand; a brief acknowledged wrist contact answers the bodily uncertainty. No pulse check is scored.",
+      "decision": "adapt",
+      "mechanic": "recognizable_gentle_pulse_mime",
+      "inspirations": [
+        "jolly-corner"
+      ],
+      "playableChanged": true,
+      "acceptance": "editorially_reviewed_not_playtested"
+    },
+    {
+      "id": "P057",
+      "type": "possessed",
+      "title": "Круг на ладони",
+      "previousTitle": "Круг на ладони",
+      "entityIntent": "Keep a circular bodily trace intact.",
+      "causalLink": "Copying its circuit strengthens the mark; two crossing strokes visibly cancel it. This is an authored ritual gesture.",
+      "decision": "retain_core",
+      "mechanic": "cross_out_traced_palm_circle",
+      "inspirations": [
+        "ash-tree"
+      ],
+      "playableChanged": false,
+      "acceptance": "editorially_reviewed_not_playtested"
+    },
+    {
+      "id": "P058",
+      "type": "possessed",
+      "title": "Локоть марионетки",
+      "previousTitle": "Локоть марионетки",
+      "entityIntent": "Keep a limb under an absent puppeteer’s control.",
+      "causalLink": "A social pumping movement lends it further motion; a light accepted elbow support allows self-directed relaxation.",
+      "decision": "retain_core",
+      "mechanic": "support_puppet_elbow",
+      "inspirations": [
+        "jolly-corner"
+      ],
+      "playableChanged": false,
+      "acceptance": "editorially_reviewed_not_playtested"
+    },
+    {
+      "id": "P059",
+      "type": "possessed",
+      "title": "Холод между людьми",
+      "previousTitle": "Плащ последней зимы",
+      "entityIntent": "Keep a resident isolated from living warmth.",
+      "causalLink": "Warmth is acknowledged through a brief agreed shoulder-to-shoulder presence, without cloth or other equipment.",
+      "decision": "retain_core",
+      "mechanic": "agreed_shoulder_to_shoulder_contact",
+      "inspirations": [
+        "old-nurse"
+      ],
+      "playableChanged": true,
+      "acceptance": "editorially_reviewed_not_playtested",
+      "currentDecision": "adapt_no_props"
+    },
+    {
+      "id": "P060",
+      "type": "possessed",
+      "title": "Спутник остался за порогом",
+      "previousTitle": "Забытый спутник",
+      "entityIntent": "Keep a homecoming waiting for its missing companion.",
+      "causalLink": "Taking the sleeve preserves a trailing hold; a brief agreed side-by-side elbow greeting completes companionship without joint travel.",
+      "decision": "adapt",
+      "mechanic": "stationary_linked_elbow_pose",
+      "inspirations": [
+        "vourdalak",
+        "old-nurse"
+      ],
+      "playableChanged": true,
+      "acceptance": "editorially_reviewed_not_playtested"
+    },
+    {
+      "id": "P061",
+      "type": "possessed",
+      "title": "Отпечаток без хозяина",
+      "previousTitle": "Отпечаток без хозяина",
+      "entityIntent": "Find an owner for a detached palm impression.",
+      "causalLink": "An incompatible closed fist denies its shape; a full accepted palm match recognizes the hand.",
+      "decision": "retain_core",
+      "mechanic": "match_spread_handprint",
+      "inspirations": [
+        "jolly-corner"
+      ],
+      "playableChanged": false,
+      "acceptance": "editorially_reviewed_not_playtested"
+    },
+    {
+      "id": "P062",
+      "type": "possessed",
+      "title": "Повернувшийся к стене",
+      "previousTitle": "Повернувшийся к стене",
+      "entityIntent": "Keep the person turned away from the household.",
+      "causalLink": "A turning attempt repeats control; an accepted upper-back touch and address acknowledge them without forcing the face.",
+      "decision": "retain_core",
+      "mechanic": "greet_with_agreed_upper_back_touch",
+      "inspirations": [
+        "turn-screw"
+      ],
+      "playableChanged": false,
+      "acceptance": "editorially_reviewed_not_playtested"
+    },
+    {
+      "id": "P063",
+      "type": "possessed",
+      "title": "У одной тени две спины",
+      "previousTitle": "У одной тени две спины",
+      "entityIntent": "Keep an unseen presence immediately behind the actor.",
+      "causalLink": "Offering hand support pursues the absent hold; independent back-to-back contact occupies the threatened space.",
+      "decision": "retain_core",
+      "mechanic": "stationary_back_to_back_contact",
+      "inspirations": [
+        "turn-screw"
+      ],
+      "playableChanged": false,
+      "acceptance": "editorially_reviewed_not_playtested"
+    },
+    {
+      "id": "P064",
+      "type": "possessed",
+      "title": "Свет ниже глаз",
+      "previousTitle": "Свет ниже глаз",
+      "entityIntent": "Hide the face while searching for a low light.",
+      "causalLink": "Performing an overhead inspection sustains exposure; a low stable light permits voluntary uncovering.",
+      "decision": "retain_core",
+      "mechanic": "provide_low_screen_light",
+      "inspirations": [
+        "others"
+      ],
+      "playableChanged": false,
+      "acceptance": "editorially_reviewed_not_playtested"
+    },
+    {
+      "id": "P065",
+      "type": "possessed",
+      "title": "Руки помнят ночную птицу",
+      "previousTitle": "Тень птицы",
+      "entityIntent": "Keep an alien shape hidden inside ordinary hands.",
+      "causalLink": "Copying its shape accepts it; a real visible projection places the shape outside the actor. Admission depends on actual dim-screen visibility.",
+      "decision": "adapt",
+      "mechanic": "cast_other_persons_hand_shadow",
+      "inspirations": [
+        "ash-tree",
+        "innocents"
+      ],
+      "playableChanged": true,
+      "acceptance": "editorially_reviewed_not_playtested"
+    },
+    {
+      "id": "P066",
+      "type": "possessed",
+      "title": "Свет ведёт чужого",
+      "previousTitle": "Маяк смотрит не туда",
+      "entityIntent": "Keep an intruding presence on a living body.",
+      "causalLink": "Inviting it to stay binds it; drawing its attention from body to empty space and an isolated lit hand gives an exit. No moving shadow or invisible projection is claimed.",
+      "decision": "replace",
+      "mechanic": "draw_light_to_empty_space_and_isolated_hand",
+      "inspirations": [
+        "others"
+      ],
+      "playableChanged": true,
+      "acceptance": "editorially_reviewed_not_playtested"
+    },
+    {
+      "id": "P067",
+      "type": "possessed",
+      "title": "Тот, кого выдаёт свет",
+      "previousTitle": "Тот, кого выдаёт свет",
+      "entityIntent": "Keep the actor exposed to an unseen watcher through light.",
+      "causalLink": "Later user instruction removes all material task props; the action uses the player’s body and phone only.",
+      "decision": "retain_core",
+      "mechanic": "stationary_screen_cover_with_hand_only",
+      "inspirations": [
+        "others"
+      ],
+      "playableChanged": false,
+      "acceptance": "editorially_reviewed_not_playtested",
+      "currentDecision": "adapt_no_props"
+    },
+    {
+      "id": "P068",
+      "type": "possessed",
+      "title": "Тень ладони смотрит не туда",
+      "previousTitle": "Силуэт по другую сторону",
+      "entityIntent": "Hold a hand and its visible trace on the wrong relative side.",
+      "causalLink": "A real hand casts the shadow instead of a figurine. No independent shadow motion is claimed.",
+      "decision": "adapt",
+      "mechanic": "move_screen_to_change_real_hand_shadow_side",
+      "inspirations": [
+        "jolly-corner",
+        "others"
+      ],
+      "playableChanged": true,
+      "acceptance": "editorially_reviewed_not_playtested",
+      "currentDecision": "adapt_no_props"
+    },
+    {
+      "id": "P069",
+      "type": "possessed",
+      "title": "Утро за собственными ладонями",
+      "previousTitle": "Занавес без утра",
+      "entityIntent": "Keep morning outside the actor’s own enclosure.",
+      "causalLink": "The enclosing curtain is represented by the actor’s hands only, with no fabric or window operation.",
+      "decision": "retain_core",
+      "mechanic": "mime_opening_curtain_with_empty_hand",
+      "inspirations": [
+        "others"
+      ],
+      "playableChanged": true,
+      "acceptance": "editorially_reviewed_not_playtested",
+      "currentDecision": "adapt_no_props"
+    },
+    {
+      "id": "P070",
+      "type": "possessed",
+      "title": "Отпечаток помнит хозяина",
+      "previousTitle": "След под косым светом",
+      "entityIntent": "Keep a bodily trace separate from the person it belonged to.",
+      "causalLink": "Outlining preserves the detached trace; linking one’s own chest and a whole hand at that place returns it to a living owner. Unlike P061 this uses no person-to-person palm contact.",
+      "decision": "replace",
+      "mechanic": "connect_own_chest_to_wall_print",
+      "inspirations": [
+        "jolly-corner",
+        "beckoning"
+      ],
+      "playableChanged": true,
+      "acceptance": "editorially_reviewed_not_playtested"
+    },
+    {
+      "id": "P071",
+      "type": "possessed",
+      "title": "Провожает самого себя",
+      "previousTitle": "Три жеста назад",
+      "entityIntent": "Let the double leave while the original remains unrecognized.",
+      "causalLink": "Addressing only the absent double accepts replacement; a completed farewell followed by greeting the visible person separates them. No reversed gesture list remains.",
+      "decision": "replace",
+      "mechanic": "farewell_double_then_greet_original",
+      "inspirations": [
+        "jolly-corner"
+      ],
+      "playableChanged": true,
+      "acceptance": "editorially_reviewed_not_playtested"
+    },
+    {
+      "id": "P072",
+      "type": "possessed",
+      "title": "Отражение без правой руки",
+      "previousTitle": "Отражение без правой руки",
+      "entityIntent": "Demand a complete reflection from an incomplete body.",
+      "causalLink": "Demanding two-handed copying strengthens the mismatch; a one-handed model permits a complete response.",
+      "decision": "retain_core",
+      "mechanic": "limit_mirror_input_to_available_hand",
+      "inspirations": [
+        "jolly-corner"
+      ],
+      "playableChanged": false,
+      "acceptance": "editorially_reviewed_not_playtested"
+    },
+    {
+      "id": "P073",
+      "type": "possessed",
+      "title": "Двое в одном голосе",
+      "previousTitle": "Двое в одном голосе",
+      "entityIntent": "Split one person between two competing voices.",
+      "causalLink": "Answering as two people feeds the split; two clear gestures give one person’s coherent identity and destination.",
+      "decision": "retain_core",
+      "mechanic": "answer_two_voices_with_two_gestures",
+      "inspirations": [
+        "turn-screw"
+      ],
+      "playableChanged": false,
+      "acceptance": "editorially_reviewed_not_playtested"
+    },
+    {
+      "id": "P074",
+      "type": "possessed",
+      "title": "Эхо смотрит на губы",
+      "previousTitle": "Чужая пауза",
+      "entityIntent": "Borrow the visible speaker’s voice through their moving lips.",
+      "causalLink": "Repeating the echo accepts borrowed speech; a clearly heard address without a visible speaking mouth breaks its coupling to the visitor’s lips. This is an authored performance rule, not an actual ghost effect.",
+      "decision": "replace",
+      "mechanic": "cover_speaking_mouth_to_break_echo",
+      "inspirations": [
+        "empty-house",
+        "old-nurse"
+      ],
+      "playableChanged": true,
+      "acceptance": "editorially_reviewed_not_playtested"
+    },
+    {
+      "id": "P075",
+      "type": "possessed",
+      "title": "Не смотрит на того, кто выше",
+      "previousTitle": "Память трёх вещей",
+      "entityIntent": "Keep a person bowed under an absent observer’s gaze.",
+      "causalLink": "Taking the observer’s place sustains domination; a visible screen across its sightline lets the person straighten. No actual shadow, strain or support of body weight is required.",
+      "decision": "replace",
+      "mechanic": "screen_absent_observer_until_actor_straightens",
+      "inspirations": [
+        "turn-screw",
+        "jolly-corner"
+      ],
+      "playableChanged": true,
+      "acceptance": "editorially_reviewed_not_playtested"
+    },
+    {
+      "id": "E001",
+      "type": "exorcist",
+      "title": "Голос, который идёт за тобой",
+      "previousTitle": "Голос, который идёт за тобой",
+      "decision": "retain_core",
+      "entityIntent": "Maintain one’s own voice through the household.",
+      "causalLink": "The on-site offering is made at an agreed empty place, without a vessel, marker or physical deposit.",
+      "inspirations": [
+        "others"
+      ],
+      "playableChanged": true,
+      "acceptance": "editorially_reviewed_not_playtested",
+      "currentDecision": "adapt_no_props"
+    },
+    {
+      "id": "E002",
+      "type": "exorcist",
+      "title": "Обет молчания",
+      "previousTitle": "Обет молчания",
+      "decision": "retain_core",
+      "entityIntent": "Pass through the house without lending it ordinary speech.",
+      "causalLink": "Silence is maintained through the search; technical and consent speech remains available.",
+      "inspirations": [
+        "others"
+      ],
+      "playableChanged": false,
+      "acceptance": "editorially_reviewed_not_playtested"
+    },
+    {
+      "id": "E003",
+      "type": "exorcist",
+      "title": "Не отвечать за пустую комнату",
+      "previousTitle": "Вопрос вместо ответа",
+      "decision": "replace",
+      "entityIntent": "Investigate an apparent unseen respondent.",
+      "causalLink": "The completed action identifies who actually answered rather than requiring question-only speech or a real supernatural response.",
+      "inspirations": [
+        "empty-house",
+        "others"
+      ],
+      "playableChanged": true,
+      "acceptance": "editorially_reviewed_not_playtested"
+    },
+    {
+      "id": "E004",
+      "type": "exorcist",
+      "title": "Имена здесь лишние",
+      "previousTitle": "Имена здесь лишние",
+      "decision": "retain_core",
+      "entityIntent": "Recognize another living participant under a chosen identity.",
+      "causalLink": "A fictional name is immediately used in a new address; no genuine identity or card is exposed.",
+      "inspirations": [
+        "vourdalak"
+      ],
+      "playableChanged": false,
+      "acceptance": "editorially_reviewed_not_playtested"
+    },
+    {
+      "id": "E005",
+      "type": "exorcist",
+      "title": "Отозвать чужое приглашение",
+      "previousTitle": "Рифма на пороге",
+      "decision": "replace",
+      "entityIntent": "Withdraw imagined household access.",
+      "causalLink": "A complete protective act replaces rhyme composition. It does not automatically rescue an unrelated possessed group.",
+      "inspirations": [
+        "monkeys-paw",
+        "vourdalak"
+      ],
+      "playableChanged": true,
+      "acceptance": "editorially_reviewed_not_playtested"
+    },
+    {
+      "id": "E006",
+      "type": "exorcist",
+      "title": "Нельзя назвать себя",
+      "previousTitle": "Нельзя назвать себя",
+      "decision": "retain_core",
+      "entityIntent": "Avoid an in-fiction claim of self-possession.",
+      "causalLink": "The accepted speech restriction includes an actual offer of help, not merely saying nothing.",
+      "inspirations": [
+        "jolly-corner"
+      ],
+      "playableChanged": false,
+      "acceptance": "editorially_reviewed_not_playtested"
+    },
+    {
+      "id": "E007",
+      "type": "exorcist",
+      "title": "Знак узнавания",
+      "previousTitle": "Приветствие четырёх пальцев",
+      "decision": "adapt",
+      "entityIntent": "Recognize a living visitor without a hidden password.",
+      "causalLink": "The two-part greeting has a social recipient and completion, not arbitrary finger arithmetic.",
+      "inspirations": [
+        "vourdalak"
+      ],
+      "playableChanged": true,
+      "acceptance": "editorially_reviewed_not_playtested"
+    },
+    {
+      "id": "E008",
+      "type": "exorcist",
+      "title": "Кто смотрит сверху",
+      "previousTitle": "Смотрящий вверх",
+      "decision": "adapt",
+      "entityIntent": "Investigate an implied observer above the household.",
+      "causalLink": "A real observation anchors the feared gaze instead of inventing evidence.",
+      "inspirations": [
+        "turn-screw"
+      ],
+      "playableChanged": true,
+      "acceptance": "editorially_reviewed_not_playtested"
+    },
+    {
+      "id": "E009",
+      "type": "exorcist",
+      "title": "Знак перед входом",
+      "previousTitle": "Знак перед входом",
+      "decision": "retain_core",
+      "entityIntent": "Acknowledge a threshold before crossing it.",
+      "causalLink": "A repeated entrance gesture has a physical trigger and does not block navigation.",
+      "inspirations": [
+        "monkeys-paw"
+      ],
+      "playableChanged": false,
+      "acceptance": "editorially_reviewed_not_playtested"
+    },
+    {
+      "id": "E010",
+      "type": "exorcist",
+      "title": "Вернуться своим путём",
+      "previousTitle": "Чужой маршрут",
+      "decision": "adapt",
+      "entityIntent": "Check a reported route through the same home.",
+      "causalLink": "Actual independent visits verify a homecoming path; no party coalition or written map is introduced.",
+      "inspirations": [
+        "vourdalak",
+        "empty-house"
+      ],
+      "playableChanged": true,
+      "acceptance": "editorially_reviewed_not_playtested"
+    },
+    {
+      "id": "E011",
+      "type": "exorcist",
+      "title": "Три опоры настоящего дома",
+      "previousTitle": "Три поверхности",
+      "decision": "adapt",
+      "entityIntent": "Keep contact with the ordinary physical home.",
+      "causalLink": "Use naturally available building or ground surfaces only, without laid-out textures.",
+      "inspirations": [
+        "others"
+      ],
+      "playableChanged": true,
+      "acceptance": "editorially_reviewed_not_playtested",
+      "currentDecision": "adapt_no_props"
+    },
+    {
+      "id": "E012",
+      "type": "exorcist",
+      "title": "Минута без маяка",
+      "previousTitle": "Минута без маяка",
+      "decision": "retain_core",
+      "entityIntent": "Test a short absence of the observing light.",
+      "causalLink": "The stationary screen-cover interval is completed and then light restored; nobody approaches during it.",
+      "inspirations": [
+        "others"
+      ],
+      "playableChanged": false,
+      "acceptance": "editorially_reviewed_not_playtested"
+    },
+    {
+      "id": "E013",
+      "type": "exorcist",
+      "title": "Проверить пустое место",
+      "previousTitle": "Две метки возвращения",
+      "decision": "replace",
+      "entityIntent": "Check an apparently empty place from two real viewpoints.",
+      "causalLink": "Inspect one empty place from two viewpoints, using no object.",
+      "inspirations": [
+        "beckoning"
+      ],
+      "playableChanged": true,
+      "acceptance": "editorially_reviewed_not_playtested",
+      "currentDecision": "adapt_no_props"
+    },
+    {
+      "id": "E014",
+      "type": "exorcist",
+      "title": "Тихое подношение",
+      "previousTitle": "Тихое подношение",
+      "decision": "retain_core",
+      "entityIntent": "Offer presence without answering the dwelling.",
+      "causalLink": "The on-site offering is made at an agreed empty place, without a vessel, marker or physical deposit.",
+      "inspirations": [
+        "others"
+      ],
+      "playableChanged": true,
+      "acceptance": "editorially_reviewed_not_playtested",
+      "currentDecision": "adapt_no_props"
+    },
+    {
+      "id": "E015",
+      "type": "exorcist",
+      "title": "Неназванный адресат",
+      "previousTitle": "Неназванный адресат",
+      "decision": "retain_core",
+      "entityIntent": "Keep a fictional addressee until reaching its place.",
+      "causalLink": "The on-site offering is made at an agreed empty place, without a vessel, marker or physical deposit.",
+      "inspirations": [
+        "old-nurse"
+      ],
+      "playableChanged": true,
+      "acceptance": "editorially_reviewed_not_playtested",
+      "currentDecision": "adapt_no_props"
+    },
+    {
+      "id": "E016",
+      "type": "exorcist",
+      "title": "Свой знак у Обители",
+      "previousTitle": "Подпись движением",
+      "decision": "adapt",
+      "entityIntent": "Present oneself to the household presence without leaving an object.",
+      "causalLink": "The on-site offering is made at an agreed empty place, without a vessel, marker or physical deposit.",
+      "inspirations": [
+        "others",
+        "beckoning"
+      ],
+      "playableChanged": true,
+      "acceptance": "editorially_reviewed_not_playtested",
+      "currentDecision": "adapt_no_props"
+    },
+    {
+      "id": "E017",
+      "type": "exorcist",
+      "title": "Пустые руки для Обители",
+      "previousTitle": "Посыльный с открытой ладонью",
+      "decision": "adapt",
+      "entityIntent": "Reach the presence without accepting an unknown object.",
+      "causalLink": "The on-site offering is made at an agreed empty place, without a vessel, marker or physical deposit.",
+      "inspirations": [
+        "monkeys-paw",
+        "beckoning"
+      ],
+      "playableChanged": true,
+      "acceptance": "editorially_reviewed_not_playtested",
+      "currentDecision": "adapt_no_props"
+    },
+    {
+      "id": "E018",
+      "type": "exorcist",
+      "title": "Место Обители не занимают",
+      "previousTitle": "Обитель не открывают",
+      "decision": "retain_core",
+      "entityIntent": "Leave the dwelling as it was found.",
+      "causalLink": "The on-site offering is made at an agreed empty place, without a vessel, marker or physical deposit.",
+      "inspirations": [
+        "beckoning"
+      ],
+      "playableChanged": true,
+      "acceptance": "editorially_reviewed_not_playtested",
+      "currentDecision": "adapt_no_props"
+    },
+    {
+      "id": "E019",
+      "type": "exorcist",
+      "title": "Не повторить чужое окончание",
+      "previousTitle": "Завязка на пороге",
+      "decision": "adapt",
+      "entityIntent": "Resist the prescribed ending of a borrowed gesture.",
+      "causalLink": "Respond to a freely invented two-part gesture by preserving its start and changing its ending; no knot or carried item is used.",
+      "inspirations": [
+        "beckoning"
+      ],
+      "playableChanged": true,
+      "acceptance": "editorially_reviewed_not_playtested",
+      "currentDecision": "adapt_no_props"
+    },
+    {
+      "id": "E020",
+      "type": "exorcist",
+      "title": "Как выглядит место Обители",
+      "previousTitle": "Перепись тихого дома",
+      "decision": "adapt",
+      "entityIntent": "Distinguish the real dwelling from an imagined change.",
+      "causalLink": "Observe the already agreed Dwelling place and its natural features, not a container.",
+      "inspirations": [
+        "others"
+      ],
+      "playableChanged": true,
+      "acceptance": "editorially_reviewed_not_playtested",
+      "currentDecision": "adapt_no_props"
+    },
+    {
+      "id": "E021",
+      "type": "exorcist",
+      "title": "Слушающий пустоту",
+      "previousTitle": "Слушающий пустоту",
+      "decision": "retain_core",
+      "entityIntent": "Listen before inventing an explanation for a sound.",
+      "causalLink": "A bounded stationary listen reports real sound or honest silence.",
+      "inspirations": [
+        "uninvited"
+      ],
+      "playableChanged": false,
+      "acceptance": "editorially_reviewed_not_playtested"
+    },
+    {
+      "id": "E022",
+      "type": "exorcist",
+      "title": "Что здесь повторяется",
+      "previousTitle": "Свидетель трёх предложений",
+      "decision": "adapt",
+      "entityIntent": "Give a witness a recognizable domestic disturbance.",
+      "causalLink": "An ordinary act and a changed repeat create an episode rather than an unrelated three-sentence exercise.",
+      "inspirations": [
+        "empty-house",
+        "beckoning"
+      ],
+      "playableChanged": true,
+      "acceptance": "editorially_reviewed_not_playtested"
+    },
+    {
+      "id": "E023",
+      "type": "exorcist",
+      "title": "Показать того, кого описали",
+      "previousTitle": "Сон без слов",
+      "decision": "adapt",
+      "entityIntent": "Make a described presence visible through a human performer.",
+      "causalLink": "Recognition is checked against the source participant’s invented image, not supernatural perception.",
+      "inspirations": [
+        "turn-screw",
+        "jolly-corner"
+      ],
+      "playableChanged": true,
+      "acceptance": "editorially_reviewed_not_playtested"
+    },
+    {
+      "id": "E024",
+      "type": "exorcist",
+      "title": "Поза свидетеля",
+      "previousTitle": "Поза свидетеля",
+      "decision": "retain_core",
+      "entityIntent": "Carry a witnessed bodily image away from its actor.",
+      "causalLink": "One observed pose is reproduced after withdrawing, rather than performing a whole possessed mission.",
+      "inspirations": [
+        "jolly-corner"
+      ],
+      "playableChanged": false,
+      "acceptance": "editorially_reviewed_not_playtested"
+    },
+    {
+      "id": "E025",
+      "type": "exorcist",
+      "title": "Два состояния",
+      "previousTitle": "Два состояния",
+      "decision": "retain_core",
+      "entityIntent": "Witness the difference after a presence releases its hold.",
+      "causalLink": "Actual before/after observation supplies evidence without delaying a freed person.",
+      "inspirations": [
+        "turn-screw"
+      ],
+      "playableChanged": false,
+      "acceptance": "editorially_reviewed_not_playtested"
+    },
+    {
+      "id": "E026",
+      "type": "exorcist",
+      "title": "Свободна только одна рука",
+      "previousTitle": "Свободна только одна рука",
+      "decision": "retain_core",
+      "entityIntent": "Keep one hand and one’s own light under control during a rescue.",
+      "causalLink": "An actual physical rescue, not words alone, must fit the one-hand constraint. The mission can remain incomplete.",
+      "inspirations": [
+        "jolly-corner"
+      ],
+      "playableChanged": false,
+      "acceptance": "editorially_reviewed_not_playtested"
+    },
+    {
+      "id": "E027",
+      "type": "exorcist",
+      "title": "Немая помощь",
+      "previousTitle": "Немая помощь",
+      "decision": "retain_core",
+      "entityIntent": "Help without feeding an intrusive voice.",
+      "causalLink": "A genuine nonverbal rescue is required, with consent outside fiction.",
+      "inspirations": [
+        "old-nurse"
+      ],
+      "playableChanged": false,
+      "acceptance": "editorially_reviewed_not_playtested"
+    },
+    {
+      "id": "E028",
+      "type": "exorcist",
+      "title": "Помнить комнату за спиной",
+      "previousTitle": "Комната за спиной",
+      "decision": "adapt",
+      "entityIntent": "Keep a stable memory of a room while not looking.",
+      "causalLink": "Recall three existing spatial landmarks rather than objects or prepared markers.",
+      "inspirations": [
+        "others",
+        "jolly-corner"
+      ],
+      "playableChanged": true,
+      "acceptance": "editorially_reviewed_not_playtested",
+      "currentDecision": "adapt_no_props"
+    },
+    {
+      "id": "E029",
+      "type": "exorcist",
+      "title": "Фраза для пустого места",
+      "previousTitle": "Фраза для пустого места",
+      "decision": "retain_core",
+      "entityIntent": "Address an absent resident and end the exchange.",
+      "causalLink": "Introduction, pause and goodbye complete an act without requiring a paranormal reply.",
+      "inspirations": [
+        "beckoning"
+      ],
+      "playableChanged": false,
+      "acceptance": "editorially_reviewed_not_playtested"
+    },
+    {
+      "id": "E030",
+      "type": "exorcist",
+      "title": "Испуг без прикосновения",
+      "previousTitle": "Испуг без прикосновения",
+      "decision": "retain_core",
+      "entityIntent": "Let another player briefly encounter an unfamiliar persona.",
+      "causalLink": "The recipient explicitly confirms fear; silence and a startle are never inferred evidence.",
+      "inspirations": [
+        "turn-screw"
+      ],
+      "playableChanged": false,
+      "acceptance": "editorially_reviewed_not_playtested"
+    },
+    {
+      "id": "E031",
+      "type": "exorcist",
+      "title": "Отделить свой голос от эха",
+      "previousTitle": "Разомкнуть знак",
+      "decision": "replace",
+      "entityIntent": "Keep a person’s voice distinguishable from an imitation.",
+      "causalLink": "The task completes a source/echo/present episode, not an abstract transported finger ring. No exact words or reversed order are tested.",
+      "inspirations": [
+        "empty-house",
+        "old-nurse"
+      ],
+      "playableChanged": true,
+      "acceptance": "editorially_reviewed_not_playtested"
+    },
+    {
+      "id": "E032",
+      "type": "exorcist",
+      "title": "Два настоящих звука",
+      "previousTitle": "Два настоящих звука",
+      "decision": "retain_core",
+      "entityIntent": "Remember where ordinary sound came from.",
+      "causalLink": "Two actually heard sounds are reproduced, not invented as proof of a presence.",
+      "inspirations": [
+        "empty-house"
+      ],
+      "playableChanged": false,
+      "acceptance": "editorially_reviewed_not_playtested"
+    },
+    {
+      "id": "E033",
+      "type": "exorcist",
+      "title": "Прекратить чужую домашнюю привычку",
+      "previousTitle": "Два свёртка тишины",
+      "decision": "replace",
+      "entityIntent": "Notice and interrupt a borrowed domestic routine.",
+      "causalLink": "This ends a self-authored habitual act; the cloth rolling exercise is removed. It is not a route or object-fold task.",
+      "inspirations": [
+        "beckoning"
+      ],
+      "playableChanged": true,
+      "acceptance": "editorially_reviewed_not_playtested"
+    },
+    {
+      "id": "E034",
+      "type": "exorcist",
+      "title": "Услышать смену голоса",
+      "previousTitle": "Ответ наоборот",
+      "decision": "replace",
+      "entityIntent": "Recognize an actual audible change in a human voice.",
+      "causalLink": "A voluntary comparison of one speaker’s ordinary and performed voice replaces reverse word order. Unlike E004 there is no fictional-name exchange or repeated address.",
+      "inspirations": [
+        "jolly-corner",
+        "vourdalak"
+      ],
+      "playableChanged": true,
+      "acceptance": "editorially_reviewed_not_playtested"
+    },
+    {
+      "id": "E035",
+      "type": "exorcist",
+      "title": "Попросить указать дорогу домой",
+      "previousTitle": "Просьба без приказа",
+      "decision": "adapt",
+      "entityIntent": "Find a homeward direction without commanding a claimed identity.",
+      "causalLink": "A real voluntary response completes navigation; no escort or exact spell is needed.",
+      "inspirations": [
+        "vourdalak"
+      ],
+      "playableChanged": true,
+      "acceptance": "editorially_reviewed_not_playtested"
+    },
+    {
+      "id": "E036",
+      "type": "exorcist",
+      "title": "Увидеть, кому принадлежит тень",
+      "previousTitle": "Собственная тень",
+      "decision": "adapt",
+      "entityIntent": "Check whether a disturbing shape follows a real source.",
+      "causalLink": "An honest light-hand-shadow sequence replaces a claim that a ghost was detected.",
+      "inspirations": [
+        "innocents",
+        "others"
+      ],
+      "playableChanged": true,
+      "acceptance": "editorially_reviewed_not_playtested"
+    },
+    {
+      "id": "E037",
+      "type": "exorcist",
+      "title": "Своя рука после чужой сцены",
+      "previousTitle": "Смена руки на границе",
+      "decision": "replace",
+      "entityIntent": "Keep the hand and voice recognizable after an uncanny encounter.",
+      "causalLink": "Later user instruction removes all material task props; the action uses the player’s body and phone only.",
+      "inspirations": [
+        "beckoning",
+        "monkeys-paw"
+      ],
+      "playableChanged": true,
+      "acceptance": "editorially_reviewed_not_playtested",
+      "currentDecision": "adapt_no_props"
+    },
+    {
+      "id": "E038",
+      "type": "exorcist",
+      "title": "Стряхнуть след чужого дома",
+      "previousTitle": "Пустая ладонь",
+      "decision": "adapt",
+      "entityIntent": "End an imagined bodily trace after passing through the home.",
+      "causalLink": "Two independent visits end in a completed self-directed shoulder-sweeping gesture. No cloth, pocket, inventory or actual mark is needed.",
+      "inspirations": [
+        "beckoning"
+      ],
+      "playableChanged": true,
+      "acceptance": "editorially_reviewed_not_playtested"
+    },
+    {
+      "id": "E039",
+      "type": "exorcist",
+      "title": "Проверка реальности",
+      "previousTitle": "Проверка реальности",
+      "decision": "retain_core",
+      "entityIntent": "Name the present room instead of an imagined threat.",
+      "causalLink": "Ground attention in five real spatial details, not a collection of objects.",
+      "inspirations": [
+        "others"
+      ],
+      "playableChanged": true,
+      "acceptance": "editorially_reviewed_not_playtested",
+      "currentDecision": "adapt_no_props"
+    },
+    {
+      "id": "E040",
+      "type": "exorcist",
+      "title": "Ночной дозор",
+      "previousTitle": "Ночной дозор",
+      "decision": "retain_core",
+      "entityIntent": "Keep a usable return route through the home.",
+      "causalLink": "Two real entrance landmarks are inspected on independent visits.",
+      "inspirations": [
+        "empty-house"
+      ],
+      "playableChanged": false,
+      "acceptance": "editorially_reviewed_not_playtested"
+    },
+    {
+      "id": "E041",
+      "type": "exorcist",
+      "title": "Неверная примета",
+      "previousTitle": "Неверная примета",
+      "decision": "retain_core",
+      "entityIntent": "Compare a fictional house belief with another character’s response.",
+      "causalLink": "The invented omen remains explicitly fiction and does not create a new game rule.",
+      "inspirations": [
+        "old-nurse"
+      ],
+      "playableChanged": false,
+      "acceptance": "editorially_reviewed_not_playtested"
+    },
+    {
+      "id": "E042",
+      "type": "exorcist",
+      "title": "Закончить прощание",
+      "previousTitle": "Голова помнит землю",
+      "decision": "replace",
+      "entityIntent": "Finish a social departure instead of restarting it.",
+      "causalLink": "A bounded farewell and independent departure replace a repeated bowed-head gesture. No joint movement or delayed rescue is required.",
+      "inspirations": [
+        "empty-house",
+        "old-nurse"
+      ],
+      "playableChanged": true,
+      "acceptance": "editorially_reviewed_not_playtested"
+    },
+    {
+      "id": "T001",
+      "type": "trial",
+      "title": "Посланник света",
+      "previousTitle": "Посланник света",
+      "decision": "adapt",
+      "entityIntent": "Let a messenger distinguish a visible person from a claimed presence.",
+      "causalLink": "Private instructions, two distinct scoring branches and explicit human evidence are preserved; no computer perception is assumed.",
+      "inspirations": [
+        "turn-screw"
+      ],
+      "playableChanged": false,
+      "acceptance": "editorially_reviewed_not_playtested"
+    },
+    {
+      "id": "T002",
+      "type": "trial",
+      "title": "Тот, кто заставляет вздрогнуть",
+      "previousTitle": "Тот, кто заставляет вздрогнуть",
+      "decision": "adapt",
+      "entityIntent": "Stage an unfamiliar household persona for two witnesses.",
+      "causalLink": "Private instructions, two distinct scoring branches and explicit human evidence are preserved; no computer perception is assumed.",
+      "inspirations": [
+        "turn-screw",
+        "jolly-corner"
+      ],
+      "playableChanged": true,
+      "acceptance": "editorially_reviewed_not_playtested"
+    },
+    {
+      "id": "T003",
+      "type": "trial",
+      "title": "Мастер не отвечает",
+      "previousTitle": "Мастер не отвечает",
+      "decision": "adapt",
+      "entityIntent": "Keep a promised in-fiction silence towards the unseen administrator.",
+      "causalLink": "Private instructions, two distinct scoring branches and explicit human evidence are preserved; no computer perception is assumed.",
+      "inspirations": [
+        "others"
+      ],
+      "playableChanged": false,
+      "acceptance": "editorially_reviewed_not_playtested"
+    },
+    {
+      "id": "T004",
+      "type": "trial",
+      "title": "Принести зов Обители",
+      "previousTitle": "Обитель не должна остаться здесь",
+      "decision": "adapt",
+      "entityIntent": "Bring an imagined call from the dwelling place and return it without an object.",
+      "causalLink": "The user removes the physical Dwelling. The original delivery/return structure is adapted as an on-site call, early return with a remembered fictional name, and a second visit; inverted late scoring and the one-off early-return exception remain.",
+      "inspirations": [
+        "beckoning"
+      ],
+      "playableChanged": true,
+      "acceptance": "editorially_reviewed_not_playtested",
+      "currentDecision": "adapt_no_props"
+    },
+    {
+      "id": "T005",
+      "type": "trial",
+      "title": "Ответ пустой комнате",
+      "previousTitle": "Ответ пустой комнате",
+      "decision": "adapt",
+      "entityIntent": "Seek an actual respondent in apparently empty rooms.",
+      "causalLink": "Private instructions, two distinct scoring branches and explicit human evidence are preserved; no computer perception is assumed.",
+      "inspirations": [
+        "empty-house"
+      ],
+      "playableChanged": false,
+      "acceptance": "editorially_reviewed_not_playtested"
+    },
+    {
+      "id": "T006",
+      "type": "trial",
+      "title": "Жест чужого жильца",
+      "previousTitle": "Проверка тишины",
+      "decision": "adapt",
+      "entityIntent": "Let an unexplained household gesture interrupt another routine.",
+      "causalLink": "Private instructions, two distinct scoring branches and explicit human evidence are preserved; no computer perception is assumed.",
+      "inspirations": [
+        "others"
+      ],
+      "playableChanged": true,
+      "acceptance": "editorially_reviewed_not_playtested"
+    },
+    {
+      "id": "T007",
+      "type": "trial",
+      "title": "Пустое место у плеча",
+      "previousTitle": "Мешочек, который не открыли",
+      "decision": "adapt",
+      "entityIntent": "See whether another participant follows a gaze to an absent companion.",
+      "causalLink": "A voluntary gaze response replaces acceptance of a bundle. Both private branches use explicit human reports, with no object or inferred observation.",
+      "inspirations": [
+        "turn-screw",
+        "others"
+      ],
+      "playableChanged": true,
+      "acceptance": "editorially_reviewed_not_playtested",
+      "currentDecision": "adapt_no_props"
+    },
+    {
+      "id": "T008",
+      "type": "trial",
+      "title": "Чужое имя в ответ",
+      "previousTitle": "Чужое имя в ответ",
+      "decision": "adapt",
+      "entityIntent": "See whether a visitor remembers and independently uses a fictional identity.",
+      "causalLink": "Private instructions, two distinct scoring branches and explicit human evidence are preserved; no computer perception is assumed.",
+      "inspirations": [
+        "jolly-corner"
+      ],
+      "playableChanged": false,
+      "acceptance": "editorially_reviewed_not_playtested"
+    },
+    {
+      "id": "T009",
+      "type": "trial",
+      "title": "Знак, который вернулся",
+      "previousTitle": "Знак, который вернулся",
+      "decision": "adapt",
+      "entityIntent": "Let a recognizable gesture return before it is shown again.",
+      "causalLink": "Private instructions, two distinct scoring branches and explicit human evidence are preserved; no computer perception is assumed.",
+      "inspirations": [
+        "vourdalak"
+      ],
+      "playableChanged": false,
+      "acceptance": "editorially_reviewed_not_playtested"
+    },
+    {
+      "id": "T010",
+      "type": "trial",
+      "title": "Два свидетеля одной тени",
+      "previousTitle": "Два свидетеля одной тени",
+      "decision": "adapt",
+      "entityIntent": "Compare independent witnesses’ memory of a described presence.",
+      "causalLink": "Private instructions, two distinct scoring branches and explicit human evidence are preserved; no computer perception is assumed.",
+      "inspirations": [
+        "turn-screw"
+      ],
+      "playableChanged": false,
+      "acceptance": "editorially_reviewed_not_playtested"
+    },
+    {
+      "id": "T011",
+      "type": "trial",
+      "title": "До последнего слова",
+      "previousTitle": "До последнего слова",
+      "decision": "adapt",
+      "entityIntent": "Let observation precede a release attempt rather than immediate imitation.",
+      "causalLink": "Private instructions, two distinct scoring branches and explicit human evidence are preserved; no computer perception is assumed.",
+      "inspirations": [
+        "empty-house"
+      ],
+      "playableChanged": false,
+      "acceptance": "editorially_reviewed_not_playtested"
+    },
+    {
+      "id": "R001",
+      "type": "prophecy",
+      "title": "Не выпусти голос",
+      "previousTitle": "Не выпусти голос",
+      "decision": "retain_core",
+      "entityIntent": "Keep a living voice covered at the table.",
+      "causalLink": "Rule, trigger, action, scope and final flag are identical to the pre-revision record.",
+      "inspirations": [
+        "others"
+      ],
+      "playableChanged": false,
+      "acceptance": "editorially_reviewed_not_playtested"
+    },
+    {
+      "id": "R002",
+      "type": "prophecy",
+      "title": "Здесь не любят экзорцистов",
+      "previousTitle": "Здесь не любят экзорцистов",
+      "decision": "retain_core",
+      "entityIntent": "Answer the forbidden role-name without echoing it.",
+      "causalLink": "Rule, trigger, action, scope and final flag are identical to the pre-revision record.",
+      "inspirations": [
+        "others"
+      ],
+      "playableChanged": false,
+      "acceptance": "editorially_reviewed_not_playtested"
+    },
+    {
+      "id": "R003",
+      "type": "prophecy",
+      "title": "Помоги нам",
+      "previousTitle": "Помоги нам",
+      "decision": "retain_core",
+      "entityIntent": "Keep each appeal directed at the household presence.",
+      "causalLink": "Rule, trigger, action, scope and final flag are identical to the pre-revision record.",
+      "inspirations": [
+        "others"
+      ],
+      "playableChanged": false,
+      "acceptance": "editorially_reviewed_not_playtested"
+    },
+    {
+      "id": "R004",
+      "type": "prophecy",
+      "title": "Ладонь перед словом",
+      "previousTitle": "Ладонь перед словом",
+      "decision": "retain_core",
+      "entityIntent": "Mark a deliberate intention to speak.",
+      "causalLink": "Rule, trigger, action, scope and final flag are identical to the pre-revision record.",
+      "inspirations": [
+        "others"
+      ],
+      "playableChanged": false,
+      "acceptance": "editorially_reviewed_not_playtested"
+    },
+    {
+      "id": "R005",
+      "type": "prophecy",
+      "title": "Имена остались снаружи",
+      "previousTitle": "Имена остались снаружи",
+      "decision": "retain_core",
+      "entityIntent": "Keep genuine identities outside the ritual address.",
+      "causalLink": "Rule, trigger, action, scope and final flag are identical to the pre-revision record.",
+      "inspirations": [
+        "others"
+      ],
+      "playableChanged": false,
+      "acceptance": "editorially_reviewed_not_playtested"
+    },
+    {
+      "id": "R006",
+      "type": "prophecy",
+      "title": "Даже знакомые стали чужими",
+      "previousTitle": "Даже знакомые стали чужими",
+      "decision": "retain_core",
+      "entityIntent": "Make familiar people speak as strangers.",
+      "causalLink": "Rule, trigger, action, scope and final flag are identical to the pre-revision record.",
+      "inspirations": [
+        "others"
+      ],
+      "playableChanged": false,
+      "acceptance": "editorially_reviewed_not_playtested"
+    },
+    {
+      "id": "R007",
+      "type": "prophecy",
+      "title": "Ответь, что ты здесь",
+      "previousTitle": "Ответь, что ты здесь",
+      "decision": "retain_core",
+      "entityIntent": "Reassert one’s presence before answering.",
+      "causalLink": "Rule, trigger, action, scope and final flag are identical to the pre-revision record.",
+      "inspirations": [
+        "others"
+      ],
+      "playableChanged": false,
+      "acceptance": "editorially_reviewed_not_playtested"
+    },
+    {
+      "id": "R008",
+      "type": "prophecy",
+      "title": "Не отводи взгляд от свечей",
+      "previousTitle": "Не отводи взгляд от свечей",
+      "decision": "retain_core",
+      "entityIntent": "Keep speech oriented towards the shared ritual.",
+      "causalLink": "Rule, trigger, action, scope and final flag are identical to the pre-revision record.",
+      "inspirations": [
+        "others"
+      ],
+      "playableChanged": false,
+      "acceptance": "editorially_reviewed_not_playtested"
+    },
+    {
+      "id": "R009",
+      "type": "prophecy",
+      "title": "Сердце считает свечи",
+      "previousTitle": "Сердце считает свечи",
+      "decision": "retain_core",
+      "entityIntent": "Acknowledge the completed candle movement bodily.",
+      "causalLink": "Rule, trigger, action, scope and final flag are identical to the pre-revision record.",
+      "inspirations": [
+        "others"
+      ],
+      "playableChanged": false,
+      "acceptance": "editorially_reviewed_not_playtested"
+    },
+    {
+      "id": "R010",
+      "type": "prophecy",
+      "title": "Порог требует ответа",
+      "previousTitle": "Порог требует ответа",
+      "decision": "retain_core",
+      "entityIntent": "Declare a completed return before ordinary speech.",
+      "causalLink": "Rule, trigger, action, scope and final flag are identical to the pre-revision record.",
+      "inspirations": [
+        "others"
+      ],
+      "playableChanged": false,
+      "acceptance": "editorially_reviewed_not_playtested"
+    },
+    {
+      "id": "R011",
+      "type": "prophecy",
+      "title": "Дверь отпускает",
+      "previousTitle": "Дверь отпускает",
+      "decision": "retain_core",
+      "entityIntent": "End the household presence and recall everyone.",
+      "causalLink": "Rule, trigger, action, scope and final flag are identical to the pre-revision record.",
+      "inspirations": [
+        "others"
+      ],
+      "playableChanged": false,
+      "acceptance": "editorially_reviewed_not_playtested"
+    },
+    {
+      "id": "S001",
+      "type": "story",
+      "title": "Лишнее место",
+      "previousTitle": "Девочка, которой нет на снимке",
+      "decision": "adapt",
+      "entityIntent": "Acquire a place in the family.",
+      "causalLink": "Independent opening for a private dwelling or its grounds. No exact card, real building feature or scripted outcome is required.",
+      "inspirations": [
+        "beckoning",
+        "others"
+      ],
+      "playableChanged": true,
+      "acceptance": "editorially_reviewed_not_playtested"
+    },
+    {
+      "id": "S002",
+      "type": "story",
+      "title": "Квартира, которую не освободили",
+      "previousTitle": "Гостиница с занятым пустым номером",
+      "decision": "replace",
+      "entityIntent": "Keep ownership of a vacated apartment.",
+      "causalLink": "Independent opening for a private dwelling or its grounds. No exact card, real building feature or scripted outcome is required.",
+      "inspirations": [
+        "others",
+        "beckoning"
+      ],
+      "playableChanged": true,
+      "acceptance": "editorially_reviewed_not_playtested"
+    },
+    {
+      "id": "S003",
+      "type": "story",
+      "title": "Пока дом спит",
+      "previousTitle": "Последняя репетиция",
+      "decision": "replace",
+      "entityIntent": "Act through a resident while they sleep.",
+      "causalLink": "Independent opening for a private dwelling or its grounds. No exact card, real building feature or scripted outcome is required.",
+      "inspirations": [
+        "turn-screw",
+        "empty-house"
+      ],
+      "playableChanged": true,
+      "acceptance": "editorially_reviewed_not_playtested"
+    },
+    {
+      "id": "S004",
+      "type": "story",
+      "title": "Кто-то просится со двора",
+      "previousTitle": "Тропа вернувшихся",
+      "decision": "replace",
+      "entityIntent": "Be recognized as a returning resident.",
+      "causalLink": "Independent opening for a private dwelling or its grounds. No exact card, real building feature or scripted outcome is required.",
+      "inspirations": [
+        "monkeys-paw",
+        "vourdalak",
+        "old-nurse"
+      ],
+      "playableChanged": true,
+      "acceptance": "editorially_reviewed_not_playtested"
+    },
+    {
+      "id": "S005",
+      "type": "story",
+      "title": "Корни под полом",
+      "previousTitle": "Праздник под чёрными ветвями",
+      "decision": "replace",
+      "entityIntent": "Carry the garden’s presence into the house.",
+      "causalLink": "Independent opening for a private dwelling or its grounds. No exact card, real building feature or scripted outcome is required.",
+      "inspirations": [
+        "ash-tree",
+        "beckoning"
+      ],
+      "playableChanged": true,
+      "acceptance": "editorially_reviewed_not_playtested"
+    },
+    {
+      "id": "S006",
+      "type": "story",
+      "title": "На участке стало двое",
+      "previousTitle": "Поляна, которая помнит голоса",
+      "decision": "replace",
+      "entityIntent": "Replace the original with a familiar double.",
+      "causalLink": "Independent opening for a private dwelling or its grounds. No exact card, real building feature or scripted outcome is required.",
+      "inspirations": [
+        "jolly-corner",
+        "turn-screw"
+      ],
+      "playableChanged": true,
+      "acceptance": "editorially_reviewed_not_playtested"
+    },
+    {
+      "id": "M001",
+      "type": "reference",
+      "title": "Памятка экзорциста",
+      "previousTitle": "Памятка экзорциста",
+      "decision": "adapt",
+      "entityIntent": "Explain roles and completed physical reports.",
+      "causalLink": "The reference now explains zero task props, a place-only Dwelling and body/voice group performance.",
+      "inspirations": [],
+      "playableChanged": true,
+      "acceptance": "editorially_reviewed_not_playtested",
+      "currentDecision": "adapt_no_props"
+    },
+    {
+      "id": "M002",
+      "type": "reference",
+      "title": "Памятка одержимого и пленённого",
+      "previousTitle": "Памятка одержимого и пленённого",
+      "decision": "adapt",
+      "entityIntent": "Explain roles and completed physical reports.",
+      "causalLink": "The reference now explains zero task props, a place-only Dwelling and body/voice group performance.",
+      "inspirations": [],
+      "playableChanged": true,
+      "acceptance": "editorially_reviewed_not_playtested",
+      "currentDecision": "adapt_no_props"
+    }
+  ],
+  "variants": [
+    {
+      "id": "HP001",
+      "type": "possessed",
+      "baseCard": "P010",
+      "title": "Дай ему место",
+      "decision": "retain_core",
+      "entityIntent": "Bring an unacknowledged companion into the home.",
+      "causalLink": "Denying the visible actor’s concern sustains it; addressing the specified empty place acknowledges a separate guest.",
+      "fearMechanism": "An empty personal-space boundary is treated as occupied. The performer’s yielding movement makes the imagined presence feel close without approaching or following the rescuer.",
+      "inspirations": [
+        "turn-screw"
+      ],
+      "acceptance": "editorially_reviewed_not_playtested"
+    },
+    {
+      "id": "HP002",
+      "type": "possessed",
+      "baseCard": "P007",
+      "title": "Колыбельная снизу",
+      "decision": "retain_core",
+      "entityIntent": "Repeat a tune for an absent household listener.",
+      "causalLink": "No material scene setup: performance is stable body/voice, and light covering uses the rescuer’s hand.",
+      "fearMechanism": "One visible performer alternates a lullaby with an adult reply to someone below their own ordinary eye level; no furniture or hidden actor is needed.",
+      "inspirations": [
+        "beckoning"
+      ],
+      "acceptance": "editorially_reviewed_not_playtested",
+      "currentDecision": "adapt_no_props"
+    },
+    {
+      "id": "HP003",
+      "type": "possessed",
+      "baseCard": "P018",
+      "title": "Шаги остановились рядом",
+      "decision": "retain_core",
+      "entityIntent": "Continue an unseen approach.",
+      "causalLink": "Physical imitation admits the walking loop; addressing the implied walker gives its approach a stopping point.",
+      "fearMechanism": "Audible footsteps contradict clearly motionless feet, then appear to stop beside the visitor.",
+      "inspirations": [
+        "empty-house"
+      ],
+      "acceptance": "editorially_reviewed_not_playtested"
+    },
+    {
+      "id": "HP004",
+      "type": "possessed",
+      "baseCard": "P020",
+      "title": "Он смеётся твоим ртом",
+      "decision": "adapt",
+      "entityIntent": "Keep an alien playful voice in an unfinished farewell.",
+      "causalLink": "Joining the acted laughter keeps the voice; a serious reciprocal farewell closes the social exchange.",
+      "fearMechanism": "A short laugh ends in an unnaturally blank expression; the hand is treated as if the voice came through it.",
+      "inspirations": [
+        "turn-screw",
+        "jolly-corner"
+      ],
+      "acceptance": "editorially_reviewed_not_playtested"
+    },
+    {
+      "id": "HP005",
+      "type": "possessed",
+      "baseCard": "P012",
+      "title": "Портрет ждёт твоего лица",
+      "decision": "adapt",
+      "entityIntent": "Recover a face missing from the household memory.",
+      "causalLink": "Blocking the frame erases recognition; a visible steady face completes the portrait. No actual painting is needed.",
+      "fearMechanism": "Expression changes happen only when the observer looks away, making the living portrait seem discontinuous.",
+      "inspirations": [
+        "jolly-corner",
+        "turn-screw"
+      ],
+      "acceptance": "editorially_reviewed_not_playtested"
+    },
+    {
+      "id": "HP006",
+      "type": "possessed",
+      "baseCard": "P039",
+      "title": "В отражении открылись глаза",
+      "decision": "retain_core",
+      "entityIntent": "Hold a person through their fixed-house reflection.",
+      "causalLink": "An existing house mirror is blocked by the rescuer’s body, without moving or covering it with an object.",
+      "fearMechanism": "The actor distrusts their own fixed-house reflection. A human body interrupting its sightline ends the scene without a movable object.",
+      "inspirations": [
+        "jolly-corner"
+      ],
+      "acceptance": "editorially_reviewed_not_playtested",
+      "currentDecision": "adapt_no_props"
+    },
+    {
+      "id": "HP007",
+      "type": "possessed",
+      "baseCard": "P036",
+      "title": "Кто-то стучит в закрытой руке",
+      "decision": "retain_core",
+      "entityIntent": "Wait for an answering sound from a closed hand.",
+      "causalLink": "An acted sound comes from the performer’s closed hand. The answering strike and listening remain physical but need no container.",
+      "fearMechanism": "A visible human hand is treated as a closed source of answering sound. Only the actor makes the tap.",
+      "inspirations": [
+        "monkeys-paw"
+      ],
+      "acceptance": "editorially_reviewed_not_playtested",
+      "currentDecision": "adapt_no_props"
+    },
+    {
+      "id": "HP008",
+      "type": "possessed",
+      "baseCard": "P042",
+      "title": "Между ладонями будто лицо",
+      "decision": "retain_core",
+      "entityIntent": "Keep an absent shape hidden between the actor’s hands.",
+      "causalLink": "A hidden shape is framed by the actor’s hands over empty space; uncovering is visible pantomime, not handling a prop.",
+      "fearMechanism": "A hand-framed absence briefly moves and seems to answer itself. Uncovering remains a clear human pantomime.",
+      "inspirations": [
+        "beckoning"
+      ],
+      "acceptance": "editorially_reviewed_not_playtested",
+      "currentDecision": "adapt_no_props"
+    },
+    {
+      "id": "HP009",
+      "type": "possessed",
+      "baseCard": "P038",
+      "title": "Пока он спит, я отвечаю",
+      "decision": "replace",
+      "entityIntent": "Keep the resident asleep while another presence answers.",
+      "causalLink": "Encouraging continued sleep gives the intruder time; eliciting the resident’s own account of the present room wakes them. No special candle or factual quiz is used.",
+      "fearMechanism": "A familiar sleepy person becomes briefly alert in an alien persona, then returns unaware. An actual present-room answer restores the resident’s own voice.",
+      "inspirations": [
+        "others",
+        "turn-screw"
+      ],
+      "acceptance": "editorially_reviewed_not_playtested"
+    },
+    {
+      "id": "HP010",
+      "type": "possessed",
+      "baseCard": "P019",
+      "title": "Не слушай второй рот",
+      "decision": "retain_core",
+      "entityIntent": "Keep speech under an alien seal.",
+      "causalLink": "Shushing reinforces the seal; visibly removing one’s own mimed seal gives a model of release.",
+      "fearMechanism": "The performer disowns a voice produced through their own palm and then asks about it as if they did not hear it.",
+      "inspirations": [
+        "old-nurse"
+      ],
+      "acceptance": "editorially_reviewed_not_playtested"
+    },
+    {
+      "id": "HP011",
+      "type": "possessed",
+      "baseCard": "P024",
+      "title": "Отражение, которое не остановилось",
+      "decision": "retain_core",
+      "entityIntent": "Keep an image acting after its person stops.",
+      "causalLink": "Following the delayed copy gives it priority; withdrawing both hands and staying still removes its input.",
+      "fearMechanism": "A human reflection continues after its source stops, then acknowledges the mismatch with a delayed expression.",
+      "inspirations": [
+        "jolly-corner"
+      ],
+      "acceptance": "editorially_reviewed_not_playtested"
+    },
+    {
+      "id": "HP012",
+      "type": "possessed",
+      "baseCard": "P065",
+      "title": "Крылья на стене",
+      "decision": "adapt",
+      "entityIntent": "Keep an alien shape hidden inside ordinary hands.",
+      "causalLink": "Copying its shape accepts it; a real visible projection places the shape outside the actor. Admission depends on actual dim-screen visibility.",
+      "fearMechanism": "An actual hand shadow changes from a bird-like shape to claw-like fingers while the performer watches the wall as if something is trapped there.",
+      "inspirations": [
+        "ash-tree",
+        "innocents"
+      ],
+      "acceptance": "editorially_reviewed_not_playtested"
+    },
+    {
+      "id": "HP013",
+      "type": "possessed",
+      "baseCard": "P067",
+      "title": "Пока горит свет, оно видит",
+      "decision": "retain_core",
+      "entityIntent": "Keep the actor exposed to an unseen watcher through light.",
+      "causalLink": "No material scene setup: performance is stable body/voice, and light covering uses the rescuer’s hand.",
+      "fearMechanism": "The visitor must voluntarily interrupt the light that makes the figure visible, creating a short interval of anticipation rather than a difficult puzzle.",
+      "inspirations": [
+        "others"
+      ],
+      "acceptance": "editorially_reviewed_not_playtested",
+      "currentDecision": "adapt_no_props"
+    },
+    {
+      "id": "HP014",
+      "type": "possessed",
+      "baseCard": "P006",
+      "title": "Не открывай, там мы",
+      "decision": "adapt",
+      "entityIntent": "Keep an old household behind a closed threshold.",
+      "causalLink": "Two independent unintrusive passes acknowledge the boundary without entering the old event.",
+      "fearMechanism": "A quiet answer seems attached to a door associated with a second version of the players. The door remains physically passable and unblocked.",
+      "inspirations": [
+        "monkeys-paw",
+        "empty-house"
+      ],
+      "acceptance": "editorially_reviewed_not_playtested"
+    },
+    {
+      "id": "HP015",
+      "type": "possessed",
+      "baseCard": "P045",
+      "title": "Кора отвечает шёпотом",
+      "decision": "retain_core",
+      "entityIntent": "Wait for a human ear at the garden tree.",
+      "causalLink": "Knocking calls further; silent listening through the visible hand withdrawal completes the attention.",
+      "fearMechanism": "An ordinary tree is treated as a source of a fictional name, then as something that passed a voice through a hand.",
+      "inspirations": [
+        "ash-tree"
+      ],
+      "acceptance": "editorially_reviewed_not_playtested"
+    },
+    {
+      "id": "HP016",
+      "type": "possessed",
+      "baseCard": "P048",
+      "title": "В круге рук кто-то повернулся",
+      "decision": "adapt",
+      "entityIntent": "Keep an unseen occupant within a bodily enclosure.",
+      "causalLink": "The closed place is shown by the actor’s body, with no ground marking. A visible opening gesture gives it an exit.",
+      "fearMechanism": "The performer’s own arms suggest an occupied enclosure; an outward hand passage opens it without objects or ground marks.",
+      "inspirations": [
+        "old-nurse",
+        "ash-tree"
+      ],
+      "acceptance": "editorially_reviewed_not_playtested",
+      "currentDecision": "adapt_no_props"
+    },
+    {
+      "id": "HP017",
+      "type": "possessed",
+      "baseCard": "P053",
+      "title": "Под домом идут вровень с тобой",
+      "decision": "replace",
+      "entityIntent": "Borrow a living person’s place to come up from below.",
+      "causalLink": "Offering one’s place provides a host; an audible ground contact and completed rising gesture let the trapped sound emerge without occupying someone. This is an authored symbolic release.",
+      "fearMechanism": "The imagined walker shifts from below the actor to below the visitor; the invitation is a temptation to provide it with a place. Sound is entirely performed.",
+      "inspirations": [
+        "ash-tree",
+        "empty-house"
+      ],
+      "acceptance": "editorially_reviewed_not_playtested"
+    },
+    {
+      "id": "HP018",
+      "type": "possessed",
+      "baseCard": "P003",
+      "title": "Руки того, кто остался",
+      "decision": "retain_core",
+      "entityIntent": "Borrow warmth through a person’s hands.",
+      "causalLink": "Wordless partial contact maintains estrangement; both accepted hands with human address restore connection.",
+      "fearMechanism": "A familiar pair of hands is presented as belonging to someone who did not leave; the rescuer chooses whether to acknowledge the person while touching.",
+      "inspirations": [
+        "uninvited"
+      ],
+      "acceptance": "editorially_reviewed_not_playtested"
+    },
+    {
+      "id": "HP019",
+      "type": "possessed",
+      "baseCard": "P057",
+      "title": "Отметина под кожей",
+      "decision": "retain_core",
+      "entityIntent": "Keep a circular bodily trace intact.",
+      "causalLink": "Copying its circuit strengthens the mark; two crossing strokes visibly cancel it. This is an authored ritual gesture.",
+      "fearMechanism": "A spreading imaginary mark becomes a small tactile act; uncertainty concerns the traced pattern, not a painful or invasive prop.",
+      "inspirations": [
+        "ash-tree"
+      ],
+      "acceptance": "editorially_reviewed_not_playtested"
+    },
+    {
+      "id": "HP020",
+      "type": "possessed",
+      "baseCard": "P058",
+      "title": "Кто держит его за локоть",
+      "decision": "retain_core",
+      "entityIntent": "Keep a limb under an absent puppeteer’s control.",
+      "causalLink": "A social pumping movement lends it further motion; a light accepted elbow support allows self-directed relaxation.",
+      "fearMechanism": "A visibly self-moving arm is described as being held from an empty point above it; a light supporting contact confronts that implied control.",
+      "inspirations": [
+        "jolly-corner"
+      ],
+      "acceptance": "editorially_reviewed_not_playtested"
+    },
+    {
+      "id": "HP021",
+      "type": "possessed",
+      "baseCard": "P059",
+      "title": "Холод стоит рядом",
+      "decision": "retain_core",
+      "entityIntent": "Keep a resident isolated from living warmth.",
+      "causalLink": "Warmth is acknowledged through a brief agreed shoulder-to-shoulder presence, without cloth or other equipment.",
+      "fearMechanism": "Cold is acted as an absent neighbour at the shoulder. A brief independently balanced shoulder contact acknowledges a living companion.",
+      "inspirations": [
+        "old-nurse"
+      ],
+      "acceptance": "editorially_reviewed_not_playtested",
+      "currentDecision": "adapt_no_props"
+    },
+    {
+      "id": "HP022",
+      "type": "possessed",
+      "baseCard": "P061",
+      "title": "Чужая ладонь",
+      "decision": "retain_core",
+      "entityIntent": "Find an owner for a detached palm impression.",
+      "causalLink": "An incompatible closed fist denies its shape; a full accepted palm match recognizes the hand.",
+      "fearMechanism": "Eyes remain visible behind a hand the performer describes as alien; the rescuer must make a deliberate full-hand contact rather than a quick closed-fist greeting.",
+      "inspirations": [
+        "jolly-corner"
+      ],
+      "acceptance": "editorially_reviewed_not_playtested"
+    },
+    {
+      "id": "HP023",
+      "type": "possessed",
+      "baseCard": "P062",
+      "title": "Не поворачивай меня лицом",
+      "decision": "retain_core",
+      "entityIntent": "Keep the person turned away from the household.",
+      "causalLink": "A turning attempt repeats control; an accepted upper-back touch and address acknowledge them without forcing the face.",
+      "fearMechanism": "A familiar body remains turned away while a head and voice acknowledge the visitor; contact happens where the face cannot be seen.",
+      "inspirations": [
+        "turn-screw"
+      ],
+      "acceptance": "editorially_reviewed_not_playtested"
+    },
+    {
+      "id": "HP024",
+      "type": "possessed",
+      "baseCard": "P063",
+      "title": "За спиной нет стены",
+      "decision": "retain_core",
+      "entityIntent": "Keep an unseen presence immediately behind the actor.",
+      "causalLink": "Offering hand support pursues the absent hold; independent back-to-back contact occupies the threatened space.",
+      "fearMechanism": "The threat is placed at an unseen point behind the performer; release uses an agreed stationary back-to-back contact rather than a new riddle.",
+      "inspirations": [
+        "turn-screw"
+      ],
+      "acceptance": "editorially_reviewed_not_playtested"
+    },
+    {
+      "id": "HE001",
+      "type": "exorcist",
+      "baseCard": "E021",
+      "title": "Чужое дыхание в тишине",
+      "decision": "retain_core",
+      "entityIntent": "Listen before inventing an explanation for a sound.",
+      "causalLink": "A bounded stationary listen reports real sound or honest silence.",
+      "fearMechanism": "A solitary listening pause immediately after an uncanny encounter makes ordinary ambient sounds feel uncertain without inventing sensor evidence.",
+      "inspirations": [
+        "uninvited"
+      ],
+      "acceptance": "editorially_reviewed_not_playtested"
+    },
+    {
+      "id": "HE002",
+      "type": "exorcist",
+      "baseCard": "E012",
+      "title": "Пять счётов без лица",
+      "decision": "retain_core",
+      "entityIntent": "Test a short absence of the observing light.",
+      "causalLink": "The stationary screen-cover interval is completed and then light restored; nobody approaches during it.",
+      "fearMechanism": "A five-count stationary darkness interval follows a visible face, making its absence unsettling. No surprise approach is allowed.",
+      "inspirations": [
+        "others"
+      ],
+      "acceptance": "editorially_reviewed_not_playtested"
+    },
+    {
+      "id": "HE003",
+      "type": "exorcist",
+      "baseCard": "E015",
+      "title": "Скажи, кому здесь пусто",
+      "decision": "retain_core",
+      "entityIntent": "Keep a fictional addressee until reaching its place.",
+      "causalLink": "The mission uses an agreed empty place or actual spatial details; it needs no vessel, marker or collection of objects.",
+      "fearMechanism": "A remembered fictional addressee is named at a remote physical dwelling; nothing is physically carried or left.",
+      "inspirations": [
+        "old-nurse"
+      ],
+      "acceptance": "editorially_reviewed_not_playtested",
+      "currentDecision": "adapt_no_props"
+    },
+    {
+      "id": "HE004",
+      "type": "exorcist",
+      "baseCard": "E014",
+      "title": "Не отвечай Обители",
+      "decision": "retain_core",
+      "entityIntent": "Offer presence without answering the dwelling.",
+      "causalLink": "The mission uses an agreed empty place or actual spatial details; it needs no vessel, marker or collection of objects.",
+      "fearMechanism": "The player cannot fill the silence with role dialogue while deliberately pausing beside the Dwelling.",
+      "inspirations": [
+        "others"
+      ],
+      "acceptance": "editorially_reviewed_not_playtested",
+      "currentDecision": "adapt_no_props"
+    },
+    {
+      "id": "HE005",
+      "type": "exorcist",
+      "baseCard": "E036",
+      "title": "Рука остаётся на стене",
+      "decision": "adapt",
+      "entityIntent": "Check whether a disturbing shape follows a real source.",
+      "causalLink": "An honest light-hand-shadow sequence replaces a claim that a ghost was detected.",
+      "fearMechanism": "The player manufactures and then removes a claw-like silhouette, deliberately looking at the empty place it occupied.",
+      "inspirations": [
+        "innocents",
+        "others"
+      ],
+      "acceptance": "editorially_reviewed_not_playtested"
+    },
+    {
+      "id": "HE006",
+      "type": "exorcist",
+      "baseCard": "E029",
+      "title": "Место, где никто не отвечает",
+      "decision": "retain_core",
+      "entityIntent": "Address an absent resident and end the exchange.",
+      "causalLink": "Introduction, pause and goodbye complete an act without requiring a paranormal reply.",
+      "fearMechanism": "An unanswered introduction creates a controlled expectation of a voice from an empty place.",
+      "inspirations": [
+        "beckoning"
+      ],
+      "acceptance": "editorially_reviewed_not_playtested"
+    },
+    {
+      "id": "HE007",
+      "type": "exorcist",
+      "baseCard": "E025",
+      "title": "Увидеть, как отпускают",
+      "decision": "retain_core",
+      "entityIntent": "Witness the difference after a presence releases its hold.",
+      "causalLink": "Actual before/after observation supplies evidence without delaying a freed person.",
+      "fearMechanism": "The same familiar person is watched through the transition from uncanny acting to an ordinary released presence.",
+      "inspirations": [
+        "turn-screw"
+      ],
+      "acceptance": "editorially_reviewed_not_playtested"
+    },
+    {
+      "id": "HE008",
+      "type": "exorcist",
+      "baseCard": "E023",
+      "title": "Покажи того, кто снился",
+      "decision": "adapt",
+      "entityIntent": "Make a described presence visible through a human performer.",
+      "causalLink": "Recognition is checked against the source participant’s invented image, not supernatural perception.",
+      "fearMechanism": "A frightening imagined figure is externalized onto paper during a brief encounter, without soliciting real trauma.",
+      "inspirations": [
+        "turn-screw",
+        "jolly-corner"
+      ],
+      "acceptance": "editorially_reviewed_not_playtested"
+    },
+    {
+      "id": "HE009",
+      "type": "exorcist",
+      "baseCard": "E039",
+      "title": "Пять вещей, которые настоящие",
+      "decision": "retain_core",
+      "entityIntent": "Name the present room instead of an imagined threat.",
+      "causalLink": "The mission uses an agreed empty place or actual spatial details; it needs no vessel, marker or collection of objects.",
+      "fearMechanism": "Concrete spatial observations contrast with an acknowledged empty place; there are no objects to collect or arrange.",
+      "inspirations": [
+        "others"
+      ],
+      "acceptance": "editorially_reviewed_not_playtested",
+      "currentDecision": "adapt_no_props"
+    },
+    {
+      "id": "HE010",
+      "type": "exorcist",
+      "baseCard": "E030",
+      "title": "Не тот, кого ты ждал",
+      "decision": "retain_core",
+      "entityIntent": "Let another player briefly encounter an unfamiliar persona.",
+      "causalLink": "The recipient explicitly confirms fear; silence and a startle are never inferred evidence.",
+      "fearMechanism": "A visible conversational partner briefly answers in a different voice as if someone else is present. Fear is confirmed only by its recipient.",
+      "inspirations": [
+        "turn-screw"
+      ],
+      "acceptance": "editorially_reviewed_not_playtested"
+    },
+    {
+      "id": "HE011",
+      "type": "exorcist",
+      "baseCard": "E007",
+      "title": "То, что он написал",
+      "decision": "adapt",
+      "entityIntent": "Recognize an agreed tactile trace while watching its maker’s face.",
+      "causalLink": "A consenting partner traces one independently chosen shape on the player’s palm; recognition is confirmed by its maker. This replaces the base greeting in this variant and does not require sightless walking, actual ink or guessing a possessed solution.",
+      "fearMechanism": "A familiar face is watched while an unseen but agreed finger trace is felt on the player’s own palm.",
+      "inspirations": [
+        "vourdalak"
+      ],
+      "acceptance": "editorially_reviewed_not_playtested"
+    },
+    {
+      "id": "HE012",
+      "type": "exorcist",
+      "baseCard": "E028",
+      "title": "Дорога назад ещё есть",
+      "decision": "adapt",
+      "entityIntent": "Keep a return route distinct from an imagined changed home.",
+      "causalLink": "Two separate location visits establish actual landmarks; revisiting the first and naming the same landmark completes the route check. This variant replaces the base stationary object-order test and requires no third location or escort.",
+      "fearMechanism": "The player deliberately retraces a previously crossed dark route instead of ending the scene as soon as both observations are recorded.",
+      "inspirations": [
+        "others",
+        "jolly-corner"
+      ],
+      "acceptance": "editorially_reviewed_not_playtested"
+    },
+    {
+      "id": "HP025",
+      "type": "possessed",
+      "baseCard": "P026",
+      "title": "Ангел при отведённом взгляде",
+      "decision": "retain_core",
+      "entityIntent": "Advance outside observation until confronted with one’s own actual face.",
+      "causalLink": "User explicitly preserves seeing one’s own face in an existing house mirror. It is neither carried nor staged, and no one must turn or touch it.",
+      "fearMechanism": "The watched figure advances only outside a free exorcist’s gaze. Seeing its own actual face in an existing house mirror releases it; no prop is brought or turned.",
+      "inspirations": [
+        "blink"
+      ],
+      "acceptance": "editorially_reviewed_not_playtested",
+      "currentDecision": "existing_house_mirror"
+    },
+    {
+      "id": "HP026",
+      "type": "possessed",
+      "baseCard": "P030",
+      "title": "Вращающийся медиум",
+      "decision": "retain_core",
+      "entityIntent": "Continue the domestic presence through the actor’s body, voice or gaze rather than a prepared object.",
+      "causalLink": "The requested spinner is unchanged; the location must already have enough space, without moving or preparing furniture.",
+      "fearMechanism": "A person keeps rotating with outstretched arms in the middle of a room, ignoring in-fiction interaction. An opposite-direction outer orbit breaks the pattern.",
+      "inspirations": [
+        "empty-house"
+      ],
+      "acceptance": "editorially_reviewed_not_playtested",
+      "currentDecision": "adapt_no_props"
+    }
+  ],
+  "runtimeComparison": {
+    "personalCards": 90,
+    "prophecies": 7,
+    "treatment": "Historical comparison only. No lowercase runtime ID is appended to the authored selection; no importer or issued assignment changes."
+  },
+  "preservedContracts": [
+    {
+      "id": "P001",
+      "collection": "primary",
+      "fields": [
+        "infectionCondition",
+        "releaseCondition"
+      ],
+      "sha256": "7b4c6e5a55dce711158e10e40d59fd9eeab71693a8ecf98f77273d2cd10edf2a"
+    },
+    {
+      "id": "P003",
+      "collection": "primary",
+      "fields": [
+        "infectionCondition",
+        "releaseCondition"
+      ],
+      "sha256": "85413e5108202a979b02914561498631743373fea26f74ee9ada92ac035548c2"
+    },
+    {
+      "id": "P004",
+      "collection": "primary",
+      "fields": [
+        "infectionCondition",
+        "releaseCondition"
+      ],
+      "sha256": "74edf67a5d3a6b43671c88f3b91677365b0cc818c9b7e0c0dd6f6a4fb7f93962"
+    },
+    {
+      "id": "P005",
+      "collection": "primary",
+      "fields": [
+        "infectionCondition",
+        "releaseCondition"
+      ],
+      "sha256": "6f8afc123e5b1bd8b65b21cd527055990e30407887248225f95ebc1de3bffde9"
+    },
+    {
+      "id": "P007",
+      "collection": "primary",
+      "fields": [
+        "infectionCondition",
+        "releaseCondition"
+      ],
+      "sha256": "dd84fe587cf3dafe37c68f145a647751420dcf313165cca22b12167191cf3eb2"
+    },
+    {
+      "id": "P009",
+      "collection": "primary",
+      "fields": [
+        "infectionCondition",
+        "releaseCondition"
+      ],
+      "sha256": "e19102e6ac51b26a063dd11026ed21db6185d7b69f3ae281592093261fa5caad"
+    },
+    {
+      "id": "P010",
+      "collection": "primary",
+      "fields": [
+        "infectionCondition",
+        "releaseCondition"
+      ],
+      "sha256": "73d1b22c2030265664c515df380de18ab372df092255c1d5e2091c6b118c0e46"
+    },
+    {
+      "id": "P017",
+      "collection": "primary",
+      "fields": [
+        "infectionCondition",
+        "releaseCondition"
+      ],
+      "sha256": "53065a624bfc825e0eb36e0ec189358ffe2f8f15face4329544ecfb0baa6085a",
+      "amendmentHistory": [
+        {
+          "request": "user:no-task-props",
+          "previousSha256": "ab639708c454f811ec4aace034518a969ec72d3eddaa0e952c5709e868d421e4",
+          "fields": [
+            "infectionCondition",
+            "releaseCondition"
+          ],
+          "reason": "Later user instruction replaces material requirements with body/voice/space; existing house mirror self-view is explicitly retained for the angel."
+        }
+      ]
+    },
+    {
+      "id": "P018",
+      "collection": "primary",
+      "fields": [
+        "infectionCondition",
+        "releaseCondition"
+      ],
+      "sha256": "da29329a46ed7a5e315a30ce94ae76a660f85c7a0c3586273d8d002e2fbfccd5"
+    },
+    {
+      "id": "P019",
+      "collection": "primary",
+      "fields": [
+        "infectionCondition",
+        "releaseCondition"
+      ],
+      "sha256": "aeae040f3578919ec8331147db2c6787ad34e9c6f57a9c9a7b87b78c03cf52a6"
+    },
+    {
+      "id": "P022",
+      "collection": "primary",
+      "fields": [
+        "infectionCondition",
+        "releaseCondition"
+      ],
+      "sha256": "cd3992a29704a63b48fc562bde96bde185dc57a6464a7f84a8f6fc8282d0d06a"
+    },
+    {
+      "id": "P024",
+      "collection": "primary",
+      "fields": [
+        "infectionCondition",
+        "releaseCondition"
+      ],
+      "sha256": "48589ab6a54f9cb2439a78f3a174bd96325e9055b16d880b82fa4e7dc54d5b23"
+    },
+    {
+      "id": "P026",
+      "collection": "primary",
+      "fields": [
+        "behavior",
+        "infectionCondition",
+        "releaseCondition",
+        "sets"
+      ],
+      "sha256": "c718756acd378ae1adcc723f93c6f419ef0bdab65a67cdc7969e76d4ed4c6f83",
+      "preparationAmendment": {
+        "request": "user:no-exorcist-loadout",
+        "previousFields": [
+          "behavior",
+          "infectionCondition",
+          "releaseCondition",
+          "requirements",
+          "sets"
+        ],
+        "previousSha256": "fcafbf17d878ddd75e854b9eb7beac46a083c7d9da04e5b007287a83dc4b298e",
+        "reason": "Only preparation placement changes. Behavior, capture, release and subset remain preserved."
+      },
+      "amendmentHistory": [
+        {
+          "request": "user:house-mirror",
+          "previousSha256": "9757f869dc20e235730befe4c95f1706bbe7b6566e9883df0490380bf2c43c0a",
+          "fields": [
+            "behavior",
+            "infectionCondition",
+            "releaseCondition",
+            "sets"
+          ],
+          "reason": "Later user instruction replaces material requirements with body/voice/space; existing house mirror self-view is explicitly retained for the angel."
+        }
+      ]
+    },
+    {
+      "id": "P028",
+      "collection": "primary",
+      "fields": [
+        "infectionCondition",
+        "releaseCondition"
+      ],
+      "sha256": "319760c0969cedc54418c1acd807e6541c5ff177c23cbd5efe29f0495f0014c6",
+      "amendmentHistory": [
+        {
+          "request": "user:no-task-props",
+          "previousSha256": "9fdf5805986afaa9ca03be86767d66538f508b5aaae23dcf6e656c425d9fab83",
+          "fields": [
+            "infectionCondition",
+            "releaseCondition"
+          ],
+          "reason": "Later user instruction replaces material requirements with body/voice/space; existing house mirror self-view is explicitly retained for the angel."
+        }
+      ]
+    },
+    {
+      "id": "P030",
+      "collection": "primary",
+      "fields": [
+        "behavior",
+        "infectionCondition",
+        "releaseCondition",
+        "requirements",
+        "sets"
+      ],
+      "sha256": "60ad3188b66e172639b4bc39977f2c3720b980cb6b780f6301090651f01b11bc",
+      "amendmentHistory": [
+        {
+          "request": "user:no-task-props",
+          "previousSha256": "d59c7776af23cf49e17ae2188d51f7cc9a6dcc91bc9bcfddc06ab47d4cc8a663",
+          "fields": [
+            "behavior",
+            "infectionCondition",
+            "releaseCondition",
+            "requirements",
+            "sets"
+          ],
+          "reason": "Later user instruction replaces material requirements with body/voice/space; existing house mirror self-view is explicitly retained for the angel."
+        }
+      ]
+    },
+    {
+      "id": "P036",
+      "collection": "primary",
+      "fields": [
+        "infectionCondition",
+        "releaseCondition"
+      ],
+      "sha256": "afd4834c061a707cf5abce8fa443c461684402cf1b54e70add563a7eae5b4806",
+      "amendmentHistory": [
+        {
+          "request": "user:no-task-props",
+          "previousSha256": "84499ada9ebe2ef75990693f64a2b1de1ceb1c5f60646aa51169707b681604b1",
+          "fields": [
+            "infectionCondition",
+            "releaseCondition"
+          ],
+          "reason": "Later user instruction replaces material requirements with body/voice/space; existing house mirror self-view is explicitly retained for the angel."
+        }
+      ]
+    },
+    {
+      "id": "P039",
+      "collection": "primary",
+      "fields": [
+        "infectionCondition",
+        "releaseCondition"
+      ],
+      "sha256": "d68ab9fe5b28d461fa03f6663c68644aee67db96dc55f23827c880acea817690",
+      "amendmentHistory": [
+        {
+          "request": "user:no-task-props",
+          "previousSha256": "00e7239b8b082079fd0eb7591ba1a40685663ee85cd86228cb90a7c6a05703c1",
+          "fields": [
+            "infectionCondition",
+            "releaseCondition"
+          ],
+          "reason": "Later user instruction replaces material requirements with body/voice/space; existing house mirror self-view is explicitly retained for the angel."
+        }
+      ]
+    },
+    {
+      "id": "P042",
+      "collection": "primary",
+      "fields": [
+        "infectionCondition",
+        "releaseCondition"
+      ],
+      "sha256": "10711a60a639d609c3f0ee66bcb5a68dd1bdee46805fb7791c5b26b53f40ca33",
+      "amendmentHistory": [
+        {
+          "request": "user:no-task-props",
+          "previousSha256": "0708309ae9d68f17e8ec1f83f45fdec42d440dda47fe629df1fe746146626f47",
+          "fields": [
+            "infectionCondition",
+            "releaseCondition"
+          ],
+          "reason": "Later user instruction replaces material requirements with body/voice/space; existing house mirror self-view is explicitly retained for the angel."
+        }
+      ]
+    },
+    {
+      "id": "P045",
+      "collection": "primary",
+      "fields": [
+        "infectionCondition",
+        "releaseCondition"
+      ],
+      "sha256": "e72ce4fdc254630b749c43981f58d77e006957e50205059551ffe41259e8f972"
+    },
+    {
+      "id": "P054",
+      "collection": "primary",
+      "fields": [
+        "infectionCondition",
+        "releaseCondition"
+      ],
+      "sha256": "997c6016abc6836b00c072f45049449c3a28f749ee364a3a799e936953c668f8"
+    },
+    {
+      "id": "P057",
+      "collection": "primary",
+      "fields": [
+        "infectionCondition",
+        "releaseCondition"
+      ],
+      "sha256": "d7971060f8ac1c93391fbb4a4d7a62a4fb742db11e745b606024d427171bcdbf"
+    },
+    {
+      "id": "P058",
+      "collection": "primary",
+      "fields": [
+        "infectionCondition",
+        "releaseCondition"
+      ],
+      "sha256": "e303a70fc2537e9b03097d17d31f3f8c194bf21c04820f5a4a36bacb94e48d9e"
+    },
+    {
+      "id": "P059",
+      "collection": "primary",
+      "fields": [
+        "infectionCondition",
+        "releaseCondition"
+      ],
+      "sha256": "3f247ffad462ca44127b2beb387417670d13f4ce1b198d4b25ed1ba7b349ab16",
+      "amendmentHistory": [
+        {
+          "request": "user:no-task-props",
+          "previousSha256": "5353216a44d68bb72c16cd5dae3d270f7cd731dd48c5a3d1bf7b49256acf68e9",
+          "fields": [
+            "infectionCondition",
+            "releaseCondition"
+          ],
+          "reason": "Later user instruction replaces material requirements with body/voice/space; existing house mirror self-view is explicitly retained for the angel."
+        }
+      ]
+    },
+    {
+      "id": "P061",
+      "collection": "primary",
+      "fields": [
+        "infectionCondition",
+        "releaseCondition"
+      ],
+      "sha256": "63ba1bf99b9cb4082caa6475ad1b147abf2c3da061f93eea0467d35ec3f53e3c"
+    },
+    {
+      "id": "P062",
+      "collection": "primary",
+      "fields": [
+        "infectionCondition",
+        "releaseCondition"
+      ],
+      "sha256": "a7514b6f62943d267e0ce2ff46e6820b64aa6524e76d1e57ead9f8282a58c8a2"
+    },
+    {
+      "id": "P063",
+      "collection": "primary",
+      "fields": [
+        "infectionCondition",
+        "releaseCondition"
+      ],
+      "sha256": "fcdc4dc2ed5109dba9418fd7634b71909dfa6c62608dbcb58fdc1f190277736d"
+    },
+    {
+      "id": "P064",
+      "collection": "primary",
+      "fields": [
+        "infectionCondition",
+        "releaseCondition"
+      ],
+      "sha256": "b9567276d37c7af1d0bf772d9e73156ecdb7c022d44b726f5f67aef7303ff8a2"
+    },
+    {
+      "id": "P067",
+      "collection": "primary",
+      "fields": [
+        "infectionCondition",
+        "releaseCondition"
+      ],
+      "sha256": "9dcaf2d08defaa539c0adaf1deb4cc504e63ea1cc92fa26bc88d1e838f5fcbb6",
+      "amendmentHistory": [
+        {
+          "request": "user:no-task-props",
+          "previousSha256": "054e8fc33266d5c7f6a5d97c88b931f3c958ca060f2a78f41695672949b20d53",
+          "fields": [
+            "infectionCondition",
+            "releaseCondition"
+          ],
+          "reason": "No optional cloth or furniture dependency; body/voice/phone remains."
+        }
+      ]
+    },
+    {
+      "id": "P069",
+      "collection": "primary",
+      "fields": [
+        "infectionCondition",
+        "releaseCondition"
+      ],
+      "sha256": "c023beddcab61c5e1b351302f213f5a831e45ac7b2dfa510544100366967ef74",
+      "amendmentHistory": [
+        {
+          "request": "user:no-task-props",
+          "previousSha256": "fc7b7e2efe05b74f73d6fe8ab85e642e9f76bab49b4d7220679df8e1dbbf11d3",
+          "fields": [
+            "infectionCondition",
+            "releaseCondition"
+          ],
+          "reason": "Later user instruction replaces material requirements with body/voice/space; existing house mirror self-view is explicitly retained for the angel."
+        }
+      ]
+    },
+    {
+      "id": "P072",
+      "collection": "primary",
+      "fields": [
+        "infectionCondition",
+        "releaseCondition"
+      ],
+      "sha256": "c743979b04d6077d988eb1ed00905705bb71eacdd2aabf5500297886d2993c98"
+    },
+    {
+      "id": "P073",
+      "collection": "primary",
+      "fields": [
+        "infectionCondition",
+        "releaseCondition"
+      ],
+      "sha256": "1bff0c72f69265a7916e2b6dfa912ed3e9d1fdf69b55b223d681fb3a6869b1b3"
+    },
+    {
+      "id": "E001",
+      "collection": "primary",
+      "fields": [
+        "mission",
+        "successCondition"
+      ],
+      "sha256": "0e8e732b949ab9c12f76d2a5dc04b1da6db9af4a9ad5db332627d68cc085ece4",
+      "amendmentHistory": [
+        {
+          "request": "user:no-task-props",
+          "previousSha256": "35fdefc92cd58eddf125f4ef8be3c583863c8ee5e00c4054eb5be12fb9d052cd",
+          "fields": [
+            "mission",
+            "successCondition"
+          ],
+          "reason": "Later user instruction replaces material requirements with body/voice/space; existing house mirror self-view is explicitly retained for the angel."
+        }
+      ]
+    },
+    {
+      "id": "E002",
+      "collection": "primary",
+      "fields": [
+        "mission",
+        "successCondition"
+      ],
+      "sha256": "2cb90531ddda1eeffeb29f67daf52388da442aaa79f863962c7674511e85fae6"
+    },
+    {
+      "id": "E004",
+      "collection": "primary",
+      "fields": [
+        "mission",
+        "successCondition"
+      ],
+      "sha256": "6bfeba48b16968f84d8276531c01ea94e50c683b58bf615061f2dc021a772798"
+    },
+    {
+      "id": "E006",
+      "collection": "primary",
+      "fields": [
+        "mission",
+        "successCondition"
+      ],
+      "sha256": "d004c6860cfc14a06123bd8c159e25ae0f27b619a7c6a3bf255329e7fc16e647"
+    },
+    {
+      "id": "E009",
+      "collection": "primary",
+      "fields": [
+        "mission",
+        "successCondition"
+      ],
+      "sha256": "b0140d4556e9bca4da7049285dc780450be8b492cea97cab2a1d5b8fcdbcca7d"
+    },
+    {
+      "id": "E012",
+      "collection": "primary",
+      "fields": [
+        "mission",
+        "successCondition"
+      ],
+      "sha256": "40bae8acde44a8763e0f4b13d104dcd6b95ea6afc39d5cb60ac928ed64c895ae"
+    },
+    {
+      "id": "E014",
+      "collection": "primary",
+      "fields": [
+        "mission",
+        "successCondition"
+      ],
+      "sha256": "2c60d33977f68203bb76358a8c7767224cb6b27f6d3feb56c4df4741311ffe5a",
+      "amendmentHistory": [
+        {
+          "request": "user:no-task-props",
+          "previousSha256": "0e8b0a0dba9f130447aee334358a8647022f83522d1eeb4326d63eab65492483",
+          "fields": [
+            "mission",
+            "successCondition"
+          ],
+          "reason": "Later user instruction replaces material requirements with body/voice/space; existing house mirror self-view is explicitly retained for the angel."
+        }
+      ]
+    },
+    {
+      "id": "E015",
+      "collection": "primary",
+      "fields": [
+        "mission",
+        "successCondition"
+      ],
+      "sha256": "2a267f1e97816eda98746ba7d70441aa1e570f939f54268a486ce56a4568b13e",
+      "amendmentHistory": [
+        {
+          "request": "user:no-task-props",
+          "previousSha256": "c9cfcf7a021f125c0b0310d5acc903441f31ee8b1de378338098382fb8f761b0",
+          "fields": [
+            "mission",
+            "successCondition"
+          ],
+          "reason": "Later user instruction replaces material requirements with body/voice/space; existing house mirror self-view is explicitly retained for the angel."
+        }
+      ]
+    },
+    {
+      "id": "E018",
+      "collection": "primary",
+      "fields": [
+        "mission",
+        "successCondition"
+      ],
+      "sha256": "f418697f723e102ff059b37d5441de3030839b88499fbe6a1962ffcc4a8a25d6",
+      "amendmentHistory": [
+        {
+          "request": "user:no-task-props",
+          "previousSha256": "e14f09e0baacd9d84ede3f92461c6b55317abb96efe8102ed8110bea29a3fc17",
+          "fields": [
+            "mission",
+            "successCondition"
+          ],
+          "reason": "Later user instruction replaces material requirements with body/voice/space; existing house mirror self-view is explicitly retained for the angel."
+        }
+      ]
+    },
+    {
+      "id": "E021",
+      "collection": "primary",
+      "fields": [
+        "mission",
+        "successCondition"
+      ],
+      "sha256": "2d7748bb52978e9d73dfd8395f6c7a00cf24b159885407455e194a0b909138a4"
+    },
+    {
+      "id": "E024",
+      "collection": "primary",
+      "fields": [
+        "mission",
+        "successCondition"
+      ],
+      "sha256": "736707dd331f23b40e78cf7d56b425fb84d99813ffdd37757bc8fa458c0243ee"
+    },
+    {
+      "id": "E025",
+      "collection": "primary",
+      "fields": [
+        "mission",
+        "successCondition"
+      ],
+      "sha256": "906ce7253bea780c408e02b0a4806e39f45f4aa59a0b1122f781464eff9b76bd"
+    },
+    {
+      "id": "E026",
+      "collection": "primary",
+      "fields": [
+        "mission",
+        "successCondition"
+      ],
+      "sha256": "d95a13270ca1ffb96e68a973c1709bbe7233a21c8ff5735074cd6ea3d09585ef"
+    },
+    {
+      "id": "E027",
+      "collection": "primary",
+      "fields": [
+        "mission",
+        "successCondition"
+      ],
+      "sha256": "b8124310dd3be4300358c6643f8fde0f5bcca88114db1fb499da1a58e7e676e1"
+    },
+    {
+      "id": "E029",
+      "collection": "primary",
+      "fields": [
+        "mission",
+        "successCondition"
+      ],
+      "sha256": "97ef9f400947808eb50768a4212c1089fc62dc4b2dbe8d527fd7d8180d5d627d"
+    },
+    {
+      "id": "E030",
+      "collection": "primary",
+      "fields": [
+        "mission",
+        "successCondition"
+      ],
+      "sha256": "89ef854457c1f4485b051a14c4f90849b9ee25599e8703de7b75f8703a5ff245"
+    },
+    {
+      "id": "E032",
+      "collection": "primary",
+      "fields": [
+        "mission",
+        "successCondition"
+      ],
+      "sha256": "7cc126a07f3856854133ab39cc70cde488d11a6c79eb593458835a457a88cf58"
+    },
+    {
+      "id": "E039",
+      "collection": "primary",
+      "fields": [
+        "mission",
+        "successCondition"
+      ],
+      "sha256": "6b88a6e0ccb2a12feb49a2f63fdf59a7f532105d9e408e6c4516744e8bf34c0a",
+      "amendmentHistory": [
+        {
+          "request": "user:no-task-props",
+          "previousSha256": "f40e34b8ca96775797cba4c776a0b3738fcde15a0f5e0f3cf387a62def9234fd",
+          "fields": [
+            "mission",
+            "successCondition"
+          ],
+          "reason": "Later user instruction replaces material requirements with body/voice/space; existing house mirror self-view is explicitly retained for the angel."
+        }
+      ]
+    },
+    {
+      "id": "E040",
+      "collection": "primary",
+      "fields": [
+        "mission",
+        "successCondition"
+      ],
+      "sha256": "1000dbe3b37f04cd5f59d1e082c9bdca966377128deaca015a444adfd2b11356"
+    },
+    {
+      "id": "E041",
+      "collection": "primary",
+      "fields": [
+        "mission",
+        "successCondition"
+      ],
+      "sha256": "a629ecf392fb333ee05a637e4b8e80503e3dd4dcf8e3e9e6b2bacfcbebf1407d"
+    },
+    {
+      "id": "T001",
+      "collection": "primary",
+      "fields": [
+        "branches",
+        "hiddenObjective",
+        "evidence"
+      ],
+      "sha256": "2882043e3b6154d9baf366b96fbb26ad91cae9675c578289efb4e3a0af4c9725"
+    },
+    {
+      "id": "T002",
+      "collection": "primary",
+      "fields": [
+        "branches",
+        "hiddenObjective",
+        "evidence"
+      ],
+      "sha256": "c546d730842464f19af0bd321e54ee538379d783e66abd6bc9817993af90d50f"
+    },
+    {
+      "id": "T003",
+      "collection": "primary",
+      "fields": [
+        "branches",
+        "hiddenObjective",
+        "evidence"
+      ],
+      "sha256": "7bb0ad944dda4c9a6197048a4b46dc4a07d5fbb87d810c614f772a6b1a8e021d"
+    },
+    {
+      "id": "T004",
+      "collection": "primary",
+      "fields": [
+        "branches",
+        "hiddenObjective",
+        "evidence"
+      ],
+      "sha256": "3018664438f41c86937f87f41e5db600e562c1683a89be99bbb889fbd3c8b6bf",
+      "amendmentHistory": [
+        {
+          "request": "user:no-task-props",
+          "previousSha256": "e48a2c08512d60c31f6f8391bd9f839280bf70bc63e6f2fa1c0def7753ba62a9",
+          "fields": [
+            "branches",
+            "hiddenObjective",
+            "evidence"
+          ],
+          "reason": "Later user instruction replaces material requirements with body/voice/space; existing house mirror self-view is explicitly retained for the angel."
+        }
+      ]
+    },
+    {
+      "id": "T005",
+      "collection": "primary",
+      "fields": [
+        "branches",
+        "hiddenObjective",
+        "evidence"
+      ],
+      "sha256": "f8e5849106cdd57a258cb4b1d277d261faac49d51f308c1483380c19f8e998ac"
+    },
+    {
+      "id": "T008",
+      "collection": "primary",
+      "fields": [
+        "branches",
+        "hiddenObjective",
+        "evidence"
+      ],
+      "sha256": "14b3116c828a795e13c4f17d1633eea48df0c6f48a63f9ba1c34ee79ec1847a4"
+    },
+    {
+      "id": "T009",
+      "collection": "primary",
+      "fields": [
+        "branches",
+        "hiddenObjective",
+        "evidence"
+      ],
+      "sha256": "723279c4a6bab75def8b2b591e2cb042923a86fbf04c3e6108fd1e1378cd9493"
+    },
+    {
+      "id": "T010",
+      "collection": "primary",
+      "fields": [
+        "branches",
+        "hiddenObjective",
+        "evidence"
+      ],
+      "sha256": "dc11a260d7d99a71b8edcb825790886b25a673244231fe53e9ae649622f96657"
+    },
+    {
+      "id": "T011",
+      "collection": "primary",
+      "fields": [
+        "branches",
+        "hiddenObjective",
+        "evidence"
+      ],
+      "sha256": "e50831a2e9f6a89aa37bcbaaff4630f814cbe55b95e1425bb5558c08c1d756d9"
+    },
+    {
+      "id": "R001",
+      "collection": "primary",
+      "fields": [
+        "rule",
+        "trigger",
+        "action",
+        "scope",
+        "final"
+      ],
+      "sha256": "bfe35dd47c26346794b42af170c56d40369fc60fbdcdd3a7c05e8892c826a4fd"
+    },
+    {
+      "id": "R002",
+      "collection": "primary",
+      "fields": [
+        "rule",
+        "trigger",
+        "action",
+        "scope",
+        "final"
+      ],
+      "sha256": "586877bff0d6f27110d7531fdf1c5ae36b9c2336f967f3df30a9e7fe419e6d0f"
+    },
+    {
+      "id": "R003",
+      "collection": "primary",
+      "fields": [
+        "rule",
+        "trigger",
+        "action",
+        "scope",
+        "final"
+      ],
+      "sha256": "760cac21f034b94289034342e2103e063bcbee4ca122edb0f192e7508614ea8c"
+    },
+    {
+      "id": "R004",
+      "collection": "primary",
+      "fields": [
+        "rule",
+        "trigger",
+        "action",
+        "scope",
+        "final"
+      ],
+      "sha256": "a1f96a7fab8e320d5bb9a158159b075cf991172ebf8b69af793101d20268d034"
+    },
+    {
+      "id": "R005",
+      "collection": "primary",
+      "fields": [
+        "rule",
+        "trigger",
+        "action",
+        "scope",
+        "final"
+      ],
+      "sha256": "479d2ead5ef4809a466e1652d34fe4648c291ba869e19a172e7304d473311421"
+    },
+    {
+      "id": "R006",
+      "collection": "primary",
+      "fields": [
+        "rule",
+        "trigger",
+        "action",
+        "scope",
+        "final"
+      ],
+      "sha256": "815bd7aebf6b7b3913847961c4845669078cff8350bad8c052762344ee8e6bd9"
+    },
+    {
+      "id": "R007",
+      "collection": "primary",
+      "fields": [
+        "rule",
+        "trigger",
+        "action",
+        "scope",
+        "final"
+      ],
+      "sha256": "11e643e63103e81df6d435511aafe74d783173a20ca7f037530fcb8c396a572f"
+    },
+    {
+      "id": "R008",
+      "collection": "primary",
+      "fields": [
+        "rule",
+        "trigger",
+        "action",
+        "scope",
+        "final"
+      ],
+      "sha256": "081e8754a044e4491ffadc376e841ed5b714de52127e5ce91084cd31ea0c3447"
+    },
+    {
+      "id": "R009",
+      "collection": "primary",
+      "fields": [
+        "rule",
+        "trigger",
+        "action",
+        "scope",
+        "final"
+      ],
+      "sha256": "40161cffe18a67f14c26d6f4f587733d29ec1b7dd5abd3621e6f5b1a44ff9d06"
+    },
+    {
+      "id": "R010",
+      "collection": "primary",
+      "fields": [
+        "rule",
+        "trigger",
+        "action",
+        "scope",
+        "final"
+      ],
+      "sha256": "168c125dfb2e62380b876e74a4160648bbd58b18667015a41e703a16f71bc449"
+    },
+    {
+      "id": "R011",
+      "collection": "primary",
+      "fields": [
+        "rule",
+        "trigger",
+        "action",
+        "scope",
+        "final"
+      ],
+      "sha256": "c5d6b317835dfbcb65504951d64c3814ec03abef411dab6a93da5a344da36362"
+    },
+    {
+      "id": "HP001",
+      "collection": "horror",
+      "fields": [
+        "infectionCondition",
+        "releaseCondition"
+      ],
+      "sha256": "e841dcb8fd31e1ff7f5626e7be04608fa628072b662e2775f4106a4d42dd1bb5"
+    },
+    {
+      "id": "HP002",
+      "collection": "horror",
+      "fields": [
+        "infectionCondition",
+        "releaseCondition"
+      ],
+      "sha256": "6af2dc0273d1d437ca2b1428bc55c9dcbc615fdc55dc57c76ec9dd213113c83e"
+    },
+    {
+      "id": "HP003",
+      "collection": "horror",
+      "fields": [
+        "infectionCondition",
+        "releaseCondition"
+      ],
+      "sha256": "d05b51148ef753e772898e5491dc39ee4a54cdafb95aa7475ea302c334c126f5"
+    },
+    {
+      "id": "HP006",
+      "collection": "horror",
+      "fields": [
+        "infectionCondition",
+        "releaseCondition"
+      ],
+      "sha256": "d68ab9fe5b28d461fa03f6663c68644aee67db96dc55f23827c880acea817690",
+      "amendmentHistory": [
+        {
+          "request": "user:no-task-props",
+          "previousSha256": "00e7239b8b082079fd0eb7591ba1a40685663ee85cd86228cb90a7c6a05703c1",
+          "fields": [
+            "infectionCondition",
+            "releaseCondition"
+          ],
+          "reason": "Later user instruction replaces material requirements with body/voice/space; existing house mirror self-view is explicitly retained for the angel."
+        }
+      ]
+    },
+    {
+      "id": "HP007",
+      "collection": "horror",
+      "fields": [
+        "infectionCondition",
+        "releaseCondition"
+      ],
+      "sha256": "afd4834c061a707cf5abce8fa443c461684402cf1b54e70add563a7eae5b4806",
+      "amendmentHistory": [
+        {
+          "request": "user:no-task-props",
+          "previousSha256": "f63eff606190faefc79a617cbdafca6c71c3ea683cee1ab1a9d63b30f2c19e4c",
+          "fields": [
+            "infectionCondition",
+            "releaseCondition"
+          ],
+          "reason": "Later user instruction replaces material requirements with body/voice/space; existing house mirror self-view is explicitly retained for the angel."
+        }
+      ]
+    },
+    {
+      "id": "HP008",
+      "collection": "horror",
+      "fields": [
+        "infectionCondition",
+        "releaseCondition"
+      ],
+      "sha256": "10711a60a639d609c3f0ee66bcb5a68dd1bdee46805fb7791c5b26b53f40ca33",
+      "amendmentHistory": [
+        {
+          "request": "user:no-task-props",
+          "previousSha256": "c0caad6e18d435704e70f9f68c2c2ef4a637a15380be17449a26b4c428403915",
+          "fields": [
+            "infectionCondition",
+            "releaseCondition"
+          ],
+          "reason": "Later user instruction replaces material requirements with body/voice/space; existing house mirror self-view is explicitly retained for the angel."
+        }
+      ]
+    },
+    {
+      "id": "HP010",
+      "collection": "horror",
+      "fields": [
+        "infectionCondition",
+        "releaseCondition"
+      ],
+      "sha256": "4a864f6076c6073cc22acf2b1ea584cf4f12188017b09d06cae86de3c1551823"
+    },
+    {
+      "id": "HP011",
+      "collection": "horror",
+      "fields": [
+        "infectionCondition",
+        "releaseCondition"
+      ],
+      "sha256": "13dd9e9ef35958067018596f9e25bfca7556fd8316dcb3de6e2e3f000f7aca8b"
+    },
+    {
+      "id": "HP013",
+      "collection": "horror",
+      "fields": [
+        "infectionCondition",
+        "releaseCondition"
+      ],
+      "sha256": "363babc81252db36f563b250f7d95ea86622be6006fc052ca2fd2a05298e4e9c",
+      "amendmentHistory": [
+        {
+          "request": "user:no-task-props",
+          "previousSha256": "b025b6a997fc77f7bb084d227965708b50eb2d0d5665488179cb8263e7320671",
+          "fields": [
+            "infectionCondition",
+            "releaseCondition"
+          ],
+          "reason": "No optional cloth or furniture dependency; body/voice/phone remains."
+        }
+      ]
+    },
+    {
+      "id": "HP015",
+      "collection": "horror",
+      "fields": [
+        "infectionCondition",
+        "releaseCondition"
+      ],
+      "sha256": "c8cae2852c1abc029f0d6ec966bd1f079f7f700d39a7d80e2fa98c5ffa47236a"
+    },
+    {
+      "id": "HP018",
+      "collection": "horror",
+      "fields": [
+        "infectionCondition",
+        "releaseCondition"
+      ],
+      "sha256": "b6d9e6ed00ead9df07ec087ebc48dbe50877deeaa3d2a1d9eb8163a7188e5ad4"
+    },
+    {
+      "id": "HP019",
+      "collection": "horror",
+      "fields": [
+        "infectionCondition",
+        "releaseCondition"
+      ],
+      "sha256": "3b9db465d7b10c6cde535bcf622f7d1d78c8f8feb024dea6e82a8787528b9853"
+    },
+    {
+      "id": "HP020",
+      "collection": "horror",
+      "fields": [
+        "infectionCondition",
+        "releaseCondition"
+      ],
+      "sha256": "9cd88a4832be969775f1de1cf3541086911fca7476122c5a5e2c7938c7754d2c"
+    },
+    {
+      "id": "HP021",
+      "collection": "horror",
+      "fields": [
+        "infectionCondition",
+        "releaseCondition"
+      ],
+      "sha256": "3f247ffad462ca44127b2beb387417670d13f4ce1b198d4b25ed1ba7b349ab16",
+      "amendmentHistory": [
+        {
+          "request": "user:no-task-props",
+          "previousSha256": "cd1461d20a4661bee64809865247dac70cff67ce2c8097e14480bb6f1c7ae575",
+          "fields": [
+            "infectionCondition",
+            "releaseCondition"
+          ],
+          "reason": "Later user instruction replaces material requirements with body/voice/space; existing house mirror self-view is explicitly retained for the angel."
+        }
+      ]
+    },
+    {
+      "id": "HP022",
+      "collection": "horror",
+      "fields": [
+        "infectionCondition",
+        "releaseCondition"
+      ],
+      "sha256": "b7d348a5ac5afffaa0da35b739902bc8fe72f4dd17207397044b1eeff1cb3411"
+    },
+    {
+      "id": "HP023",
+      "collection": "horror",
+      "fields": [
+        "infectionCondition",
+        "releaseCondition"
+      ],
+      "sha256": "a2b3c84ef14855b8be917c3ebcf633daa8a2fa7e4af950379b738c248f133c6a"
+    },
+    {
+      "id": "HP024",
+      "collection": "horror",
+      "fields": [
+        "infectionCondition",
+        "releaseCondition"
+      ],
+      "sha256": "483a588efd5028783f4288935b8cba645a3a4687e705ae93bd6d099636a6bdd4"
+    },
+    {
+      "id": "HE001",
+      "collection": "horror",
+      "fields": [
+        "mission",
+        "successCondition"
+      ],
+      "sha256": "7c8d354a8a457f045db5baea2fd00b596635032cd0a4160825ab85eb88f7aae2"
+    },
+    {
+      "id": "HE002",
+      "collection": "horror",
+      "fields": [
+        "mission",
+        "successCondition"
+      ],
+      "sha256": "2c70ff9b9f522ca61d970ead5794c66741bc5ebb913c129a4ed024b9c5c8971f",
+      "preparationAmendment": {
+        "request": "user:no-exorcist-loadout",
+        "previousFields": [
+          "mission",
+          "successCondition"
+        ],
+        "previousSha256": "a0b27c1f0647124da17302f91b3b15d2174e5bb05554ff3dec4394138c194e20",
+        "reason": "Replace an optional cloth screen cover with the already available hand; duration, no-motion and restoration conditions are unchanged."
+      }
+    },
+    {
+      "id": "HE003",
+      "collection": "horror",
+      "fields": [
+        "mission",
+        "successCondition"
+      ],
+      "sha256": "d349f0f97d4d3065a0ca89a23e4e1bbccd6d38f5a18a4dfcab4ec7494de809d5",
+      "amendmentHistory": [
+        {
+          "request": "user:no-task-props",
+          "previousSha256": "7e0f36c8f52a583545303183df9610a79f0059d0dd7fdaaa54a5daff32aade1b",
+          "fields": [
+            "mission",
+            "successCondition"
+          ],
+          "reason": "Later user instruction replaces material requirements with body/voice/space; existing house mirror self-view is explicitly retained for the angel."
+        }
+      ]
+    },
+    {
+      "id": "HE004",
+      "collection": "horror",
+      "fields": [
+        "mission",
+        "successCondition"
+      ],
+      "sha256": "5b3dd4fb55e9ecd7b28ec0fa79f4401468e443537c6c0f9f08c3b02a7082cc7f",
+      "amendmentHistory": [
+        {
+          "request": "user:no-task-props",
+          "previousSha256": "33629c828ee0ea8dada7e448fd6dc446b7fb1532091f552cc67fcf2dab66b2ad",
+          "fields": [
+            "mission",
+            "successCondition"
+          ],
+          "reason": "Later user instruction replaces material requirements with body/voice/space; existing house mirror self-view is explicitly retained for the angel."
+        }
+      ]
+    },
+    {
+      "id": "HE006",
+      "collection": "horror",
+      "fields": [
+        "mission",
+        "successCondition"
+      ],
+      "sha256": "11be10dc9aafa0b8fb9e1c5904659adc935d1e89b0b533e78570e9b70d4367d8"
+    },
+    {
+      "id": "HE007",
+      "collection": "horror",
+      "fields": [
+        "mission",
+        "successCondition"
+      ],
+      "sha256": "9d9e248a1ef713ebd1130a1c44cfbeb8219030c6518100f200ead4e0b9a3ff18"
+    },
+    {
+      "id": "HE009",
+      "collection": "horror",
+      "fields": [
+        "mission",
+        "successCondition"
+      ],
+      "sha256": "907928a257a17d060c57b507edf767743b995051078c7e0315fb7ac1a45b3270",
+      "amendmentHistory": [
+        {
+          "request": "user:no-task-props",
+          "previousSha256": "b972a0d707b2558df381a10cd642fea3169bc3d71a993eb48c06aada85af3247",
+          "fields": [
+            "mission",
+            "successCondition"
+          ],
+          "reason": "Later user instruction replaces material requirements with body/voice/space; existing house mirror self-view is explicitly retained for the angel."
+        }
+      ]
+    },
+    {
+      "id": "HE010",
+      "collection": "horror",
+      "fields": [
+        "mission",
+        "successCondition"
+      ],
+      "sha256": "94d0245f5fe8e360486478fb20a10cb8d97cf61b22a2f4f10728d8dafdaa2c66"
+    },
+    {
+      "id": "HP025",
+      "collection": "horror",
+      "fields": [
+        "behavior",
+        "infectionCondition",
+        "releaseCondition",
+        "sets"
+      ],
+      "sha256": "c718756acd378ae1adcc723f93c6f419ef0bdab65a67cdc7969e76d4ed4c6f83",
+      "preparationAmendment": {
+        "request": "user:no-exorcist-loadout",
+        "previousFields": [
+          "behavior",
+          "infectionCondition",
+          "releaseCondition",
+          "requirements",
+          "sets"
+        ],
+        "previousSha256": "fcafbf17d878ddd75e854b9eb7beac46a083c7d9da04e5b007287a83dc4b298e",
+        "reason": "Only preparation placement changes. Behavior, capture, release and subset remain preserved."
+      },
+      "amendmentHistory": [
+        {
+          "request": "user:house-mirror",
+          "previousSha256": "9757f869dc20e235730befe4c95f1706bbe7b6566e9883df0490380bf2c43c0a",
+          "fields": [
+            "behavior",
+            "infectionCondition",
+            "releaseCondition",
+            "sets"
+          ],
+          "reason": "Later user instruction replaces material requirements with body/voice/space; existing house mirror self-view is explicitly retained for the angel."
+        }
+      ]
+    },
+    {
+      "id": "HP026",
+      "collection": "horror",
+      "fields": [
+        "behavior",
+        "infectionCondition",
+        "releaseCondition",
+        "requirements",
+        "sets"
+      ],
+      "sha256": "60ad3188b66e172639b4bc39977f2c3720b980cb6b780f6301090651f01b11bc",
+      "amendmentHistory": [
+        {
+          "request": "user:no-task-props",
+          "previousSha256": "d59c7776af23cf49e17ae2188d51f7cc9a6dcc91bc9bcfddc06ab47d4cc8a663",
+          "fields": [
+            "behavior",
+            "infectionCondition",
+            "releaseCondition",
+            "requirements",
+            "sets"
+          ],
+          "reason": "Later user instruction replaces material requirements with body/voice/space; existing house mirror self-view is explicitly retained for the angel."
+        }
+      ]
+    }
+  ],
+  "amendments": [
+    {
+      "request": "user:no-exorcist-loadout",
+      "scope": "No deliberately carried props for searching exorcists; existing scene props are pre-positioned.",
+      "primaryIds": [
+        "E013",
+        "E019",
+        "E038",
+        "P023",
+        "P026",
+        "P059",
+        "T007",
+        "M001"
+      ],
+      "variantIds": [
+        "HP025",
+        "HP021",
+        "HE002"
+      ],
+      "supersedes": "Carried-object prerequisites in the earlier domestic revision; the original decision categories remain historical."
+    },
+    {
+      "request": "user:no-task-props",
+      "scope": "No carried or staged task props; the Dwelling is an agreed empty place. Bodies, voices, phones and natural surroundings suffice.",
+      "primaryIds": [
+        "E001",
+        "E011",
+        "E013",
+        "E014",
+        "E015",
+        "E016",
+        "E017",
+        "E018",
+        "E019",
+        "E020",
+        "E028",
+        "E039",
+        "M001",
+        "M002",
+        "P002",
+        "P014",
+        "P017",
+        "P023",
+        "P025",
+        "P028",
+        "P030",
+        "P031",
+        "P033",
+        "P034",
+        "P036",
+        "P037",
+        "P039",
+        "P042",
+        "P047",
+        "P048",
+        "P059",
+        "P068",
+        "P069",
+        "T004",
+        "T007",
+        "P067",
+        "E037"
+      ],
+      "variantIds": [
+        "HE003",
+        "HE004",
+        "HE009",
+        "HP006",
+        "HP007",
+        "HP008",
+        "HP016",
+        "HP021",
+        "HP026",
+        "HP013",
+        "HP002"
+      ]
+    },
+    {
+      "request": "user:house-mirror",
+      "scope": "The angel simply sees its own face in an existing house mirror; no carried, turned or staged mirror.",
+      "primaryIds": [
+        "P026"
+      ],
+      "variantIds": [
+        "HP025"
+      ]
+    }
+  ]
+}

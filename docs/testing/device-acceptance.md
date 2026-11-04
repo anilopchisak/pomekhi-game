@@ -6,7 +6,7 @@ These scenarios require actual equipment. Mac Chromium/WebKit, loopback and simu
 
 1. Enable the phone's mobile-data hotspot and connect the Windows laptop plus six other phones simultaneously. The sharing phone is the seventh player. Check the hotspot's configured device limit and power-saving settings.
 2. Start the built game on the laptop with start-public.cmd. Open the local organizer panel and join the Tuna HTTPS invitation on all seven phones. Verify identical roster, private cards and live timer. Scan the QR with real phone cameras.
-3. Start a disposable round. Lock and unlock each phone, visit the intended zones, lose coverage, record own actions, return to base and verify accepted/review receipts without duplicates. Keep the laptop awake and powered. Check captured-group continuation and an individual round withdrawal.
+3. Start a disposable round. Lock and unlock each phone, visit the intended zones, lose coverage, record own actions, return to base and verify accepted/review receipts without duplicates. Keep the laptop awake and powered. Check captured-group continuation into the next round.
 4. After return, keep one phone offline: a new deal and finalization must wait. Reconnect it, resolve conflicts and verify all seven confirmations. Separately exercise explicit close-waiting and a late rejected event.
 
 ## Direct local connection
@@ -24,9 +24,9 @@ Restart the Windows server during a disposable search. The organizer must enter 
 
 ## Ritual rehearsal and balance
 
-With seven real participants, try the tutorial with infection and verify that its successes do not move candles. New finite parties default to seven normal rounds and a 28-step goal. Confirm synchronized results explicitly, read each newly revealed base rule aloud, and exercise one penalty and its correction. A fully captured group ends only its search. Verify victory or final-round defeat, then continue freeplay with the original outcome unchanged.
+With seven real participants, verify the 31-step goal for the first-game variant. Confirm synchronization and physical presence separately. Run recall, delayed reporting, a late release, and one penalty or a disputed penalty. Verify that an unreleased group keeps its card and location while only confirmed returners receive new cards. At the end everyone returns and the final outcome remains visible. Repeat separately with 12 real participants to assess balance at that size.
 
-Record actual successes, penalties and elapsed time including reading and breaks. The 36-minute default timer total includes the tutorial, but is not a party-duration estimate. The mathematical budget and automated perfect-score scenarios do not establish a suitable human win rate; use this rehearsal to assess the initial balance.
+Record actual successes, penalties and elapsed time including reading and breaks. The placement and exorcism clocks do not include time spent reading, checking or regrouping. The mathematical budget and automated perfect-score scenarios do not establish a suitable human win rate; use this rehearsal to assess the initial balance.
 
 ## Atmosphere acceptance
 

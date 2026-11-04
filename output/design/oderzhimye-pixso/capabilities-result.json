@@ -1,0 +1,121 @@
+{
+  "jsonrpc": "2.0",
+  "id": 7493040,
+  "result": {
+    "content": [
+      {
+        "type": "text",
+        "text": "{\"rx\":[{\"action\":{\"destinationId\":\"3:13134\",\"navigation\":\"NAVIGATE\",\"transition\":{\"easing\":{\"type\":\"INOUT_CUBIC\"},\"type\":\"DISSOLVE\"},\"type\":\"NODE\"},\"actions\":[{\"destinationId\":\"3:13134\",\"navigation\":\"NAVIGATE\",\"transition\":{\"easing\":{\"type\":\"INOUT_CUBIC\"},\"type\":\"DISSOLVE\"},\"type\":\"INTERNAL_NODE\"}],\"trigger\":{\"delayMs\":0,\"type\":\"ON_CLICK\"}},{\"action\":{\"destinationId\":\"3:13134\",\"navigation\":\"NAVIGATE\",\"transition\":{\"easing\":{\"type\":\"INOUT_CUBIC\"},\"type\":\"DISSOLVE\"},\"type\":\"NODE\"},\"actions\":[{\"destinationId\":\"3:13134\",\"navigation\":\"NAVIGATE\",\"transition\":{\"easing\":{\"type\":\"INOUT_CUBIC\"},\"type\":\"DISSOLVE\"},\"type\":\"INTERNAL_NODE\"}],\"trigger\":{\"delayMs\":0,\"type\":\"ON_CLICK\"}},{\"action\":{\"destinationId\":\"3:13134\",\"navigation\":\"NAVIGATE\",\"transition\":{\"easing\":{\"type\":\"INOUT_CUBIC\"},\"type\":\"DISSOLVE\"},\"type\":\"NODE\"},\"actions\":[{\"destinationId\":\"3:13134\",\"navigation\":\"NAVIGATE\",\"transition\":{\"easing\":{\"type\":\"INOUT_CUBIC\"},\"type\":\"DISSOLVE\"},\"type\":\"INTERNAL_NODE\"}],\"trigger\":{\"delayMs\":0,\"type\":\"ON_CLICK\"}}],\"clone\":\"function\",\"remove\":\"function\",\"setdata\":\"function\",\"components\":\"function\",\"sections\":\"function\",\"current\":\"0:1\",\"geometry\":{\"x\":2630,\"y\":2220,\"w\":390,\"h\":844,\"parent\":\"3:27987\"},\"styles\":\"function\",\"vars\":\"object\"}"
+      }
+    ],
+    "structuredContent": {
+      "clone": "function",
+      "components": "function",
+      "current": "0:1",
+      "geometry": {
+        "x": 2630,
+        "y": 2220,
+        "w": 390,
+        "h": 844,
+        "parent": "3:27987"
+      },
+      "remove": "function",
+      "rx": [
+        {
+          "action": {
+            "destinationId": "3:13134",
+            "navigation": "NAVIGATE",
+            "transition": {
+              "easing": {
+                "type": "INOUT_CUBIC"
+              },
+              "type": "DISSOLVE"
+            },
+            "type": "NODE"
+          },
+          "actions": [
+            {
+              "destinationId": "3:13134",
+              "navigation": "NAVIGATE",
+              "transition": {
+                "easing": {
+                  "type": "INOUT_CUBIC"
+                },
+                "type": "DISSOLVE"
+              },
+              "type": "INTERNAL_NODE"
+            }
+          ],
+          "trigger": {
+            "delayMs": 0,
+            "type": "ON_CLICK"
+          }
+        },
+        {
+          "action": {
+            "destinationId": "3:13134",
+            "navigation": "NAVIGATE",
+            "transition": {
+              "easing": {
+                "type": "INOUT_CUBIC"
+              },
+              "type": "DISSOLVE"
+            },
+            "type": "NODE"
+          },
+          "actions": [
+            {
+              "destinationId": "3:13134",
+              "navigation": "NAVIGATE",
+              "transition": {
+                "easing": {
+                  "type": "INOUT_CUBIC"
+                },
+                "type": "DISSOLVE"
+              },
+              "type": "INTERNAL_NODE"
+            }
+          ],
+          "trigger": {
+            "delayMs": 0,
+            "type": "ON_CLICK"
+          }
+        },
+        {
+          "action": {
+            "destinationId": "3:13134",
+            "navigation": "NAVIGATE",
+            "transition": {
+              "easing": {
+                "type": "INOUT_CUBIC"
+              },
+              "type": "DISSOLVE"
+            },
+            "type": "NODE"
+          },
+          "actions": [
+            {
+              "destinationId": "3:13134",
+              "navigation": "NAVIGATE",
+              "transition": {
+                "easing": {
+                  "type": "INOUT_CUBIC"
+                },
+                "type": "DISSOLVE"
+              },
+              "type": "INTERNAL_NODE"
+            }
+          ],
+          "trigger": {
+            "delayMs": 0,
+            "type": "ON_CLICK"
+          }
+        }
+      ],
+      "sections": "function",
+      "setdata": "function",
+      "styles": "function",
+      "vars": "object"
+    }
+  }
+}

@@ -1,0 +1,105 @@
+{
+  "reviewDate": "2026-11-03",
+  "fileKey": "ILsPo7txuQU0S96McIEWda",
+  "source": "Rendered Figma Comments panel in Safari; nine root threads, each with zero replies at collection.",
+  "comments": [
+    {
+      "number": 1,
+      "author": "Kamilla",
+      "comment": "меня освободили",
+      "frames": [
+        "P14",
+        "A01",
+        "A02"
+      ],
+      "result": "Use the personal action label «Меня освободили» and a matching confirmation; group-rescue mechanics remain unchanged.",
+      "status": "implemented"
+    },
+    {
+      "number": 2,
+      "author": "Kamilla",
+      "comment": "убрать \"комната\", блок вверх, после блока с названием и статусом",
+      "frames": [
+        "P14"
+      ],
+      "result": "Move the code/settings/help bar directly after the brand and connection status; remove the redundant room label in all phone states.",
+      "status": "implemented"
+    },
+    {
+      "number": 3,
+      "author": "Kamilla",
+      "comment": "тэг по ширине содержимого",
+      "frames": [
+        "P14"
+      ],
+      "result": "Size role and phase badges to their text and padding.",
+      "status": "implemented"
+    },
+    {
+      "number": 4,
+      "author": "Kamilla",
+      "comment": "кнопка \"скрыть карточку\" всегда под карточкой",
+      "frames": [
+        "P14"
+      ],
+      "result": "Place conceal below the card, outside the card scroll area, across both roles and derived states.",
+      "status": "implemented"
+    },
+    {
+      "number": 5,
+      "author": "Kamilla",
+      "comment": "кнопка ниже, перед кнопкой \"я прочитал\"",
+      "frames": [
+        "P07",
+        "P08"
+      ],
+      "result": "Place conceal before the readiness action.",
+      "status": "implemented"
+    },
+    {
+      "number": 6,
+      "author": "Kamilla",
+      "comment": "убрать кнопку \"как играть\"",
+      "frames": [
+        "P07",
+        "P08"
+      ],
+      "result": "Remove the duplicate instruction action from the card controls; keep the shared navigation entry.",
+      "status": "implemented"
+    },
+    {
+      "number": 7,
+      "author": "Kamilla",
+      "comment": "кнопка \"скрыть карточку\" выше кнопки \"снять готовность\"",
+      "frames": [
+        "P09",
+        "PX15",
+        "P09C",
+        "PX15C"
+      ],
+      "result": "Keep conceal above unready and remove its duplicate. Concealed-ready variants preserve readiness for both roles.",
+      "status": "implemented"
+    },
+    {
+      "number": 8,
+      "author": "Kamilla",
+      "comment": "мб приглашение сразу тут показывать, а не в модалке?",
+      "frames": [
+        "H04"
+      ],
+      "result": "Show QR, code and participant link inline in the empty room; remove automatic invitation-overlay opening.",
+      "status": "implemented"
+    },
+    {
+      "number": 9,
+      "author": "Kamilla",
+      "comment": "кнопка \"засчитать\" под кнопкой \"не зсчитывать\"",
+      "frames": [
+        "H15"
+      ],
+      "result": "Group reject and approve in one compact footer, with approve immediately below reject.",
+      "status": "implemented"
+    }
+  ],
+  "threadStatus": "Original threads preserved; no replies posted and no threads resolved."
+}

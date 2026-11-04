@@ -1,0 +1,11 @@
+const page=await figma.getNodeByIdAsync(D.pages.screens);await figma.setCurrentPageAsync(page);const issues=[],rows=[];const stress=await figma.getNodeByIdAsync(N.A07);stress.findOne(n=>n.name==='Participants').itemSpacing=4;
+for(const [id,nid]of Object.entries(N)){
+ const f=await figma.getNodeByIdAsync(nid);const body=f.findOne(n=>n.name==='Personal card scroll');const actions=f.findOne(n=>n.name==='Primary actions');const nav=f.findOne(n=>n.name==='Fixed bottom navigation');
+ if(body&&actions&&nav){const delta=actions.y+actions.height-(nav.y-16);body.resize(body.width,Math.max(120,body.height-delta));if(actions.y+actions.height>nav.y-8)issues.push({id,kind:'phone-action-overflow',bottom:actions.y+actions.height,nav:nav.y});}
+ const center=f.findOne(n=>n.name==='Current phase');if(center){const last=center.children.at(-1);if(last&&last.y+last.height>center.height-center.paddingBottom+2){center.itemSpacing=8;center.paddingTop=center.paddingBottom=20;if(last.y+last.height>center.height-center.paddingBottom+2)issues.push({id,kind:'host-content-overflow',bottom:last.y+last.height,height:center.height});}}
+ const workspace=f.findOne(n=>n.name==='Room workspace');const roster=f.findOne(n=>n.name==='Participants');if(workspace&&roster){const last=roster.children.at(-1);if(last&&last.y+last.height>roster.height-roster.paddingBottom+2){roster.itemSpacing=6;for(const row of roster.children.filter(n=>n.type==='INSTANCE'||n.name==='Participant and replacement'))row.resize(row.width,Math.min(row.height,52));if(last.y+last.height>roster.height-roster.paddingBottom+2)issues.push({id,kind:'roster-overflow',bottom:last.y+last.height,height:roster.height});}}
+ rows.push({id,nodeId:nid,width:f.width,height:f.height,mainActionsVisible:!issues.some(x=>x.id===id)});
+}
+const ids=new Set(page.findAll(()=>true).map(n=>n.id));const dangling=[];let reactionCount=0;
+for(const n of page.findAll(n=>'reactions' in n&&n.reactions.length>0)){for(const r of n.reactions){reactionCount++;for(const a of r.actions??[])if(a.type==='NODE'&&a.navigation!=='CHANGE_TO'&&a.destinationId&&!ids.has(a.destinationId))dangling.push({source:n.id,target:a.destinationId});}}
+return {rows,issues,dangling,reactionCount,frames:page.children.filter(n=>n.type==='FRAME').length,flows:page.flowStartingPoints};

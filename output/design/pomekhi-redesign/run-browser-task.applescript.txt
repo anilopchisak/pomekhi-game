@@ -1,0 +1,23 @@
+on run argv
+ set codeText to read POSIX file (item 1 of argv) as «class utf8»
+ set the clipboard to codeText
+ tell application "Safari" to activate
+ delay 0.5
+ do shell script "osascript -l JavaScript /Users/pokasich/Personal/game/game_project/output/design/pomekhi-redesign/native-click.jxa.txt 800 400"
+ delay 0.2
+ tell application "System Events" to tell process "Safari"
+  keystroke "a" using command down
+  keystroke "v" using command down
+ end tell
+ delay 0.7
+ do shell script "osascript -l JavaScript /Users/pokasich/Personal/game/game_project/output/design/pomekhi-redesign/native-click.jxa.txt 590 600"
+ delay (item 2 of argv as number)
+ do shell script "osascript -l JavaScript /Users/pokasich/Personal/game/game_project/output/design/pomekhi-redesign/native-click.jxa.txt 800 700"
+ delay 0.2
+ tell application "System Events" to tell process "Safari"
+  keystroke "a" using command down
+  keystroke "c" using command down
+ end tell
+ delay 0.5
+ return the clipboard
+end run

@@ -1,0 +1,5 @@
+ObjC.import('CoreGraphics');ObjC.import('AppKit');
+Application('Safari').activate();Application('Safari').windows[0].bounds={x:218,y:58,width:1306,height:871};delay(0.6);
+const p=$.CGPointMake(800,700);$.CGEventPost(0,$.CGEventCreateMouseEvent(null,1,p,0));$.CGEventPost(0,$.CGEventCreateMouseEvent(null,2,p,0));delay(0.2);
+const sys=Application('System Events');sys.keystroke('a',{using:['command down']});sys.keystroke('c',{using:['command down']});delay(0.5);
+$.NSPasteboard.generalPasteboard.stringForType($.NSPasteboardTypeString).js;

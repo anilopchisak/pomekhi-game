@@ -1,10 +1,12 @@
 # Pomekhi agent guide
 
-Pomekhi is a horror party game with a shared laptop display and private phone cards. This checkout implements the runtime, lobby, private-card reading, timed rounds, search actions, round results, paused disk recovery, durable offline participation and a shared ritual. [Product requirements](docs/product/README.md) distinguish the agreed target from implemented behavior.
+Pomekhi is a horror party game with a shared laptop display and private phone cards. This checkout implements the runtime, lobby, private-card reading, timed rounds, search actions, round results, paused disk recovery, durable offline participation and a shared ritual. [Target rules](docs/product/README.md) and [current implementation](docs/product/current-implementation.md) describe different rulesets.
 
 ## Sources and scope
 
-The current user request owns intended changes. [CONTEXT.md](CONTEXT.md) owns terminology; [product requirements](docs/product/README.md) own game rules; [shared protocol](src/shared/protocol.ts) owns implemented wire shapes. Current source and tests establish implementation. [Architecture](docs/agent/architecture.md) defines placement and ownership.
+The current user request owns intended changes. [CONTEXT.md](CONTEXT.md) owns terminology; [target rules](docs/product/README.md) own intended game behavior; [current implementation](docs/product/current-implementation.md) describes the existing build. Current source and tests establish actual behavior, and [shared protocol](src/shared/protocol.ts) owns implemented wire shapes. [Architecture](docs/agent/architecture.md) defines placement and ownership.
+
+For gameplay questions, player instructions or rule changes, follow the [game rules workflow](docs/agent/game-rules.md). Select the ruleset from the request and context, then use its owning sources. The Russian player rulebook describes the target and is not evidence that those mechanics are implemented.
 
 Keep project code inside this directory. Keep agent instructions, documentation and code comments in English; game-facing copy is Russian. Preserve unrelated changes. Ask only about unresolved decisions that materially change behavior or scope; continue independent work while waiting. Git initialization, commits, pushes and publication require an explicit request.
 

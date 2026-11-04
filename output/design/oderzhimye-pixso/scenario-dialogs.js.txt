@@ -1,0 +1,79 @@
+const page=pixso.getNodeById('3:3');
+const font=(style)=>({family:'Inter',style});
+await Promise.all(['Regular','Medium','Bold'].map(style=>pixso.loadFontAsync(font(style))));
+function paint(hex){
+  const n=parseInt(hex,16);
+  return {type:'SOLID',color:{r:(n>>16)/255,g:((n>>8)&255)/255,b:(n&255)/255}};
+}
+const palette=Object.fromEntries(Object.entries({canvas:'0D0B12',surface:'17131F',raised:'211B2D',text:'F1EDF7',muted:'B7AFC5',action:'B9A1E8',border:'877597',candle:'D1B783'}).map(([k,v])=>[k,paint(v)]));
+const section=pixso.createSection();
+section.name='08 · Аудит · испытания, сверка и подготовка';
+page.appendChild(section);
+section.x=0;
+section.y=Math.max(...page.children.filter(n=>n.id!==section.id).map(n=>n.y+n.height))+160;
+section.resizeWithoutConstraints(2960,Math.ceil(D.length/4)*790+100);
+function stack(name,width,height,fill,pad,gap){
+  const node=pixso.createFrame();
+  node.name=name;
+  node.resize(width,height);
+  node.layoutMode='VERTICAL';
+  node.primaryAxisSizingMode='FIXED';
+  node.counterAxisSizingMode='FIXED';
+  node.paddingLeft=node.paddingRight=node.paddingTop=node.paddingBottom=pad;
+  node.itemSpacing=gap;
+  node.fills=[palette[fill]];
+  node.cornerRadius=12;
+  node.strokes=[{...palette.border,opacity:.55}];
+  return node;
+}
+function text(parent,content,size,style,color){
+  const node=pixso.createText();
+  node.name=content.slice(0,50);
+  node.fontName=font(style);
+  node.fontSize=size;
+  node.lineHeight={unit:'PERCENT',value:135};
+  node.fills=[palette[color]];
+  node.characters=content;
+  node.textAutoResize='HEIGHT';
+  parent.appendChild(node);
+  node.resize(parent.width-parent.paddingLeft-parent.paddingRight,node.height);
+  if(node.characters!==content || node.hasMissingFont)throw Error('Invalid text '+node.id);
+  return node;
+}
+const frames=[];
+for(const [i,d] of D.entries()){
+ const width=d.mobile?390:660;
+ const pad=d.mobile?22:30;
+ const root=stack(d.key+' · '+d.title,width,d.mobile?720:620,'surface',pad,d.mobile?12:14);
+ section.appendChild(root);
+ root.x=36+i%4*730;
+ root.y=56+Math.floor(i/4)*790;
+ text(root,d.scope,12,'Medium','action');
+ text(root,d.title,d.mobile?26:30,'Bold','text');
+ text(root,d.body,16,'Regular','muted');
+ for(const [heading,body] of d.rows??[]){
+   const row=stack(heading,width-pad*2,76,'raised',12,4);
+   root.appendChild(row);
+   row.primaryAxisSizingMode='AUTO';
+   text(row,heading,14,'Medium','action');
+   text(row,body,14,'Regular','muted');
+ }
+ const actions=stack('Действия',width-pad*2,52,'surface',0,8);
+ root.appendChild(actions);
+ actions.strokes=[];
+ actions.primaryAxisSizingMode='AUTO';
+ for(const [j,caption] of d.actions.entries()){
+   const primary=j===0;
+   const button=stack('Action / '+caption,actions.width,48,primary?'action':'raised',8,0);
+   actions.appendChild(button);
+   button.primaryAxisAlignItems='CENTER';
+   button.counterAxisAlignItems='CENTER';
+   const label=text(button,caption,14,'Medium',primary?'surface':'text');
+   label.textAlignHorizontal='CENTER';
+ }
+ root.primaryAxisSizingMode='AUTO';
+ const height=root.height;
+ if(height>740)throw Error('Dialog exceeds grid row '+root.name+' '+height);
+ frames.push({key:d.key,id:root.id,title:d.title,w:width,h:height});
+}
+return {verified:frames.every(f=>pixso.getNodeById(f.id).parent.id===section.id),section:section.id,frames};

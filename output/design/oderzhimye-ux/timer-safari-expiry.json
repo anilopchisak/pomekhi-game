@@ -1,0 +1,9 @@
+{
+  "seconds": 52.985,
+  "url": "https://www.figma.com/proto/uv4SdpjWGNJORTyrInJa88/%D0%9E%D0%B4%D0%B5%D1%80%D0%B6%D0%B8%D0%BC%D1%8B%D0%B5-%E2%80%94-UX-UI?node-id=3-14223&starting-point-node-id=3-1184&scaling=scale-down&hide-ui=1",
+  "expectedNode": "3:14223",
+  "observedNode": "3:14223",
+  "passed": true,
+  "configuredPlacementSeconds": 45,
+  "note": "The destination was observed after approximately 53 seconds; this does not assert exact Figma renderer deadline precision."
+}

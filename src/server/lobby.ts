@@ -1,8 +1,9 @@
+import { stories } from './first-game-content.js';
 import { createCatalog } from './catalog.js';
 import type { SavedCatalog } from './catalog.js';
 import type { CatalogReply } from '../shared/protocol.js';
 import { createHash, randomInt, randomUUID, timingSafeEqual } from 'node:crypto';
-import type { GameCue, GameSettings, LobbyCommand, LobbyError, LobbyReply, LobbyView, RoomSnapshot } from '../shared/protocol.js';
+import type { GameCue, GameSettings, LobbyCommand, LobbyError, LobbyReply, LobbyView, PhysicalStatus, RoomSnapshot } from '../shared/protocol.js';
 import { validOfflineEvent } from './round-sync.js';
 import { createGame, validSettings } from './game.js';
 import type { GameClock, SavedGame } from './game.js';
@@ -34,9 +35,10 @@ export interface LobbyOptions {
   generateRoomCode?: () => string;
   randomIndex?: (limit: number) => number;
   clock?: GameClock;
+  firstGame?: boolean;
 }
 
-export function createLobby({ organizerCode, generateId = randomUUID, generateRoomCode = () => randomCode(6), randomIndex = randomInt, clock }: LobbyOptions) {
+export function createLobby({ organizerCode, generateId = randomUUID, generateRoomCode = () => randomCode(6), randomIndex = randomInt, clock, firstGame }: LobbyOptions) {
   const catalog = createCatalog();
   let room: Room | undefined;
   let revision = 0;
@@ -67,11 +69,18 @@ export function createLobby({ organizerCode, generateId = randomUUID, generateRo
   function viewFor(connection: string): LobbyView | undefined {
     const actor = actors.get(connection);
     if (!actor) return undefined;
-    if (actor.kind === 'organizer') return { revision, kind: 'organizer', room: snapshot(), audioEnabled: audioOwner === connection, review: room && ['between_rounds', 'finished'].includes(room.game.publicState().phase) ? room.game.review() : [] };
+    if (actor.kind === 'organizer') return { revision, kind: 'organizer', room: snapshot(), audioEnabled: audioOwner === connection,
+      ...(firstGame && room ? { stories: stories.map(({ id, title }) => ({ id, title })), roles: room.game.roles(), presence: [...room.players.keys()].flatMap(id => {
+        const status = room!.game.physicalStatus(id); return status ? [status] : [];
+      }) } : {}), review: room && ['between_rounds', 'finished'].includes(room.game.publicState().phase) ? room.game.review() : [] };
     if (actor.kind === 'ended') return { revision, ...actor };
     const state = snapshot();
     if (!state) return undefined;
-    return { revision, kind: 'player', room: state, playerId: actor.playerId, audioEnabled: phoneOwners.get(actor.playerId) === connection, assignment: room!.game.personal(actor.playerId), play: room!.game.personalPlay(actor.playerId), synchronization: room!.game.personalSync(actor.playerId) };
+    if (firstGame) {
+      state.dealing = { ...state.dealing, initialPossessedCount: null, assignments: state.dealing.assignments.filter(item => item.playerId === actor.playerId) };
+      delete state.game.venue.order;
+    }
+    return { revision, kind: 'player', room: state, playerId: actor.playerId, audioEnabled: phoneOwners.get(actor.playerId) === connection, assignment: room!.game.personal(actor.playerId), play: room!.game.personalPlay(actor.playerId), synchronization: room!.game.personalSync(actor.playerId), presence: room!.game.physicalStatus(actor.playerId) };
   }
 
   function disconnect(connection: string) {
@@ -159,7 +168,7 @@ export function createLobby({ organizerCode, generateId = randomUUID, generateRo
           for (let attempts = 0; usedCodes.has(code) && attempts < 32; attempts++) code = generateRoomCode();
           if (usedCodes.has(code)) throw new Error('Room code generator did not provide an unused code.');
           usedCodes.add(code);
-          room = { id: generateId(), code, players: new Map(), revoked: new Set(), game: createGame({ generateId, randomIndex, clock, onChange: notify, getCards: catalog.cards }), requests: new Map() };
+          room = { id: generateId(), code, players: new Map(), revoked: new Set(), game: createGame({ generateId, randomIndex, clock, firstGame, onChange: notify, getCards: catalog.cards }), requests: new Map() };
         }
       } else {
         if (typeof data.roomId !== 'string') return fail('INVALID_INPUT');
@@ -201,10 +210,11 @@ export function createLobby({ organizerCode, generateId = randomUUID, generateRo
       if (!player) return fail('SESSION_EXPIRED');
       remove(player, 'left');
     } else if (['deal:create', 'deal:shuffle', 'deal:cancel', 'deal:replace', 'card:ready', 'card:request',
-      'game:configure', 'round:start', 'round:pause', 'round:resume', 'round:return', 'round:abort', 'party:finish', 'party:extend', 'play:infect', 'play:release', 'play:mission', 'play:undo', 'results:finalize', 'venue:configure', 'play:withdraw', 'sync:resolve', 'sync:close', 'ritual:penalty', 'ritual:undo-penalty', 'party:freeplay'].includes(command)) {
-      const playAction = command.startsWith('play:');
-      const gameAction = command.startsWith('game:') || command.startsWith('round:') || command.startsWith('party:') || playAction || command === 'results:finalize' || command === 'venue:configure' || command.startsWith('sync:') || command.startsWith('ritual:');
-      const organizerAction = command.startsWith('deal:') || gameAction && !playAction;
+      'game:configure', 'round:start', 'round:pause', 'round:resume', 'round:return', 'round:abort', 'party:finish', 'party:extend', 'play:infect', 'play:release', 'play:mission', 'play:undo', 'results:finalize', 'venue:configure', 'play:withdraw', 'sync:resolve', 'sync:close', 'play:presence', 'play:location', 'round:presence', 'ritual:penalty', 'ritual:undo-penalty', 'party:freeplay'].includes(command)) {
+      const personalReport = command === 'play:presence' || command === 'play:location';
+      const playAction = command.startsWith('play:') && !personalReport;
+      const gameAction = command.startsWith('game:') || command.startsWith('round:') || command.startsWith('party:') || playAction || personalReport || command === 'results:finalize' || command === 'venue:configure' || command.startsWith('sync:') || command.startsWith('ritual:');
+      const organizerAction = command.startsWith('deal:') || gameAction && !playAction && !personalReport;
       if (organizerAction ? actor?.kind !== 'organizer' : actor?.kind !== 'player') return fail('FORBIDDEN');
       if (!room || room.id !== data.roomId) return fail('ROOM_NOT_FOUND');
       if (typeof data.requestId !== 'string' || !/^[a-zA-Z0-9_-]{8,80}$/.test(data.requestId)) return fail('INVALID_INPUT');
@@ -215,6 +225,8 @@ export function createLobby({ organizerCode, generateId = randomUUID, generateRo
         if ((command === 'round:start' || command === 'round:resume') && typeof data.confirmWarnings !== 'boolean') return fail('INVALID_INPUT');
       } else if (!Number.isInteger(data.dealVersion) || (data.dealVersion as number) < 0
         || !(data.dealId === null || typeof data.dealId === 'string')) return fail('INVALID_INPUT');
+      if ((command === 'play:presence' || command === 'round:presence') && data.status !== 'at_base' && data.status !== 'in_group') return fail('INVALID_INPUT');
+      if (command === 'round:presence' && typeof data.playerId !== 'string' || command === 'play:location' && typeof data.zone !== 'string') return fail('INVALID_INPUT');
       if (playAction && (!Number.isInteger(data.playVersion) || (data.playVersion as number) < 0)) return fail('INVALID_INPUT');
       if (command === 'play:infect' && typeof data.targetId !== 'string') return fail('INVALID_INPUT');
       if (command === 'play:undo' && typeof data.actionId !== 'string') return fail('INVALID_INPUT');
@@ -234,6 +246,8 @@ export function createLobby({ organizerCode, generateId = randomUUID, generateRo
       }
       if (command === 'venue:configure') fields.push(data.venue);
       if (command === 'sync:resolve') fields.push(data.eventId, data.decision, data.beforeId);
+      if (command === 'play:presence' || command === 'round:presence') fields.push(data.status, data.playerId);
+      if (command === 'play:location') fields.push(data.zone);
       if (playAction) fields.push(data.playVersion);
       if (command === 'play:infect') fields.push(data.targetId);
       if (command === 'play:undo') fields.push(data.actionId);
@@ -258,7 +272,9 @@ export function createLobby({ organizerCode, generateId = randomUUID, generateRo
       if (command === 'deal:create' || command === 'deal:shuffle') error = room.game.deal([...room.players.keys()], data.possessedCount as number, command === 'deal:shuffle');
       else if (command === 'deal:cancel') error = room.game.cancelDeal();
       else if (command === 'deal:replace') error = room.game.change(data.playerId as string, data.assignmentId as string, 'replace');
-      else if (command === 'venue:configure') error = room.game.configureVenue(data.venue);
+      else if (command === 'venue:configure') error = room.game.configureVenue(data.venue, [...room.players.keys()]);
+      else if (command === 'round:presence' || command === 'play:presence') error = room.game.confirmPresence(command === 'round:presence' ? data.playerId as string : actor!.kind === 'player' ? actor!.playerId : '', data.status as PhysicalStatus);
+      else if (command === 'play:location' && actor!.kind === 'player') error = room.game.setLocation(actor!.playerId, data.zone as string);
       else if (command === 'sync:resolve') error = room.game.resolveSync(data.eventId as string, data.decision as 'accept' | 'reject', data.beforeId as string | undefined);
       else if (command === 'sync:close') error = room.game.closeSync();
       else if (command === 'play:withdraw' && actor!.kind === 'player') error = room.game.withdraw(actor!.playerId);
@@ -297,7 +313,7 @@ export function createLobby({ organizerCode, generateId = randomUUID, generateRo
     revision = Math.max(revision, state.revision) + 1; usedCodes.clear(); for (const code of state.usedCodes) usedCodes.add(code);
     if (state.room) {
       const saved = state.room;
-      const game = createGame({ generateId, randomIndex, clock, onChange: notify, getCards: catalog.cards });
+      const game = createGame({ generateId, randomIndex, clock, firstGame, onChange: notify, getCards: catalog.cards });
       const restored = structuredClone(saved.game);
       restored.version = Math.max(restored.version, previousGame?.version ?? 0);
       restored.dealing.version = Math.max(restored.dealing.version, previousGame?.dealing.version ?? 0);

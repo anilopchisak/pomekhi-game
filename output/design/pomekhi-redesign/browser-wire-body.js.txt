@@ -1,0 +1,80 @@
+const page=await figma.getNodeByIdAsync(D.pages.screens);await figma.setCurrentPageAsync(page);
+const overlays={},links=[],unwired=[];
+function react(to,navigation='NAVIGATE'){return {type:'NODE',destinationId:to,navigation,transition:{type:'DISSOLVE',easing:{type:'EASE_OUT'},duration:0.15},resetScrollPosition:true};}
+async function attach(id,action,target,mode='NAVIGATE'){
+ const nid=A[id]?.[action];if(!nid)return;const n=await figma.getNodeByIdAsync(nid);if(!n)return;
+ if(!target){await n.setReactionsAsync([]);return;}
+ const dest=mode==='OVERLAY'?overlays[target]:N[target];if(!dest){unwired.push({id,action,target});return;}
+ if(mode==='NAVIGATE'&&target===id){await n.setReactionsAsync([]);return;}
+ await n.setReactionsAsync([{trigger:{type:'ON_CLICK'},actions:[react(dest,mode)]}]);links.push({id,action,target,mode});created.push(n.id);
+}
+for(const [id,nid]of Object.entries(N)){
+ const f=await figma.getNodeByIdAsync(nid);const d=f?.findOne(n=>n.name.startsWith('Dialog / '));if(!d)continue;
+ const name='Overlay / '+id;let c=page.children.find(n=>n.name===name);
+ if(!c){c=d.clone();page.appendChild(c);c.name=name;c.x=7600;c.y=80+Object.keys(overlays).length*900;created.push(c.id,...c.findAll(()=>true).map(n=>n.id));}
+ overlays[id]=c.id;
+ for(const close of c.findAll(n=>n.name==='Action / ×'))await close.setReactionsAsync([{trigger:{type:'ON_CLICK'},actions:[{type:'CLOSE'}]}]);
+ await c.setReactionsAsync([{trigger:{type:'ON_KEY_DOWN',device:'KEYBOARD',keyCodes:[27]},actions:[{type:'CLOSE'}]}]);
+}
+for(const [id,nid]of Object.entries(N)){
+ const mobile=id.startsWith('P')||['A01','A02','A03','A04','L01'].includes(id);const spec=SPECS.find(s=>s.id===id);
+ const modal=!!overlays[id];const before=['H01','H02','H03'].includes(id);
+ await attach(id,'room',before?null:mobile?'PX04':'H06',mobile?'NAVIGATE':'OVERLAY');
+ await attach(id,'settings',before?null:mobile?'P31':'H08',mobile?'NAVIGATE':'OVERLAY');
+ await attach(id,'help',mobile?'PX05':'X06',mobile?'NAVIGATE':'OVERLAY');
+ await attach(id,'ritual','X07','OVERLAY');
+ await attach(id,'editor','E01','OVERLAY');
+ const target=PRIMARY[id];
+ if(target&&!spec?.blocked&&!modal)await attach(id,'primary',target,overlays[target]?'OVERLAY':'NAVIGATE');
+ else await attach(id,'primary',null);
+ if(spec?.blocked)await attach(id,'primary',null);
+ await attach(id,'reveal',({PX16:'P08',PX17:'P15',PX18:'P14',PX19:'P17',P33:'P30'})[id]??'P07');await attach(id,'hide',(['P15','P16','PX21'].includes(id)?'PX17':['P17','P18'].includes(id)?'PX19':['P14','P30'].includes(id)?'PX18':id==='P08'||id==='PX15'?'PX16':'P06'));
+ await attach(id,'withdraw','PX08');await attach(id,'leave','PX09');
+ for(const key of Object.keys(A[id]??{}).filter(k=>k.startsWith('replace')))await attach(id,key,'X08','OVERLAY');
+ if(A[id]?.secondary){
+  let dest=mobile?(['P14','P17','P18','P30','P24','PX18','PX19','A01','A02','L01'].includes(id)?'PX01':['P15','P16','PX17','A03','A04'].includes(id)?'PX12':null):id==='H11'||id==='A05'?'X13':id==='H12'||id==='H13'?'X14':id==='X01'||id==='X11'||id==='H23'||id==='A06'?'X15':id==='H14'?'X09':id==='H17'?'H15':id==='H19'||id==='H22'?'X22':id==='H20'?'X21':id==='X12'?'X22':null;
+  if(['PX02','PX07','PX08','PX09'].includes(id)){const n=await figma.getNodeByIdAsync(A[id].secondary);await n.setReactionsAsync([{trigger:{type:'ON_CLICK'},actions:[{type:'BACK'}]}]);created.push(n.id);}
+  else if(!spec?.secondaryBlocked)await attach(id,'secondary',dest,overlays[dest]?'OVERLAY':'NAVIGATE');
+ }
+ if(A[id]?.fullscreen)await attach(id,'fullscreen',id==='X11'?'X01':'X11');
+ if(['PX04','PX05','P31'].includes(id)&&A[id]?.primary){const n=await figma.getNodeByIdAsync(A[id].primary);await n.setReactionsAsync([{trigger:{type:'ON_CLICK'},actions:[{type:'BACK'}]}]);created.push(n.id);}
+ for(const name of ['Никита','Оля','Саша'])await attach(id,name,'PX02');
+ if(id==='PX12')for(const name of ['Анна','Миша','Даша','Никита','Оля','Саша'])await attach(id,name,'PX13');
+}
+const overlayDest={H06:'H10',H07:'H10',H05:'H06',H08:null,H09:null,X04:null,X06:null,X07:null,X08:'H11R',X09:'H17',X10:'X03',X13:'H11',X14:'H21',X15:'X02',X16:'H03',X17:'H10',X18:'H03',X19:'E02',X20:'E02',X21:'X05',X22:'H20',X23:'H10',X24:'H12',H15:'H17',G05:'G02',G09:'X04',E01:null,E02:null,E03:'E02',E04:'E02',E05:'E02',E06:null,E07:'E04',E08:'E09',E09:'X19',E10:null,E11:'E06'};
+for(const [id,oid]of Object.entries(overlays)){
+ const overlay=await figma.getNodeByIdAsync(oid);const src=await figma.getNodeByIdAsync(N[id]);
+ const origActions=src.findOne(n=>n.name.startsWith('Dialog / ')).findAll(n=>n.type==='INSTANCE'&&n.name.startsWith('Action / '));
+ const clonedActions=overlay.findAll(n=>n.type==='INSTANCE'&&n.name.startsWith('Action / '));
+ for(const [i,n]of clonedActions.entries()){
+  if(n.name==='Action / ×')continue;
+  const original=origActions[i];const key=Object.entries(A[id]??{}).find(([,v])=>v===original?.id)?.[0];
+  let dest=null;
+  if(key==='submit')dest=overlayDest[id]??null;
+  if(key==='openBank')dest='E02';if(key==='new')dest='E06';if(key==='sound')dest='X04';if(key==='editor')dest='E01';
+  if(['p01','p02','p03','p04'].includes(key)&&id!=='E01')dest='E04';
+  if(key==='remove')dest='X17';if(key==='closeRoom')dest='X16';if(key==='test')dest=id==='G09'?'X04':'G09';if(key==='reject')dest='H17';
+  if(['E06','E10'].includes(id)&&key==='submit'){await n.setReactionsAsync([]);continue;}
+  if(dest===id){await n.setReactionsAsync([]);continue;}
+  let acts=dest?[react(overlays[dest]??N[dest],overlays[dest]?'SWAP':'NAVIGATE')]:[{type:'CLOSE'}];
+  await n.setReactionsAsync([{trigger:{type:'ON_CLICK'},actions:acts}]);created.push(n.id);links.push({id:'Overlay/'+id,action:key??n.name,target:dest??'CLOSE'});
+ }
+}
+for(const [from,to,trigger]of [['H12','X01','AFTER_TIMEOUT'],['X02','H14','AFTER_TIMEOUT'],['P12','P14','AFTER_TIMEOUT'],['P13','P15','AFTER_TIMEOUT'],['P05','P06','KEY'],['P09','P12','KEY'],['PX15','P13','KEY'],['P14','P26','KEY'],['P15','PX21','KEY'],['P26','PX20','KEY'],['PX21','P32','KEY'],['P17','P24','KEY'],['P40','P18','KEY']]){
+ const frame=await figma.getNodeByIdAsync(N[from]);const tr=trigger==='KEY'?{type:'ON_KEY_DOWN',device:'KEYBOARD',keyCodes:[39]}:{type:'AFTER_TIMEOUT',timeout:8};await frame.setReactionsAsync([{trigger:tr,actions:[react(N[to])]}]);links.push({id:from,action:trigger,target:to});created.push(frame.id);
+}
+const targets={PX01:['PX02','PXT02','PXT03'],PX02:['PX02','PXT02','PXT03'],PXT02:['PX02','PXT02','PXT03'],PXT03:['PX02','PXT02','PXT03'],PXC01:['PXC02','PXC03','PXC04'],PXC02:['PXC02','PXC03','PXC04'],PXC03:['PXC02','PXC03','PXC04'],PXC04:['PXC02','PXC03','PXC04']};
+for(const [id,list]of Object.entries(targets))for(const [i,name]of ['Никита','Оля','Саша'].entries())await attach(id,name,list[i]);
+for(const [i,name]of ['Анна','Миша','Даша','Никита','Оля','Саша'].entries())await attach('PX12',name,i===0?'PX13':'PXS0'+i);
+for(const id of ['PX13','PXS01','PXS02','PXS03','PXS04','PXS05']){await attach(id,'primary','P17');const n=await figma.getNodeByIdAsync(A[id].secondary);await n.setReactionsAsync([{trigger:{type:'ON_CLICK'},actions:[{type:'BACK'}]}]);created.push(n.id);}
+for(const id of ['P17','P18','PX19'])await attach(id,'secondary','PXC01');
+await attach('PX10','primary','P14');await attach('PXC10','primary','P17');
+for(const id of ['PXC02','PXC03','PXC04'])await attach(id,'primary','PXC10');
+for(const id of ['PX02','PXT02','PXT03'])await attach(id,'primary','PX10');
+for(const id of ['PXC02','PXC03','PXC04','PXT02','PXT03']){const n=await figma.getNodeByIdAsync(A[id].secondary);await n.setReactionsAsync([{trigger:{type:'ON_CLICK'},actions:[{type:'BACK'}]}]);created.push(n.id);}
+
+page.flowStartingPoints=[{nodeId:N.H03,name:'01 · Organizer / first session'},{nodeId:N.P03,name:'02 · Player / possessed'},{nodeId:N.P08,name:'03 · Player / exorcist'},{nodeId:N.G03,name:'04 · Restart recovery'},{nodeId:N.H10,name:'05 · Settings and catalog editor'},{nodeId:N.P24,name:'06 · Offline action'}];
+let hi=0,pi=0;for(const [id,nid]of Object.entries(N)){const f=await figma.getNodeByIdAsync(nid);const mobile=id.startsWith('P')||['A01','A02','A03','A04','L01'].includes(id);if(mobile){f.x=80+(pi%8)*500;f.y=26000+Math.floor(pi/8)*1000;pi++;}else{f.x=80+(hi%4)*2100;f.y=80+Math.floor(hi/4)*1260;hi++;}const spec=SPECS.find(s=>s.id===id);if(spec)f.name=id+' · '+spec.title;created.push(f.id);}
+for(const [i,nid]of Object.values(overlays).entries()){const f=await figma.getNodeByIdAsync(nid);f.x=9200;f.y=80+i*900;}
+figma.viewport.scrollAndZoomIntoView([await figma.getNodeByIdAsync(N.X01)]);
+return {overlays,links,unwired,created,flows:page.flowStartingPoints};

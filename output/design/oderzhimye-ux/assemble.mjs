@@ -1,0 +1,10 @@
+import fs from 'node:fs';
+const root='output/design/oderzhimye-ux/';const D=JSON.parse(fs.readFileSync(root+'foundations-result.json','utf8')).result;const all=JSON.parse(fs.readFileSync(root+'screens.json','utf8'));const source=fs.readFileSync('output/design/pomekhi-redesign/browser-create-screens.js.txt','utf8');const qr=source.match(/const QR_SVG=(.*);\nconst page=/s)[1];
+const [mode='etalon']=process.argv.slice(2);let S;
+if(mode==='etalon')S=all.filter(x=>['L01','P01','P02'].includes(x.id));
+else if(mode==='hosts')S=all.filter(x=>!x.phone&&!x.modal&&x.id!=='L01');
+else if(mode==='phones')S=all.filter(x=>x.phone&&!x.modal&&!['P01','P02'].includes(x.id));
+else if(mode==='modals')S=all.filter(x=>x.modal);
+else throw Error('mode');
+let code='const D='+JSON.stringify(D)+';\nconst S='+JSON.stringify(S)+';\nconst QR_SVG='+qr+';\n';code+=fs.readFileSync(root+'common.js.txt','utf8');code+='\nconst page=await figma.getNodeByIdAsync(D.pages.screens);await figma.setCurrentPageAsync(page);\n';code+=fs.readFileSync(root+'views.js.txt','utf8');code+='\nfor(const s of S){if(page.children.some(n=>n.name.startsWith(s.id+\' · \')))continue;const index='+JSON.stringify(all.map(x=>x.id)) +'.indexOf(s.id);if(s.modal)await modal(s,index-90);else if(s.phone)await phone(s,index-39);else await host(s,index);}\nreturn {createdNodeIds:created,nodes,actions,counts:{screens:S.length,instances:page.findAllWithCriteria({types:[\'INSTANCE\']}).length,texts:page.findAllWithCriteria({types:[\'TEXT\']}).length}};';
+fs.writeFileSync(root+mode+'.js.txt',code);console.log(mode,S.length,code.length);

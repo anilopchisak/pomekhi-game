@@ -1,0 +1,1044 @@
+{
+  "format": "pomekhi.editorial-expansion",
+  "version": 1,
+  "collection": "horror",
+  "language": "ru",
+  "title": "За спиной",
+  "date": "2026-11-03",
+  "status": "editorial-review-not-installed-not-playtested",
+  "expectedCounts": {
+    "possessed": 26,
+    "exorcist": 12
+  },
+  "composition": "one_for_one_replacements",
+  "base": {
+    "path": "../cards.json",
+    "sha256": "a5054fad8b7c2dc2c6c5894cb097fcc7b72b4b2eb10ff65e83d8d7ef17a9fc92"
+  },
+  "playerRules": {
+    "selection": "Это авторское страшное дополнение к адаптации «Одержимых» с компьютерным Мастером. Выбранная версия заменяет указанную исходную карту; обе версии одной миссии вместе не добавляют. Состав основной колоды остаётся прежним.",
+    "difficulty": "Все карты этой подборки рассчитаны на тревогу и страх. Отметка «Повышенная сложность» означает сложность действия или разгадки, а не силу страха. Остальные отметки — помещение, улица и физический контакт — сохраняют своё обычное значение.",
+    "privacy": "Условия заражения и освобождения видит только исполнитель одержимого и уже пленённые члены его группы. Свободный экзорцист наблюдает поведение. Этот общий каталог предназначен для подготовки, а не для показа во время партии.",
+    "outsideFiction": "Техническая помощь, уточнение правил, согласование и отказ от контакта, просьба ослабить сцену или остановить игру всегда вне роли. Они не заражают и не нарушают прорицаний. Непроизвольный испуг, смех или вздрагивание сами по себе не заражают.",
+    "physicalPlay": "Исполнитель остаётся в своей локации. «Ангел» двигается только по условиям своей карты и сохраняет два обычных шага дистанции; это не погоня по дому. Для вращения заранее освобождают центр комнаты и внешний путь обхода. Все движения спокойные. Никого не хватают, не запирают и не трогают без согласия. В промежутке с закрытым экраном никто не приближается и не касается другого.",
+    "continuity": "Пленённые копируют поведение группы. На обычный призыв возвращаются только свободные; неосвобождённые сохраняют миссию между раундами. Освобождение приносит один успех за исходное назначение, а миссия пленённого экзорциста не засчитывается.",
+    "preparation": "Реквизита для заданий нет: ничего не покупают, не приносят и не раскладывают заранее. Используются голос, тело, жесты, движения, телефон и естественное пространство. Допустимы уже имеющиеся стены, пол, двери, дерево и обычное зеркало дома в соответствующих картах; их не переставляют и не подготавливают. Для движения выбирают уже свободное место.",
+    "dwelling": "Обитель — условное место в разрешённой локации, которое все знают по договорённости. Ёмкости, маркера и оставленных вещей нет. Для подношения игрок лично приходит туда, выполняет указанный жест или фразу и сообщает результат. Удалённое сообщение не заменяет посещение.",
+    "staging": "Все играют голосом, выражением лица и собственными движениями. Пленённые повторяют сцену своей группы; дополнительные роли, предметы или актёры не требуются. Выполненное условие у любого члена освобождает всю группу, исходная миссия получает один успех. Настоящая остановка сразу прекращает отыгрыш.",
+    "stories": "Каждая история — самостоятельный вымысел о частном доме, квартире или прилегающем дворе. Она не назначает персонажей, не требует специальных предметов и не сообщает решения карт. Любую подходящую месту историю можно сочетать с обеими редакциями колоды.",
+    "loadout": "Экзорцисту нужен только телефон. Ни у него, ни в локации не должно быть подготовленного набора вещей. Упомянутые воображаемые постель, покрытие или подношение — только пантомима пустыми руками, а не предметы."
+  },
+  "technicalNotes": {
+    "scope": "38 horror revisions: 26 possessed and 12 exorcist, including the two explicit user behaviors. No new trial, prophecy, ritual currency or phase is introduced.",
+    "composition": "Select versions before dealing. Replace each matching baseCard exactly once in a copy of the original 147-card editorial set. The merged set remains 147 cards. Do not append a second copy or mutate already-issued assignments. The base files and runtime remain unchanged.",
+    "difficulty": "Harder applies only to HP011, HP012, HP025 and HE005 for indirect reflection reasoning or real optical placement. Fear is collection membership, not an automatic difficulty label.",
+    "compatibility": "The current runtime importer requires a clue field and only the old personal-card format. Neither this expansion nor its merged editorial copy is a valid current-game import. No placeholder field is supplied.",
+    "privacy": "fearMechanism and provenance are author metadata. A future player projection must omit them and must not reveal the whole catalog. Publish only the current authorized card and existing game rules.",
+    "acceptance": "Authoring review can confirm structure and noncontradictory actions, not genuine fear or discoverability. No participant playtest, native mobile test, actual dim-light test or balance trial has been performed.",
+    "paperFree": "The earlier paper-free requirement is superseded by the stricter no-task-props rule. Fictional story imagery does not require physical facsimiles. Existing mirrors, walls, floors, safe doors and trees are natural features, never equipment to prepare.",
+    "dwellingAdaptation": "The latest user-approved Dwelling is an agreed empty place, not a receptacle. Three private initial mission records remain digital and add no new draw or reward. Former container/transport tasks are explicitly authored bodily or spoken adaptations.",
+    "domesticRevision": "All 38 variants have been reconciled with the domestic-horror primary revision: 27 retained cores, nine adaptations and two replacements. Paper props and special prepared kits are absent. Every plot remains independently mixable.",
+    "sourceRegistry": "provenance.inspirations uses the adjacent primary fiction-sources.json registry; historical variant provenance remains primary:<baseCard>.",
+    "exorcistLoadout": "Only a phone is required. No carried or staged task equipment. T004 transports no object: its delivery is a reported visit/name/return sequence.",
+    "propFree": "User instruction supersedes staged-prop preparation as well as carried equipment. No task props exist. Ordinary house mirrors are an explicit user exception as natural fixed scenery; the angel simply sees its own face. Other ordinary building/ground features are not prepared or moved."
+  },
+  "cards": [
+    {
+      "id": "HP001",
+      "type": "possessed",
+      "title": "Дай ему место",
+      "sets": [],
+      "family": "acting",
+      "requirements": [],
+      "provenance": {
+        "classification": "horror_revision",
+        "sources": [
+          "primary:P010"
+        ],
+        "adaptation": "Domestic-horror variant of P010. Denying the visible actor’s concern sustains it; addressing the specified empty place acknowledges a separate guest. The frightening staging is human-performed; no additional capture rule, helper or plot dependency is added.",
+        "inspirations": [
+          "turn-screw"
+        ]
+      },
+      "behavior": "Не смотрите экзорцисту в глаза: следите за пустым местом у его плеча. Когда он остановится, медленно отодвиньтесь на полшага в пределах своей локации, будто пропускаете кого-то между вами. Тихо скажите: «Он пришёл вместе с тобой». Затем кивните пустоте и снова замолчите. Если места для шага нет, только поверните корпус.",
+      "infectionCondition": "Экзорцист намеренно отрицает присутствие вашего вымышленного спутника: говорит, что рядом с ним никого нет. Просьба вне роли прекратить сцену не считается.",
+      "releaseCondition": "Экзорцист поворачивается к тому пустому месту, за которым вы следите, и здоровается с предполагаемым спутником.",
+      "baseCard": "P010",
+      "fearMechanism": "An empty personal-space boundary is treated as occupied. The performer’s yielding movement makes the imagined presence feel close without approaching or following the rescuer."
+    },
+    {
+      "id": "HP002",
+      "type": "possessed",
+      "title": "Колыбельная снизу",
+      "sets": [],
+      "family": "sound",
+      "requirements": [
+        "Удобная устойчивая поза сидя или стоя. Мебель и место под ней не используются."
+      ],
+      "provenance": {
+        "classification": "horror_revision",
+        "sources": [
+          "primary:P007"
+        ],
+        "adaptation": "Domestic-horror variant of P007. Treating it as a louder recording preserves the loop; asking its purpose recognizes an intended listener. The frightening staging is human-performed; no additional capture rule, helper or plot dependency is added.",
+        "inspirations": [
+          "beckoning"
+        ]
+      },
+      "behavior": "Устойчиво сидя или стоя, поверните лицо вниз, словно слушатель находится у ваших колен. Напевайте три-четыре тихие ноты колыбельной. После каждой фразы отвечайте себе более низким голосом: «Ещё раз». Между повторами смотрите на экзорциста совершенно обычным взглядом, затем снова обращайтесь вниз. Никуда не приседайте и не залезайте.",
+      "infectionCondition": "Экзорцист изображает рукой регулятор громкости и просит сделать мелодию громче.",
+      "releaseCondition": "Экзорцист спрашивает, для кого вы поёте или зачем повторяете эту мелодию. Вопрос только о названии песни не освобождает.",
+      "baseCard": "P007",
+      "fearMechanism": "One visible performer alternates a lullaby with an adult reply to someone below their own ordinary eye level; no furniture or hidden actor is needed."
+    },
+    {
+      "id": "HP003",
+      "type": "possessed",
+      "title": "Шаги остановились рядом",
+      "sets": [],
+      "family": "sound",
+      "requirements": [],
+      "provenance": {
+        "classification": "horror_revision",
+        "sources": [
+          "primary:P018"
+        ],
+        "adaptation": "Domestic-horror variant of P018. Physical imitation admits the walking loop; addressing the implied walker gives its approach a stopping point. The frightening staging is human-performed; no additional capture rule, helper or plot dependency is added.",
+        "inspirations": [
+          "empty-house"
+        ]
+      },
+      "behavior": "Стойте так, чтобы ваши неподвижные ноги были видны. Голосом изобразите три медленных шага. На третьем звуке резко прекратите речь и переведите взгляд в пустое место сбоку от экзорциста. После паузы шепните: «Теперь он стоит». Повторяйте сцену, не идя вслед за человеком и не топая настоящими ногами.",
+      "infectionCondition": "Экзорцист намеренно начинает топать ногами, изображая услышанные шаги.",
+      "releaseCondition": "Экзорцист обращается к тому пустому месту, на которое вы смотрите, и предлагает невидимому идущему остановиться или дальше не идти.",
+      "baseCard": "P018",
+      "fearMechanism": "Audible footsteps contradict clearly motionless feet, then appear to stop beside the visitor."
+    },
+    {
+      "id": "HP004",
+      "type": "possessed",
+      "title": "Он смеётся твоим ртом",
+      "sets": [],
+      "family": "acting",
+      "requirements": [],
+      "provenance": {
+        "classification": "horror_revision",
+        "sources": [
+          "primary:P020"
+        ],
+        "adaptation": "Domestic-horror variant of P020. Joining the acted laughter keeps the voice; a serious reciprocal farewell closes the social exchange. The frightening staging is human-performed; no additional capture rule, helper or plot dependency is added.",
+        "inspirations": [
+          "turn-screw",
+          "jolly-corner"
+        ]
+      },
+      "behavior": "При появлении человека коротко хихикните в пустое место рядом с ним. Сделайте взрослое неподвижное лицо, изучите собственную ладонь и медленно поклонитесь, будто заканчиваете давно забытый визит. Пока человек смотрит на ладонь, снова позвольте себе короткий смешок, а затем взгляните на него так, словно ничего не произносили. Не высмеивайте настоящего участника.",
+      "infectionCondition": "Экзорцист намеренно изображает ответный смех внутри сцены. Нервная улыбка, непроизвольный смех и просьба прекратить пугающее действие не заражают.",
+      "releaseCondition": "Экзорцист сохраняет серьёзное лицо до конца одного вашего поклона и отвечает собственным поклоном.",
+      "baseCard": "P020",
+      "fearMechanism": "A short laugh ends in an unnaturally blank expression; the hand is treated as if the voice came through it."
+    },
+    {
+      "id": "HP005",
+      "type": "possessed",
+      "title": "Портрет ждёт твоего лица",
+      "sets": [],
+      "family": "acting",
+      "requirements": [],
+      "provenance": {
+        "classification": "horror_revision",
+        "sources": [
+          "primary:P012"
+        ],
+        "adaptation": "Domestic-horror variant of P012. Blocking the frame erases recognition; a visible steady face completes the portrait. No actual painting is needed. The frightening staging is human-performed; no additional capture rule, helper or plot dependency is added.",
+        "inspirations": [
+          "jolly-corner",
+          "turn-screw"
+        ]
+      },
+      "behavior": "Сложите ладони рамкой и всматривайтесь сквозь неё в пустое место, как в семейный портрет без лица. Пока экзорцист смотрит на рамку, сохраняйте обычное выражение. Когда он отвёл взгляд, медленно замените улыбку пустым лицом и вновь кивайте пустоте. Двигайтесь только в пределах своей позы, не приближая рамку к человеку.",
+      "infectionCondition": "Экзорцист намеренно закрывает вид сквозь вашу рамку собственной раскрытой ладонью.",
+      "releaseCondition": "Экзорцист располагает своё лицо так, чтобы оно было видно вам сквозь рамку, и замирает с выбранным выражением до конца одного вашего кивка. Подходить вплотную и касаться рук не нужно.",
+      "baseCard": "P012",
+      "fearMechanism": "Expression changes happen only when the observer looks away, making the living portrait seem discontinuous."
+    },
+    {
+      "id": "HP006",
+      "type": "possessed",
+      "title": "В отражении открылись глаза",
+      "sets": [
+        "indoor"
+      ],
+      "family": "space",
+      "requirements": [
+        "В комнате уже есть неподвижное обычное зеркало и свободное место между ним и одержимым. Его не трогают, не закрывают тканью и не переставляют. Проверяют, что другой человек может безопасно перекрыть линию отражения своим телом."
+      ],
+      "provenance": {
+        "classification": "horror_revision",
+        "sources": [
+          "primary:P039"
+        ],
+        "adaptation": "An existing house mirror is blocked by the rescuer’s body, without moving or covering it with an object. This variant uses no task props; existing house mirrors are the explicit user exception.",
+        "inspirations": [
+          "jolly-corner"
+        ]
+      },
+      "behavior": "Смотрите на своё лицо в уже имеющемся зеркале. Тихо скажите: «Я их закрыл. Почему они опять открыты?» Прикройте лицо собственной ладонью и уберите её, сохранив неподвижную улыбку. Зеркало не трогайте; реального изменения в нём не требуется.",
+      "infectionCondition": "Экзорцист намеренно рассматривает в этом зеркале собственное лицо внутри попытки взаимодействия с вами. Случайно увидеть отражение не считается.",
+      "releaseCondition": "Экзорцист встаёт между вами и зеркалом, повернувшись к вам лицом, и своим телом закрывает вам отражение вашего лица. Он сохраняет обычную дистанцию и не касается вас. Когда отражение перестало быть видно, группа свободна.",
+      "baseCard": "P039",
+      "fearMechanism": "The actor distrusts their own fixed-house reflection. A human body interrupting its sightline ends the scene without a movable object."
+    },
+    {
+      "id": "HP007",
+      "type": "possessed",
+      "title": "Кто-то стучит в закрытой руке",
+      "sets": [],
+      "family": "sound",
+      "requirements": [],
+      "provenance": {
+        "classification": "horror_revision",
+        "sources": [
+          "primary:P036"
+        ],
+        "adaptation": "An acted sound comes from the performer’s closed hand. The answering strike and listening remain physical but need no container. This variant uses no task props; existing house mirrors are the explicit user exception.",
+        "inspirations": [
+          "monkeys-paw"
+        ]
+      },
+      "behavior": "Держите собственную кисть свободно сжатой. Другой рукой тихо постукивайте по ней так, чтобы звук казался ответом изнутри. Прислушайтесь и одними губами спросите «кто?». Поверните кулак к посетителю, оставаясь на разговорной дистанции. Ничего внутри руки нет.",
+      "infectionCondition": "Экзорцист внутри роли прямо просит вас раскрыть эту кисть и одновременно показывает раскрывание собственного кулака. Настоящая просьба дать руке отдохнуть вне роли не заражает.",
+      "releaseCondition": "Экзорцист негромко отвечает одним стуком по своей ладони или предплечью и затем подносит свою свободную кисть к собственному уху, прислушиваясь. Вы опускаете и раскрываете свою кисть сами.",
+      "baseCard": "P036",
+      "fearMechanism": "A visible human hand is treated as a closed source of answering sound. Only the actor makes the tap."
+    },
+    {
+      "id": "HP008",
+      "type": "possessed",
+      "title": "Между ладонями будто лицо",
+      "sets": [],
+      "family": "pantomime",
+      "requirements": [],
+      "provenance": {
+        "classification": "horror_revision",
+        "sources": [
+          "primary:P042"
+        ],
+        "adaptation": "A hidden shape is framed by the actor’s hands over empty space; uncovering is visible pantomime, not handling a prop. This variant uses no task props; existing house mirrors are the explicit user exception.",
+        "inspirations": [
+          "beckoning"
+        ]
+      },
+      "behavior": "Сведите ладони над пустым местом перед собой, словно скрыли там выпуклость. Двумя пальцами слегка изобразите её движение, затем уберите пальцы и смотрите неподвижно. Обычным голосом скажите: «Он слушает», а более низким ответьте: «Я вижу». Настоящего лица или предмета нет.",
+      "infectionCondition": "Экзорцист намеренно изображает, что приподнял край невидимого покрытия, заглянул и снова накрыл это место. Непрерывное полное снятие не считается такой попыткой.",
+      "releaseCondition": "Экзорцист одной свободной рукой изображает полное поднятие невидимого покрытия и отводит его в сторону, затем показывает раскрытую пустую ладонь. Вы разводите свои руки и оставляете место открытым.",
+      "baseCard": "P042",
+      "fearMechanism": "A hand-framed absence briefly moves and seems to answer itself. Uncovering remains a clear human pantomime."
+    },
+    {
+      "id": "HP009",
+      "type": "possessed",
+      "title": "Пока он спит, я отвечаю",
+      "sets": [],
+      "family": "acting",
+      "requirements": [
+        "Удобная устойчивая поза; глаза остаются достаточно открыты для контроля места."
+      ],
+      "provenance": {
+        "classification": "horror_revision",
+        "sources": [
+          "primary:P038"
+        ],
+        "adaptation": "Domestic-horror variant of P038. Encouraging continued sleep gives the intruder time; eliciting the resident’s own account of the present room wakes them. No special candle or factual quiz is used. The frightening staging is human-performed; no additional capture rule, helper or plot dependency is added.",
+        "inspirations": [
+          "others",
+          "turn-screw"
+        ]
+      },
+      "behavior": "Устойчиво сидя или стоя, слегка склоните голову и смотрите перед собой из-под опущенных век. На появление человека медленно поднимите голову с совершенно бодрым чужим выражением: «Не надо. Ему хорошо здесь». Сразу снова вернитесь к усталому лицу, будто не знаете о произнесённом. Между повторами отдыхайте; не падайте, не задерживайте дыхание и не изображайте настоящую болезнь.",
+      "infectionCondition": "Экзорцист внутри сцены прямо предлагает дремлющему снова уснуть и не просыпаться. Настоящее предложение отдохнуть вне роли не заражает.",
+      "releaseCondition": "Экзорцист обращается к дремлющему и просит его описать, где он сейчас находится. Вы отвечаете одной обычной фразой о реально видимой обстановке собственным голосом; после этого освобождаетесь.",
+      "baseCard": "P038",
+      "fearMechanism": "A familiar sleepy person becomes briefly alert in an alien persona, then returns unaware. An actual present-room answer restores the resident’s own voice."
+    },
+    {
+      "id": "HP010",
+      "type": "possessed",
+      "title": "Не слушай второй рот",
+      "sets": [],
+      "family": "gesture",
+      "requirements": [],
+      "provenance": {
+        "classification": "horror_revision",
+        "sources": [
+          "primary:P019"
+        ],
+        "adaptation": "Domestic-horror variant of P019. Shushing reinforces the seal; visibly removing one’s own mimed seal gives a model of release. The frightening staging is human-performed; no additional capture rule, helper or plot dependency is added.",
+        "inspirations": [
+          "old-nurse"
+        ]
+      },
+      "behavior": "Прикройте собственный рот ладонью и тихо произнесите через неё: «Это не я». Опустите руку и сразу тем же обычным голосом спросите: «Что он сказал?» Повторяя сцену, смотрите на ладонь, будто боитесь снова поднести её к губам. Голос остаётся тихим, дыхание обычным; удушье и настоящую беду не изображайте.",
+      "infectionCondition": "Экзорцист намеренно шикает на вас, требуя замолчать внутри роли. Просьба вне роли остановить сцену не заражает.",
+      "releaseCondition": "Экзорцист молча изображает, что снимает невидимую полоску со своих губ и отбрасывает её. Прикасаться к вам не нужно.",
+      "baseCard": "P019",
+      "fearMechanism": "The performer disowns a voice produced through their own palm and then asks about it as if they did not hear it."
+    },
+    {
+      "id": "HP011",
+      "type": "possessed",
+      "title": "Отражение, которое не остановилось",
+      "sets": [
+        "harder"
+      ],
+      "family": "gesture",
+      "requirements": [],
+      "provenance": {
+        "classification": "horror_revision",
+        "sources": [
+          "primary:P024"
+        ],
+        "adaptation": "Domestic-horror variant of P024. Following the delayed copy gives it priority; withdrawing both hands and staying still removes its input. The frightening staging is human-performed; no additional capture rule, helper or plot dependency is added.",
+        "inspirations": [
+          "jolly-corner"
+        ]
+      },
+      "behavior": "Встаньте или сядьте напротив человека на обычной разговорной дистанции. Повторяйте движения его кистей с заметным запозданием. Когда он остановится, завершите ещё одно движение, а затем медленно улыбнитесь, будто заметили несоответствие. Не повторяйте движения, связанные с технической помощью или согласованием контакта.",
+      "infectionCondition": "Экзорцист намеренно начинает повторять ваши запоздалые движения, передав вам инициативу.",
+      "releaseCondition": "Экзорцист одновременно прячет обе кисти за собственную спину и остаётся неподвижным до конца одной вашей попытки повторить исчезнувшее движение.",
+      "baseCard": "P024",
+      "fearMechanism": "A human reflection continues after its source stops, then acknowledges the mismatch with a delayed expression."
+    },
+    {
+      "id": "HP012",
+      "type": "possessed",
+      "title": "Крылья на стене",
+      "sets": [
+        "indoor",
+        "harder"
+      ],
+      "family": "light",
+      "requirements": [
+        "Светлая стена и заранее проверенная видимость тени от тусклого экрана; руки не касаются человека."
+      ],
+      "provenance": {
+        "classification": "horror_revision",
+        "sources": [
+          "primary:P065"
+        ],
+        "adaptation": "Domestic-horror variant of P065. Copying its shape accepts it; a real visible projection places the shape outside the actor. Admission depends on actual dim-screen visibility. The frightening staging is human-performed; no additional capture rule, helper or plot dependency is added.",
+        "inspirations": [
+          "ash-tree",
+          "innocents"
+        ]
+      },
+      "behavior": "У проверенной светлой стены сложите руки птицей и смотрите на место, где должна появиться её тень. Когда реальная тень становится видна, медленно раздвигайте пальцы, превращая птицу в когти, и рассматривайте собственные кисти с удивлением. Один раз шепните: «В саду она сидела не так». Не заявляйте, что тень двигается независимо от рук.",
+      "infectionCondition": "Экзорцист намеренно складывает свои руки такой же птицей, не создав на стене тень ваших рук.",
+      "releaseCondition": "Экзорцист располагает тусклый экран так, чтобы на стене была различима тень именно ваших рук. Чёткий силуэт птицы не требуется.",
+      "baseCard": "P065",
+      "fearMechanism": "An actual hand shadow changes from a bird-like shape to claw-like fingers while the performer watches the wall as if something is trapped there."
+    },
+    {
+      "id": "HP013",
+      "type": "possessed",
+      "title": "Пока горит свет, оно видит",
+      "sets": [],
+      "family": "light",
+      "requirements": [
+        "Выполнение только на месте; собственный экран можно кратко закрыть, не теряя равновесия."
+      ],
+      "provenance": {
+        "classification": "horror_revision",
+        "sources": [
+          "primary:P067"
+        ],
+        "adaptation": "Domestic-horror variant of P067. Offering brighter inspection sustains it; a short stationary screen covering interrupts exposure. The frightening staging is human-performed; no additional capture rule, helper or plot dependency is added.",
+        "inspirations": [
+          "others"
+        ]
+      },
+      "behavior": "При появлении тусклого экрана прикрывайте лицо растопыренными пальцами и смотрите на человека через промежуток. Если экран отвели, слегка меняйте положение головы; когда он снова направлен на вас, замирайте в новой позе. Негромко произносите: «Не давай ему рассмотреть». Никуда не подкрадывайтесь.",
+      "infectionCondition": "Экзорцист внутри роли намеренно предлагает сделать свет ярче, чтобы лучше вас рассмотреть. Реальные просьбы о свете для безопасности не заражают.",
+      "releaseCondition": "Экзорцист, стоя на месте, полностью закрывает собственный экран свободной ладонью на один ваш спокойный счёт до трёх, затем сразу открывает его. Во время темноты никто не движется.",
+      "baseCard": "P067",
+      "fearMechanism": "The visitor must voluntarily interrupt the light that makes the figure visible, creating a short interval of anticipation rather than a difficult puzzle."
+    },
+    {
+      "id": "HP014",
+      "type": "possessed",
+      "title": "Не открывай, там мы",
+      "sets": [
+        "indoor"
+      ],
+      "family": "space",
+      "requirements": [
+        "Разрешённая внутренняя дверь, которую можно оставить закрытой; она не ведёт к выходу из игровой зоны и не является единственным проходом."
+      ],
+      "provenance": {
+        "classification": "horror_revision",
+        "sources": [
+          "primary:P006"
+        ],
+        "adaptation": "Domestic-horror variant of P006. Two independent unintrusive passes acknowledge the boundary without entering the old event. The frightening staging is human-performed; no additional capture rule, helper or plot dependency is added.",
+        "inspirations": [
+          "monkeys-paw",
+          "empty-house"
+        ]
+      },
+      "behavior": "Сядьте сбоку от разрешённой закрытой двери, оставив проход свободным. Прислушивайтесь к ручке и шепните: «Они опять накрывают к ужину». При каждом отдельном проходе мимо двери тихо стукните по собственной ладони и отметьте ещё одну черту в воздухе, будто считают тех, кто сумел пройти дальше. Настоящего зова о помощи не изображайте.",
+      "infectionCondition": "Экзорцист намеренно поворачивает ручку в попытке открыть выбранную дверь. Техническое открытие двери или выход ради безопасности не считаются.",
+      "releaseCondition": "Мимо вас дважды проходят, не трогая дверь. Два отдельных прохода может сделать один свободный экзорцист: он отходит и возвращается самостоятельно.",
+      "baseCard": "P006",
+      "fearMechanism": "A quiet answer seems attached to a door associated with a second version of the players. The door remains physically passable and unblocked."
+    },
+    {
+      "id": "HP015",
+      "type": "possessed",
+      "title": "Кора отвечает шёпотом",
+      "sets": [
+        "outdoor"
+      ],
+      "family": "observation",
+      "requirements": [
+        "Заранее осмотренное дерево с доступным стволом на ровной площадке."
+      ],
+      "provenance": {
+        "classification": "horror_revision",
+        "sources": [
+          "primary:P045"
+        ],
+        "adaptation": "Domestic-horror variant of P045. Knocking calls further; silent listening through the visible hand withdrawal completes the attention. The frightening staging is human-performed; no additional capture rule, helper or plot dependency is added.",
+        "inspirations": [
+          "ash-tree"
+        ]
+      },
+      "behavior": "Стойте у осмотренного дерева и приложите к нему ладонь. Отвернув лицо чуть в сторону от подошедшего, очень тихо произнесите вымышленное имя, затем повернитесь обратно и слушайте ствол. После паузы отнимите ладонь с удивлением, будто шёпот прошёл через неё. Оставайтесь у доступной стороны дерева.",
+      "infectionCondition": "Экзорцист намеренно отвечает дереву тремя стуками по стволу.",
+      "releaseCondition": "Экзорцист наклоняет голову ухом к доступной стороне ствола и молча прислушивается, пока вы один раз убираете ладонь. Касаться дерева ухом не требуется.",
+      "baseCard": "P045",
+      "fearMechanism": "An ordinary tree is treated as a source of a fictional name, then as something that passed a voice through a hand."
+    },
+    {
+      "id": "HP016",
+      "type": "possessed",
+      "title": "В круге рук кто-то повернулся",
+      "sets": [
+        "outdoor"
+      ],
+      "family": "gesture",
+      "requirements": [
+        "Свободное ровное место во дворе; на земле ничего не чертят и не выкладывают."
+      ],
+      "provenance": {
+        "classification": "horror_revision",
+        "sources": [
+          "primary:P048"
+        ],
+        "adaptation": "The closed place is shown by the actor’s body, with no ground marking. A visible opening gesture gives it an exit. This variant uses no task props; existing house mirrors are the explicit user exception.",
+        "inspirations": [
+          "old-nurse",
+          "ash-tree"
+        ]
+      },
+      "behavior": "Округлите собственные руки перед собой и смотрите внутрь пустого места. Медленно поворачивайте голову, будто лицо внутри тоже поворачивается. Когда подойдёт экзорцист, посмотрите на него и тихо скажите: «Теперь смотрит на тебя». Руки никого не окружают.",
+      "infectionCondition": "Экзорцист намеренно округляет свою свободную руку вокруг собственной груди, изображая, что тоже удерживает это замкнутое место у себя.",
+      "releaseCondition": "Экзорцист проводит свободной ладонью из середины показанного пустого места наружу через промежуток между вашими руками, не касаясь. Вы сами разводите руки, открывая путь.",
+      "baseCard": "P048",
+      "fearMechanism": "The performer’s own arms suggest an occupied enclosure; an outward hand passage opens it without objects or ground marks."
+    },
+    {
+      "id": "HP017",
+      "type": "possessed",
+      "title": "Под домом идут вровень с тобой",
+      "sets": [
+        "outdoor"
+      ],
+      "family": "sound",
+      "requirements": [
+        "Ровный участок двора с устойчивым покрытием. Не прыгают, не копают, не наклоняются до потери равновесия."
+      ],
+      "provenance": {
+        "classification": "horror_revision",
+        "sources": [
+          "primary:P053"
+        ],
+        "adaptation": "Domestic-horror variant of P053. Offering one’s place provides a host; an audible ground contact and completed rising gesture let the trapped sound emerge without occupying someone. This is an authored symbolic release. The frightening staging is human-performed; no additional capture rule, helper or plot dependency is added.",
+        "inspirations": [
+          "ash-tree",
+          "empty-house"
+        ]
+      },
+      "behavior": "Стоя устойчиво во дворе, тихо изображайте голосом шаги под землёй. На последнем звуке переведите взгляд от собственных ног к ногам подошедшего и замолчите. Шепните: «Здесь тоже место есть». Медленно начните поднимать раскрытую ладонь от пояса, но остановите её на полпути. Снова смотрите вниз и начинайте шаги, будто кто-то ищет, где подняться. Ничего не копайте и не касайтесь другого человека.",
+      "infectionCondition": "Экзорцист намеренно обращается к подземному идущему и предлагает ему встать именно на собственное место экзорциста.",
+      "releaseCondition": "Экзорцист один раз негромко стучит пяткой по земле, оставаясь стоять, затем поднимает раскрытую ладонь от уровня пояса вверх, будто выводит звук наружу. Вы доводите свой голос до обычной речи и прекращаете подземные шаги.",
+      "baseCard": "P053",
+      "fearMechanism": "The imagined walker shifts from below the actor to below the visitor; the invitation is a temptation to provide it with a place. Sound is entirely performed."
+    },
+    {
+      "id": "HP018",
+      "type": "possessed",
+      "title": "Руки того, кто остался",
+      "sets": [
+        "contact"
+      ],
+      "family": "contact",
+      "requirements": [
+        "Согласие участников на контакт ладоней и предплечья."
+      ],
+      "provenance": {
+        "classification": "horror_revision",
+        "sources": [
+          "primary:P003"
+        ],
+        "adaptation": "Domestic-horror variant of P003. Wordless partial contact maintains estrangement; both accepted hands with human address restore connection. The frightening staging is human-performed; no additional capture rule, helper or plot dependency is added.",
+        "inspirations": [
+          "uninvited"
+        ]
+      },
+      "behavior": "Смотрите на свои ладони, будто впервые их видите. Медленно переворачивайте их, затем протягивайте обе к подошедшему. Одним обычным голосом скажите: «Они всё ещё холодные», а более низким ответьте: «Я никуда не уходил». Не пытайтесь сами взять человека за руки. Контакт сначала согласуйте вне роли.",
+      "infectionCondition": "Внутри сцены экзорцист касается вашего предплечья, не обращаясь к вам игровыми словами, и убирает руку. Предварительное обсуждение согласия не считается игровым обращением.",
+      "releaseCondition": "После согласования контакта экзорцист одновременно обхватывает обе ваши ладони своими и обращается к вам любой спокойной фразой.",
+      "baseCard": "P003",
+      "fearMechanism": "A familiar pair of hands is presented as belonging to someone who did not leave; the rescuer chooses whether to acknowledge the person while touching."
+    },
+    {
+      "id": "HP019",
+      "type": "possessed",
+      "title": "Отметина под кожей",
+      "sets": [
+        "contact"
+      ],
+      "family": "contact",
+      "requirements": [
+        "Согласованный лёгкий контакт ладони; писать по коже настоящими инструментами не требуется."
+      ],
+      "provenance": {
+        "classification": "horror_revision",
+        "sources": [
+          "primary:P057"
+        ],
+        "adaptation": "Domestic-horror variant of P057. Copying its circuit strengthens the mark; two crossing strokes visibly cancel it. This is an authored ritual gesture. The frightening staging is human-performed; no additional capture rule, helper or plot dependency is added.",
+        "inspirations": [
+          "ash-tree"
+        ]
+      },
+      "behavior": "Держите ладонь раскрытой. Медленно обводите на ней пальцем воображаемый круг, затем растопыривайте остальные пальцы, словно что-то разошлось от отметины. Тихо произнесите: «Здесь была только одна». Снова сведите пальцы и продолжайте круг. Настоящих отметин и предметов под кожей нет; контакт согласуйте отдельно.",
+      "infectionCondition": "После согласования контакта экзорцист намеренно обводит пальцем тот же круг на вашей ладони.",
+      "releaseCondition": "После согласования контакта экзорцист проводит по вашей ладони две пересекающиеся прямые, перечёркивая воображаемый круг. Настоящие пишущие предметы не используются.",
+      "baseCard": "P057",
+      "fearMechanism": "A spreading imaginary mark becomes a small tactile act; uncertainty concerns the traced pattern, not a painful or invasive prop."
+    },
+    {
+      "id": "HP020",
+      "type": "possessed",
+      "title": "Кто держит его за локоть",
+      "sets": [
+        "contact"
+      ],
+      "family": "contact",
+      "requirements": [
+        "Согласованная лёгкая поддержка локтя в удобной позе."
+      ],
+      "provenance": {
+        "classification": "horror_revision",
+        "sources": [
+          "primary:P058"
+        ],
+        "adaptation": "Domestic-horror variant of P058. A social pumping movement lends it further motion; a light accepted elbow support allows self-directed relaxation. The frightening staging is human-performed; no additional capture rule, helper or plot dependency is added.",
+        "inspirations": [
+          "jolly-corner"
+        ]
+      },
+      "behavior": "Держите предплечье приподнятым, расслабив кисть. Медленно опускайте его, будто рука тяжелеет, затем возвращайте локоть вверх собственным движением и смотрите в пустое место над ним. Шепчите: «Не я поднимаю». Не делайте резких рывков и не переносите вес на помощника. Любое касание сначала согласуйте. Между повторами дайте руке отдохнуть.",
+      "infectionCondition": "После согласования контакта экзорцист берёт вашу ладонь и делает одно намеренное движение вверх-вниз, как при рукопожатии.",
+      "releaseCondition": "После согласования контакта экзорцист подставляет открытую ладонь под ваш локоть и легко поддерживает его, пока вы расслабляете предплечье. Держать вес тела или тянуть руку не нужно.",
+      "baseCard": "P058",
+      "fearMechanism": "A visibly self-moving arm is described as being held from an empty point above it; a light supporting contact confronts that implied control."
+    },
+    {
+      "id": "HP021",
+      "type": "possessed",
+      "title": "Холод стоит рядом",
+      "sets": [
+        "contact"
+      ],
+      "family": "contact",
+      "requirements": [
+        "Согласованный лёгкий контакт наружными сторонами плеч. Оба стоят самостоятельно, без переноса веса."
+      ],
+      "provenance": {
+        "classification": "horror_revision",
+        "sources": [
+          "primary:P059"
+        ],
+        "adaptation": "Warmth is acknowledged through a brief agreed shoulder-to-shoulder presence, without cloth or other equipment. This variant uses no task props; existing house mirrors are the explicit user exception.",
+        "inspirations": [
+          "old-nurse"
+        ]
+      },
+      "behavior": "Обхватите себя за плечи. Посмотрите на свободное место сбоку и тихо произнесите: «Он всё ещё здесь». На миг опустите одну руку, словно ожидаете человеческого тепла рядом, затем снова обнимите себя. Не изображайте болезнь; настоящий контакт сначала согласуйте.",
+      "infectionCondition": "После согласования экзорцист касается вашей руки, затем демонстративно обхватывает собственные плечи, изображая, что забрал ваш холод. Непроизвольная дрожь не считается.",
+      "releaseCondition": "После согласования экзорцист становится рядом и легко касается наружной стороной своего плеча вашего плеча на один обычный спокойный выдох, затем отходит. Давить и опираться друг на друга нельзя.",
+      "baseCard": "P059",
+      "fearMechanism": "Cold is acted as an absent neighbour at the shoulder. A brief independently balanced shoulder contact acknowledges a living companion."
+    },
+    {
+      "id": "HP022",
+      "type": "possessed",
+      "title": "Чужая ладонь",
+      "sets": [
+        "contact"
+      ],
+      "family": "contact",
+      "requirements": [
+        "Согласованный контакт ладоней."
+      ],
+      "provenance": {
+        "classification": "horror_revision",
+        "sources": [
+          "primary:P061"
+        ],
+        "adaptation": "Domestic-horror variant of P061. An incompatible closed fist denies its shape; a full accepted palm match recognizes the hand. The frightening staging is human-performed; no additional capture rule, helper or plot dependency is added.",
+        "inspirations": [
+          "jolly-corner"
+        ]
+      },
+      "behavior": "Держите раскрытую ладонь перед лицом так, чтобы через промежутки были видны ваши глаза. Смотрите сквозь пальцы на человека, затем переведите взгляд на собственную руку и тихо спросите: «Почему она больше моей?» Медленно сожмите и снова раскройте ладонь. Не подносите её к чужому лицу; касание сначала согласуйте.",
+      "infectionCondition": "После согласования контакта экзорцист намеренно отвечает на вашу раскрытую ладонь лёгким касанием своего закрытого кулака.",
+      "releaseCondition": "После согласования контакта экзорцист прикладывает раскрытую ладонь к вашей, совмещая пальцы, затем отпускает. Давить или захватывать кисть нельзя.",
+      "baseCard": "P061",
+      "fearMechanism": "Eyes remain visible behind a hand the performer describes as alien; the rescuer must make a deliberate full-hand contact rather than a quick closed-fist greeting."
+    },
+    {
+      "id": "HP023",
+      "type": "possessed",
+      "title": "Не поворачивай меня лицом",
+      "sets": [
+        "contact",
+        "indoor"
+      ],
+      "family": "acting",
+      "requirements": [
+        "Согласованный контакт верхней части спины и локтя; касание не должно быть неожиданным."
+      ],
+      "provenance": {
+        "classification": "horror_revision",
+        "sources": [
+          "primary:P062"
+        ],
+        "adaptation": "Domestic-horror variant of P062. A turning attempt repeats control; an accepted upper-back touch and address acknowledge them without forcing the face. The frightening staging is human-performed; no additional capture rule, helper or plot dependency is added.",
+        "inspirations": [
+          "turn-screw"
+        ]
+      },
+      "behavior": "Стойте лицом к безопасной стене на небольшом расстоянии от неё. Иногда поворачивайте только голову настолько, чтобы видеть подошедшего боковым зрением, но плечи оставляйте неподвижными. Негромко спрашивайте: «Если я повернусь, кто останется здесь?» После паузы снова смотрите на стену. До касания обязательно согласуйте контакт вне роли.",
+      "infectionCondition": "После согласования контакта экзорцист намеренно касается вашего локтя, будто собирается развернуть, и убирает руку. Реально тянуть или поворачивать человека нельзя.",
+      "releaseCondition": "После согласования контакта экзорцист легко кладёт открытую ладонь на верхнюю часть вашей спины, обращается к вам любой фразой и убирает руку.",
+      "baseCard": "P062",
+      "fearMechanism": "A familiar body remains turned away while a head and voice acknowledge the visitor; contact happens where the face cannot be seen."
+    },
+    {
+      "id": "HP024",
+      "type": "possessed",
+      "title": "За спиной нет стены",
+      "sets": [
+        "contact"
+      ],
+      "family": "posture",
+      "requirements": [
+        "Свободное ровное место и согласованный лёгкий контакт спинами; оба стоят самостоятельно."
+      ],
+      "provenance": {
+        "classification": "horror_revision",
+        "sources": [
+          "primary:P063"
+        ],
+        "adaptation": "Domestic-horror variant of P063. Offering hand support pursues the absent hold; independent back-to-back contact occupies the threatened space. The frightening staging is human-performed; no additional capture rule, helper or plot dependency is added.",
+        "inspirations": [
+          "turn-screw"
+        ]
+      },
+      "behavior": "Держите собственные ладони за спиной, будто проверяете пустоту. Медленно оглянитесь через одно плечо, затем через другое, не меняя места. Тихо произнесите: «Он отходит, когда я оборачиваюсь». При появлении человека повернитесь к нему боком и снова ищите опору за спиной. Контакт и положение спинами согласуйте до действия.",
+      "infectionCondition": "После согласования контакта экзорцист предлагает опору своими ладонями, и вы ненадолго соприкасаетесь ладонями за вашей спиной. На человека не опирайтесь.",
+      "releaseCondition": "После согласования контакта экзорцист становится к вам спиной и ненадолго легко касается вашей спины своей, затем отходит. Оба стоят самостоятельно, без наклона и переноса веса.",
+      "baseCard": "P063",
+      "fearMechanism": "The threat is placed at an unseen point behind the performer; release uses an agreed stationary back-to-back contact rather than a new riddle."
+    },
+    {
+      "id": "HE001",
+      "type": "exorcist",
+      "title": "Чужое дыхание в тишине",
+      "sets": [],
+      "family": "sound",
+      "requirements": [],
+      "provenance": {
+        "classification": "horror_revision",
+        "sources": [
+          "primary:E021"
+        ],
+        "adaptation": "Domestic-horror variant of E021. A bounded stationary listen reports real sound or honest silence. The frightening staging is human-performed; no additional capture rule, helper or plot dependency is added.",
+        "inspirations": [
+          "uninvited"
+        ]
+      },
+      "mission": "После встречи с одержимым самостоятельно отойдите на свободное место внутри разрешённой локации. Не гасите экран. Остановитесь и молча прослушайте десять собственных медленных счётов, различая своё дыхание и звуки вокруг. Затем негромко назовите один реальный звук, который был не вашим дыханием. Если такого звука не было, скажите: «Было тихо».",
+      "successCondition": "Вы закончили неподвижное слушание на весь счёт и честно назвали его результат до призыва. Выдуманный голос или обязательный испуг не требуются.",
+      "depositRequired": false,
+      "baseCard": "E021",
+      "fearMechanism": "A solitary listening pause immediately after an uncanny encounter makes ordinary ambient sounds feel uncertain without inventing sensor evidence."
+    },
+    {
+      "id": "HE002",
+      "type": "exorcist",
+      "title": "Пять счётов без лица",
+      "sets": [],
+      "family": "light",
+      "requirements": [
+        "Знакомый ровный свободный участок; эта миссия явно разрешает кратко закрыть собственный свет стоя на месте."
+      ],
+      "provenance": {
+        "classification": "horror_revision",
+        "sources": [
+          "primary:E012"
+        ],
+        "adaptation": "Domestic-horror variant of E012. The stationary screen-cover interval is completed and then light restored; nobody approaches during it. The frightening staging is human-performed; no additional capture rule, helper or plot dependency is added. The user excludes carried props; all required scene objects are already in the location, and screen covering uses the player’s hand.",
+        "inspirations": [
+          "others"
+        ]
+      },
+      "mission": "После встречи с одержимым выберите знакомое ровное свободное место и остановитесь. Закройте экран собственного телефона свободной ладонью. Негромко досчитайте до пяти, затем сразу верните свет. Ни вы, ни участник рядом не приближаетесь и не касаетесь друг друга в этот промежуток. Если требуется свет для безопасности, прекратите попытку.",
+      "successCondition": "Экран был полностью закрыт на один непрерывный счёт до пяти, вы оставались на месте и затем восстановили свет до призыва. Прекращённая попытка не выполнена и сама по себе не заражает.",
+      "depositRequired": false,
+      "baseCard": "E012",
+      "fearMechanism": "A five-count stationary darkness interval follows a visible face, making its absence unsettling. No surprise approach is allowed."
+    },
+    {
+      "id": "HE003",
+      "type": "exorcist",
+      "title": "Скажи, кому здесь пусто",
+      "sets": [],
+      "family": "dwelling",
+      "requirements": [
+        "Обитель — заранее оговорённое место в разрешённой локации: угол комнаты или участок двора. Ничего ставить, раскладывать или рисовать там не нужно."
+      ],
+      "provenance": {
+        "classification": "horror_revision",
+        "sources": [
+          "primary:E015"
+        ],
+        "adaptation": "The mission uses an agreed empty place or actual spatial details; it needs no vessel, marker or collection of objects. This variant uses no task props; existing house mirrors are the explicit user exception.",
+        "inspirations": [
+          "old-nurse"
+        ]
+      },
+      "mission": "До выхода придумайте вымышленное имя того, кто остался в этом месте. Дойдите до Обители самостоятельно, коснитесь свободной ладонью собственной груди и негромко произнесите это имя, затем добавьте: «Твоё место ещё пусто». Уходите обычным шагом; телефон и вещи остаются у вас.",
+      "successCondition": "Вы физически дошли до Обители, выполнили касание и обращение до призыва. Настоящее имя участника и материальное подношение не нужны.",
+      "depositRequired": true,
+      "baseCard": "E015",
+      "fearMechanism": "A remembered fictional addressee is named at a remote physical dwelling; nothing is physically carried or left."
+    },
+    {
+      "id": "HE004",
+      "type": "exorcist",
+      "title": "Не отвечай Обители",
+      "sets": [],
+      "family": "dwelling",
+      "requirements": [
+        "Обитель — заранее оговорённое место в разрешённой локации: угол комнаты или участок двора. Ничего ставить, раскладывать или рисовать там не нужно."
+      ],
+      "provenance": {
+        "classification": "horror_revision",
+        "sources": [
+          "primary:E014"
+        ],
+        "adaptation": "The mission uses an agreed empty place or actual spatial details; it needs no vessel, marker or collection of objects. This variant uses no task props; existing house mirrors are the explicit user exception.",
+        "inspirations": [
+          "others"
+        ]
+      },
+      "mission": "Дойдите до Обители духов самостоятельно. От входа в её локацию до выхода не произносите обычных игровых слов. Раскройте свободную ладонь в сторону выбранного места и постойте так на пять мысленных счётов и уходите. На внеигровую помощь и остановку отвечать можно.",
+      "successCondition": "Вы физически дошли до Обители, выполнили жест и пятерной счёт без обычной игровой речи до призыва. Нахождение там одержимого не мешает; реальную просьбу о помощи не игнорируйте.",
+      "depositRequired": true,
+      "baseCard": "E014",
+      "fearMechanism": "The player cannot fill the silence with role dialogue while deliberately pausing beside the Dwelling."
+    },
+    {
+      "id": "HE005",
+      "type": "exorcist",
+      "title": "Рука остаётся на стене",
+      "sets": [
+        "indoor",
+        "harder"
+      ],
+      "family": "light",
+      "requirements": [
+        "Заранее проверенное место, где экран даёт различимую тень на светлой поверхности."
+      ],
+      "provenance": {
+        "classification": "horror_revision",
+        "sources": [
+          "primary:E036"
+        ],
+        "adaptation": "Domestic-horror variant of E036. An honest light-hand-shadow sequence replaces a claim that a ghost was detected. The frightening staging is human-performed; no additional capture rule, helper or plot dependency is added.",
+        "inspirations": [
+          "innocents",
+          "others"
+        ]
+      },
+      "mission": "В заранее подходящем месте остановитесь. Создайте тусклым экраном реальную тень своей свободной руки на светлой поверхности. Медленно превратите ладонь в когти, затем полностью уберите руку и посмотрите на освободившееся место, проверяя, ушла ли форма вместе с вами. Не придумывайте продолжающего двигаться силуэта и не повышайте яркость.",
+      "successCondition": "Вы увидели свою настоящую тень, изменение формы и её исчезновение после удаления руки до призыва. Ощущение присутствия не требуется.",
+      "depositRequired": false,
+      "baseCard": "E036",
+      "fearMechanism": "The player manufactures and then removes a claw-like silhouette, deliberately looking at the empty place it occupied."
+    },
+    {
+      "id": "HE006",
+      "type": "exorcist",
+      "title": "Место, где никто не отвечает",
+      "sets": [],
+      "family": "acting",
+      "requirements": [],
+      "provenance": {
+        "classification": "horror_revision",
+        "sources": [
+          "primary:E029"
+        ],
+        "adaptation": "Domestic-horror variant of E029. Introduction, pause and goodbye complete an act without requiring a paranormal reply. The frightening staging is human-performed; no additional capture rule, helper or plot dependency is added.",
+        "inspirations": [
+          "beckoning"
+        ]
+      },
+      "mission": "В разрешённой локации выберите пустое место на обычной разговорной дистанции. Представьтесь ему вымышленным именем и задайте один вопрос об этом месте. Выдержите паузу на пять мысленных счётов, не отвечая за воображаемого собеседника, затем попрощайтесь и продолжайте поиск в одиночку.",
+      "successCondition": "Вы выполнили представление, один вопрос, полную паузу и прощание до призыва. Настоящий ответ, звук или чувство страха не требуются.",
+      "depositRequired": false,
+      "baseCard": "E029",
+      "fearMechanism": "An unanswered introduction creates a controlled expectation of a voice from an empty place."
+    },
+    {
+      "id": "HE007",
+      "type": "exorcist",
+      "title": "Увидеть, как отпускают",
+      "sets": [],
+      "family": "observation",
+      "requirements": [],
+      "provenance": {
+        "classification": "horror_revision",
+        "sources": [
+          "primary:E025"
+        ],
+        "adaptation": "Domestic-horror variant of E025. Actual before/after observation supplies evidence without delaying a freed person. The frightening staging is human-performed; no additional capture rule, helper or plot dependency is added.",
+        "inspirations": [
+          "turn-screw"
+        ]
+      },
+      "mission": "У одного одержимого молча просмотрите один полный повтор поведения. Постарайтесь застать его освобождение — помочь самому можно. После подтверждения и включения им света, не задерживая уход, назовите себе одно реальное изменение в его лице, голосе, позе или свете. Не просите повторять сцену после освобождения.",
+      "successCondition": "Вы наблюдали поведение до освобождения и настоящее изменение после него, затем назвали изменение до призыва. Нужен один освобождённый, а не несколько спасателей.",
+      "depositRequired": false,
+      "baseCard": "E025",
+      "fearMechanism": "The same familiar person is watched through the transition from uncanny acting to an ordinary released presence."
+    },
+    {
+      "id": "HE008",
+      "type": "exorcist",
+      "title": "Покажи того, кто снился",
+      "sets": [],
+      "family": "memory",
+      "requirements": [
+        "Один согласный на краткий обмен участник и свободное место для спокойной пантомимы."
+      ],
+      "provenance": {
+        "classification": "horror_revision",
+        "sources": [
+          "primary:E023"
+        ],
+        "adaptation": "Domestic-horror variant of E023. Recognition is checked against the source participant’s invented image, not supernatural perception. The frightening staging is human-performed; no additional capture rule, helper or plot dependency is added.",
+        "inspirations": [
+          "turn-screw",
+          "jolly-corner"
+        ]
+      },
+      "mission": "Попросите согласного участника описать полностью вымышленного жильца этого дома тремя признаками: рост, лицо, движение. Не спрашивайте о настоящих кошмарах или близких. Изобразите его позой, выражением и движением на свободном месте, словно на мгновение стали этим жильцом. Получите подтверждение узнаваемости и разойдитесь.",
+      "successCondition": "Собеседник узнал все три придуманных признака в вашей пантомиме до призыва. Качество исполнения и настоящий испуг не оцениваются.",
+      "depositRequired": false,
+      "baseCard": "E023",
+      "fearMechanism": "A frightening imagined figure is externalized onto paper during a brief encounter, without soliciting real trauma."
+    },
+    {
+      "id": "HE009",
+      "type": "exorcist",
+      "title": "Пять вещей, которые настоящие",
+      "sets": [],
+      "family": "observation",
+      "requirements": [
+        "С одного устойчивого места видны пять различимых деталей окружающего пространства."
+      ],
+      "provenance": {
+        "classification": "horror_revision",
+        "sources": [
+          "primary:E039"
+        ],
+        "adaptation": "The mission uses an agreed empty place or actual spatial details; it needs no vessel, marker or collection of objects. This variant uses no task props; existing house mirrors are the explicit user exception.",
+        "inspirations": [
+          "others"
+        ]
+      },
+      "mission": "После встречи со странным поведением остановитесь на свободном месте и назовите пять настоящих видимых деталей пространства: углы, линии стен, участки пола или земли, свет, небо, дерево. На каждую укажите рукой. Затем выберите одно действительно пустое место и скажите: «А здесь никого нет». Реальных людей не называйте пустотой; чужие условия заражения сохраняются.",
+      "successCondition": "Вы назвали и показали пять разных реальных деталей места и отдельно обозначили пустое место до призыва. Никакие предметы искать или готовить не нужно.",
+      "depositRequired": false,
+      "baseCard": "E039",
+      "fearMechanism": "Concrete spatial observations contrast with an acknowledged empty place; there are no objects to collect or arrange."
+    },
+    {
+      "id": "HE010",
+      "type": "exorcist",
+      "title": "Не тот, кого ты ждал",
+      "sets": [],
+      "family": "acting",
+      "requirements": [
+        "Согласие группы на пугающую актёрскую игру и один согласный участник."
+      ],
+      "provenance": {
+        "classification": "horror_revision",
+        "sources": [
+          "primary:E030"
+        ],
+        "adaptation": "Domestic-horror variant of E030. The recipient explicitly confirms fear; silence and a startle are never inferred evidence. The frightening staging is human-performed; no additional capture rule, helper or plot dependency is added.",
+        "inspirations": [
+          "turn-screw"
+        ]
+      },
+      "mission": "При встрече с участником, согласившимся на пугающую игру, останьтесь на видимом месте. Спокойно обратитесь к пустому месту рядом с ним, затем на одну короткую фразу измените голос и замрите с непривычным выражением лица. Не подкрадывайтесь, не касайтесь и не кричите возле уха. После сцены один раз спросите вне роли, было ли человеку действительно страшно.",
+      "successCondition": "Другой участник сам подтвердил настоящий испуг. Вздрагивание, молчание или ваша уверенность в успехе не заменяют его ответа; отказ отвечать не даёт успеха.",
+      "depositRequired": false,
+      "baseCard": "E030",
+      "fearMechanism": "A visible conversational partner briefly answers in a different voice as if someone else is present. Fear is confirmed only by its recipient."
+    },
+    {
+      "id": "HE011",
+      "type": "exorcist",
+      "title": "То, что он написал",
+      "sets": [
+        "contact"
+      ],
+      "family": "contact",
+      "requirements": [
+        "Взаимное согласие на лёгкое рисование пальцем по ладони; настоящие пишущие предметы не используются."
+      ],
+      "provenance": {
+        "classification": "horror_revision",
+        "sources": [
+          "primary:E007"
+        ],
+        "adaptation": "A consenting partner traces one independently chosen shape on the player’s palm; recognition is confirmed by its maker. This replaces the base greeting in this variant and does not require sightless walking, actual ink or guessing a possessed solution. The literary connection is thematic and the result uses explicit participant confirmation.",
+        "inspirations": [
+          "vourdalak"
+        ]
+      },
+      "mission": "При краткой встрече согласуйте лёгкое касание ладони. Предложите собеседнику изобразить пальцем на вашей раскрытой ладони один след отсутствующего жильца: круг, треугольник или крест. Пока он ведёт пальцем, смотрите на его лицо, а не на ладонь, оставляя глаза открытыми. Назовите почувствованную фигуру и выслушайте подтверждение. После этого разойдитесь.",
+      "successCondition": "Вы распознали одну намеренно начерченную фигуру, и собеседник подтвердил совпадение до призыва. Реальный отказ от контакта не считается ошибкой или заражением.",
+      "depositRequired": false,
+      "baseCard": "E007",
+      "fearMechanism": "A familiar face is watched while an unseen but agreed finger trace is felt on the player’s own palm."
+    },
+    {
+      "id": "HE012",
+      "type": "exorcist",
+      "title": "Дорога назад ещё есть",
+      "sets": [],
+      "family": "memory",
+      "requirements": [
+        "Две разрешённые локации с различимыми неподвижными ориентирами."
+      ],
+      "provenance": {
+        "classification": "horror_revision",
+        "sources": [
+          "primary:E028"
+        ],
+        "adaptation": "Two separate location visits establish actual landmarks; revisiting the first and naming the same landmark completes the route check. This variant replaces the base stationary object-order test and requires no third location or escort. The literary connection is thematic and the result uses explicit participant confirmation.",
+        "inspirations": [
+          "others",
+          "jolly-corner"
+        ]
+      },
+      "mission": "Самостоятельно посетите две разрешённые локации и запомните по одному устойчивому ориентиру, как если бы дом пытался заменить знакомую дорогу. Вернитесь в первую и вслух назовите тот же ориентир, убедившись, что нашли именно его. Не просите вести вас и не возвращайтесь ради отчёта на базу до призыва.",
+      "successCondition": "Вы посетили обе локации в одиночку, запомнили два реальных ориентира и повторно нашли первый до призыва. Третья локация и записи не требуются.",
+      "depositRequired": false,
+      "baseCard": "E028",
+      "fearMechanism": "The player deliberately retraces a previously crossed dark route instead of ending the scene as soon as both observations are recorded."
+    },
+    {
+      "id": "HP025",
+      "type": "possessed",
+      "title": "Ангел при отведённом взгляде",
+      "sets": [
+        "indoor",
+        "harder"
+      ],
+      "family": "movement",
+      "requirements": [
+        "В этой разрешённой комнате уже есть обычное безопасное зеркало. Его не приносят, не снимают, не поворачивают и не трогают. Выберите исходное место, из которого своё лицо ещё не видно; перемещения внутри комнаты позволяют оказаться в отражении с сохранением двух шагов дистанции."
+      ],
+      "provenance": {
+        "classification": "horror_revision",
+        "sources": [
+          "primary:P026"
+        ],
+        "adaptation": "User explicitly preserves seeing one’s own face in an existing house mirror. It is neither carried nor staged, and no one must turn or touch it. This variant uses no task props; existing house mirrors are the explicit user exception.",
+        "inspirations": [
+          "blink"
+        ]
+      },
+      "behavior": "Выберите свободный участок своей локации и замрите, сложив ладони возле лица. Пока на вас смотрит хотя бы один свободный экзорцист, не двигайтесь. Когда все свободные экзорцисты отвели взгляд, медленно идите вслед за выбранным экзорцистом короткими шагами, оставаясь в той же локации и не приближаясь ближе двух обычных шагов. Как только вас снова заметили — немедленно замрите в текущей позе. Если направление взгляда непонятно, считайте, что на вас смотрят. За границу локации не выходите.",
+      "infectionCondition": "Экзорцист намеренно закрывает собственные глаза обеими ладонями внутри игровой попытки, оставаясь лицом к вам. Непроизвольный испуг, реальная просьба прекратить сцену и закрытие глаз ради безопасности не заражают.",
+      "releaseCondition": "Как только в ходе сцены вы действительно видите собственное лицо в уже имеющемся зеркале дома, освобождается вся группа. Экзорцист может обратить ваше внимание на зеркало или выбрать свой путь так, чтобы вы оказались перед ним. Приносить или поворачивать зеркало не требуется.",
+      "baseCard": "P026",
+      "fearMechanism": "The watched figure advances only outside a free exorcist’s gaze. Seeing its own actual face in an existing house mirror releases it; no prop is brought or turned.",
+      "sharedEdition": true
+    },
+    {
+      "id": "HP026",
+      "type": "possessed",
+      "title": "Вращающийся медиум",
+      "sets": [
+        "indoor"
+      ],
+      "family": "movement",
+      "requirements": [
+        "Уже свободный центр комнаты и ровный путь снаружи полного размаха рук. Если места нет, выбирают другую подходящую локацию или не используют карту; переносить мебель для задания не требуется."
+      ],
+      "provenance": {
+        "classification": "horror_revision",
+        "sources": [
+          "primary:P030"
+        ],
+        "adaptation": "The requested spinner is unchanged; the location must already have enough space, without moving or preparing furniture. This variant uses no task props; existing house mirrors are the explicit user exception.",
+        "inspirations": [
+          "empty-house"
+        ]
+      },
+      "behavior": "Встаньте в заранее выбранном свободном центре комнаты и вытяните руки в стороны. Медленно сделайте один полный поворот вправо — по часовой стрелке при взгляде сверху. Остановитесь на два обычных спокойных вдоха, затем повторите. На игровые слова, жесты и свет не реагируйте; считайте только условие своей карты. На внеигровую остановку реагируйте сразу. Пленённые повторяют позу в своих свободных местах той же комнаты; если места для одновременного вращения нет, вращайтесь по очереди, а остальные замирают в позе вне маршрута экзорциста.",
+      "infectionCondition": "Экзорцист намеренно завершает один полный обход вокруг исходного одержимого по часовой стрелке, не меняя направления. Он идёт снаружи размаха рук. Незаконченный круг, выход ради безопасности или обычный проход мимо не заражают.",
+      "releaseCondition": "Экзорцист завершает один полный обход вокруг исходного одержимого против часовой стрелки, не меняя направления и оставаясь снаружи размаха рук. После завершения обхода освобождается вся группа; руками вращающегося останавливать не нужно.",
+      "baseCard": "P030",
+      "fearMechanism": "A person keeps rotating with outstretched arms in the middle of a room, ignoring in-fiction interaction. An opposite-direction outer orbit breaks the pattern.",
+      "sharedEdition": true
+    }
+  ],
+  "harderCardIds": [
+    "HP011",
+    "HP012",
+    "HE005",
+    "HP025"
+  ],
+  "paperFree": true,
+  "requiredExorcistEquipment": [
+    "phone"
+  ],
+  "taskProps": [],
+  "environmentFeatures": [
+    "existing walls and floor",
+    "existing safe interior doors",
+    "existing yard trees",
+    "existing house mirror"
+  ]
+}

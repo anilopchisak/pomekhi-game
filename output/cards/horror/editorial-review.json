@@ -1,0 +1,350 @@
+{
+  "format": "pomekhi.horror-editorial-review",
+  "version": 1,
+  "reviewer": "authoring agent; no live participant test claimed",
+  "cards": [
+    {
+      "id": "HP001",
+      "baseCard": "P010",
+      "status": "editorially_reviewed_not_playtested",
+      "fearMechanism": "An empty personal-space boundary is treated as occupied. The performer’s yielding movement makes the imagined presence feel close without approaching or following the rescuer.",
+      "adjudication": "Denying the visible actor’s concern sustains it; addressing the specified empty place acknowledges a separate guest.",
+      "decision": "retain_core"
+    },
+    {
+      "id": "HP002",
+      "baseCard": "P007",
+      "status": "editorially_reviewed_not_playtested",
+      "fearMechanism": "One visible performer alternates a lullaby with an adult reply to someone below their own ordinary eye level; no furniture or hidden actor is needed.",
+      "adjudication": "No material scene setup: performance is stable body/voice, and light covering uses the rescuer’s hand.",
+      "decision": "retain_core"
+    },
+    {
+      "id": "HP003",
+      "baseCard": "P018",
+      "status": "editorially_reviewed_not_playtested",
+      "fearMechanism": "Audible footsteps contradict clearly motionless feet, then appear to stop beside the visitor.",
+      "adjudication": "Physical imitation admits the walking loop; addressing the implied walker gives its approach a stopping point.",
+      "decision": "retain_core"
+    },
+    {
+      "id": "HP004",
+      "baseCard": "P020",
+      "status": "editorially_reviewed_not_playtested",
+      "fearMechanism": "A short laugh ends in an unnaturally blank expression; the hand is treated as if the voice came through it.",
+      "adjudication": "Joining the acted laughter keeps the voice; a serious reciprocal farewell closes the social exchange.",
+      "decision": "adapt"
+    },
+    {
+      "id": "HP005",
+      "baseCard": "P012",
+      "status": "editorially_reviewed_not_playtested",
+      "fearMechanism": "Expression changes happen only when the observer looks away, making the living portrait seem discontinuous.",
+      "adjudication": "Blocking the frame erases recognition; a visible steady face completes the portrait. No actual painting is needed.",
+      "decision": "adapt"
+    },
+    {
+      "id": "HP006",
+      "baseCard": "P039",
+      "status": "editorially_reviewed_not_playtested",
+      "fearMechanism": "The actor distrusts their own fixed-house reflection. A human body interrupting its sightline ends the scene without a movable object.",
+      "adjudication": "An existing house mirror is blocked by the rescuer’s body, without moving or covering it with an object.",
+      "decision": "retain_core"
+    },
+    {
+      "id": "HP007",
+      "baseCard": "P036",
+      "status": "editorially_reviewed_not_playtested",
+      "fearMechanism": "A visible human hand is treated as a closed source of answering sound. Only the actor makes the tap.",
+      "adjudication": "An acted sound comes from the performer’s closed hand. The answering strike and listening remain physical but need no container.",
+      "decision": "retain_core"
+    },
+    {
+      "id": "HP008",
+      "baseCard": "P042",
+      "status": "editorially_reviewed_not_playtested",
+      "fearMechanism": "A hand-framed absence briefly moves and seems to answer itself. Uncovering remains a clear human pantomime.",
+      "adjudication": "A hidden shape is framed by the actor’s hands over empty space; uncovering is visible pantomime, not handling a prop.",
+      "decision": "retain_core"
+    },
+    {
+      "id": "HP009",
+      "baseCard": "P038",
+      "status": "editorially_reviewed_not_playtested",
+      "fearMechanism": "A familiar sleepy person becomes briefly alert in an alien persona, then returns unaware. An actual present-room answer restores the resident’s own voice.",
+      "adjudication": "Encouraging continued sleep gives the intruder time; eliciting the resident’s own account of the present room wakes them. No special candle or factual quiz is used.",
+      "decision": "replace"
+    },
+    {
+      "id": "HP010",
+      "baseCard": "P019",
+      "status": "editorially_reviewed_not_playtested",
+      "fearMechanism": "The performer disowns a voice produced through their own palm and then asks about it as if they did not hear it.",
+      "adjudication": "Shushing reinforces the seal; visibly removing one’s own mimed seal gives a model of release.",
+      "decision": "retain_core"
+    },
+    {
+      "id": "HP011",
+      "baseCard": "P024",
+      "status": "editorially_reviewed_not_playtested",
+      "fearMechanism": "A human reflection continues after its source stops, then acknowledges the mismatch with a delayed expression.",
+      "adjudication": "Following the delayed copy gives it priority; withdrawing both hands and staying still removes its input.",
+      "decision": "retain_core"
+    },
+    {
+      "id": "HP012",
+      "baseCard": "P065",
+      "status": "editorially_reviewed_not_playtested",
+      "fearMechanism": "An actual hand shadow changes from a bird-like shape to claw-like fingers while the performer watches the wall as if something is trapped there.",
+      "adjudication": "Copying its shape accepts it; a real visible projection places the shape outside the actor. Admission depends on actual dim-screen visibility.",
+      "decision": "adapt"
+    },
+    {
+      "id": "HP013",
+      "baseCard": "P067",
+      "status": "editorially_reviewed_not_playtested",
+      "fearMechanism": "The visitor must voluntarily interrupt the light that makes the figure visible, creating a short interval of anticipation rather than a difficult puzzle.",
+      "adjudication": "No material scene setup: performance is stable body/voice, and light covering uses the rescuer’s hand.",
+      "decision": "retain_core"
+    },
+    {
+      "id": "HP014",
+      "baseCard": "P006",
+      "status": "editorially_reviewed_not_playtested",
+      "fearMechanism": "A quiet answer seems attached to a door associated with a second version of the players. The door remains physically passable and unblocked.",
+      "adjudication": "Two independent unintrusive passes acknowledge the boundary without entering the old event.",
+      "decision": "adapt"
+    },
+    {
+      "id": "HP015",
+      "baseCard": "P045",
+      "status": "editorially_reviewed_not_playtested",
+      "fearMechanism": "An ordinary tree is treated as a source of a fictional name, then as something that passed a voice through a hand.",
+      "adjudication": "Knocking calls further; silent listening through the visible hand withdrawal completes the attention.",
+      "decision": "retain_core"
+    },
+    {
+      "id": "HP016",
+      "baseCard": "P048",
+      "status": "editorially_reviewed_not_playtested",
+      "fearMechanism": "The performer’s own arms suggest an occupied enclosure; an outward hand passage opens it without objects or ground marks.",
+      "adjudication": "The closed place is shown by the actor’s body, with no ground marking. A visible opening gesture gives it an exit.",
+      "decision": "adapt"
+    },
+    {
+      "id": "HP017",
+      "baseCard": "P053",
+      "status": "editorially_reviewed_not_playtested",
+      "fearMechanism": "The imagined walker shifts from below the actor to below the visitor; the invitation is a temptation to provide it with a place. Sound is entirely performed.",
+      "adjudication": "Offering one’s place provides a host; an audible ground contact and completed rising gesture let the trapped sound emerge without occupying someone. This is an authored symbolic release.",
+      "decision": "replace"
+    },
+    {
+      "id": "HP018",
+      "baseCard": "P003",
+      "status": "editorially_reviewed_not_playtested",
+      "fearMechanism": "A familiar pair of hands is presented as belonging to someone who did not leave; the rescuer chooses whether to acknowledge the person while touching.",
+      "adjudication": "Wordless partial contact maintains estrangement; both accepted hands with human address restore connection.",
+      "decision": "retain_core"
+    },
+    {
+      "id": "HP019",
+      "baseCard": "P057",
+      "status": "editorially_reviewed_not_playtested",
+      "fearMechanism": "A spreading imaginary mark becomes a small tactile act; uncertainty concerns the traced pattern, not a painful or invasive prop.",
+      "adjudication": "Copying its circuit strengthens the mark; two crossing strokes visibly cancel it. This is an authored ritual gesture.",
+      "decision": "retain_core"
+    },
+    {
+      "id": "HP020",
+      "baseCard": "P058",
+      "status": "editorially_reviewed_not_playtested",
+      "fearMechanism": "A visibly self-moving arm is described as being held from an empty point above it; a light supporting contact confronts that implied control.",
+      "adjudication": "A social pumping movement lends it further motion; a light accepted elbow support allows self-directed relaxation.",
+      "decision": "retain_core"
+    },
+    {
+      "id": "HP021",
+      "baseCard": "P059",
+      "status": "editorially_reviewed_not_playtested",
+      "fearMechanism": "Cold is acted as an absent neighbour at the shoulder. A brief independently balanced shoulder contact acknowledges a living companion.",
+      "adjudication": "Warmth is acknowledged through a brief agreed shoulder-to-shoulder presence, without cloth or other equipment.",
+      "decision": "retain_core"
+    },
+    {
+      "id": "HP022",
+      "baseCard": "P061",
+      "status": "editorially_reviewed_not_playtested",
+      "fearMechanism": "Eyes remain visible behind a hand the performer describes as alien; the rescuer must make a deliberate full-hand contact rather than a quick closed-fist greeting.",
+      "adjudication": "An incompatible closed fist denies its shape; a full accepted palm match recognizes the hand.",
+      "decision": "retain_core"
+    },
+    {
+      "id": "HP023",
+      "baseCard": "P062",
+      "status": "editorially_reviewed_not_playtested",
+      "fearMechanism": "A familiar body remains turned away while a head and voice acknowledge the visitor; contact happens where the face cannot be seen.",
+      "adjudication": "A turning attempt repeats control; an accepted upper-back touch and address acknowledge them without forcing the face.",
+      "decision": "retain_core"
+    },
+    {
+      "id": "HP024",
+      "baseCard": "P063",
+      "status": "editorially_reviewed_not_playtested",
+      "fearMechanism": "The threat is placed at an unseen point behind the performer; release uses an agreed stationary back-to-back contact rather than a new riddle.",
+      "adjudication": "Offering hand support pursues the absent hold; independent back-to-back contact occupies the threatened space.",
+      "decision": "retain_core"
+    },
+    {
+      "id": "HE001",
+      "baseCard": "E021",
+      "status": "editorially_reviewed_not_playtested",
+      "fearMechanism": "A solitary listening pause immediately after an uncanny encounter makes ordinary ambient sounds feel uncertain without inventing sensor evidence.",
+      "adjudication": "A bounded stationary listen reports real sound or honest silence.",
+      "decision": "retain_core"
+    },
+    {
+      "id": "HE002",
+      "baseCard": "E012",
+      "status": "editorially_reviewed_not_playtested",
+      "fearMechanism": "A five-count stationary darkness interval follows a visible face, making its absence unsettling. No surprise approach is allowed.",
+      "adjudication": "The stationary screen-cover interval is completed and then light restored; nobody approaches during it.",
+      "decision": "retain_core"
+    },
+    {
+      "id": "HE003",
+      "baseCard": "E015",
+      "status": "editorially_reviewed_not_playtested",
+      "fearMechanism": "A remembered fictional addressee is named at a remote physical dwelling; nothing is physically carried or left.",
+      "adjudication": "The mission uses an agreed empty place or actual spatial details; it needs no vessel, marker or collection of objects.",
+      "decision": "retain_core"
+    },
+    {
+      "id": "HE004",
+      "baseCard": "E014",
+      "status": "editorially_reviewed_not_playtested",
+      "fearMechanism": "The player cannot fill the silence with role dialogue while deliberately pausing beside the Dwelling.",
+      "adjudication": "The mission uses an agreed empty place or actual spatial details; it needs no vessel, marker or collection of objects.",
+      "decision": "retain_core"
+    },
+    {
+      "id": "HE005",
+      "baseCard": "E036",
+      "status": "editorially_reviewed_not_playtested",
+      "fearMechanism": "The player manufactures and then removes a claw-like silhouette, deliberately looking at the empty place it occupied.",
+      "adjudication": "An honest light-hand-shadow sequence replaces a claim that a ghost was detected.",
+      "decision": "adapt"
+    },
+    {
+      "id": "HE006",
+      "baseCard": "E029",
+      "status": "editorially_reviewed_not_playtested",
+      "fearMechanism": "An unanswered introduction creates a controlled expectation of a voice from an empty place.",
+      "adjudication": "Introduction, pause and goodbye complete an act without requiring a paranormal reply.",
+      "decision": "retain_core"
+    },
+    {
+      "id": "HE007",
+      "baseCard": "E025",
+      "status": "editorially_reviewed_not_playtested",
+      "fearMechanism": "The same familiar person is watched through the transition from uncanny acting to an ordinary released presence.",
+      "adjudication": "Actual before/after observation supplies evidence without delaying a freed person.",
+      "decision": "retain_core"
+    },
+    {
+      "id": "HE008",
+      "baseCard": "E023",
+      "status": "editorially_reviewed_not_playtested",
+      "fearMechanism": "A frightening imagined figure is externalized onto paper during a brief encounter, without soliciting real trauma.",
+      "adjudication": "Recognition is checked against the source participant’s invented image, not supernatural perception.",
+      "decision": "adapt"
+    },
+    {
+      "id": "HE009",
+      "baseCard": "E039",
+      "status": "editorially_reviewed_not_playtested",
+      "fearMechanism": "Concrete spatial observations contrast with an acknowledged empty place; there are no objects to collect or arrange.",
+      "adjudication": "The mission uses an agreed empty place or actual spatial details; it needs no vessel, marker or collection of objects.",
+      "decision": "retain_core"
+    },
+    {
+      "id": "HE010",
+      "baseCard": "E030",
+      "status": "editorially_reviewed_not_playtested",
+      "fearMechanism": "A visible conversational partner briefly answers in a different voice as if someone else is present. Fear is confirmed only by its recipient.",
+      "adjudication": "The recipient explicitly confirms fear; silence and a startle are never inferred evidence.",
+      "decision": "retain_core"
+    },
+    {
+      "id": "HE011",
+      "baseCard": "E007",
+      "status": "editorially_reviewed_not_playtested",
+      "fearMechanism": "A familiar face is watched while an unseen but agreed finger trace is felt on the player’s own palm.",
+      "adjudication": "A consenting partner traces one independently chosen shape on the player’s palm; recognition is confirmed by its maker. This replaces the base greeting in this variant and does not require sightless walking, actual ink or guessing a possessed solution.",
+      "decision": "adapt"
+    },
+    {
+      "id": "HE012",
+      "baseCard": "E028",
+      "status": "editorially_reviewed_not_playtested",
+      "fearMechanism": "The player deliberately retraces a previously crossed dark route instead of ending the scene as soon as both observations are recorded.",
+      "adjudication": "Two separate location visits establish actual landmarks; revisiting the first and naming the same landmark completes the route check. This variant replaces the base stationary object-order test and requires no third location or escort.",
+      "decision": "adapt"
+    },
+    {
+      "id": "HP025",
+      "baseCard": "P026",
+      "status": "editorially_reviewed_not_playtested",
+      "fearMechanism": "The watched figure advances only outside a free exorcist’s gaze. Seeing its own actual face in an existing house mirror releases it; no prop is brought or turned.",
+      "adjudication": "User explicitly preserves seeing one’s own face in an existing house mirror. It is neither carried nor staged, and no one must turn or touch it.",
+      "decision": "retain_core"
+    },
+    {
+      "id": "HP026",
+      "baseCard": "P030",
+      "status": "editorially_reviewed_not_playtested",
+      "fearMechanism": "A person keeps rotating with outstretched arms in the middle of a room, ignoring in-fiction interaction. An opposite-direction outer orbit breaks the pattern.",
+      "adjudication": "The requested spinner is unchanged; the location must already have enough space, without moving or preparing furniture.",
+      "decision": "retain_core"
+    }
+  ],
+  "collectionDecisions": [
+    "The user explicitly requested a scary collection after distinguishing fear from harder difficulty. Horror is therefore collection membership, not an automatic harder label.",
+    "38 one-for-one replacements are supplied, not 38 appended missions. The complete detached editorial selection retains all six original deck counts and 147 total cards.",
+    "Shared base mechanics are intentional revisions. The base and its variant must never coexist. Within the 38-card collection each scenario has its own action and opposing outcome.",
+    "Game-facing prose is Russian; provenance and review are English. No helper field, hidden riddle explanation or empty placeholder is supplied.",
+    "Original-rule group persistence, sole-free-rescuer play, once-only rescue credit and invalidated captured-exorcist missions remain unchanged.",
+    "Paper-free scope is explicit. The earlier reference to a stationary-only performance now has the two user-authorized bounded movement scenes; they do not authorize a house-wide chase or ignoring a real stop.",
+    "Domestic revision preserves the approved 27/9/2 variant decisions. Card-level causal reasoning is linked to revision-audit.json; old paper candle and leaf scenes are replaced, not relabelled.",
+    "The latest user removes all task props. Fixed existing house mirrors are an explicit natural-scene exception. The angel’s release is actual self-view, with no carrying or turning of a mirror."
+  ],
+  "similarityChecks": [
+    {
+      "cards": [
+        "HP009",
+        "HP004"
+      ],
+      "reason": "A present-room wake-up exchange differs from a reciprocal serious farewell; both use changed affect without the same release."
+    },
+    {
+      "cards": [
+        "HP017",
+        "HP003"
+      ],
+      "reason": "A ground strike and rising gesture for the below-ground walker differs from addressing an approaching figure to stop."
+    },
+    {
+      "cards": [
+        "HE011",
+        "HP019"
+      ],
+      "reason": "Identifying one independently traced shape differs from cancelling a known palm circle. A guess is not a capture condition in the mission."
+    }
+  ],
+  "acceptanceLimits": [
+    "Real participants must assess fear and comfort; authored staging does not prove effectiveness.",
+    "Discoverability without assistance, actual dim light, shadow/reflective visibility and audibility are untested.",
+    "No original or horror version is installed in the runtime by this delivery.",
+    "No real-device, network or seven-round balance scenario is claimed."
+  ]
+}

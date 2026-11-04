@@ -1,0 +1,3297 @@
+{
+  "sourceCommit": "b66f871",
+  "sourceSha256": "96fb2391dcc41510c565eeb25fd21233b21da67fc0cf9932c01e5779febcdc60",
+  "sharedMissionCaption": "Дополнительная миссия необязательна. Выполняйте её по пути, не задерживая освобождение. Если вас заразили, миссия этого раунда не засчитывается. Отметьте выполнение до подтверждения итогов.",
+  "safetyCaption": "Двигайтесь шагом. Для заданий не нужны бег, лестницы, предметы или прикосновения. Условия заражения, связанные с предложением действия, выполняются словами: само действие делать не нужно.",
+  "cards": [
+    {
+      "id": "p01",
+      "role": "possessed",
+      "difficulty": 1,
+      "decision": "revise",
+      "changedFields": [
+        "clue",
+        "infectionCondition"
+      ],
+      "rationale": "The clue omitted the exact accepted phrase; distinguish speaking about a flashlight from actually enabling one.",
+      "checks": {
+        "actionable": true,
+        "clueMatchesRelease": true,
+        "distinctInfection": true,
+        "levelAppropriate": true,
+        "noRequiredProps": true,
+        "noDelayedRescue": true
+      },
+      "balance": "Live rehearsal required; editorial review is not playtest evidence.",
+      "original": {
+        "id": "p01",
+        "role": "possessed",
+        "difficulty": 1,
+        "title": "Частота пустого дома",
+        "behavior": "Спокойно повторяйте: «Здесь никто не принимает сигнал». Между повторами делайте паузу.",
+        "clue": "«Мне нужны два слова: что сигнал больше не потерян».",
+        "infectionCondition": "Экзорцист предлагает вам включить фонарик.",
+        "releaseCondition": "Экзорцист произносит: «Сигнал принят»."
+      },
+      "final": {
+        "id": "p01",
+        "role": "possessed",
+        "difficulty": 1,
+        "title": "Частота пустого дома",
+        "behavior": "Спокойно повторяйте: «Здесь никто не принимает сигнал». Между повторами делайте паузу.",
+        "clue": "Скажи, что сигнал получен: «Сигнал принят».",
+        "infectionCondition": "Экзорцист вслух предлагает включить фонарик. Включать его не нужно.",
+        "releaseCondition": "Экзорцист произносит: «Сигнал принят»."
+      }
+    },
+    {
+      "id": "p02",
+      "role": "possessed",
+      "difficulty": 1,
+      "decision": "revise",
+      "changedFields": [
+        "clue"
+      ],
+      "rationale": "Clarify the accepted response, ordered steps, spoken-only trigger or meeting-place wording; preserve the task identity.",
+      "checks": {
+        "actionable": true,
+        "clueMatchesRelease": true,
+        "distinctInfection": true,
+        "levelAppropriate": true,
+        "noRequiredProps": true,
+        "noDelayedRescue": true
+      },
+      "balance": "Live rehearsal required; editorial review is not playtest evidence.",
+      "original": {
+        "id": "p02",
+        "role": "possessed",
+        "difficulty": 1,
+        "title": "Лишний пассажир",
+        "behavior": "Говорите встречным, что невидимый поезд всё ещё не прибыл. Оставайтесь на месте.",
+        "clue": "«Объяви, что моя остановка — дом, и разреши выйти».",
+        "infectionCondition": "Экзорцист спрашивает, куда едет поезд.",
+        "releaseCondition": "Экзорцист объявляет: «Остановка — дом. Выходите»."
+      },
+      "final": {
+        "id": "p02",
+        "role": "possessed",
+        "difficulty": 1,
+        "title": "Лишний пассажир",
+        "behavior": "Говорите встречным, что невидимый поезд всё ещё не прибыл. Оставайтесь на месте.",
+        "clue": "Объяви: «Остановка — дом. Выходите». Переходить никуда не нужно.",
+        "infectionCondition": "Экзорцист спрашивает, куда едет поезд.",
+        "releaseCondition": "Экзорцист объявляет: «Остановка — дом. Выходите»."
+      }
+    },
+    {
+      "id": "p03",
+      "role": "possessed",
+      "difficulty": 1,
+      "decision": "retain",
+      "changedFields": [],
+      "rationale": "The behavior, clue, release and infection trigger are actionable and distinct. The task requires no props, contact or hazardous movement.",
+      "checks": {
+        "actionable": true,
+        "clueMatchesRelease": true,
+        "distinctInfection": true,
+        "levelAppropriate": true,
+        "noRequiredProps": true,
+        "noDelayedRescue": true
+      },
+      "balance": "Live rehearsal required; editorial review is not playtest evidence.",
+      "original": {
+        "id": "p03",
+        "role": "possessed",
+        "difficulty": 1,
+        "title": "Отсчёт наоборот",
+        "behavior": "Негромко называйте числа от пяти до одного и начинайте заново.",
+        "clue": "«Кто-нибудь должен досчитать в другую сторону».",
+        "infectionCondition": "Экзорцист считает вместе с вами в обратном порядке.",
+        "releaseCondition": "Экзорцист считает вслух от одного до пяти по порядку."
+      },
+      "final": {
+        "id": "p03",
+        "role": "possessed",
+        "difficulty": 1,
+        "title": "Отсчёт наоборот",
+        "behavior": "Негромко называйте числа от пяти до одного и начинайте заново.",
+        "clue": "«Кто-нибудь должен досчитать в другую сторону».",
+        "infectionCondition": "Экзорцист считает вместе с вами в обратном порядке.",
+        "releaseCondition": "Экзорцист считает вслух от одного до пяти по порядку."
+      }
+    },
+    {
+      "id": "p04",
+      "role": "possessed",
+      "difficulty": 1,
+      "decision": "revise",
+      "changedFields": [
+        "clue"
+      ],
+      "rationale": "Clarify the accepted response, ordered steps, spoken-only trigger or meeting-place wording; preserve the task identity.",
+      "checks": {
+        "actionable": true,
+        "clueMatchesRelease": true,
+        "distinctInfection": true,
+        "levelAppropriate": true,
+        "noRequiredProps": true,
+        "noDelayedRescue": true
+      },
+      "balance": "Live rehearsal required; editorial review is not playtest evidence.",
+      "original": {
+        "id": "p04",
+        "role": "possessed",
+        "difficulty": 1,
+        "title": "Неназванный гость",
+        "behavior": "Смотрите в сторону пустого пространства рядом с собой и говорите: «Гостя забыли представить».",
+        "clue": "«Представься гостю и поприветствуй его».",
+        "infectionCondition": "Экзорцист спрашивает имя невидимого гостя.",
+        "releaseCondition": "Экзорцист называет своё имя и говорит «Добрый вечер» невидимому гостю."
+      },
+      "final": {
+        "id": "p04",
+        "role": "possessed",
+        "difficulty": 1,
+        "title": "Неназванный гость",
+        "behavior": "Смотрите в сторону пустого пространства рядом с собой и говорите: «Гостя забыли представить».",
+        "clue": "Назови своё имя и скажи невидимому гостю: «Добрый вечер».",
+        "infectionCondition": "Экзорцист спрашивает имя невидимого гостя.",
+        "releaseCondition": "Экзорцист называет своё имя и говорит «Добрый вечер» невидимому гостю."
+      }
+    },
+    {
+      "id": "p05",
+      "role": "possessed",
+      "difficulty": 1,
+      "decision": "revise",
+      "changedFields": [
+        "releaseCondition"
+      ],
+      "rationale": "Clarify the accepted response, ordered steps, spoken-only trigger or meeting-place wording; preserve the task identity.",
+      "checks": {
+        "actionable": true,
+        "clueMatchesRelease": true,
+        "distinctInfection": true,
+        "levelAppropriate": true,
+        "noRequiredProps": true,
+        "noDelayedRescue": true
+      },
+      "balance": "Live rehearsal required; editorial review is not playtest evidence.",
+      "original": {
+        "id": "p05",
+        "role": "possessed",
+        "difficulty": 1,
+        "title": "Пустое расписание",
+        "behavior": "Повторяйте: «Я помню вчера. Я помню завтра. А сегодня пропало».",
+        "clue": "«Мне достаточно услышать название сегодняшнего дня недели».",
+        "infectionCondition": "Экзорцист называет вчерашний день вместо сегодняшнего.",
+        "releaseCondition": "Экзорцист правильно называет текущий день недели. Дату называть не нужно."
+      },
+      "final": {
+        "id": "p05",
+        "role": "possessed",
+        "difficulty": 1,
+        "title": "Пустое расписание",
+        "behavior": "Повторяйте: «Я помню вчера. Я помню завтра. А сегодня пропало».",
+        "clue": "«Мне достаточно услышать название сегодняшнего дня недели».",
+        "infectionCondition": "Экзорцист называет вчерашний день вместо сегодняшнего.",
+        "releaseCondition": "Экзорцист называет сегодняшний день недели. Если вы не уверены, вместе уточните день; спор не считается заражением."
+      }
+    },
+    {
+      "id": "p06",
+      "role": "possessed",
+      "difficulty": 1,
+      "decision": "retain",
+      "changedFields": [],
+      "rationale": "The behavior, clue, release and infection trigger are actionable and distinct. The task requires no props, contact or hazardous movement.",
+      "checks": {
+        "actionable": true,
+        "clueMatchesRelease": true,
+        "distinctInfection": true,
+        "levelAppropriate": true,
+        "noRequiredProps": true,
+        "noDelayedRescue": true
+      },
+      "balance": "Live rehearsal required; editorial review is not playtest evidence.",
+      "original": {
+        "id": "p06",
+        "role": "possessed",
+        "difficulty": 1,
+        "title": "Сторож без смены",
+        "behavior": "Говорите: «Смена не закончена», будто охраняете невидимый пост. Никому не преграждайте путь.",
+        "clue": "«Объяви конец моей смены и скажи, что пост принят».",
+        "infectionCondition": "Экзорцист предлагает вам продолжить охрану.",
+        "releaseCondition": "Экзорцист произносит: «Смена закончена, пост принят»."
+      },
+      "final": {
+        "id": "p06",
+        "role": "possessed",
+        "difficulty": 1,
+        "title": "Сторож без смены",
+        "behavior": "Говорите: «Смена не закончена», будто охраняете невидимый пост. Никому не преграждайте путь.",
+        "clue": "«Объяви конец моей смены и скажи, что пост принят».",
+        "infectionCondition": "Экзорцист предлагает вам продолжить охрану.",
+        "releaseCondition": "Экзорцист произносит: «Смена закончена, пост принят»."
+      }
+    },
+    {
+      "id": "p07",
+      "role": "possessed",
+      "difficulty": 1,
+      "decision": "revise",
+      "changedFields": [
+        "behavior",
+        "infectionCondition"
+      ],
+      "rationale": "The original instruction varied the missing season despite a fixed autumn answer. Fix the repeated sequence.",
+      "checks": {
+        "actionable": true,
+        "clueMatchesRelease": true,
+        "distinctInfection": true,
+        "levelAppropriate": true,
+        "noRequiredProps": true,
+        "noDelayedRescue": true
+      },
+      "balance": "Live rehearsal required; editorial review is not playtest evidence.",
+      "original": {
+        "id": "p07",
+        "role": "possessed",
+        "difficulty": 1,
+        "title": "Три пустых места",
+        "behavior": "По очереди называйте три времени года, каждый раз забывая одно: «Зима, весна, лето…».",
+        "clue": "«Назови все четыре времени года, ни одного не теряя».",
+        "infectionCondition": "Экзорцист повторяет только три названных вами времени года.",
+        "releaseCondition": "Экзорцист перечисляет зиму, весну, лето и осень в любом порядке."
+      },
+      "final": {
+        "id": "p07",
+        "role": "possessed",
+        "difficulty": 1,
+        "title": "Три пустых места",
+        "behavior": "Негромко повторяйте: «Зима, весна, лето…». Осень каждый раз пропускайте.",
+        "clue": "«Назови все четыре времени года, ни одного не теряя».",
+        "infectionCondition": "Экзорцист повторяет «Зима, весна, лето» и останавливается, не называя осень.",
+        "releaseCondition": "Экзорцист перечисляет зиму, весну, лето и осень в любом порядке."
+      }
+    },
+    {
+      "id": "p08",
+      "role": "possessed",
+      "difficulty": 1,
+      "decision": "revise",
+      "changedFields": [
+        "clue"
+      ],
+      "rationale": "Clarify the accepted response, ordered steps, spoken-only trigger or meeting-place wording; preserve the task identity.",
+      "checks": {
+        "actionable": true,
+        "clueMatchesRelease": true,
+        "distinctInfection": true,
+        "levelAppropriate": true,
+        "noRequiredProps": true,
+        "noDelayedRescue": true
+      },
+      "balance": "Live rehearsal required; editorial review is not playtest evidence.",
+      "original": {
+        "id": "p08",
+        "role": "possessed",
+        "difficulty": 1,
+        "title": "Незакрытая скобка",
+        "behavior": "Говорите короткими обрывками: «Начало есть… конец потерялся…».",
+        "clue": "«Доскажи обычную фразу: всё хорошо, что…».",
+        "infectionCondition": "Экзорцист предлагает вам замолчать.",
+        "releaseCondition": "Экзорцист завершает фразу словами «хорошо кончается»."
+      },
+      "final": {
+        "id": "p08",
+        "role": "possessed",
+        "difficulty": 1,
+        "title": "Незакрытая скобка",
+        "behavior": "Говорите короткими обрывками: «Начало есть… конец потерялся…».",
+        "clue": "Закончи пословицу: «Всё хорошо, что…» — словами «хорошо кончается».",
+        "infectionCondition": "Экзорцист предлагает вам замолчать.",
+        "releaseCondition": "Экзорцист завершает фразу словами «хорошо кончается»."
+      }
+    },
+    {
+      "id": "p09",
+      "role": "possessed",
+      "difficulty": 1,
+      "decision": "retain",
+      "changedFields": [],
+      "rationale": "The behavior, clue, release and infection trigger are actionable and distinct. The task requires no props, contact or hazardous movement.",
+      "checks": {
+        "actionable": true,
+        "clueMatchesRelease": true,
+        "distinctInfection": true,
+        "levelAppropriate": true,
+        "noRequiredProps": true,
+        "noDelayedRescue": true
+      },
+      "balance": "Live rehearsal required; editorial review is not playtest evidence.",
+      "original": {
+        "id": "p09",
+        "role": "possessed",
+        "difficulty": 1,
+        "title": "Хранитель двух цветов",
+        "behavior": "Повторяйте: «Одного цвета мало. Двух хватит, чтобы вспомнить мир».",
+        "clue": "«Назови два разных цвета подряд».",
+        "infectionCondition": "Экзорцист называет только один цвет и говорит, что этого достаточно.",
+        "releaseCondition": "Экзорцист называет два разных цвета."
+      },
+      "final": {
+        "id": "p09",
+        "role": "possessed",
+        "difficulty": 1,
+        "title": "Хранитель двух цветов",
+        "behavior": "Повторяйте: «Одного цвета мало. Двух хватит, чтобы вспомнить мир».",
+        "clue": "«Назови два разных цвета подряд».",
+        "infectionCondition": "Экзорцист называет только один цвет и говорит, что этого достаточно.",
+        "releaseCondition": "Экзорцист называет два разных цвета."
+      }
+    },
+    {
+      "id": "p10",
+      "role": "possessed",
+      "difficulty": 1,
+      "decision": "revise",
+      "changedFields": [
+        "clue"
+      ],
+      "rationale": "Clarify the accepted response, ordered steps, spoken-only trigger or meeting-place wording; preserve the task identity.",
+      "checks": {
+        "actionable": true,
+        "clueMatchesRelease": true,
+        "distinctInfection": true,
+        "levelAppropriate": true,
+        "noRequiredProps": true,
+        "noDelayedRescue": true
+      },
+      "balance": "Live rehearsal required; editorial review is not playtest evidence.",
+      "original": {
+        "id": "p10",
+        "role": "possessed",
+        "difficulty": 1,
+        "title": "Забытое возвращение",
+        "behavior": "Спрашивайте: «Как возвращаются те, кого ждали?». Не просите никого куда-либо идти.",
+        "clue": "«Разреши мне вернуться к остальным одной фразой».",
+        "infectionCondition": "Экзорцист просит вас остаться здесь.",
+        "releaseCondition": "Экзорцист произносит: «Ты можешь вернуться к остальным»."
+      },
+      "final": {
+        "id": "p10",
+        "role": "possessed",
+        "difficulty": 1,
+        "title": "Забытое возвращение",
+        "behavior": "Спрашивайте: «Как возвращаются те, кого ждали?». Не просите никого куда-либо идти.",
+        "clue": "Скажи мне: «Ты можешь вернуться к остальным». Пока условие не выполнено, оставайся со мной.",
+        "infectionCondition": "Экзорцист просит вас остаться здесь.",
+        "releaseCondition": "Экзорцист произносит: «Ты можешь вернуться к остальным»."
+      }
+    },
+    {
+      "id": "p11",
+      "role": "possessed",
+      "difficulty": 1,
+      "decision": "retain",
+      "changedFields": [],
+      "rationale": "The behavior, clue, release and infection trigger are actionable and distinct. The task requires no props, contact or hazardous movement.",
+      "checks": {
+        "actionable": true,
+        "clueMatchesRelease": true,
+        "distinctInfection": true,
+        "levelAppropriate": true,
+        "noRequiredProps": true,
+        "noDelayedRescue": true
+      },
+      "balance": "Live rehearsal required; editorial review is not playtest evidence.",
+      "original": {
+        "id": "p11",
+        "role": "possessed",
+        "difficulty": 1,
+        "title": "Архив знакомых слов",
+        "behavior": "Говорите: «Архив пуст. Оставь в нём три мирных слова».",
+        "clue": "«Назови три любых предмета, которые бывают дома. Искать и приносить их не надо».",
+        "infectionCondition": "Экзорцист говорит, что не назовёт ни одного предмета.",
+        "releaseCondition": "Экзорцист называет три разных домашних предмета, например из мебели, посуды или одежды."
+      },
+      "final": {
+        "id": "p11",
+        "role": "possessed",
+        "difficulty": 1,
+        "title": "Архив знакомых слов",
+        "behavior": "Говорите: «Архив пуст. Оставь в нём три мирных слова».",
+        "clue": "«Назови три любых предмета, которые бывают дома. Искать и приносить их не надо».",
+        "infectionCondition": "Экзорцист говорит, что не назовёт ни одного предмета.",
+        "releaseCondition": "Экзорцист называет три разных домашних предмета, например из мебели, посуды или одежды."
+      }
+    },
+    {
+      "id": "p12",
+      "role": "possessed",
+      "difficulty": 1,
+      "decision": "revise",
+      "changedFields": [
+        "clue"
+      ],
+      "rationale": "Clarify the accepted response, ordered steps, spoken-only trigger or meeting-place wording; preserve the task identity.",
+      "checks": {
+        "actionable": true,
+        "clueMatchesRelease": true,
+        "distinctInfection": true,
+        "levelAppropriate": true,
+        "noRequiredProps": true,
+        "noDelayedRescue": true
+      },
+      "balance": "Live rehearsal required; editorial review is not playtest evidence.",
+      "original": {
+        "id": "p12",
+        "role": "possessed",
+        "difficulty": 1,
+        "title": "Письмо без адреса",
+        "behavior": "Повторяйте: «Письмо пришло. Некому сказать, что оно получено». Ничего не ищите и не передавайте.",
+        "clue": "«Поблагодари за письмо и подтверди, что прочитал его».",
+        "infectionCondition": "Экзорцист просит уничтожить невидимое письмо.",
+        "releaseCondition": "Экзорцист произносит: «Спасибо за письмо, я его прочитал»."
+      },
+      "final": {
+        "id": "p12",
+        "role": "possessed",
+        "difficulty": 1,
+        "title": "Письмо без адреса",
+        "behavior": "Повторяйте: «Письмо пришло. Некому сказать, что оно получено». Ничего не ищите и не передавайте.",
+        "clue": "Скажи: «Спасибо за письмо, я его прочитал». Настоящего письма нет.",
+        "infectionCondition": "Экзорцист просит уничтожить невидимое письмо.",
+        "releaseCondition": "Экзорцист произносит: «Спасибо за письмо, я его прочитал»."
+      }
+    },
+    {
+      "id": "e01",
+      "role": "exorcist",
+      "difficulty": 1,
+      "decision": "revise",
+      "changedFields": [
+        "mission"
+      ],
+      "rationale": "Use direct instructions, move shared optionality into the persistent mission caption, and separate the search action from the after-search report.",
+      "checks": {
+        "actionable": true,
+        "clueMatchesRelease": true,
+        "distinctInfection": true,
+        "levelAppropriate": true,
+        "noRequiredProps": true,
+        "noDelayedRescue": true
+      },
+      "balance": "Live rehearsal required; editorial review is not playtest evidence.",
+      "original": {
+        "id": "e01",
+        "role": "exorcist",
+        "difficulty": 1,
+        "title": "Свидетель сигнала",
+        "mission": "Если это не задерживает помощь, запомните одну необычную фразу одержимого и перескажите её на базе после поиска."
+      },
+      "final": {
+        "id": "e01",
+        "role": "exorcist",
+        "difficulty": 1,
+        "title": "Свидетель сигнала",
+        "mission": "Запомните одну необычную фразу одержимого. После поиска перескажите её у ноутбука."
+      }
+    },
+    {
+      "id": "e02",
+      "role": "exorcist",
+      "difficulty": 1,
+      "decision": "revise",
+      "changedFields": [
+        "mission"
+      ],
+      "rationale": "Two named zones were not guaranteed. Use one naturally encountered location without a software venue dependency.",
+      "checks": {
+        "actionable": true,
+        "clueMatchesRelease": true,
+        "distinctInfection": true,
+        "levelAppropriate": true,
+        "noRequiredProps": true,
+        "noDelayedRescue": true
+      },
+      "balance": "Live rehearsal required; editorial review is not playtest evidence.",
+      "original": {
+        "id": "e02",
+        "role": "exorcist",
+        "difficulty": 1,
+        "title": "Карта голосов",
+        "mission": "Попробуйте запомнить, в каких двух разрешённых зонах вы услышали голоса. Специально обходить дом ради этого не нужно."
+      },
+      "final": {
+        "id": "e02",
+        "role": "exorcist",
+        "difficulty": 1,
+        "title": "Карта голосов",
+        "mission": "По обычному пути запомните, где услышали один голос одержимого. После поиска опишите это место. Название комнаты вводить в игру не нужно."
+      }
+    },
+    {
+      "id": "e03",
+      "role": "exorcist",
+      "difficulty": 1,
+      "decision": "revise",
+      "changedFields": [
+        "mission"
+      ],
+      "rationale": "Use direct instructions, move shared optionality into the persistent mission caption, and separate the search action from the after-search report.",
+      "checks": {
+        "actionable": true,
+        "clueMatchesRelease": true,
+        "distinctInfection": true,
+        "levelAppropriate": true,
+        "noRequiredProps": true,
+        "noDelayedRescue": true
+      },
+      "balance": "Live rehearsal required; editorial review is not playtest evidence.",
+      "original": {
+        "id": "e03",
+        "role": "exorcist",
+        "difficulty": 1,
+        "title": "Знак возвращения",
+        "mission": "После успешного освобождения пожелайте освобождённому спокойного возвращения, не задерживая его."
+      },
+      "final": {
+        "id": "e03",
+        "role": "exorcist",
+        "difficulty": 1,
+        "title": "Знак возвращения",
+        "mission": "После освобождения пожелайте участнику спокойного возвращения. Не задерживайте его."
+      }
+    },
+    {
+      "id": "e04",
+      "role": "exorcist",
+      "difficulty": 1,
+      "decision": "revise",
+      "changedFields": [
+        "mission"
+      ],
+      "rationale": "Use direct instructions, move shared optionality into the persistent mission caption, and separate the search action from the after-search report.",
+      "checks": {
+        "actionable": true,
+        "clueMatchesRelease": true,
+        "distinctInfection": true,
+        "levelAppropriate": true,
+        "noRequiredProps": true,
+        "noDelayedRescue": true
+      },
+      "balance": "Live rehearsal required; editorial review is not playtest evidence.",
+      "original": {
+        "id": "e04",
+        "role": "exorcist",
+        "difficulty": 1,
+        "title": "Точное наблюдение",
+        "mission": "По ходу поиска запомните один повторяющийся жест или выражение одержимого. Расскажите об этом после возвращения."
+      },
+      "final": {
+        "id": "e04",
+        "role": "exorcist",
+        "difficulty": 1,
+        "title": "Точное наблюдение",
+        "mission": "Запомните один повторяющийся жест или выражение одержимого. После поиска опишите его."
+      }
+    },
+    {
+      "id": "e05",
+      "role": "exorcist",
+      "difficulty": 1,
+      "decision": "revise",
+      "changedFields": [
+        "mission"
+      ],
+      "rationale": "Use direct instructions, move shared optionality into the persistent mission caption, and separate the search action from the after-search report.",
+      "checks": {
+        "actionable": true,
+        "clueMatchesRelease": true,
+        "distinctInfection": true,
+        "levelAppropriate": true,
+        "noRequiredProps": true,
+        "noDelayedRescue": true
+      },
+      "balance": "Live rehearsal required; editorial review is not playtest evidence.",
+      "original": {
+        "id": "e05",
+        "role": "exorcist",
+        "difficulty": 1,
+        "title": "Хроника помощи",
+        "mission": "Запомните первую подсказку, которая помогла вам понять условие освобождения. На базе расскажите, как вы её поняли."
+      },
+      "final": {
+        "id": "e05",
+        "role": "exorcist",
+        "difficulty": 1,
+        "title": "Хроника помощи",
+        "mission": "Запомните одну подсказку, которая помогла вам понять освобождение. У ноутбука объясните, как вы её поняли."
+      }
+    },
+    {
+      "id": "e06",
+      "role": "exorcist",
+      "difficulty": 1,
+      "decision": "revise",
+      "changedFields": [
+        "mission"
+      ],
+      "rationale": "Use direct instructions, move shared optionality into the persistent mission caption, and separate the search action from the after-search report.",
+      "checks": {
+        "actionable": true,
+        "clueMatchesRelease": true,
+        "distinctInfection": true,
+        "levelAppropriate": true,
+        "noRequiredProps": true,
+        "noDelayedRescue": true
+      },
+      "balance": "Live rehearsal required; editorial review is not playtest evidence.",
+      "original": {
+        "id": "e06",
+        "role": "exorcist",
+        "difficulty": 1,
+        "title": "Тихая поддержка",
+        "mission": "Если встретите другого экзорциста, кратко пожелайте ему удачи. Не ищите его специально и не отвлекайте от помощи."
+      },
+      "final": {
+        "id": "e06",
+        "role": "exorcist",
+        "difficulty": 1,
+        "title": "Тихая поддержка",
+        "mission": "Если встретите экзорциста по пути, кратко пожелайте ему удачи. Не ищите его специально."
+      }
+    },
+    {
+      "id": "e07",
+      "role": "exorcist",
+      "difficulty": 1,
+      "decision": "revise",
+      "changedFields": [
+        "mission"
+      ],
+      "rationale": "A compulsory help question can delay an already understood rescue. Add a completion alternative.",
+      "checks": {
+        "actionable": true,
+        "clueMatchesRelease": true,
+        "distinctInfection": true,
+        "levelAppropriate": true,
+        "noRequiredProps": true,
+        "noDelayedRescue": true
+      },
+      "balance": "Live rehearsal required; editorial review is not playtest evidence.",
+      "original": {
+        "id": "e07",
+        "role": "exorcist",
+        "difficulty": 1,
+        "title": "Один добрый вопрос",
+        "mission": "При обычной встрече с одержимым один раз спокойно спросите, какая помощь ему нужна. Не откладывайте уже понятное освобождение ради миссии."
+      },
+      "final": {
+        "id": "e07",
+        "role": "exorcist",
+        "difficulty": 1,
+        "title": "Один добрый вопрос",
+        "mission": "Если условие освобождения ещё непонятно, спокойно спросите одержимого: «Какая помощь тебе нужна?». Если условие уже понятно, после помощи кратко перескажите его у ноутбука."
+      }
+    },
+    {
+      "id": "e08",
+      "role": "exorcist",
+      "difficulty": 1,
+      "decision": "revise",
+      "changedFields": [
+        "mission"
+      ],
+      "rationale": "Use direct instructions, move shared optionality into the persistent mission caption, and separate the search action from the after-search report.",
+      "checks": {
+        "actionable": true,
+        "clueMatchesRelease": true,
+        "distinctInfection": true,
+        "levelAppropriate": true,
+        "noRequiredProps": true,
+        "noDelayedRescue": true
+      },
+      "balance": "Live rehearsal required; editorial review is not playtest evidence.",
+      "original": {
+        "id": "e08",
+        "role": "exorcist",
+        "difficulty": 1,
+        "title": "Память пространства",
+        "mission": "Запомните одну безопасную примету разрешённой зоны, замеченную по пути. На базе опишите её, ничего не трогая и не разыскивая специально."
+      },
+      "final": {
+        "id": "e08",
+        "role": "exorcist",
+        "difficulty": 1,
+        "title": "Память пространства",
+        "mission": "По обычному пути запомните одну примету места. После поиска опишите её. Ничего не трогайте и не разыскивайте специально."
+      }
+    },
+    {
+      "id": "e09",
+      "role": "exorcist",
+      "difficulty": 1,
+      "decision": "revise",
+      "changedFields": [
+        "mission"
+      ],
+      "rationale": "Reduce the three-part report at level 1; reserve multi-part recall for higher difficulty.",
+      "checks": {
+        "actionable": true,
+        "clueMatchesRelease": true,
+        "distinctInfection": true,
+        "levelAppropriate": true,
+        "noRequiredProps": true,
+        "noDelayedRescue": true
+      },
+      "balance": "Live rehearsal required; editorial review is not playtest evidence.",
+      "original": {
+        "id": "e09",
+        "role": "exorcist",
+        "difficulty": 1,
+        "title": "Надёжный рассказчик",
+        "mission": "После поиска расскажите об одном случае помощи от первого лица: что вы увидели, поняли и сделали."
+      },
+      "final": {
+        "id": "e09",
+        "role": "exorcist",
+        "difficulty": 1,
+        "title": "Надёжный рассказчик",
+        "mission": "После поиска одним предложением расскажите, как вы помогали или пытались помочь одержимому."
+      }
+    },
+    {
+      "id": "e10",
+      "role": "exorcist",
+      "difficulty": 1,
+      "decision": "revise",
+      "changedFields": [
+        "mission"
+      ],
+      "rationale": "Never make another person becoming distressed a scoring opportunity. Replace it with neutral recall.",
+      "checks": {
+        "actionable": true,
+        "clueMatchesRelease": true,
+        "distinctInfection": true,
+        "levelAppropriate": true,
+        "noRequiredProps": true,
+        "noDelayedRescue": true
+      },
+      "balance": "Live rehearsal required; editorial review is not playtest evidence.",
+      "original": {
+        "id": "e10",
+        "role": "exorcist",
+        "difficulty": 1,
+        "title": "Слово спокойствия",
+        "mission": "Если при встрече кто-то растерялся, спокойно напомните, что это игра и можно попросить перерыв. Специально пугать или проверять человека не надо."
+      },
+      "final": {
+        "id": "e10",
+        "role": "exorcist",
+        "difficulty": 1,
+        "title": "Слово спокойствия",
+        "mission": "Запомните одно спокойное слово, услышанное во время поиска. После поиска произнесите его у ноутбука."
+      }
+    },
+    {
+      "id": "e11",
+      "role": "exorcist",
+      "difficulty": 1,
+      "decision": "revise",
+      "changedFields": [
+        "mission"
+      ],
+      "rationale": "Use direct instructions, move shared optionality into the persistent mission caption, and separate the search action from the after-search report.",
+      "checks": {
+        "actionable": true,
+        "clueMatchesRelease": true,
+        "distinctInfection": true,
+        "levelAppropriate": true,
+        "noRequiredProps": true,
+        "noDelayedRescue": true
+      },
+      "balance": "Live rehearsal required; editorial review is not playtest evidence.",
+      "original": {
+        "id": "e11",
+        "role": "exorcist",
+        "difficulty": 1,
+        "title": "Собранная история",
+        "mission": "Придумайте на базе короткое название для самого запомнившегося вам эпизода поиска. Придумывать его во время помощи необязательно."
+      },
+      "final": {
+        "id": "e11",
+        "role": "exorcist",
+        "difficulty": 1,
+        "title": "Собранная история",
+        "mission": "После поиска придумайте короткое название одному запомнившемуся эпизоду."
+      }
+    },
+    {
+      "id": "e12",
+      "role": "exorcist",
+      "difficulty": 1,
+      "decision": "revise",
+      "changedFields": [
+        "mission"
+      ],
+      "rationale": "Use direct instructions, move shared optionality into the persistent mission caption, and separate the search action from the after-search report.",
+      "checks": {
+        "actionable": true,
+        "clueMatchesRelease": true,
+        "distinctInfection": true,
+        "levelAppropriate": true,
+        "noRequiredProps": true,
+        "noDelayedRescue": true
+      },
+      "balance": "Live rehearsal required; editorial review is not playtest evidence.",
+      "original": {
+        "id": "e12",
+        "role": "exorcist",
+        "difficulty": 1,
+        "title": "Возвращение без потерь",
+        "mission": "По дороге назад запомните имя одного участника, которому помогали или желали помочь. После поиска поблагодарите его за роль."
+      },
+      "final": {
+        "id": "e12",
+        "role": "exorcist",
+        "difficulty": 1,
+        "title": "Возвращение без потерь",
+        "mission": "После поиска поблагодарите одного участника, которому помогали или пытались помочь."
+      }
+    },
+    {
+      "id": "p13",
+      "role": "possessed",
+      "difficulty": 1,
+      "decision": "retain",
+      "changedFields": [],
+      "rationale": "The behavior, clue, release and infection trigger are actionable and distinct. The task requires no props, contact or hazardous movement.",
+      "checks": {
+        "actionable": true,
+        "clueMatchesRelease": true,
+        "distinctInfection": true,
+        "levelAppropriate": true,
+        "noRequiredProps": true,
+        "noDelayedRescue": true
+      },
+      "balance": "Live rehearsal required; editorial review is not playtest evidence.",
+      "original": {
+        "id": "p13",
+        "role": "possessed",
+        "difficulty": 1,
+        "title": "Радио без приветствия",
+        "behavior": "Негромко повторяйте: «Приёмная открыта, но никто не поздоровался».",
+        "clue": "Поздоровайся со мной любыми словами.",
+        "releaseCondition": "Экзорцист здоровается с вами.",
+        "infectionCondition": "Экзорцист говорит «До свидания» до приветствия."
+      },
+      "final": {
+        "id": "p13",
+        "role": "possessed",
+        "difficulty": 1,
+        "title": "Радио без приветствия",
+        "behavior": "Негромко повторяйте: «Приёмная открыта, но никто не поздоровался».",
+        "clue": "Поздоровайся со мной любыми словами.",
+        "releaseCondition": "Экзорцист здоровается с вами.",
+        "infectionCondition": "Экзорцист говорит «До свидания» до приветствия."
+      }
+    },
+    {
+      "id": "p14",
+      "role": "possessed",
+      "difficulty": 1,
+      "decision": "retain",
+      "changedFields": [],
+      "rationale": "The behavior, clue, release and infection trigger are actionable and distinct. The task requires no props, contact or hazardous movement.",
+      "checks": {
+        "actionable": true,
+        "clueMatchesRelease": true,
+        "distinctInfection": true,
+        "levelAppropriate": true,
+        "noRequiredProps": true,
+        "noDelayedRescue": true
+      },
+      "balance": "Live rehearsal required; editorial review is not playtest evidence.",
+      "original": {
+        "id": "p14",
+        "role": "possessed",
+        "difficulty": 1,
+        "title": "Забытый берег",
+        "behavior": "Повторяйте: «Река есть, а берега потерялись».",
+        "clue": "Назови левый и правый берег.",
+        "releaseCondition": "Экзорцист называет левый и правый берег.",
+        "infectionCondition": "Экзорцист предлагает войти в воображаемую реку."
+      },
+      "final": {
+        "id": "p14",
+        "role": "possessed",
+        "difficulty": 1,
+        "title": "Забытый берег",
+        "behavior": "Повторяйте: «Река есть, а берега потерялись».",
+        "clue": "Назови левый и правый берег.",
+        "releaseCondition": "Экзорцист называет левый и правый берег.",
+        "infectionCondition": "Экзорцист предлагает войти в воображаемую реку."
+      }
+    },
+    {
+      "id": "p15",
+      "role": "possessed",
+      "difficulty": 1,
+      "decision": "retain",
+      "changedFields": [],
+      "rationale": "The behavior, clue, release and infection trigger are actionable and distinct. The task requires no props, contact or hazardous movement.",
+      "checks": {
+        "actionable": true,
+        "clueMatchesRelease": true,
+        "distinctInfection": true,
+        "levelAppropriate": true,
+        "noRequiredProps": true,
+        "noDelayedRescue": true
+      },
+      "balance": "Live rehearsal required; editorial review is not playtest evidence.",
+      "original": {
+        "id": "p15",
+        "role": "possessed",
+        "difficulty": 1,
+        "title": "Потерянное эхо",
+        "behavior": "Говорите: «Моё эхо не вернулось», затем негромко произносите «Дом».",
+        "clue": "Верни мне последнее слово.",
+        "releaseCondition": "Экзорцист повторяет слово «Дом».",
+        "infectionCondition": "Экзорцист просит вас говорить громче."
+      },
+      "final": {
+        "id": "p15",
+        "role": "possessed",
+        "difficulty": 1,
+        "title": "Потерянное эхо",
+        "behavior": "Говорите: «Моё эхо не вернулось», затем негромко произносите «Дом».",
+        "clue": "Верни мне последнее слово.",
+        "releaseCondition": "Экзорцист повторяет слово «Дом».",
+        "infectionCondition": "Экзорцист просит вас говорить громче."
+      }
+    },
+    {
+      "id": "p16",
+      "role": "possessed",
+      "difficulty": 1,
+      "decision": "revise",
+      "changedFields": [
+        "releaseCondition"
+      ],
+      "rationale": "Clarify the accepted response, ordered steps, spoken-only trigger or meeting-place wording; preserve the task identity.",
+      "checks": {
+        "actionable": true,
+        "clueMatchesRelease": true,
+        "distinctInfection": true,
+        "levelAppropriate": true,
+        "noRequiredProps": true,
+        "noDelayedRescue": true
+      },
+      "balance": "Live rehearsal required; editorial review is not playtest evidence.",
+      "original": {
+        "id": "p16",
+        "role": "possessed",
+        "difficulty": 1,
+        "title": "Часы без полудня",
+        "behavior": "Повторяйте: «Утро прошло, вечер не пришёл».",
+        "clue": "Как называется время между утром и вечером?",
+        "releaseCondition": "Экзорцист называет день.",
+        "infectionCondition": "Экзорцист говорит, что наступила ночь."
+      },
+      "final": {
+        "id": "p16",
+        "role": "possessed",
+        "difficulty": 1,
+        "title": "Часы без полудня",
+        "behavior": "Повторяйте: «Утро прошло, вечер не пришёл».",
+        "clue": "Как называется время между утром и вечером?",
+        "releaseCondition": "Экзорцист отвечает «День» — время суток между утром и вечером.",
+        "infectionCondition": "Экзорцист говорит, что наступила ночь."
+      }
+    },
+    {
+      "id": "p17",
+      "role": "possessed",
+      "difficulty": 1,
+      "decision": "retain",
+      "changedFields": [],
+      "rationale": "The behavior, clue, release and infection trigger are actionable and distinct. The task requires no props, contact or hazardous movement.",
+      "checks": {
+        "actionable": true,
+        "clueMatchesRelease": true,
+        "distinctInfection": true,
+        "levelAppropriate": true,
+        "noRequiredProps": true,
+        "noDelayedRescue": true
+      },
+      "balance": "Live rehearsal required; editorial review is not playtest evidence.",
+      "original": {
+        "id": "p17",
+        "role": "possessed",
+        "difficulty": 1,
+        "title": "Добрый сторож",
+        "behavior": "Говорите: «Я не помню ни одного доброго пожелания».",
+        "clue": "Пожелай мне спокойной ночи.",
+        "releaseCondition": "Экзорцист желает вам спокойной ночи.",
+        "infectionCondition": "Экзорцист предлагает вам не спать."
+      },
+      "final": {
+        "id": "p17",
+        "role": "possessed",
+        "difficulty": 1,
+        "title": "Добрый сторож",
+        "behavior": "Говорите: «Я не помню ни одного доброго пожелания».",
+        "clue": "Пожелай мне спокойной ночи.",
+        "releaseCondition": "Экзорцист желает вам спокойной ночи.",
+        "infectionCondition": "Экзорцист предлагает вам не спать."
+      }
+    },
+    {
+      "id": "p18",
+      "role": "possessed",
+      "difficulty": 1,
+      "decision": "revise",
+      "changedFields": [
+        "infectionCondition"
+      ],
+      "rationale": "Clarify the accepted response, ordered steps, spoken-only trigger or meeting-place wording; preserve the task identity.",
+      "checks": {
+        "actionable": true,
+        "clueMatchesRelease": true,
+        "distinctInfection": true,
+        "levelAppropriate": true,
+        "noRequiredProps": true,
+        "noDelayedRescue": true
+      },
+      "balance": "Live rehearsal required; editorial review is not playtest evidence.",
+      "original": {
+        "id": "p18",
+        "role": "possessed",
+        "difficulty": 1,
+        "title": "Открытая дверь эфира",
+        "behavior": "Повторяйте: «В эфире сквозняк, дверь забыли закрыть». Не трогайте настоящие двери.",
+        "clue": "Скажи, что дверь закрыта. Действовать не нужно.",
+        "releaseCondition": "Экзорцист произносит «Дверь закрыта».",
+        "infectionCondition": "Экзорцист предлагает открыть настоящую дверь."
+      },
+      "final": {
+        "id": "p18",
+        "role": "possessed",
+        "difficulty": 1,
+        "title": "Открытая дверь эфира",
+        "behavior": "Повторяйте: «В эфире сквозняк, дверь забыли закрыть». Не трогайте настоящие двери.",
+        "clue": "Скажи, что дверь закрыта. Действовать не нужно.",
+        "releaseCondition": "Экзорцист произносит «Дверь закрыта».",
+        "infectionCondition": "Экзорцист вслух предлагает открыть настоящую дверь. Открывать её не нужно."
+      }
+    },
+    {
+      "id": "p19",
+      "role": "possessed",
+      "difficulty": 1,
+      "decision": "retain",
+      "changedFields": [],
+      "rationale": "The behavior, clue, release and infection trigger are actionable and distinct. The task requires no props, contact or hazardous movement.",
+      "checks": {
+        "actionable": true,
+        "clueMatchesRelease": true,
+        "distinctInfection": true,
+        "levelAppropriate": true,
+        "noRequiredProps": true,
+        "noDelayedRescue": true
+      },
+      "balance": "Live rehearsal required; editorial review is not playtest evidence.",
+      "original": {
+        "id": "p19",
+        "role": "possessed",
+        "difficulty": 1,
+        "title": "Безымянная тишина",
+        "behavior": "Тихо говорите: «Мне забыли назвать тишину».",
+        "clue": "Просто произнеси слово «Тишина».",
+        "releaseCondition": "Экзорцист произносит слово «Тишина».",
+        "infectionCondition": "Экзорцист предлагает устроить шум."
+      },
+      "final": {
+        "id": "p19",
+        "role": "possessed",
+        "difficulty": 1,
+        "title": "Безымянная тишина",
+        "behavior": "Тихо говорите: «Мне забыли назвать тишину».",
+        "clue": "Просто произнеси слово «Тишина».",
+        "releaseCondition": "Экзорцист произносит слово «Тишина».",
+        "infectionCondition": "Экзорцист предлагает устроить шум."
+      }
+    },
+    {
+      "id": "p20",
+      "role": "possessed",
+      "difficulty": 1,
+      "decision": "revise",
+      "changedFields": [
+        "infectionCondition"
+      ],
+      "rationale": "Clarify the accepted response, ordered steps, spoken-only trigger or meeting-place wording; preserve the task identity.",
+      "checks": {
+        "actionable": true,
+        "clueMatchesRelease": true,
+        "distinctInfection": true,
+        "levelAppropriate": true,
+        "noRequiredProps": true,
+        "noDelayedRescue": true
+      },
+      "balance": "Live rehearsal required; editorial review is not playtest evidence.",
+      "original": {
+        "id": "p20",
+        "role": "possessed",
+        "difficulty": 1,
+        "title": "Лампа памяти",
+        "behavior": "Повторяйте: «Невидимой лампе забыли дать свет». Не используйте предметы.",
+        "clue": "Назови любой источник света, включать его не нужно.",
+        "releaseCondition": "Экзорцист называет любой источник света.",
+        "infectionCondition": "Экзорцист предлагает погасить весь свет."
+      },
+      "final": {
+        "id": "p20",
+        "role": "possessed",
+        "difficulty": 1,
+        "title": "Лампа памяти",
+        "behavior": "Повторяйте: «Невидимой лампе забыли дать свет». Не используйте предметы.",
+        "clue": "Назови любой источник света, включать его не нужно.",
+        "releaseCondition": "Экзорцист называет любой источник света.",
+        "infectionCondition": "Экзорцист вслух предлагает погасить весь свет. Выполнять это предложение не нужно."
+      }
+    },
+    {
+      "id": "p21",
+      "role": "possessed",
+      "difficulty": 2,
+      "decision": "revise",
+      "changedFields": [
+        "clue"
+      ],
+      "rationale": "Clarify the accepted response, ordered steps, spoken-only trigger or meeting-place wording; preserve the task identity.",
+      "checks": {
+        "actionable": true,
+        "clueMatchesRelease": true,
+        "distinctInfection": true,
+        "levelAppropriate": true,
+        "noRequiredProps": true,
+        "noDelayedRescue": true
+      },
+      "balance": "Live rehearsal required; editorial review is not playtest evidence.",
+      "original": {
+        "id": "p21",
+        "role": "possessed",
+        "difficulty": 2,
+        "title": "Два объявления",
+        "behavior": "Чередуйте: «Поезд задержан» и «Пассажир забыт».",
+        "clue": "Сначала объяви прибытие, затем пригласи пассажира домой.",
+        "releaseCondition": "Экзорцист по порядку объявляет «Поезд прибыл» и «Пассажир, возвращайтесь домой».",
+        "infectionCondition": "Экзорцист предлагает ждать поезд дальше."
+      },
+      "final": {
+        "id": "p21",
+        "role": "possessed",
+        "difficulty": 2,
+        "title": "Два объявления",
+        "behavior": "Чередуйте: «Поезд задержан» и «Пассажир забыт».",
+        "clue": "Скажи по порядку: «Поезд прибыл», затем «Пассажир, возвращайтесь домой».",
+        "releaseCondition": "Экзорцист по порядку объявляет «Поезд прибыл» и «Пассажир, возвращайтесь домой».",
+        "infectionCondition": "Экзорцист предлагает ждать поезд дальше."
+      }
+    },
+    {
+      "id": "p22",
+      "role": "possessed",
+      "difficulty": 2,
+      "decision": "retain",
+      "changedFields": [],
+      "rationale": "The behavior, clue, release and infection trigger are actionable and distinct. The task requires no props, contact or hazardous movement.",
+      "checks": {
+        "actionable": true,
+        "clueMatchesRelease": true,
+        "distinctInfection": true,
+        "levelAppropriate": true,
+        "noRequiredProps": true,
+        "noDelayedRescue": true
+      },
+      "balance": "Live rehearsal required; editorial review is not playtest evidence.",
+      "original": {
+        "id": "p22",
+        "role": "possessed",
+        "difficulty": 2,
+        "title": "Архив двух полок",
+        "behavior": "Говорите: «На первой полке пусто. На второй нет названия».",
+        "clue": "Назови домашний предмет, а затем скажи, что архив закрыт.",
+        "releaseCondition": "Экзорцист называет домашний предмет и после этого произносит «Архив закрыт».",
+        "infectionCondition": "Экзорцист предлагает выбросить архив."
+      },
+      "final": {
+        "id": "p22",
+        "role": "possessed",
+        "difficulty": 2,
+        "title": "Архив двух полок",
+        "behavior": "Говорите: «На первой полке пусто. На второй нет названия».",
+        "clue": "Назови домашний предмет, а затем скажи, что архив закрыт.",
+        "releaseCondition": "Экзорцист называет домашний предмет и после этого произносит «Архив закрыт».",
+        "infectionCondition": "Экзорцист предлагает выбросить архив."
+      }
+    },
+    {
+      "id": "p23",
+      "role": "possessed",
+      "difficulty": 2,
+      "decision": "retain",
+      "changedFields": [],
+      "rationale": "The behavior, clue, release and infection trigger are actionable and distinct. The task requires no props, contact or hazardous movement.",
+      "checks": {
+        "actionable": true,
+        "clueMatchesRelease": true,
+        "distinctInfection": true,
+        "levelAppropriate": true,
+        "noRequiredProps": true,
+        "noDelayedRescue": true
+      },
+      "balance": "Live rehearsal required; editorial review is not playtest evidence.",
+      "original": {
+        "id": "p23",
+        "role": "possessed",
+        "difficulty": 2,
+        "title": "Смена маяка",
+        "behavior": "Чередуйте: «Берег не виден» и «Смотритель не сменился».",
+        "clue": "Назови любой цвет света, затем объяви, что принимаешь смену.",
+        "releaseCondition": "Экзорцист называет цвет и затем произносит «Я принимаю смену».",
+        "infectionCondition": "Экзорцист предлагает вам остаться на посту."
+      },
+      "final": {
+        "id": "p23",
+        "role": "possessed",
+        "difficulty": 2,
+        "title": "Смена маяка",
+        "behavior": "Чередуйте: «Берег не виден» и «Смотритель не сменился».",
+        "clue": "Назови любой цвет света, затем объяви, что принимаешь смену.",
+        "releaseCondition": "Экзорцист называет цвет и затем произносит «Я принимаю смену».",
+        "infectionCondition": "Экзорцист предлагает вам остаться на посту."
+      }
+    },
+    {
+      "id": "p24",
+      "role": "possessed",
+      "difficulty": 2,
+      "decision": "retain",
+      "changedFields": [],
+      "rationale": "The behavior, clue, release and infection trigger are actionable and distinct. The task requires no props, contact or hazardous movement.",
+      "checks": {
+        "actionable": true,
+        "clueMatchesRelease": true,
+        "distinctInfection": true,
+        "levelAppropriate": true,
+        "noRequiredProps": true,
+        "noDelayedRescue": true
+      },
+      "balance": "Live rehearsal required; editorial review is not playtest evidence.",
+      "original": {
+        "id": "p24",
+        "role": "possessed",
+        "difficulty": 2,
+        "title": "Письмо к утру",
+        "behavior": "Повторяйте: «Письму нужны адрес и ответ».",
+        "clue": "Назови получателем утро, затем поблагодари за письмо.",
+        "releaseCondition": "Экзорцист произносит «Получатель — утро» и затем благодарит за письмо.",
+        "infectionCondition": "Экзорцист говорит, что письмо не нужно читать."
+      },
+      "final": {
+        "id": "p24",
+        "role": "possessed",
+        "difficulty": 2,
+        "title": "Письмо к утру",
+        "behavior": "Повторяйте: «Письму нужны адрес и ответ».",
+        "clue": "Назови получателем утро, затем поблагодари за письмо.",
+        "releaseCondition": "Экзорцист произносит «Получатель — утро» и затем благодарит за письмо.",
+        "infectionCondition": "Экзорцист говорит, что письмо не нужно читать."
+      }
+    },
+    {
+      "id": "p25",
+      "role": "possessed",
+      "difficulty": 2,
+      "decision": "revise",
+      "changedFields": [
+        "releaseCondition"
+      ],
+      "rationale": "Clarify the accepted response, ordered steps, spoken-only trigger or meeting-place wording; preserve the task identity.",
+      "checks": {
+        "actionable": true,
+        "clueMatchesRelease": true,
+        "distinctInfection": true,
+        "levelAppropriate": true,
+        "noRequiredProps": true,
+        "noDelayedRescue": true
+      },
+      "balance": "Live rehearsal required; editorial review is not playtest evidence.",
+      "original": {
+        "id": "p25",
+        "role": "possessed",
+        "difficulty": 2,
+        "title": "Разорванный календарь",
+        "behavior": "Говорите: «Сначала был день, а потом пропало время года».",
+        "clue": "Назови сегодняшний день недели, затем текущее время года.",
+        "releaseCondition": "Экзорцист по порядку правильно называет текущий день недели и время года.",
+        "infectionCondition": "Экзорцист предлагает забыть сегодняшний день."
+      },
+      "final": {
+        "id": "p25",
+        "role": "possessed",
+        "difficulty": 2,
+        "title": "Разорванный календарь",
+        "behavior": "Говорите: «Сначала был день, а потом пропало время года».",
+        "clue": "Назови сегодняшний день недели, затем текущее время года.",
+        "releaseCondition": "Экзорцист называет сегодняшний день недели, затем текущее время года. При сомнении вместе уточните; спор не считается заражением.",
+        "infectionCondition": "Экзорцист предлагает забыть сегодняшний день."
+      }
+    },
+    {
+      "id": "p26",
+      "role": "possessed",
+      "difficulty": 2,
+      "decision": "retain",
+      "changedFields": [],
+      "rationale": "The behavior, clue, release and infection trigger are actionable and distinct. The task requires no props, contact or hazardous movement.",
+      "checks": {
+        "actionable": true,
+        "clueMatchesRelease": true,
+        "distinctInfection": true,
+        "levelAppropriate": true,
+        "noRequiredProps": true,
+        "noDelayedRescue": true
+      },
+      "balance": "Live rehearsal required; editorial review is not playtest evidence.",
+      "original": {
+        "id": "p26",
+        "role": "possessed",
+        "difficulty": 2,
+        "title": "Двойное эхо",
+        "behavior": "Негромко повторяйте «Окно, берег», выдерживая паузу.",
+        "clue": "Повтори мои два слова, затем скажи, что эхо вернулось.",
+        "releaseCondition": "Экзорцист говорит «Окно, берег», затем «Эхо вернулось».",
+        "infectionCondition": "Экзорцист меняет порядок слов при повторении."
+      },
+      "final": {
+        "id": "p26",
+        "role": "possessed",
+        "difficulty": 2,
+        "title": "Двойное эхо",
+        "behavior": "Негромко повторяйте «Окно, берег», выдерживая паузу.",
+        "clue": "Повтори мои два слова, затем скажи, что эхо вернулось.",
+        "releaseCondition": "Экзорцист говорит «Окно, берег», затем «Эхо вернулось».",
+        "infectionCondition": "Экзорцист меняет порядок слов при повторении."
+      }
+    },
+    {
+      "id": "p27",
+      "role": "possessed",
+      "difficulty": 2,
+      "decision": "revise",
+      "changedFields": [
+        "behavior",
+        "clue",
+        "releaseCondition",
+        "infectionCondition"
+      ],
+      "rationale": "Remove dependence on configured zones and prevent a forbidden-area suggestion from becoming an instruction.",
+      "checks": {
+        "actionable": true,
+        "clueMatchesRelease": true,
+        "distinctInfection": true,
+        "levelAppropriate": true,
+        "noRequiredProps": true,
+        "noDelayedRescue": true
+      },
+      "balance": "Live rehearsal required; editorial review is not playtest evidence.",
+      "original": {
+        "id": "p27",
+        "role": "possessed",
+        "difficulty": 2,
+        "title": "Комната двух ответов",
+        "behavior": "Спрашивайте: «Где мы встретимся? Что там делать?». Не уходите с места.",
+        "clue": "Ответь: на базе; затем: отдыхать.",
+        "releaseCondition": "Экзорцист по порядку отвечает «На базе» и «Отдыхать».",
+        "infectionCondition": "Экзорцист предлагает идти в запрещённую зону."
+      },
+      "final": {
+        "id": "p27",
+        "role": "possessed",
+        "difficulty": 2,
+        "title": "Комната двух ответов",
+        "behavior": "Спрашивайте: «Где мы соберёмся после поиска? Что там делать?». Оставайтесь на месте.",
+        "clue": "Ответь по порядку: «У ноутбука», затем «Отдыхать».",
+        "releaseCondition": "Экзорцист отвечает «У ноутбука», затем «Отдыхать».",
+        "infectionCondition": "Экзорцист вслух предлагает продолжать поиск после сигнала возвращения. Следовать этому предложению нельзя."
+      }
+    },
+    {
+      "id": "p28",
+      "role": "possessed",
+      "difficulty": 2,
+      "decision": "retain",
+      "changedFields": [],
+      "rationale": "The behavior, clue, release and infection trigger are actionable and distinct. The task requires no props, contact or hazardous movement.",
+      "checks": {
+        "actionable": true,
+        "clueMatchesRelease": true,
+        "distinctInfection": true,
+        "levelAppropriate": true,
+        "noRequiredProps": true,
+        "noDelayedRescue": true
+      },
+      "balance": "Live rehearsal required; editorial review is not playtest evidence.",
+      "original": {
+        "id": "p28",
+        "role": "possessed",
+        "difficulty": 2,
+        "title": "Незавершённая передача",
+        "behavior": "Говорите: «Сначала позывной. После него нужна подпись».",
+        "clue": "Назови себя, затем объяви конец передачи.",
+        "releaseCondition": "Экзорцист называет своё имя и затем произносит «Конец передачи».",
+        "infectionCondition": "Экзорцист предлагает продолжать передачу всю ночь."
+      },
+      "final": {
+        "id": "p28",
+        "role": "possessed",
+        "difficulty": 2,
+        "title": "Незавершённая передача",
+        "behavior": "Говорите: «Сначала позывной. После него нужна подпись».",
+        "clue": "Назови себя, затем объяви конец передачи.",
+        "releaseCondition": "Экзорцист называет своё имя и затем произносит «Конец передачи».",
+        "infectionCondition": "Экзорцист предлагает продолжать передачу всю ночь."
+      }
+    },
+    {
+      "id": "p29",
+      "role": "possessed",
+      "difficulty": 2,
+      "decision": "revise",
+      "changedFields": [
+        "releaseCondition"
+      ],
+      "rationale": "Clarify the accepted response, ordered steps, spoken-only trigger or meeting-place wording; preserve the task identity.",
+      "checks": {
+        "actionable": true,
+        "clueMatchesRelease": true,
+        "distinctInfection": true,
+        "levelAppropriate": true,
+        "noRequiredProps": true,
+        "noDelayedRescue": true
+      },
+      "balance": "Live rehearsal required; editorial review is not playtest evidence.",
+      "original": {
+        "id": "p29",
+        "role": "possessed",
+        "difficulty": 2,
+        "title": "Хранитель пары",
+        "behavior": "Повторяйте: «Одно слово тёплое, другое — нет».",
+        "clue": "Назови что-нибудь тёплое, затем что-нибудь холодное. Искать ничего не надо.",
+        "releaseCondition": "Экзорцист последовательно называет тёплый и холодный предмет или явление.",
+        "infectionCondition": "Экзорцист предлагает что-нибудь принести."
+      },
+      "final": {
+        "id": "p29",
+        "role": "possessed",
+        "difficulty": 2,
+        "title": "Хранитель пары",
+        "behavior": "Повторяйте: «Одно слово тёплое, другое — нет».",
+        "clue": "Назови что-нибудь тёплое, затем что-нибудь холодное. Искать ничего не надо.",
+        "releaseCondition": "Экзорцист называет сначала что-нибудь тёплое, затем холодное, например «чай, лёд». Приносить предметы не нужно.",
+        "infectionCondition": "Экзорцист предлагает что-нибудь принести."
+      }
+    },
+    {
+      "id": "p30",
+      "role": "possessed",
+      "difficulty": 2,
+      "decision": "revise",
+      "changedFields": [
+        "releaseCondition"
+      ],
+      "rationale": "Clarify the accepted response, ordered steps, spoken-only trigger or meeting-place wording; preserve the task identity.",
+      "checks": {
+        "actionable": true,
+        "clueMatchesRelease": true,
+        "distinctInfection": true,
+        "levelAppropriate": true,
+        "noRequiredProps": true,
+        "noDelayedRescue": true
+      },
+      "balance": "Live rehearsal required; editorial review is not playtest evidence.",
+      "original": {
+        "id": "p30",
+        "role": "possessed",
+        "difficulty": 2,
+        "title": "Билет туда и обратно",
+        "behavior": "Повторяйте: «Отправление помню, возвращение потерял».",
+        "clue": "Сначала скажи «Отправление», затем «Возвращение разрешено».",
+        "releaseCondition": "Экзорцист произносит эти две фразы в указанном порядке.",
+        "infectionCondition": "Экзорцист говорит, что обратного пути нет."
+      },
+      "final": {
+        "id": "p30",
+        "role": "possessed",
+        "difficulty": 2,
+        "title": "Билет туда и обратно",
+        "behavior": "Повторяйте: «Отправление помню, возвращение потерял».",
+        "clue": "Сначала скажи «Отправление», затем «Возвращение разрешено».",
+        "releaseCondition": "Экзорцист говорит «Отправление», затем «Возвращение разрешено».",
+        "infectionCondition": "Экзорцист говорит, что обратного пути нет."
+      }
+    },
+    {
+      "id": "p31",
+      "role": "possessed",
+      "difficulty": 2,
+      "decision": "retain",
+      "changedFields": [],
+      "rationale": "The behavior, clue, release and infection trigger are actionable and distinct. The task requires no props, contact or hazardous movement.",
+      "checks": {
+        "actionable": true,
+        "clueMatchesRelease": true,
+        "distinctInfection": true,
+        "levelAppropriate": true,
+        "noRequiredProps": true,
+        "noDelayedRescue": true
+      },
+      "balance": "Live rehearsal required; editorial review is not playtest evidence.",
+      "original": {
+        "id": "p31",
+        "role": "possessed",
+        "difficulty": 2,
+        "title": "Словарь добрых слов",
+        "behavior": "Говорите: «Словарь просит два разных пожелания».",
+        "clue": "Пожелай мне удачи, затем спокойного возвращения.",
+        "releaseCondition": "Экзорцист желает удачи и после этого спокойного возвращения.",
+        "infectionCondition": "Экзорцист желает вам потеряться."
+      },
+      "final": {
+        "id": "p31",
+        "role": "possessed",
+        "difficulty": 2,
+        "title": "Словарь добрых слов",
+        "behavior": "Говорите: «Словарь просит два разных пожелания».",
+        "clue": "Пожелай мне удачи, затем спокойного возвращения.",
+        "releaseCondition": "Экзорцист желает удачи и после этого спокойного возвращения.",
+        "infectionCondition": "Экзорцист желает вам потеряться."
+      }
+    },
+    {
+      "id": "p32",
+      "role": "possessed",
+      "difficulty": 2,
+      "decision": "retain",
+      "changedFields": [],
+      "rationale": "The behavior, clue, release and infection trigger are actionable and distinct. The task requires no props, contact or hazardous movement.",
+      "checks": {
+        "actionable": true,
+        "clueMatchesRelease": true,
+        "distinctInfection": true,
+        "levelAppropriate": true,
+        "noRequiredProps": true,
+        "noDelayedRescue": true
+      },
+      "balance": "Live rehearsal required; editorial review is not playtest evidence.",
+      "original": {
+        "id": "p32",
+        "role": "possessed",
+        "difficulty": 2,
+        "title": "Два времени суток",
+        "behavior": "Повторяйте: «После ночи пропало утро, после дня — вечер».",
+        "clue": "Назови время после ночи, затем время после дня.",
+        "releaseCondition": "Экзорцист последовательно называет утро и вечер.",
+        "infectionCondition": "Экзорцист утверждает, что утро никогда не наступит."
+      },
+      "final": {
+        "id": "p32",
+        "role": "possessed",
+        "difficulty": 2,
+        "title": "Два времени суток",
+        "behavior": "Повторяйте: «После ночи пропало утро, после дня — вечер».",
+        "clue": "Назови время после ночи, затем время после дня.",
+        "releaseCondition": "Экзорцист последовательно называет утро и вечер.",
+        "infectionCondition": "Экзорцист утверждает, что утро никогда не наступит."
+      }
+    },
+    {
+      "id": "p33",
+      "role": "possessed",
+      "difficulty": 2,
+      "decision": "retain",
+      "changedFields": [],
+      "rationale": "The behavior, clue, release and infection trigger are actionable and distinct. The task requires no props, contact or hazardous movement.",
+      "checks": {
+        "actionable": true,
+        "clueMatchesRelease": true,
+        "distinctInfection": true,
+        "levelAppropriate": true,
+        "noRequiredProps": true,
+        "noDelayedRescue": true
+      },
+      "balance": "Live rehearsal required; editorial review is not playtest evidence.",
+      "original": {
+        "id": "p33",
+        "role": "possessed",
+        "difficulty": 2,
+        "title": "Приёмная тишины",
+        "behavior": "Говорите: «Сначала нужно войти в эфир, потом закрыть его».",
+        "clue": "Поздоровайся, затем произнеси слово «Тишина».",
+        "releaseCondition": "Экзорцист здоровается и после этого произносит «Тишина».",
+        "infectionCondition": "Экзорцист просит вас кричать."
+      },
+      "final": {
+        "id": "p33",
+        "role": "possessed",
+        "difficulty": 2,
+        "title": "Приёмная тишины",
+        "behavior": "Говорите: «Сначала нужно войти в эфир, потом закрыть его».",
+        "clue": "Поздоровайся, затем произнеси слово «Тишина».",
+        "releaseCondition": "Экзорцист здоровается и после этого произносит «Тишина».",
+        "infectionCondition": "Экзорцист просит вас кричать."
+      }
+    },
+    {
+      "id": "p34",
+      "role": "possessed",
+      "difficulty": 2,
+      "decision": "revise",
+      "changedFields": [
+        "clue"
+      ],
+      "rationale": "Clarify the accepted response, ordered steps, spoken-only trigger or meeting-place wording; preserve the task identity.",
+      "checks": {
+        "actionable": true,
+        "clueMatchesRelease": true,
+        "distinctInfection": true,
+        "levelAppropriate": true,
+        "noRequiredProps": true,
+        "noDelayedRescue": true
+      },
+      "balance": "Live rehearsal required; editorial review is not playtest evidence.",
+      "original": {
+        "id": "p34",
+        "role": "possessed",
+        "difficulty": 2,
+        "title": "Невидимая библиотека",
+        "behavior": "Повторяйте: «Книге не хватает названия и читателя».",
+        "clue": "Придумай любое название книги, затем представься её читателем.",
+        "releaseCondition": "Экзорцист называет придуманную книгу и затем говорит «Я её читатель».",
+        "infectionCondition": "Экзорцист предлагает уничтожить книгу."
+      },
+      "final": {
+        "id": "p34",
+        "role": "possessed",
+        "difficulty": 2,
+        "title": "Невидимая библиотека",
+        "behavior": "Повторяйте: «Книге не хватает названия и читателя».",
+        "clue": "Придумай любое название книги, затем скажи: «Я её читатель».",
+        "releaseCondition": "Экзорцист называет придуманную книгу и затем говорит «Я её читатель».",
+        "infectionCondition": "Экзорцист предлагает уничтожить книгу."
+      }
+    },
+    {
+      "id": "p35",
+      "role": "possessed",
+      "difficulty": 2,
+      "decision": "revise",
+      "changedFields": [
+        "infectionCondition"
+      ],
+      "rationale": "Clarify the accepted response, ordered steps, spoken-only trigger or meeting-place wording; preserve the task identity.",
+      "checks": {
+        "actionable": true,
+        "clueMatchesRelease": true,
+        "distinctInfection": true,
+        "levelAppropriate": true,
+        "noRequiredProps": true,
+        "noDelayedRescue": true
+      },
+      "balance": "Live rehearsal required; editorial review is not playtest evidence.",
+      "original": {
+        "id": "p35",
+        "role": "possessed",
+        "difficulty": 2,
+        "title": "Прогноз пустого дома",
+        "behavior": "Говорите: «Сегодняшней погоде забыли дать имя и конец».",
+        "clue": "Назови любую погоду, затем скажи «Прогноз окончен».",
+        "releaseCondition": "Экзорцист называет погоду и после этого произносит «Прогноз окончен».",
+        "infectionCondition": "Экзорцист предлагает выйти проверять погоду."
+      },
+      "final": {
+        "id": "p35",
+        "role": "possessed",
+        "difficulty": 2,
+        "title": "Прогноз пустого дома",
+        "behavior": "Говорите: «Сегодняшней погоде забыли дать имя и конец».",
+        "clue": "Назови любую погоду, затем скажи «Прогноз окончен».",
+        "releaseCondition": "Экзорцист называет погоду и после этого произносит «Прогноз окончен».",
+        "infectionCondition": "Экзорцист вслух предлагает выйти на улицу проверять погоду. Выходить не нужно."
+      }
+    },
+    {
+      "id": "p36",
+      "role": "possessed",
+      "difficulty": 2,
+      "decision": "revise",
+      "changedFields": [
+        "infectionCondition"
+      ],
+      "rationale": "Clarify the accepted response, ordered steps, spoken-only trigger or meeting-place wording; preserve the task identity.",
+      "checks": {
+        "actionable": true,
+        "clueMatchesRelease": true,
+        "distinctInfection": true,
+        "levelAppropriate": true,
+        "noRequiredProps": true,
+        "noDelayedRescue": true
+      },
+      "balance": "Live rehearsal required; editorial review is not playtest evidence.",
+      "original": {
+        "id": "p36",
+        "role": "possessed",
+        "difficulty": 2,
+        "title": "Рамка без картины",
+        "behavior": "Повторяйте: «В картине потерялись цвет и название».",
+        "clue": "Назови цвет, затем придумай название воображаемой картины.",
+        "releaseCondition": "Экзорцист называет любой цвет и после этого название картины.",
+        "infectionCondition": "Экзорцист предлагает снять настоящую картину."
+      },
+      "final": {
+        "id": "p36",
+        "role": "possessed",
+        "difficulty": 2,
+        "title": "Рамка без картины",
+        "behavior": "Повторяйте: «В картине потерялись цвет и название».",
+        "clue": "Назови цвет, затем придумай название воображаемой картины.",
+        "releaseCondition": "Экзорцист называет любой цвет и после этого название картины.",
+        "infectionCondition": "Экзорцист вслух предлагает снять настоящую картину. Трогать её не нужно."
+      }
+    },
+    {
+      "id": "p37",
+      "role": "possessed",
+      "difficulty": 2,
+      "decision": "revise",
+      "changedFields": [
+        "infectionCondition"
+      ],
+      "rationale": "Clarify the accepted response, ordered steps, spoken-only trigger or meeting-place wording; preserve the task identity.",
+      "checks": {
+        "actionable": true,
+        "clueMatchesRelease": true,
+        "distinctInfection": true,
+        "levelAppropriate": true,
+        "noRequiredProps": true,
+        "noDelayedRescue": true
+      },
+      "balance": "Live rehearsal required; editorial review is not playtest evidence.",
+      "original": {
+        "id": "p37",
+        "role": "possessed",
+        "difficulty": 2,
+        "title": "Дежурство у окна",
+        "behavior": "Говорите: «Окно закрыто, но дежурство продолжается». Ничего не трогайте.",
+        "clue": "Подтверди, что окно закрыто, затем разреши мне отдыхать.",
+        "releaseCondition": "Экзорцист говорит «Окно закрыто» и затем «Можно отдыхать».",
+        "infectionCondition": "Экзорцист предлагает открыть окно."
+      },
+      "final": {
+        "id": "p37",
+        "role": "possessed",
+        "difficulty": 2,
+        "title": "Дежурство у окна",
+        "behavior": "Говорите: «Окно закрыто, но дежурство продолжается». Ничего не трогайте.",
+        "clue": "Подтверди, что окно закрыто, затем разреши мне отдыхать.",
+        "releaseCondition": "Экзорцист говорит «Окно закрыто» и затем «Можно отдыхать».",
+        "infectionCondition": "Экзорцист вслух предлагает открыть окно. Открывать его нельзя ради задания."
+      }
+    },
+    {
+      "id": "p38",
+      "role": "possessed",
+      "difficulty": 2,
+      "decision": "revise",
+      "changedFields": [
+        "infectionCondition"
+      ],
+      "rationale": "Clarify the accepted response, ordered steps, spoken-only trigger or meeting-place wording; preserve the task identity.",
+      "checks": {
+        "actionable": true,
+        "clueMatchesRelease": true,
+        "distinctInfection": true,
+        "levelAppropriate": true,
+        "noRequiredProps": true,
+        "noDelayedRescue": true
+      },
+      "balance": "Live rehearsal required; editorial review is not playtest evidence.",
+      "original": {
+        "id": "p38",
+        "role": "possessed",
+        "difficulty": 2,
+        "title": "Сломанный указатель",
+        "behavior": "Повторяйте: «Вверху забыли небо. Внизу забыли землю».",
+        "clue": "Назови небо, затем землю. Показывать руками не нужно.",
+        "releaseCondition": "Экзорцист последовательно произносит «Небо» и «Земля».",
+        "infectionCondition": "Экзорцист предлагает вам переместиться на другой этаж."
+      },
+      "final": {
+        "id": "p38",
+        "role": "possessed",
+        "difficulty": 2,
+        "title": "Сломанный указатель",
+        "behavior": "Повторяйте: «Вверху забыли небо. Внизу забыли землю».",
+        "clue": "Назови небо, затем землю. Показывать руками не нужно.",
+        "releaseCondition": "Экзорцист последовательно произносит «Небо» и «Земля».",
+        "infectionCondition": "Экзорцист вслух предлагает перейти на другой этаж. Переходить не нужно."
+      }
+    },
+    {
+      "id": "p39",
+      "role": "possessed",
+      "difficulty": 2,
+      "decision": "revise",
+      "changedFields": [
+        "releaseCondition"
+      ],
+      "rationale": "Clarify the accepted response, ordered steps, spoken-only trigger or meeting-place wording; preserve the task identity.",
+      "checks": {
+        "actionable": true,
+        "clueMatchesRelease": true,
+        "distinctInfection": true,
+        "levelAppropriate": true,
+        "noRequiredProps": true,
+        "noDelayedRescue": true
+      },
+      "balance": "Live rehearsal required; editorial review is not playtest evidence.",
+      "original": {
+        "id": "p39",
+        "role": "possessed",
+        "difficulty": 2,
+        "title": "Запись без даты",
+        "behavior": "Говорите: «Запись нельзя закончить без дня и подписи».",
+        "clue": "Назови сегодняшний день недели, затем скажи «Записано».",
+        "releaseCondition": "Экзорцист правильно называет день недели и после этого произносит «Записано».",
+        "infectionCondition": "Экзорцист предлагает стереть запись."
+      },
+      "final": {
+        "id": "p39",
+        "role": "possessed",
+        "difficulty": 2,
+        "title": "Запись без даты",
+        "behavior": "Говорите: «Запись нельзя закончить без дня и подписи».",
+        "clue": "Назови сегодняшний день недели, затем скажи «Записано».",
+        "releaseCondition": "Экзорцист называет сегодняшний день недели, затем говорит «Записано». При сомнении вместе уточните день; спор не считается заражением.",
+        "infectionCondition": "Экзорцист предлагает стереть запись."
+      }
+    },
+    {
+      "id": "p40",
+      "role": "possessed",
+      "difficulty": 2,
+      "decision": "revise",
+      "changedFields": [
+        "clue",
+        "releaseCondition"
+      ],
+      "rationale": "Clarify the accepted response, ordered steps, spoken-only trigger or meeting-place wording; preserve the task identity.",
+      "checks": {
+        "actionable": true,
+        "clueMatchesRelease": true,
+        "distinctInfection": true,
+        "levelAppropriate": true,
+        "noRequiredProps": true,
+        "noDelayedRescue": true
+      },
+      "balance": "Live rehearsal required; editorial review is not playtest evidence.",
+      "original": {
+        "id": "p40",
+        "role": "possessed",
+        "difficulty": 2,
+        "title": "Два ключа эфира",
+        "behavior": "Повторяйте: «Первый ключ — спасибо. Второй — разрешение».",
+        "clue": "Поблагодари меня, затем разреши вернуться на базу.",
+        "releaseCondition": "Экзорцист благодарит вас и затем произносит «Возвращайся на базу».",
+        "infectionCondition": "Экзорцист предлагает вам остаться одному до утра."
+      },
+      "final": {
+        "id": "p40",
+        "role": "possessed",
+        "difficulty": 2,
+        "title": "Два ключа эфира",
+        "behavior": "Повторяйте: «Первый ключ — спасибо. Второй — разрешение».",
+        "clue": "Поблагодари меня, затем скажи: «Возвращайся к ноутбуку».",
+        "releaseCondition": "Экзорцист благодарит вас, затем говорит «Возвращайся к ноутбуку».",
+        "infectionCondition": "Экзорцист предлагает вам остаться одному до утра."
+      }
+    },
+    {
+      "id": "p41",
+      "role": "possessed",
+      "difficulty": 3,
+      "decision": "retain",
+      "changedFields": [],
+      "rationale": "The behavior, clue, release and infection trigger are actionable and distinct. The task requires no props, contact or hazardous movement.",
+      "checks": {
+        "actionable": true,
+        "clueMatchesRelease": true,
+        "distinctInfection": true,
+        "levelAppropriate": true,
+        "noRequiredProps": true,
+        "noDelayedRescue": true
+      },
+      "balance": "Live rehearsal required; editorial review is not playtest evidence.",
+      "original": {
+        "id": "p41",
+        "role": "possessed",
+        "difficulty": 3,
+        "title": "Три станции",
+        "behavior": "Негромко повторяйте: «Лес, река, дом. Маршрут пропал».",
+        "clue": "Повтори три станции в том же порядке, затем объяви прибытие.",
+        "releaseCondition": "Экзорцист говорит «Лес, река, дом», затем «Мы прибыли».",
+        "infectionCondition": "Экзорцист предлагает ехать дальше после дома."
+      },
+      "final": {
+        "id": "p41",
+        "role": "possessed",
+        "difficulty": 3,
+        "title": "Три станции",
+        "behavior": "Негромко повторяйте: «Лес, река, дом. Маршрут пропал».",
+        "clue": "Повтори три станции в том же порядке, затем объяви прибытие.",
+        "releaseCondition": "Экзорцист говорит «Лес, река, дом», затем «Мы прибыли».",
+        "infectionCondition": "Экзорцист предлагает ехать дальше после дома."
+      }
+    },
+    {
+      "id": "p42",
+      "role": "possessed",
+      "difficulty": 3,
+      "decision": "retain",
+      "changedFields": [],
+      "rationale": "The behavior, clue, release and infection trigger are actionable and distinct. The task requires no props, contact or hazardous movement.",
+      "checks": {
+        "actionable": true,
+        "clueMatchesRelease": true,
+        "distinctInfection": true,
+        "levelAppropriate": true,
+        "noRequiredProps": true,
+        "noDelayedRescue": true
+      },
+      "balance": "Live rehearsal required; editorial review is not playtest evidence.",
+      "original": {
+        "id": "p42",
+        "role": "possessed",
+        "difficulty": 3,
+        "title": "Архив обратного эха",
+        "behavior": "Говорите: «Свет, голос, дом. Эхо забыло обратный путь».",
+        "clue": "Повтори три слова в обратном порядке: дом, голос, свет.",
+        "releaseCondition": "Экзорцист произносит «Дом, голос, свет» в этом порядке.",
+        "infectionCondition": "Экзорцист повторяет исходный порядок вместо обратного."
+      },
+      "final": {
+        "id": "p42",
+        "role": "possessed",
+        "difficulty": 3,
+        "title": "Архив обратного эха",
+        "behavior": "Говорите: «Свет, голос, дом. Эхо забыло обратный путь».",
+        "clue": "Повтори три слова в обратном порядке: дом, голос, свет.",
+        "releaseCondition": "Экзорцист произносит «Дом, голос, свет» в этом порядке.",
+        "infectionCondition": "Экзорцист повторяет исходный порядок вместо обратного."
+      }
+    },
+    {
+      "id": "p43",
+      "role": "possessed",
+      "difficulty": 3,
+      "decision": "revise",
+      "changedFields": [
+        "releaseCondition"
+      ],
+      "rationale": "Clarify the accepted response, ordered steps, spoken-only trigger or meeting-place wording; preserve the task identity.",
+      "checks": {
+        "actionable": true,
+        "clueMatchesRelease": true,
+        "distinctInfection": true,
+        "levelAppropriate": true,
+        "noRequiredProps": true,
+        "noDelayedRescue": true
+      },
+      "balance": "Live rehearsal required; editorial review is not playtest evidence.",
+      "original": {
+        "id": "p43",
+        "role": "possessed",
+        "difficulty": 3,
+        "title": "Три отметки смотрителя",
+        "behavior": "Говорите: «Смотрителю нужны имя, сигнал и конец смены».",
+        "clue": "Назови себя, затем скажи «Сигнал принят», затем «Смена закончена».",
+        "releaseCondition": "Экзорцист выполняет три названных речевых шага в указанном порядке.",
+        "infectionCondition": "Экзорцист просит вас продолжить смену."
+      },
+      "final": {
+        "id": "p43",
+        "role": "possessed",
+        "difficulty": 3,
+        "title": "Три отметки смотрителя",
+        "behavior": "Говорите: «Смотрителю нужны имя, сигнал и конец смены».",
+        "clue": "Назови себя, затем скажи «Сигнал принят», затем «Смена закончена».",
+        "releaseCondition": "Экзорцист называет своё имя, говорит «Сигнал принят», затем «Смена закончена».",
+        "infectionCondition": "Экзорцист просит вас продолжить смену."
+      }
+    },
+    {
+      "id": "p44",
+      "role": "possessed",
+      "difficulty": 3,
+      "decision": "revise",
+      "changedFields": [
+        "releaseCondition"
+      ],
+      "rationale": "Clarify the accepted response, ordered steps, spoken-only trigger or meeting-place wording; preserve the task identity.",
+      "checks": {
+        "actionable": true,
+        "clueMatchesRelease": true,
+        "distinctInfection": true,
+        "levelAppropriate": true,
+        "noRequiredProps": true,
+        "noDelayedRescue": true
+      },
+      "balance": "Live rehearsal required; editorial review is not playtest evidence.",
+      "original": {
+        "id": "p44",
+        "role": "possessed",
+        "difficulty": 3,
+        "title": "Календарь возвращения",
+        "behavior": "Повторяйте: «Вчера потерялось. Сегодня не подписано. Завтра закрыто».",
+        "clue": "Назови вчерашний, сегодняшний и завтрашний дни недели по порядку.",
+        "releaseCondition": "Экзорцист правильно называет три дня недели в указанной последовательности.",
+        "infectionCondition": "Экзорцист предлагает забыть про завтра."
+      },
+      "final": {
+        "id": "p44",
+        "role": "possessed",
+        "difficulty": 3,
+        "title": "Календарь возвращения",
+        "behavior": "Повторяйте: «Вчера потерялось. Сегодня не подписано. Завтра закрыто».",
+        "clue": "Назови вчерашний, сегодняшний и завтрашний дни недели по порядку.",
+        "releaseCondition": "Экзорцист называет вчерашний, сегодняшний и завтрашний дни недели по порядку. При сомнении вместе уточните дни; спор не считается заражением.",
+        "infectionCondition": "Экзорцист предлагает забыть про завтра."
+      }
+    },
+    {
+      "id": "p45",
+      "role": "possessed",
+      "difficulty": 3,
+      "decision": "retain",
+      "changedFields": [],
+      "rationale": "The behavior, clue, release and infection trigger are actionable and distinct. The task requires no props, contact or hazardous movement.",
+      "checks": {
+        "actionable": true,
+        "clueMatchesRelease": true,
+        "distinctInfection": true,
+        "levelAppropriate": true,
+        "noRequiredProps": true,
+        "noDelayedRescue": true
+      },
+      "balance": "Live rehearsal required; editorial review is not playtest evidence.",
+      "original": {
+        "id": "p45",
+        "role": "possessed",
+        "difficulty": 3,
+        "title": "Письмо трёх слов",
+        "behavior": "Повторяйте: «Дом, покой, утро. Это нужно сохранить».",
+        "clue": "Повтори три слова, затем поблагодари за письмо и подтверди получение.",
+        "releaseCondition": "Экзорцист говорит «Дом, покой, утро», благодарит за письмо и подтверждает получение.",
+        "infectionCondition": "Экзорцист предлагает не сохранять письмо."
+      },
+      "final": {
+        "id": "p45",
+        "role": "possessed",
+        "difficulty": 3,
+        "title": "Письмо трёх слов",
+        "behavior": "Повторяйте: «Дом, покой, утро. Это нужно сохранить».",
+        "clue": "Повтори три слова, затем поблагодари за письмо и подтверди получение.",
+        "releaseCondition": "Экзорцист говорит «Дом, покой, утро», благодарит за письмо и подтверждает получение.",
+        "infectionCondition": "Экзорцист предлагает не сохранять письмо."
+      }
+    },
+    {
+      "id": "p46",
+      "role": "possessed",
+      "difficulty": 3,
+      "decision": "retain",
+      "changedFields": [],
+      "rationale": "The behavior, clue, release and infection trigger are actionable and distinct. The task requires no props, contact or hazardous movement.",
+      "checks": {
+        "actionable": true,
+        "clueMatchesRelease": true,
+        "distinctInfection": true,
+        "levelAppropriate": true,
+        "noRequiredProps": true,
+        "noDelayedRescue": true
+      },
+      "balance": "Live rehearsal required; editorial review is not playtest evidence.",
+      "original": {
+        "id": "p46",
+        "role": "possessed",
+        "difficulty": 3,
+        "title": "Последний прогноз",
+        "behavior": "Говорите: «Сначала туман. Затем ветер. Потом не хватает света».",
+        "clue": "Назови туман, ветер и солнце по порядку, затем объяви конец прогноза.",
+        "releaseCondition": "Экзорцист произносит «Туман, ветер, солнце», затем «Прогноз окончен».",
+        "infectionCondition": "Экзорцист объявляет бесконечную ночь."
+      },
+      "final": {
+        "id": "p46",
+        "role": "possessed",
+        "difficulty": 3,
+        "title": "Последний прогноз",
+        "behavior": "Говорите: «Сначала туман. Затем ветер. Потом не хватает света».",
+        "clue": "Назови туман, ветер и солнце по порядку, затем объяви конец прогноза.",
+        "releaseCondition": "Экзорцист произносит «Туман, ветер, солнце», затем «Прогноз окончен».",
+        "infectionCondition": "Экзорцист объявляет бесконечную ночь."
+      }
+    },
+    {
+      "id": "p47",
+      "role": "possessed",
+      "difficulty": 3,
+      "decision": "revise",
+      "changedFields": [
+        "releaseCondition"
+      ],
+      "rationale": "Clarify the accepted response, ordered steps, spoken-only trigger or meeting-place wording; preserve the task identity.",
+      "checks": {
+        "actionable": true,
+        "clueMatchesRelease": true,
+        "distinctInfection": true,
+        "levelAppropriate": true,
+        "noRequiredProps": true,
+        "noDelayedRescue": true
+      },
+      "balance": "Live rehearsal required; editorial review is not playtest evidence.",
+      "original": {
+        "id": "p47",
+        "role": "possessed",
+        "difficulty": 3,
+        "title": "Книга трёх страниц",
+        "behavior": "Повторяйте: «Первая — имя, вторая — дом, третья не закрыта».",
+        "clue": "Назови своё имя, скажи «Я дома», затем «Книга закрыта».",
+        "releaseCondition": "Экзорцист выполняет три названных шага в этом порядке.",
+        "infectionCondition": "Экзорцист предлагает вырвать страницу."
+      },
+      "final": {
+        "id": "p47",
+        "role": "possessed",
+        "difficulty": 3,
+        "title": "Книга трёх страниц",
+        "behavior": "Повторяйте: «Первая — имя, вторая — дом, третья не закрыта».",
+        "clue": "Назови своё имя, скажи «Я дома», затем «Книга закрыта».",
+        "releaseCondition": "Экзорцист называет своё имя, говорит «Я дома», затем «Книга закрыта».",
+        "infectionCondition": "Экзорцист предлагает вырвать страницу."
+      }
+    },
+    {
+      "id": "p48",
+      "role": "possessed",
+      "difficulty": 3,
+      "decision": "retain",
+      "changedFields": [],
+      "rationale": "The behavior, clue, release and infection trigger are actionable and distinct. The task requires no props, contact or hazardous movement.",
+      "checks": {
+        "actionable": true,
+        "clueMatchesRelease": true,
+        "distinctInfection": true,
+        "levelAppropriate": true,
+        "noRequiredProps": true,
+        "noDelayedRescue": true
+      },
+      "balance": "Live rehearsal required; editorial review is not playtest evidence.",
+      "original": {
+        "id": "p48",
+        "role": "possessed",
+        "difficulty": 3,
+        "title": "Частота семи",
+        "behavior": "Негромко называйте «Семь, пять, три» и повторяйте после паузы.",
+        "clue": "Повтори мои числа, затем назови следующее нечётное число при движении вниз.",
+        "releaseCondition": "Экзорцист произносит «Семь, пять, три, один».",
+        "infectionCondition": "Экзорцист предлагает продолжать отсчёт ниже нуля."
+      },
+      "final": {
+        "id": "p48",
+        "role": "possessed",
+        "difficulty": 3,
+        "title": "Частота семи",
+        "behavior": "Негромко называйте «Семь, пять, три» и повторяйте после паузы.",
+        "clue": "Повтори мои числа, затем назови следующее нечётное число при движении вниз.",
+        "releaseCondition": "Экзорцист произносит «Семь, пять, три, один».",
+        "infectionCondition": "Экзорцист предлагает продолжать отсчёт ниже нуля."
+      }
+    },
+    {
+      "id": "p49",
+      "role": "possessed",
+      "difficulty": 3,
+      "decision": "revise",
+      "changedFields": [
+        "infectionCondition"
+      ],
+      "rationale": "Require the complete wrong sequence; an unfinished attempt must not accidentally count as the trigger.",
+      "checks": {
+        "actionable": true,
+        "clueMatchesRelease": true,
+        "distinctInfection": true,
+        "levelAppropriate": true,
+        "noRequiredProps": true,
+        "noDelayedRescue": true
+      },
+      "balance": "Live rehearsal required; editorial review is not playtest evidence.",
+      "original": {
+        "id": "p49",
+        "role": "possessed",
+        "difficulty": 3,
+        "title": "Три потерянных цвета",
+        "behavior": "Повторяйте: «Красный, синий, белый. Последний должен стать первым».",
+        "clue": "Переставь последний цвет в начало: белый, красный, синий.",
+        "releaseCondition": "Экзорцист называет «Белый, красный, синий» в указанном порядке.",
+        "infectionCondition": "Экзорцист оставляет белый цвет последним."
+      },
+      "final": {
+        "id": "p49",
+        "role": "possessed",
+        "difficulty": 3,
+        "title": "Три потерянных цвета",
+        "behavior": "Повторяйте: «Красный, синий, белый. Последний должен стать первым».",
+        "clue": "Переставь последний цвет в начало: белый, красный, синий.",
+        "releaseCondition": "Экзорцист называет «Белый, красный, синий» в указанном порядке.",
+        "infectionCondition": "Экзорцист полностью повторяет исходную последовательность «Красный, синий, белый» вместо переставленной."
+      }
+    },
+    {
+      "id": "p50",
+      "role": "possessed",
+      "difficulty": 3,
+      "decision": "revise",
+      "changedFields": [
+        "releaseCondition"
+      ],
+      "rationale": "Clarify the accepted response, ordered steps, spoken-only trigger or meeting-place wording; preserve the task identity.",
+      "checks": {
+        "actionable": true,
+        "clueMatchesRelease": true,
+        "distinctInfection": true,
+        "levelAppropriate": true,
+        "noRequiredProps": true,
+        "noDelayedRescue": true
+      },
+      "balance": "Live rehearsal required; editorial review is not playtest evidence.",
+      "original": {
+        "id": "p50",
+        "role": "possessed",
+        "difficulty": 3,
+        "title": "Опись мирных вещей",
+        "behavior": "Говорите: «В описи нет ни мебели, ни посуды, ни одежды».",
+        "clue": "Назови по одному примеру мебели, посуды и одежды — в таком порядке.",
+        "releaseCondition": "Экзорцист называет по одному подходящему предмету каждой из трёх категорий в указанном порядке.",
+        "infectionCondition": "Экзорцист предлагает разыскивать или приносить предметы."
+      },
+      "final": {
+        "id": "p50",
+        "role": "possessed",
+        "difficulty": 3,
+        "title": "Опись мирных вещей",
+        "behavior": "Говорите: «В описи нет ни мебели, ни посуды, ни одежды».",
+        "clue": "Назови по одному примеру мебели, посуды и одежды — в таком порядке.",
+        "releaseCondition": "Экзорцист называет предмет мебели, предмет посуды, предмет одежды — в таком порядке. Например: «Стул, чашка, шарф». Ничего приносить не нужно.",
+        "infectionCondition": "Экзорцист предлагает разыскивать или приносить предметы."
+      }
+    },
+    {
+      "id": "p51",
+      "role": "possessed",
+      "difficulty": 3,
+      "decision": "revise",
+      "changedFields": [
+        "releaseCondition"
+      ],
+      "rationale": "Clarify the accepted response, ordered steps, spoken-only trigger or meeting-place wording; preserve the task identity.",
+      "checks": {
+        "actionable": true,
+        "clueMatchesRelease": true,
+        "distinctInfection": true,
+        "levelAppropriate": true,
+        "noRequiredProps": true,
+        "noDelayedRescue": true
+      },
+      "balance": "Live rehearsal required; editorial review is not playtest evidence.",
+      "original": {
+        "id": "p51",
+        "role": "possessed",
+        "difficulty": 3,
+        "title": "Рассвет по частям",
+        "behavior": "Повторяйте: «Сначала темно. Потом светлеет. Что приходит после?».",
+        "clue": "Скажи «Ночь», затем «Рассвет», затем «День».",
+        "releaseCondition": "Экзорцист произносит три названных слова в указанном порядке.",
+        "infectionCondition": "Экзорцист говорит, что рассвет отменён."
+      },
+      "final": {
+        "id": "p51",
+        "role": "possessed",
+        "difficulty": 3,
+        "title": "Рассвет по частям",
+        "behavior": "Повторяйте: «Сначала темно. Потом светлеет. Что приходит после?».",
+        "clue": "Скажи «Ночь», затем «Рассвет», затем «День».",
+        "releaseCondition": "Экзорцист говорит «Ночь», затем «Рассвет», затем «День».",
+        "infectionCondition": "Экзорцист говорит, что рассвет отменён."
+      }
+    },
+    {
+      "id": "p52",
+      "role": "possessed",
+      "difficulty": 3,
+      "decision": "revise",
+      "changedFields": [
+        "clue",
+        "releaseCondition"
+      ],
+      "rationale": "Clarify the accepted response, ordered steps, spoken-only trigger or meeting-place wording; preserve the task identity.",
+      "checks": {
+        "actionable": true,
+        "clueMatchesRelease": true,
+        "distinctInfection": true,
+        "levelAppropriate": true,
+        "noRequiredProps": true,
+        "noDelayedRescue": true
+      },
+      "balance": "Live rehearsal required; editorial review is not playtest evidence.",
+      "original": {
+        "id": "p52",
+        "role": "possessed",
+        "difficulty": 3,
+        "title": "Трёхстрочный пропуск",
+        "behavior": "Говорите: «Пропуску нужны приветствие, имя и разрешение».",
+        "clue": "Поздоровайся, представься и разреши мне вернуться на базу — по порядку.",
+        "releaseCondition": "Экзорцист здоровается, называет своё имя и затем разрешает вам вернуться на базу.",
+        "infectionCondition": "Экзорцист запрещает вам возвращаться."
+      },
+      "final": {
+        "id": "p52",
+        "role": "possessed",
+        "difficulty": 3,
+        "title": "Трёхстрочный пропуск",
+        "behavior": "Говорите: «Пропуску нужны приветствие, имя и разрешение».",
+        "clue": "Поздоровайся, назови своё имя и разреши мне вернуться к ноутбуку — по порядку.",
+        "releaseCondition": "Экзорцист здоровается, называет своё имя, затем разрешает вам вернуться к ноутбуку.",
+        "infectionCondition": "Экзорцист запрещает вам возвращаться."
+      }
+    },
+    {
+      "id": "p53",
+      "role": "possessed",
+      "difficulty": 3,
+      "decision": "revise",
+      "changedFields": [
+        "releaseCondition"
+      ],
+      "rationale": "Clarify the accepted response, ordered steps, spoken-only trigger or meeting-place wording; preserve the task identity.",
+      "checks": {
+        "actionable": true,
+        "clueMatchesRelease": true,
+        "distinctInfection": true,
+        "levelAppropriate": true,
+        "noRequiredProps": true,
+        "noDelayedRescue": true
+      },
+      "balance": "Live rehearsal required; editorial review is not playtest evidence.",
+      "original": {
+        "id": "p53",
+        "role": "possessed",
+        "difficulty": 3,
+        "title": "Память времён года",
+        "behavior": "Повторяйте: «Лето, осень, зима. Что было до и будет после?».",
+        "clue": "Назови весну, лето, осень, зиму и снова весну.",
+        "releaseCondition": "Экзорцист произносит пять названий в указанном порядке.",
+        "infectionCondition": "Экзорцист предлагает пропустить зиму."
+      },
+      "final": {
+        "id": "p53",
+        "role": "possessed",
+        "difficulty": 3,
+        "title": "Память времён года",
+        "behavior": "Повторяйте: «Лето, осень, зима. Что было до и будет после?».",
+        "clue": "Назови весну, лето, осень, зиму и снова весну.",
+        "releaseCondition": "Экзорцист говорит «Весна, лето, осень, зима, весна» в таком порядке.",
+        "infectionCondition": "Экзорцист предлагает пропустить зиму."
+      }
+    },
+    {
+      "id": "p54",
+      "role": "possessed",
+      "difficulty": 3,
+      "decision": "revise",
+      "changedFields": [
+        "releaseCondition"
+      ],
+      "rationale": "Clarify the accepted response, ordered steps, spoken-only trigger or meeting-place wording; preserve the task identity.",
+      "checks": {
+        "actionable": true,
+        "clueMatchesRelease": true,
+        "distinctInfection": true,
+        "levelAppropriate": true,
+        "noRequiredProps": true,
+        "noDelayedRescue": true
+      },
+      "balance": "Live rehearsal required; editorial review is not playtest evidence.",
+      "original": {
+        "id": "p54",
+        "role": "possessed",
+        "difficulty": 3,
+        "title": "Маршрут письма",
+        "behavior": "Повторяйте: «Отправитель — дом. Получатель — утро. Нужен ответ».",
+        "clue": "Повтори отправителя и получателя, затем скажи «Письмо получено».",
+        "releaseCondition": "Экзорцист говорит «Отправитель — дом», «Получатель — утро», затем «Письмо получено».",
+        "infectionCondition": "Экзорцист меняет отправителя и получателя местами."
+      },
+      "final": {
+        "id": "p54",
+        "role": "possessed",
+        "difficulty": 3,
+        "title": "Маршрут письма",
+        "behavior": "Повторяйте: «Отправитель — дом. Получатель — утро. Нужен ответ».",
+        "clue": "Повтори отправителя и получателя, затем скажи «Письмо получено».",
+        "releaseCondition": "Экзорцист говорит «Отправитель — дом», затем «Получатель — утро», затем «Письмо получено».",
+        "infectionCondition": "Экзорцист меняет отправителя и получателя местами."
+      }
+    },
+    {
+      "id": "p55",
+      "role": "possessed",
+      "difficulty": 3,
+      "decision": "retain",
+      "changedFields": [],
+      "rationale": "The behavior, clue, release and infection trigger are actionable and distinct. The task requires no props, contact or hazardous movement.",
+      "checks": {
+        "actionable": true,
+        "clueMatchesRelease": true,
+        "distinctInfection": true,
+        "levelAppropriate": true,
+        "noRequiredProps": true,
+        "noDelayedRescue": true
+      },
+      "balance": "Live rehearsal required; editorial review is not playtest evidence.",
+      "original": {
+        "id": "p55",
+        "role": "possessed",
+        "difficulty": 3,
+        "title": "Сигнал через паузу",
+        "behavior": "Говорите: «Свет, тень, покой. Среднее слово мешает передаче».",
+        "clue": "Повтори первое и последнее слова, затем подтверди приём сигнала.",
+        "releaseCondition": "Экзорцист говорит «Свет, покой», затем «Сигнал принят».",
+        "infectionCondition": "Экзорцист произносит «Тень» при подтверждении сигнала."
+      },
+      "final": {
+        "id": "p55",
+        "role": "possessed",
+        "difficulty": 3,
+        "title": "Сигнал через паузу",
+        "behavior": "Говорите: «Свет, тень, покой. Среднее слово мешает передаче».",
+        "clue": "Повтори первое и последнее слова, затем подтверди приём сигнала.",
+        "releaseCondition": "Экзорцист говорит «Свет, покой», затем «Сигнал принят».",
+        "infectionCondition": "Экзорцист произносит «Тень» при подтверждении сигнала."
+      }
+    },
+    {
+      "id": "p56",
+      "role": "possessed",
+      "difficulty": 3,
+      "decision": "revise",
+      "changedFields": [
+        "releaseCondition"
+      ],
+      "rationale": "Clarify the accepted response, ordered steps, spoken-only trigger or meeting-place wording; preserve the task identity.",
+      "checks": {
+        "actionable": true,
+        "clueMatchesRelease": true,
+        "distinctInfection": true,
+        "levelAppropriate": true,
+        "noRequiredProps": true,
+        "noDelayedRescue": true
+      },
+      "balance": "Live rehearsal required; editorial review is not playtest evidence.",
+      "original": {
+        "id": "p56",
+        "role": "possessed",
+        "difficulty": 3,
+        "title": "Три спокойных обещания",
+        "behavior": "Повторяйте: «Меня услышат? Мне помогут? Я вернусь?».",
+        "clue": "Ответь по порядку: «Я тебя слышу», «Я помогу», «Ты можешь вернуться».",
+        "releaseCondition": "Экзорцист произносит три названных ответа в указанном порядке.",
+        "infectionCondition": "Экзорцист предлагает вам перестать просить помощь."
+      },
+      "final": {
+        "id": "p56",
+        "role": "possessed",
+        "difficulty": 3,
+        "title": "Три спокойных обещания",
+        "behavior": "Повторяйте: «Меня услышат? Мне помогут? Я вернусь?».",
+        "clue": "Ответь по порядку: «Я тебя слышу», «Я помогу», «Ты можешь вернуться».",
+        "releaseCondition": "Экзорцист говорит «Я тебя слышу», затем «Я помогу», затем «Ты можешь вернуться».",
+        "infectionCondition": "Экзорцист предлагает вам перестать просить помощь."
+      }
+    },
+    {
+      "id": "p57",
+      "role": "possessed",
+      "difficulty": 3,
+      "decision": "retain",
+      "changedFields": [],
+      "rationale": "The behavior, clue, release and infection trigger are actionable and distinct. The task requires no props, contact or hazardous movement.",
+      "checks": {
+        "actionable": true,
+        "clueMatchesRelease": true,
+        "distinctInfection": true,
+        "levelAppropriate": true,
+        "noRequiredProps": true,
+        "noDelayedRescue": true
+      },
+      "balance": "Live rehearsal required; editorial review is not playtest evidence.",
+      "original": {
+        "id": "p57",
+        "role": "possessed",
+        "difficulty": 3,
+        "title": "Голоса старого приёмника",
+        "behavior": "Говорите: «Первый голос — утро, второй — вечер, третий — ночь».",
+        "clue": "Назови второй, первый и третий голоса: вечер, утро, ночь.",
+        "releaseCondition": "Экзорцист произносит «Вечер, утро, ночь» в указанном порядке.",
+        "infectionCondition": "Экзорцист называет ночь первым голосом."
+      },
+      "final": {
+        "id": "p57",
+        "role": "possessed",
+        "difficulty": 3,
+        "title": "Голоса старого приёмника",
+        "behavior": "Говорите: «Первый голос — утро, второй — вечер, третий — ночь».",
+        "clue": "Назови второй, первый и третий голоса: вечер, утро, ночь.",
+        "releaseCondition": "Экзорцист произносит «Вечер, утро, ночь» в указанном порядке.",
+        "infectionCondition": "Экзорцист называет ночь первым голосом."
+      }
+    },
+    {
+      "id": "p58",
+      "role": "possessed",
+      "difficulty": 3,
+      "decision": "revise",
+      "changedFields": [
+        "releaseCondition"
+      ],
+      "rationale": "Clarify the accepted response, ordered steps, spoken-only trigger or meeting-place wording; preserve the task identity.",
+      "checks": {
+        "actionable": true,
+        "clueMatchesRelease": true,
+        "distinctInfection": true,
+        "levelAppropriate": true,
+        "noRequiredProps": true,
+        "noDelayedRescue": true
+      },
+      "balance": "Live rehearsal required; editorial review is not playtest evidence.",
+      "original": {
+        "id": "p58",
+        "role": "possessed",
+        "difficulty": 3,
+        "title": "Дежурный по истории",
+        "behavior": "Повторяйте: «Начало потеряло середину, середина — конец».",
+        "clue": "Скажи «Начало», затем «Середина», затем «История закончена».",
+        "releaseCondition": "Экзорцист произносит три названных части в указанном порядке.",
+        "infectionCondition": "Экзорцист предлагает рассказать бесконечную историю."
+      },
+      "final": {
+        "id": "p58",
+        "role": "possessed",
+        "difficulty": 3,
+        "title": "Дежурный по истории",
+        "behavior": "Повторяйте: «Начало потеряло середину, середина — конец».",
+        "clue": "Скажи «Начало», затем «Середина», затем «История закончена».",
+        "releaseCondition": "Экзорцист говорит «Начало», затем «Середина», затем «История закончена».",
+        "infectionCondition": "Экзорцист предлагает рассказать бесконечную историю."
+      }
+    },
+    {
+      "id": "p59",
+      "role": "possessed",
+      "difficulty": 3,
+      "decision": "revise",
+      "changedFields": [
+        "behavior",
+        "clue",
+        "releaseCondition"
+      ],
+      "rationale": "The phrase sounded like an authoritative return announcement. Replace it with a personal letter response.",
+      "checks": {
+        "actionable": true,
+        "clueMatchesRelease": true,
+        "distinctInfection": true,
+        "levelAppropriate": true,
+        "noRequiredProps": true,
+        "noDelayedRescue": true
+      },
+      "balance": "Live rehearsal required; editorial review is not playtest evidence.",
+      "original": {
+        "id": "p59",
+        "role": "possessed",
+        "difficulty": 3,
+        "title": "Объявление для дома",
+        "behavior": "Говорите: «В объявлении забыли адрес, новость и подпись».",
+        "clue": "Скажи «Для дома», затем «Все возвращаются», затем назови своё имя.",
+        "releaseCondition": "Экзорцист выполняет три названных речевых шага в указанном порядке.",
+        "infectionCondition": "Экзорцист объявляет, что никто не вернётся."
+      },
+      "final": {
+        "id": "p59",
+        "role": "possessed",
+        "difficulty": 3,
+        "title": "Объявление для дома",
+        "behavior": "Говорите: «В личном письме забыли адрес, весть и подпись». Это не общий сигнал возвращения.",
+        "clue": "Скажи «Для дома», затем «Мы дома», затем назови своё имя.",
+        "releaseCondition": "Экзорцист говорит «Для дома», затем «Мы дома», затем называет своё имя.",
+        "infectionCondition": "Экзорцист объявляет, что никто не вернётся."
+      }
+    },
+    {
+      "id": "p60",
+      "role": "possessed",
+      "difficulty": 3,
+      "decision": "retain",
+      "changedFields": [],
+      "rationale": "The behavior, clue, release and infection trigger are actionable and distinct. The task requires no props, contact or hazardous movement.",
+      "checks": {
+        "actionable": true,
+        "clueMatchesRelease": true,
+        "distinctInfection": true,
+        "levelAppropriate": true,
+        "noRequiredProps": true,
+        "noDelayedRescue": true
+      },
+      "balance": "Live rehearsal required; editorial review is not playtest evidence.",
+      "original": {
+        "id": "p60",
+        "role": "possessed",
+        "difficulty": 3,
+        "title": "Последняя строка эфира",
+        "behavior": "Негромко повторяйте «Один, два, три. Кто закроет эфир?».",
+        "clue": "Посчитай от трёх до одного, затем скажи «Эфир закрыт».",
+        "releaseCondition": "Экзорцист произносит «Три, два, один», затем «Эфир закрыт».",
+        "infectionCondition": "Экзорцист предлагает снова открыть эфир."
+      },
+      "final": {
+        "id": "p60",
+        "role": "possessed",
+        "difficulty": 3,
+        "title": "Последняя строка эфира",
+        "behavior": "Негромко повторяйте «Один, два, три. Кто закроет эфир?».",
+        "clue": "Посчитай от трёх до одного, затем скажи «Эфир закрыт».",
+        "releaseCondition": "Экзорцист произносит «Три, два, один», затем «Эфир закрыт».",
+        "infectionCondition": "Экзорцист предлагает снова открыть эфир."
+      }
+    },
+    {
+      "id": "e13",
+      "role": "exorcist",
+      "difficulty": 2,
+      "decision": "revise",
+      "changedFields": [
+        "mission"
+      ],
+      "rationale": "Use direct instructions, move shared optionality into the persistent mission caption, and separate the search action from the after-search report.",
+      "checks": {
+        "actionable": true,
+        "clueMatchesRelease": true,
+        "distinctInfection": true,
+        "levelAppropriate": true,
+        "noRequiredProps": true,
+        "noDelayedRescue": true
+      },
+      "balance": "Live rehearsal required; editorial review is not playtest evidence.",
+      "original": {
+        "id": "e13",
+        "role": "exorcist",
+        "difficulty": 2,
+        "title": "Две детали записи",
+        "mission": "Миссия необязательна: выполняйте только по ходу помощи, не задерживайте освобождение и не ищите участников специально. Запомните одну фразу одержимого и безопасную примету той же зоны. На базе назовите обе детали."
+      },
+      "final": {
+        "id": "e13",
+        "role": "exorcist",
+        "difficulty": 2,
+        "title": "Две детали записи",
+        "mission": "Запомните одну фразу одержимого и одну примету того же места. После поиска назовите обе детали."
+      }
+    },
+    {
+      "id": "e14",
+      "role": "exorcist",
+      "difficulty": 2,
+      "decision": "revise",
+      "changedFields": [
+        "mission"
+      ],
+      "rationale": "Use direct instructions, move shared optionality into the persistent mission caption, and separate the search action from the after-search report.",
+      "checks": {
+        "actionable": true,
+        "clueMatchesRelease": true,
+        "distinctInfection": true,
+        "levelAppropriate": true,
+        "noRequiredProps": true,
+        "noDelayedRescue": true
+      },
+      "balance": "Live rehearsal required; editorial review is not playtest evidence.",
+      "original": {
+        "id": "e14",
+        "role": "exorcist",
+        "difficulty": 2,
+        "title": "Начало и помощь",
+        "mission": "Миссия необязательна: выполняйте только по ходу помощи, не задерживайте освобождение и не ищите участников специально. Запомните поведение одного одержимого и подсказку, которая помогла его понять. На базе опишите их связь."
+      },
+      "final": {
+        "id": "e14",
+        "role": "exorcist",
+        "difficulty": 2,
+        "title": "Начало и помощь",
+        "mission": "Запомните поведение одержимого и подсказку к нему. После поиска объясните их связь."
+      }
+    },
+    {
+      "id": "e15",
+      "role": "exorcist",
+      "difficulty": 2,
+      "decision": "revise",
+      "changedFields": [
+        "mission"
+      ],
+      "rationale": "A second encounter was not guaranteed. Add a same-encounter alternative.",
+      "checks": {
+        "actionable": true,
+        "clueMatchesRelease": true,
+        "distinctInfection": true,
+        "levelAppropriate": true,
+        "noRequiredProps": true,
+        "noDelayedRescue": true
+      },
+      "balance": "Live rehearsal required; editorial review is not playtest evidence.",
+      "original": {
+        "id": "e15",
+        "role": "exorcist",
+        "difficulty": 2,
+        "title": "Два спокойных эпизода",
+        "mission": "Миссия необязательна: выполняйте только по ходу помощи, не задерживайте освобождение и не ищите участников специально. Если по пути встретятся два одержимых, запомните по одному отличию их поведения. Сравните их на базе."
+      },
+      "final": {
+        "id": "e15",
+        "role": "exorcist",
+        "difficulty": 2,
+        "title": "Два спокойных эпизода",
+        "mission": "Если по пути встретите двух одержимых, запомните по одной особенности каждого и сравните их после поиска. Если встретили одного, назовите две особенности его поведения."
+      }
+    },
+    {
+      "id": "e16",
+      "role": "exorcist",
+      "difficulty": 2,
+      "decision": "revise",
+      "changedFields": [
+        "mission"
+      ],
+      "rationale": "Use direct instructions, move shared optionality into the persistent mission caption, and separate the search action from the after-search report.",
+      "checks": {
+        "actionable": true,
+        "clueMatchesRelease": true,
+        "distinctInfection": true,
+        "levelAppropriate": true,
+        "noRequiredProps": true,
+        "noDelayedRescue": true
+      },
+      "balance": "Live rehearsal required; editorial review is not playtest evidence.",
+      "original": {
+        "id": "e16",
+        "role": "exorcist",
+        "difficulty": 2,
+        "title": "Слова и ответ",
+        "mission": "Миссия необязательна: выполняйте только по ходу помощи, не задерживайте освобождение и не ищите участников специально. Запомните вопрос, который вы задали при помощи, и полученный ответ. Перескажите диалог на базе."
+      },
+      "final": {
+        "id": "e16",
+        "role": "exorcist",
+        "difficulty": 2,
+        "title": "Слова и ответ",
+        "mission": "Запомните один свой вопрос при попытке помочь и полученный ответ. После поиска перескажите этот диалог."
+      }
+    },
+    {
+      "id": "e17",
+      "role": "exorcist",
+      "difficulty": 2,
+      "decision": "revise",
+      "changedFields": [
+        "mission"
+      ],
+      "rationale": "Two physical locations were not guaranteed. Add a one-location alternative.",
+      "checks": {
+        "actionable": true,
+        "clueMatchesRelease": true,
+        "distinctInfection": true,
+        "levelAppropriate": true,
+        "noRequiredProps": true,
+        "noDelayedRescue": true
+      },
+      "balance": "Live rehearsal required; editorial review is not playtest evidence.",
+      "original": {
+        "id": "e17",
+        "role": "exorcist",
+        "difficulty": 2,
+        "title": "Порядок пути",
+        "mission": "Миссия необязательна: выполняйте только по ходу помощи, не задерживайте освобождение и не ищите участников специально. Запомните порядок двух разрешённых зон, через которые прошли по ходу поиска. Назовите их на базе."
+      },
+      "final": {
+        "id": "e17",
+        "role": "exorcist",
+        "difficulty": 2,
+        "title": "Порядок пути",
+        "mission": "Запомните порядок двух мест, через которые прошли по обычному пути. После поиска назовите их. Если место было одно, назовите его и замеченную там деталь."
+      }
+    },
+    {
+      "id": "e18",
+      "role": "exorcist",
+      "difficulty": 2,
+      "decision": "revise",
+      "changedFields": [
+        "mission"
+      ],
+      "rationale": "Use direct instructions, move shared optionality into the persistent mission caption, and separate the search action from the after-search report.",
+      "checks": {
+        "actionable": true,
+        "clueMatchesRelease": true,
+        "distinctInfection": true,
+        "levelAppropriate": true,
+        "noRequiredProps": true,
+        "noDelayedRescue": true
+      },
+      "balance": "Live rehearsal required; editorial review is not playtest evidence.",
+      "original": {
+        "id": "e18",
+        "role": "exorcist",
+        "difficulty": 2,
+        "title": "Две благодарности",
+        "mission": "Миссия необязательна: выполняйте только по ходу помощи, не задерживайте освобождение и не ищите участников специально. После помощи поблагодарите освобождённого, а на базе — другого участника за совместную игру."
+      },
+      "final": {
+        "id": "e18",
+        "role": "exorcist",
+        "difficulty": 2,
+        "title": "Две благодарности",
+        "mission": "После помощи поблагодарите участника, а после поиска — ещё одного за совместную игру. Не задерживайте возвращение."
+      }
+    },
+    {
+      "id": "e19",
+      "role": "exorcist",
+      "difficulty": 2,
+      "decision": "revise",
+      "changedFields": [
+        "mission"
+      ],
+      "rationale": "Use direct instructions, move shared optionality into the persistent mission caption, and separate the search action from the after-search report.",
+      "checks": {
+        "actionable": true,
+        "clueMatchesRelease": true,
+        "distinctInfection": true,
+        "levelAppropriate": true,
+        "noRequiredProps": true,
+        "noDelayedRescue": true
+      },
+      "balance": "Live rehearsal required; editorial review is not playtest evidence.",
+      "original": {
+        "id": "e19",
+        "role": "exorcist",
+        "difficulty": 2,
+        "title": "Название и смысл",
+        "mission": "Миссия необязательна: выполняйте только по ходу помощи, не задерживайте освобождение и не ищите участников специально. На базе придумайте короткое название одному эпизоду и объясните, какая подсказка в нём помогла."
+      },
+      "final": {
+        "id": "e19",
+        "role": "exorcist",
+        "difficulty": 2,
+        "title": "Название и смысл",
+        "mission": "После поиска придумайте название эпизоду помощи и объясните, какая подсказка вам пригодилась."
+      }
+    },
+    {
+      "id": "e20",
+      "role": "exorcist",
+      "difficulty": 2,
+      "decision": "revise",
+      "changedFields": [
+        "mission"
+      ],
+      "rationale": "Use direct instructions, move shared optionality into the persistent mission caption, and separate the search action from the after-search report.",
+      "checks": {
+        "actionable": true,
+        "clueMatchesRelease": true,
+        "distinctInfection": true,
+        "levelAppropriate": true,
+        "noRequiredProps": true,
+        "noDelayedRescue": true
+      },
+      "balance": "Live rehearsal required; editorial review is not playtest evidence.",
+      "original": {
+        "id": "e20",
+        "role": "exorcist",
+        "difficulty": 2,
+        "title": "Тихая хроника",
+        "mission": "Миссия необязательна: выполняйте только по ходу помощи, не задерживайте освобождение и не ищите участников специально. Запомните одно действие помощи и результат этого действия. На базе опишите их двумя предложениями."
+      },
+      "final": {
+        "id": "e20",
+        "role": "exorcist",
+        "difficulty": 2,
+        "title": "Тихая хроника",
+        "mission": "Запомните одно действие помощи и его результат. После поиска опишите их двумя предложениями."
+      }
+    },
+    {
+      "id": "e21",
+      "role": "exorcist",
+      "difficulty": 2,
+      "decision": "revise",
+      "changedFields": [
+        "mission"
+      ],
+      "rationale": "Use direct instructions, move shared optionality into the persistent mission caption, and separate the search action from the after-search report.",
+      "checks": {
+        "actionable": true,
+        "clueMatchesRelease": true,
+        "distinctInfection": true,
+        "levelAppropriate": true,
+        "noRequiredProps": true,
+        "noDelayedRescue": true
+      },
+      "balance": "Live rehearsal required; editorial review is not playtest evidence.",
+      "original": {
+        "id": "e21",
+        "role": "exorcist",
+        "difficulty": 2,
+        "title": "До и после сигнала",
+        "mission": "Миссия необязательна: выполняйте только по ходу помощи, не задерживайте освобождение и не ищите участников специально. Запомните, чем вы занимались перед сигналом возвращения и сразу после него. Расскажите об этом на базе."
+      },
+      "final": {
+        "id": "e21",
+        "role": "exorcist",
+        "difficulty": 2,
+        "title": "До и после сигнала",
+        "mission": "Запомните, что делали перед сигналом возвращения и сразу после него. После поиска назовите оба действия."
+      }
+    },
+    {
+      "id": "e22",
+      "role": "exorcist",
+      "difficulty": 3,
+      "decision": "revise",
+      "changedFields": [
+        "mission"
+      ],
+      "rationale": "Use direct instructions, move shared optionality into the persistent mission caption, and separate the search action from the after-search report.",
+      "checks": {
+        "actionable": true,
+        "clueMatchesRelease": true,
+        "distinctInfection": true,
+        "levelAppropriate": true,
+        "noRequiredProps": true,
+        "noDelayedRescue": true
+      },
+      "balance": "Live rehearsal required; editorial review is not playtest evidence.",
+      "original": {
+        "id": "e22",
+        "role": "exorcist",
+        "difficulty": 3,
+        "title": "Три кадра поиска",
+        "mission": "Миссия необязательна: выполняйте только по ходу помощи, не задерживайте освобождение и не ищите участников специально. Запомните три детали одного эпизода помощи: поведение, подсказку и ответ экзорциста. На базе перескажите их в таком порядке."
+      },
+      "final": {
+        "id": "e22",
+        "role": "exorcist",
+        "difficulty": 3,
+        "title": "Три кадра поиска",
+        "mission": "Запомните поведение одержимого, его подсказку и ответ экзорциста. После поиска перескажите эти три детали по порядку."
+      }
+    },
+    {
+      "id": "e23",
+      "role": "exorcist",
+      "difficulty": 3,
+      "decision": "revise",
+      "changedFields": [
+        "mission"
+      ],
+      "rationale": "Use direct instructions, move shared optionality into the persistent mission caption, and separate the search action from the after-search report.",
+      "checks": {
+        "actionable": true,
+        "clueMatchesRelease": true,
+        "distinctInfection": true,
+        "levelAppropriate": true,
+        "noRequiredProps": true,
+        "noDelayedRescue": true
+      },
+      "balance": "Live rehearsal required; editorial review is not playtest evidence.",
+      "original": {
+        "id": "e23",
+        "role": "exorcist",
+        "difficulty": 3,
+        "title": "Путь рассказчика",
+        "mission": "Миссия необязательна: выполняйте только по ходу помощи, не задерживайте освобождение и не ищите участников специально. Запомните порядок до трёх разрешённых зон на своём обычном пути. На базе восстановите маршрут; если зон было меньше, назовите только пройденные."
+      },
+      "final": {
+        "id": "e23",
+        "role": "exorcist",
+        "difficulty": 3,
+        "title": "Путь рассказчика",
+        "mission": "По обычному пути запомните до трёх мест и порядок их посещения. После поиска восстановите маршрут. Если мест было меньше трёх, назовите только посещённые."
+      }
+    },
+    {
+      "id": "e24",
+      "role": "exorcist",
+      "difficulty": 3,
+      "decision": "revise",
+      "changedFields": [
+        "mission"
+      ],
+      "rationale": "Use direct instructions, move shared optionality into the persistent mission caption, and separate the search action from the after-search report.",
+      "checks": {
+        "actionable": true,
+        "clueMatchesRelease": true,
+        "distinctInfection": true,
+        "levelAppropriate": true,
+        "noRequiredProps": true,
+        "noDelayedRescue": true
+      },
+      "balance": "Live rehearsal required; editorial review is not playtest evidence.",
+      "original": {
+        "id": "e24",
+        "role": "exorcist",
+        "difficulty": 3,
+        "title": "Причина и разгадка",
+        "mission": "Миссия необязательна: выполняйте только по ходу помощи, не задерживайте освобождение и не ищите участников специально. Запомните первоначальную догадку, полученную подсказку и окончательное решение одного условия. Объясните на базе, что изменилось."
+      },
+      "final": {
+        "id": "e24",
+        "role": "exorcist",
+        "difficulty": 3,
+        "title": "Причина и разгадка",
+        "mission": "Запомните свою первую догадку, подсказку и окончательное решение одного условия. После поиска объясните, как менялась догадка."
+      }
+    },
+    {
+      "id": "e25",
+      "role": "exorcist",
+      "difficulty": 3,
+      "decision": "revise",
+      "changedFields": [
+        "mission"
+      ],
+      "rationale": "Use direct instructions, move shared optionality into the persistent mission caption, and separate the search action from the after-search report.",
+      "checks": {
+        "actionable": true,
+        "clueMatchesRelease": true,
+        "distinctInfection": true,
+        "levelAppropriate": true,
+        "noRequiredProps": true,
+        "noDelayedRescue": true
+      },
+      "balance": "Live rehearsal required; editorial review is not playtest evidence.",
+      "original": {
+        "id": "e25",
+        "role": "exorcist",
+        "difficulty": 3,
+        "title": "Три мирных слова",
+        "mission": "Миссия необязательна: выполняйте только по ходу помощи, не задерживайте освобождение и не ищите участников специально. По ходу обычного поиска запомните три разных мирных слова, услышанных в игре. На базе составьте из них короткую фразу."
+      },
+      "final": {
+        "id": "e25",
+        "role": "exorcist",
+        "difficulty": 3,
+        "title": "Три мирных слова",
+        "mission": "Запомните три разных спокойных слова, услышанных по обычному пути. После поиска составьте из них короткую фразу."
+      }
+    },
+    {
+      "id": "e26",
+      "role": "exorcist",
+      "difficulty": 3,
+      "decision": "revise",
+      "changedFields": [
+        "mission"
+      ],
+      "rationale": "Use direct instructions, move shared optionality into the persistent mission caption, and separate the search action from the after-search report.",
+      "checks": {
+        "actionable": true,
+        "clueMatchesRelease": true,
+        "distinctInfection": true,
+        "levelAppropriate": true,
+        "noRequiredProps": true,
+        "noDelayedRescue": true
+      },
+      "balance": "Live rehearsal required; editorial review is not playtest evidence.",
+      "original": {
+        "id": "e26",
+        "role": "exorcist",
+        "difficulty": 3,
+        "title": "Запись для утра",
+        "mission": "Миссия необязательна: выполняйте только по ходу помощи, не задерживайте освобождение и не ищите участников специально. На базе перескажите один эпизод в трёх частях: что заметили, как помогли, чем всё закончилось."
+      },
+      "final": {
+        "id": "e26",
+        "role": "exorcist",
+        "difficulty": 3,
+        "title": "Запись для утра",
+        "mission": "После поиска расскажите об одном эпизоде в трёх частях: что заметили, как помогали, чем всё закончилось."
+      }
+    },
+    {
+      "id": "e27",
+      "role": "exorcist",
+      "difficulty": 3,
+      "decision": "revise",
+      "changedFields": [
+        "mission"
+      ],
+      "rationale": "Make both encounter-count branches have three recall elements.",
+      "checks": {
+        "actionable": true,
+        "clueMatchesRelease": true,
+        "distinctInfection": true,
+        "levelAppropriate": true,
+        "noRequiredProps": true,
+        "noDelayedRescue": true
+      },
+      "balance": "Live rehearsal required; editorial review is not playtest evidence.",
+      "original": {
+        "id": "e27",
+        "role": "exorcist",
+        "difficulty": 3,
+        "title": "Сравнение сигналов",
+        "mission": "Миссия необязательна: выполняйте только по ходу помощи, не задерживайте освобождение и не ищите участников специально. Если встретите двух одержимых, запомните их подсказки. На базе назовите по одному различию и одно сходство; если встретили одного, опишите только его."
+      },
+      "final": {
+        "id": "e27",
+        "role": "exorcist",
+        "difficulty": 3,
+        "title": "Сравнение сигналов",
+        "mission": "Запомните подсказки двух встреченных одержимых. После поиска назовите одно сходство и одно различие. Если встретили одного, назовите его подсказку, свою догадку и решение."
+      }
+    },
+    {
+      "id": "e28",
+      "role": "exorcist",
+      "difficulty": 3,
+      "decision": "revise",
+      "changedFields": [
+        "mission"
+      ],
+      "rationale": "Use direct instructions, move shared optionality into the persistent mission caption, and separate the search action from the after-search report.",
+      "checks": {
+        "actionable": true,
+        "clueMatchesRelease": true,
+        "distinctInfection": true,
+        "levelAppropriate": true,
+        "noRequiredProps": true,
+        "noDelayedRescue": true
+      },
+      "balance": "Live rehearsal required; editorial review is not playtest evidence.",
+      "original": {
+        "id": "e28",
+        "role": "exorcist",
+        "difficulty": 3,
+        "title": "Обратная хроника",
+        "mission": "Миссия необязательна: выполняйте только по ходу помощи, не задерживайте освобождение и не ищите участников специально. Запомните до трёх последовательных событий своего поиска. На базе расскажите о них от последнего к первому."
+      },
+      "final": {
+        "id": "e28",
+        "role": "exorcist",
+        "difficulty": 3,
+        "title": "Обратная хроника",
+        "mission": "Запомните до трёх событий своего поиска. После поиска расскажите о них от последнего к первому. Если событий было меньше, расскажите только о них."
+      }
+    },
+    {
+      "id": "e29",
+      "role": "exorcist",
+      "difficulty": 3,
+      "decision": "revise",
+      "changedFields": [
+        "mission"
+      ],
+      "rationale": "Use direct instructions, move shared optionality into the persistent mission caption, and separate the search action from the after-search report.",
+      "checks": {
+        "actionable": true,
+        "clueMatchesRelease": true,
+        "distinctInfection": true,
+        "levelAppropriate": true,
+        "noRequiredProps": true,
+        "noDelayedRescue": true
+      },
+      "balance": "Live rehearsal required; editorial review is not playtest evidence.",
+      "original": {
+        "id": "e29",
+        "role": "exorcist",
+        "difficulty": 3,
+        "title": "Память о помощи",
+        "mission": "Миссия необязательна: выполняйте только по ходу помощи, не задерживайте освобождение и не ищите участников специально. Запомните имя участника, одну связанную с ним фразу и оказанную помощь. На базе свяжите эти три детали в рассказ."
+      },
+      "final": {
+        "id": "e29",
+        "role": "exorcist",
+        "difficulty": 3,
+        "title": "Память о помощи",
+        "mission": "Запомните имя участника, его фразу и свою попытку помочь. После поиска свяжите эти три детали в короткий рассказ."
+      }
+    },
+    {
+      "id": "e30",
+      "role": "exorcist",
+      "difficulty": 3,
+      "decision": "revise",
+      "changedFields": [
+        "mission"
+      ],
+      "rationale": "Use direct instructions, move shared optionality into the persistent mission caption, and separate the search action from the after-search report.",
+      "checks": {
+        "actionable": true,
+        "clueMatchesRelease": true,
+        "distinctInfection": true,
+        "levelAppropriate": true,
+        "noRequiredProps": true,
+        "noDelayedRescue": true
+      },
+      "balance": "Live rehearsal required; editorial review is not playtest evidence.",
+      "original": {
+        "id": "e30",
+        "role": "exorcist",
+        "difficulty": 3,
+        "title": "Последний заголовок",
+        "mission": "Миссия необязательна: выполняйте только по ходу помощи, не задерживайте освобождение и не ищите участников специально. На базе придумайте заголовок эпизода, назовите две его детали и объясните выбор заголовка."
+      },
+      "final": {
+        "id": "e30",
+        "role": "exorcist",
+        "difficulty": 3,
+        "title": "Последний заголовок",
+        "mission": "После поиска придумайте заголовок эпизода, назовите две его детали и объясните выбор заголовка."
+      }
+    }
+  ]
+}

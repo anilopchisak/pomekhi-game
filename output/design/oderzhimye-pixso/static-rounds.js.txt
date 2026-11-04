@@ -1,0 +1,117 @@
+const page = pixso.getNodeById('3:3');
+const font = style => ({ family: 'Inter', style });
+const mono = {family:'IBM Plex Mono',style:'Medium',hash:'ac0c3464000d8fb6175b85f8fa3e30a3fb8351fe'};
+await Promise.all([font('Regular'),font('Medium'),font('Bold'),mono].map(f=>pixso.loadFontAsync(f)));
+const section = pixso.createSection();
+section.name = '10 · Передача · раунд, сверка и восстановление';
+page.appendChild(section);
+section.x = 0;
+section.y = Math.max(...page.children.filter(n=>n.id!==section.id).map(n=>n.y+n.height))+160;
+section.resizeWithoutConstraints(4650,4900);
+
+const frames = [];
+function clone(id,key,title,width=1366,height=768) {
+  const node = pixso.getNodeById(id).clone();
+  section.appendChild(node);
+  node.name=key+' · '+title;
+  node.x=36+(frames.length%3)*1530;
+  node.y=56+Math.floor(frames.length/3)*950;
+  if(node.width!==width || node.height!==height)node.resize(width,height);
+  frames.push({id:node.id,key,title,width:node.width,height:node.height});
+  return node;
+}
+function rewrite(node,value,metric) {
+  if(!node)throw Error('Missing text '+value);
+  const style = metric?.[2]??node.fontName.style??'Regular';
+  if(node.fontName.family==='Golos Text'){
+    node.textStyleId='';
+    node.fontName=font(style);
+  }
+  if(metric){
+    node.fontSize=metric[0];
+    node.lineHeight={unit:'PIXELS',value:metric[1]};
+  }
+  node.characters=String(value);
+  if(node.characters!==String(value)||node.hasMissingFont)throw Error('Invalid text '+node.id);
+}
+function panel(root){return root.findOne(n=>n.name==='Ritual · compact progress');}
+function phase(root){return root.findOne(n=>n.name==='Current phase');}
+function replaceRitual(root,reference) {
+  const old=panel(root);
+  const parent=old.parent;
+  const index=parent.children.findIndex(n=>n.id===old.id);
+  const copy=panel(pixso.getNodeById(reference)).clone();
+  parent.insertChild(index,copy);
+  old.remove();
+  return copy;
+}
+function roundLabel(ritual,round) {
+  const existing=ritual.children.find(n=>n.name==='Round indicator');
+  if(existing){rewrite(existing,round+' / 7 РАУНДОВ',[13,18,'Regular']);return;}
+  const badge=ritual.children.find(n=>n.name.startsWith('Tag /'));
+  const copy=ritual.children.find(n=>n.name.startsWith('Small / Осталось')).clone();
+  ritual.insertChild(ritual.children.findIndex(n=>n.id===badge.id)+1,copy);
+  badge.visible=false;
+  copy.name='Round indicator';
+  rewrite(copy,round+' / 7 РАУНДОВ',[13,18,'Regular']);
+}
+function candleCounts(ritual,counts) {
+  const route=ritual.children.find(n=>n.name==='Candle route');
+  for(const [i,tile] of route.children.entries()){
+    rewrite(tile.findOne(n=>n.type==='TEXT'&&n.name.startsWith('Code /')),counts[i]);
+  }
+  rewrite(ritual.children.find(n=>n.name.startsWith('Metric /')),3*counts[0]+2*counts[1]+counts[2]);
+}
+function scene(root,title,body) {
+  const center=phase(root);
+  if(title)rewrite(center.children.find(n=>n.type==='TEXT'&&n.name.startsWith('Title /')),title,[32,40,'Bold']);
+  if(body)rewrite(center.children.find(n=>n.type==='TEXT'&&n.name.startsWith('Body /')),body,[16,24,'Regular']);
+}
+function named(root,prefix){return root.findOne(n=>n.type==='TEXT'&&n.name.startsWith(prefix));}
+
+const applied=clone('3:2039','S01','Раунд 2 · результат сохранён');
+const appliedRitual=replaceRitual(applied,'7:15026');
+roundLabel(appliedRitual,2);
+scene(applied,'Шесть шагов сохранены','Засчитаны четыре освобождённых задания и две миссии. Движение свечей можно пропустить. После возврата связи откроется это же состояние.');
+rewrite(named(phase(applied),'Label / 13 / 2 / 3'),'9 / 6 / 3 → 3 / 12 / 3',[14,20,'Medium']);
+rewrite(named(phase(applied),'Small / 4 подтверждённых'),'Осталось 36 шагов. Ни одно прорицание ещё не открыто.',[13,18,'Regular']);
+
+const rejected=clone('7:14802','S02','Раунд 2 · спорная миссия отклонена');
+scene(rejected,'Пять успехов к подтверждению','Четыре освобождённых задания и одна допустимая миссия дают пять шагов. Поздняя запись о миссии Никиты отклонена.');
+const rejectedMission=phase(rejected).findOne(n=>n.type==='TEXT'&&n.name==='Title / 1'&&n.parent.children.some(c=>c.type==='TEXT'&&c.characters==='Миссия'));
+rewrite(rejectedMission,'1',[32,40,'Bold']);
+
+const fewer=clone(applied.id,'S03','Раунд 2 · сохранены пять шагов');
+candleCounts(panel(fewer),[4,11,3]);
+scene(fewer,'Пять шагов сохранены','Спорная миссия исключена. Освобождение группы и порядок новой раздачи сохраняются. Отклонённое действие не двигает свечу.');
+rewrite(named(phase(fewer),'Label / 13 / 2 / 3'),'9 / 6 / 3 → 4 / 11 / 3',[14,20,'Medium']);
+rewrite(named(phase(fewer),'Small / 4 подтверждённых'),'Осталось 37 шагов. Обе неосвобождённые группы остаются на местах.',[13,18,'Regular']);
+
+for(const [key,source,reference,round,title,body,width,height] of [
+  ['S04','20:10909','7:15026',3,'Читают только вернувшиеся','Восемь новых карточек. Четверо продолжают свои прежние задания в двух группах. Время чтения не ограничено.',1366,768],
+  ['S05','20:11673','7:15026',3,'Расстановка · 45 секунд','Новые одержимые занимают места и выключают свет. Экзорцисты ждут у стола. Прежние группы остаются там, где были.',1366,768],
+  ['S06','20:11343','7:15026',3,'Исследование · 4 минуты','Экзорцисты исследуют по одному. Прежние группы продолжают задания. По сигналу к столу вернутся только свободные.',1366,768],
+  ['S07','20:10909','7:15197',5,'Читают только вернувшиеся','Четверо остаются на своих местах. Прорицание «Имена стёрты» действует у стола, хотя к нему вернулась свеча.',1366,768],
+  ['S08','20:11673','7:15197',5,'Расстановка · 45 секунд','Новые одержимые занимают места. Свечи и первое открытое прорицание сохраняются.',1366,768],
+  ['S09','20:11343','7:15197',5,'Исследование · 4 минуты','Продолжается пятый раунд. Свободные исследуют по одному. Неосвобождённые продолжают прежние задания.',1440,900],
+  ['S10','3:3409','7:15197',5,'Раунд 5 · восстановление на паузе','Осталось 02:18. Назначения, отчёты, две группы и открытое прорицание восстановлены. Продолжение с ноутбука запускает оставшееся время.',1366,768]
+]){
+  const node=clone(source,key,'Раунд '+round+' · '+title,width,height);
+  roundLabel(replaceRitual(node,reference),round);
+  scene(node,null,body);
+}
+
+for(const [key,count,title,body] of [
+ ['S11','4','Последняя сверка · победа возможна','Четыре подтверждённых освобождения погасят последние четыре свечи. Если сверка подтвердится, Ведущий позовёт к столу всех.'],
+ ['S12','3','Последняя сверка · останется свеча','Засчитаны три освобождения. После подтверждения у последней двери останется одна свеча. После седьмой сверки партия завершится.']
+]){
+  const node=clone('7:14802',key,title);
+  roundLabel(replaceRitual(node,'7:17481'),7);
+  scene(node,title,body);
+  const center=phase(node);
+  for(const [label,value] of [['Освобождения',count],['Миссия','0']]){
+    const text=center.findOne(n=>n.type==='TEXT'&&n.characters===label);
+    rewrite(text.parent.children.find(n=>n.type==='TEXT'&&n.id!==text.id),value,[32,40,'Bold']);
+  }
+}
+return {verified:frames.every(f=>pixso.getNodeById(f.id).parent.id===section.id),section:section.id,frames};

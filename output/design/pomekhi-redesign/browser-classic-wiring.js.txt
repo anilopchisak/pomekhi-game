@@ -1,0 +1,9 @@
+const targets={PX01:['PX02','PXT02','PXT03'],PX02:['PX02','PXT02','PXT03'],PXT02:['PX02','PXT02','PXT03'],PXT03:['PX02','PXT02','PXT03'],PXC01:['PXC02','PXC03','PXC04'],PXC02:['PXC02','PXC03','PXC04'],PXC03:['PXC02','PXC03','PXC04'],PXC04:['PXC02','PXC03','PXC04']};
+for(const [id,list]of Object.entries(targets))for(const [i,name]of ['Никита','Оля','Саша'].entries())await attach(id,name,list[i]);
+for(const [i,name]of ['Анна','Миша','Даша','Никита','Оля','Саша'].entries())await attach('PX12',name,i===0?'PX13':'PXS0'+i);
+for(const id of ['PX13','PXS01','PXS02','PXS03','PXS04','PXS05']){await attach(id,'primary','P17');const n=await figma.getNodeByIdAsync(A[id].secondary);await n.setReactionsAsync([{trigger:{type:'ON_CLICK'},actions:[{type:'BACK'}]}]);created.push(n.id);}
+for(const id of ['P17','P18','PX19'])await attach(id,'secondary','PXC01');
+await attach('PX10','primary','P14');await attach('PXC10','primary','P17');
+for(const id of ['PXC02','PXC03','PXC04'])await attach(id,'primary','PXC10');
+for(const id of ['PX02','PXT02','PXT03'])await attach(id,'primary','PX10');
+for(const id of ['PXC02','PXC03','PXC04','PXT02','PXT03']){const n=await figma.getNodeByIdAsync(A[id].secondary);await n.setReactionsAsync([{trigger:{type:'ON_CLICK'},actions:[{type:'BACK'}]}]);created.push(n.id);}

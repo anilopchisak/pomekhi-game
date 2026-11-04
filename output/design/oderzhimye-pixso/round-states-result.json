@@ -1,0 +1,18 @@
+{
+  "jsonrpc": "2.0",
+  "id": 9072064,
+  "result": {
+    "content": [
+      {
+        "type": "text",
+        "text": "{\"error\":\"Error: Missing text 2 / 7 РАУНДОВ\\nSource (eval_script line 21): if(!node)throw Error('Missing text '+value);\\n    at textNode (mcp-evaluate-script.js:22)\\n    at label (mcp-evaluate-script.js)\\n    at <anonymous> (mcp-evaluate-script.js:59)\\n    at <anonymous> (mcp-evaluate-script.js:88)\\n    at <eval> (mcp-evaluate-script.js:95)\\n\",\"rollback\":{\"status\":\"attempted\"}}"
+      }
+    ],
+    "structuredContent": {
+      "error": "Error: Missing text 2 / 7 РАУНДОВ\nSource (eval_script line 21): if(!node)throw Error('Missing text '+value);\n    at textNode (mcp-evaluate-script.js:22)\n    at label (mcp-evaluate-script.js)\n    at <anonymous> (mcp-evaluate-script.js:59)\n    at <anonymous> (mcp-evaluate-script.js:88)\n    at <eval> (mcp-evaluate-script.js:95)\n",
+      "rollback": {
+        "status": "attempted"
+      }
+    }
+  }
+}

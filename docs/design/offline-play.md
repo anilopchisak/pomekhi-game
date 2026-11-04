@@ -1,5 +1,7 @@
 # Offline participation and reconciliation
 
+> The executable uses the [first-game design](first-game.md). Below, older round, dealing, scoring and schema behavior applies to compatibility fixtures; shared foundation behavior still applies.
+
 Status: implemented. The server confirms game rules; a phone can retain its private view and record provisional actions while disconnected. Physical performance remains trust-based. [Product requirements](../product/README.md) own participation rules.
 
 ## Owners and storage

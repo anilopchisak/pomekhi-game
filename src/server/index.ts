@@ -15,8 +15,8 @@ async function main() {
     throw new Error('Client build is missing. Run npm run build before npm start.');
   }
   const organizerCode = generateOrganizerCode();
-  const sessionStore = createFileSessionStore(resolve('data'));
-  const runtime = createServerRuntime({ config, clientDirectory, organizerCode, sessionStore, onError: () => {
+  const sessionStore = createFileSessionStore(resolve('data'), true);
+  const runtime = createServerRuntime({ config, clientDirectory, organizerCode, sessionStore, firstGame: true, onError: () => {
     console.error('Pomekhi server encountered a transport error.');
     process.exitCode = 1;
     stopServer();

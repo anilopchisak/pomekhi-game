@@ -1,0 +1,1 @@
+{"file_key": "PvAwgT1U6s5Oj8tX7ShmIA", "script": "return {pages:pixso.root.children.map(p=>({id:p.id,name:p.name,type:p.type})),currentPage:{id:pixso.currentPage.id,name:pixso.currentPage.name},api:{getNodeById:typeof pixso.getNodeById,getNodeByIdAsync:typeof pixso.getNodeByIdAsync,setCurrentPageAsync:typeof pixso.setCurrentPageAsync}};"}

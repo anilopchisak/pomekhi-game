@@ -1,6 +1,6 @@
 # Architecture and ownership
 
-Status: runtime foundation, one locally saved room, private cards and timed rounds. Search actions and results are implemented; paused disk recovery is implemented as described in [product requirements](../product/README.md).
+This document describes implemented ownership and boundaries. [Current implementation](../product/current-implementation.md) records existing behavior; [target rules](../product/README.md) record intended behavior. Use the [game rules workflow](game-rules.md) when a task depends on that distinction.
 
 ## Current modules
 

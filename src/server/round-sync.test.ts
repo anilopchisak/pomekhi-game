@@ -31,7 +31,7 @@ it('requires organizer review for late timing and keeps dependent undo causal', 
   j.resolve(capture.id, 'accept'); expect(j.current().personal(b)?.status).toBe('captured');
   const release = event(b, { kind: 'release' }); j.ingest(b, [release], () => true);
   const undo = event(a, { kind: 'undo', actionId: capture.id }, capture.id); j.ingest(a, [undo], () => true);
-  expect(j.personal(a).receipts.at(-1)).toMatchObject({ status: 'review', reason: 'UNDO_DEPENDENCY' });
+  expect(j.personal(a)?.receipts.at(-1)).toMatchObject({ status: 'review', reason: 'UNDO_DEPENDENCY' });
   j.resolve(release.id, 'reject'); expect(j.current().personal(b)?.status).toBe('exorcist');
 });
 it('can reject a competing accepted capture and accept the intended group', () => {
@@ -46,7 +46,7 @@ it('retains group progress when its original leaves and persists receipt/undo st
   const { journal: j, event, roots: [a], exos: [b], generateId } = fixture();
   j.ingest(a, [event(a, { kind: 'infect', targetId: b })], () => true);
   j.ingest(b, [event(b, { kind: 'captured', by: a })], () => true);
-  j.ingest(a, [event(a, { kind: 'withdraw' })], () => true); expect(j.personal(a).withdrawn).toBe(true);
+  j.ingest(a, [event(a, { kind: 'withdraw' })], () => true); expect(j.personal(a)?.withdrawn).toBe(true);
   j.ingest(b, [event(b, { kind: 'release' })], () => true);
   const restored = createRoundSync(JSON.parse(JSON.stringify(j.exportState())), generateId);
   expect(restored.current().result(1, 'provisional', 0)).toMatchObject({ rescuedGroups: 1, infectedPlayers: 1, totalGroups: 3 });
@@ -58,7 +58,7 @@ it('waits for everyone and explicitly rejects unreceived actions after force-clo
   const mission = event(a, { kind: 'mission', completed: true }); j.ingest(a, [mission], () => true); expect(j.ready()).toBe(false);
   expect(j.complete(a, -1)).toBe('STALE_GAME');
   j.close(); const late = event(a, { kind: 'mission', completed: false }); j.ingest(a, [late], () => true);
-  expect(j.personal(a).receipts.at(-1)).toMatchObject({ status: 'rejected', reason: 'results_closed' });
+  expect(j.personal(a)?.receipts.at(-1)).toMatchObject({ status: 'rejected', reason: 'results_closed' });
   expect(j.current().result(1, 'provisional', 0).missions).toBe(1);
 });
 it('rejects forged retries and independent sequence collisions', () => {
@@ -67,6 +67,7 @@ it('rejects forged retries and independent sequence collisions', () => {
   expect(j.ingest(a, [{ ...original, action: { kind: 'withdraw' } }], () => true)).toBe('INVALID_INPUT');
   expect(j.ingest(a, [{ ...original, id: 'different-event' }], () => true)).toBe('INVALID_INPUT');
   expect(j.ingest('stranger', [original], () => true)).toBe('FORBIDDEN');
+  expect(j.personal('stranger')).toBeNull();
 });
 
 it('accepts a delayed capture notice after its source withdrew without dropping the group', () => {

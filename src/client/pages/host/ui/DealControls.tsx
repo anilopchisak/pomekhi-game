@@ -1,3 +1,4 @@
+import { ConfirmButton } from '../../../shared/ui/index.js';
 import { useState } from 'react';
 import { dealCommand } from '../../../shared/api/index.js';
 import type { LobbyCommand, LobbyInputs, RoomSnapshot } from '../../../../shared/protocol.js';
@@ -12,6 +13,21 @@ export function DealControls({ room, disabled, run }: {
   const reading = room.game.phase === 'reading';
   const readyCount = room.dealing.assignments.filter(item => item.ready).length;
   if (!['lobby', 'reading', 'between_rounds'].includes(room.game.phase)) return null;
+  if (room.game.firstGame) return <section aria-label="Раздача">
+    <h3>{reading ? 'Чтение карточек' : room.game.started ? 'Новая раздача — только свободным' : 'Подготовка раздачи'}</h3>
+    {reading ? <p role="status">Прочитали: {readyCount} / {room.dealing.assignments.length}. Чтение без таймера.</p>
+      : <p>Карточки чередуются по порядку за столом. Группы в локациях сохраняют свои карточки.</p>}
+    {reading ? <>
+      <ConfirmButton title="Перевыдать карточки?" description="Новые карточки получат участники текущей раздачи."
+        confirm="Перевыдать карточки" disabled={disabled}
+        onConfirm={() => void run('deal:shuffle', { ...dealCommand(room), possessedCount: count })}>Перевыдать карточки</ConfirmButton>
+      <ConfirmButton data-danger title="Отменить текущую раздачу?" confirm="Отменить раздачу" disabled={disabled}
+        onConfirm={() => void run('deal:cancel', dealCommand(room))}>Отменить раздачу</ConfirmButton>
+    </> : <button disabled={disabled || !room.game.started && room.players.length < 5 || !room.game.venue.dwelling}
+      onClick={() => void run('deal:create', { ...dealCommand(room), possessedCount: count })}>
+      {room.game.started ? 'Раздать свободным' : 'Раздать карточки'}
+    </button>}
+  </section>;
   return <section>
     <h3>{reading ? 'Чтение карточек' : 'Подготовка раздачи'}</h3>
     <label>Одержимых при новой общей раздаче

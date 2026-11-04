@@ -9,7 +9,9 @@ import { io } from 'socket.io-client';
 import type { Socket } from 'socket.io-client';
 import type { ClientToServerEvents, ServerToClientEvents, LobbyCommand, LobbyInputs, LobbyReply } from '../../src/shared/protocol.js';
 import { createServerRuntime } from '../../src/server/runtime.js';
+import { createFileSessionStore } from '../../src/server/session-store.js';
 import type { SessionStore } from '../../src/server/session-store.js';
+import { controlledClock } from '../helpers/game-clock.js';
 
 type Client = Socket<ServerToClientEvents, ClientToServerEvents>;
 function value(reply: LobbyReply) { if (!reply.ok) throw new Error(reply.error); return reply.view; }
@@ -49,6 +51,9 @@ it.skipIf(process.platform === 'win32')('recovers seven real clients after a kil
     const created = value(await send(host, 'room:create', {})); if (created.kind !== 'organizer' || !created.room) throw new Error('No room');
     const room = created.room;
     for (let n = 1; n <= 7; n++) { const p = await connect(running.port); sockets.push(p); value(await send(p, 'player:join', { roomCode: room.code, name: `Телефон ${n}`, resumeKey: String(n).padStart(64, '0') })); }
+    const joined = value(await send(host, 'lobby:sync', {})); if (joined.kind !== 'organizer' || !joined.room) throw new Error('No room');
+    value(await send(host, 'venue:configure', { roomId: room.id, requestId: 'durable-venue-request', gameVersion: joined.room.game.version, roundId: null,
+      venue: { base: 'База', zones: ['Дальняя комната'], dwelling: { zone: 'Дальняя комната', place: 'Угол' }, storyId: 'S001', harder: false, order: joined.room.players.map(p => p.id) } }));
     const dealIntent = { roomId: room.id, requestId: 'durable-deal-request', dealVersion: room.dealing.version, dealId: null, possessedCount: 3 };
     const dealt = value(await send(host, 'deal:create', dealIntent)); if (dealt.kind !== 'organizer' || !dealt.room) throw new Error('No deal');
     const cards = await Promise.all(sockets.slice(1).map(async p => value(await send(p, 'lobby:sync', {}))));
@@ -74,7 +79,7 @@ it.skipIf(process.platform === 'win32')('recovers seven real clients after a kil
     expect(value(await send(host, 'deal:create', dealIntent))).toMatchObject({ room: { game: { roundId } } });
     expect(await send(host, 'round:start', { ...startIntent, requestId: 'old-unreceived-intent' })).toEqual({ ok: false, error: 'STALE_GAME' });
     expect(cues).toEqual([]);
-    const persisted = await readFile(join(dir, 'data/session.json'), 'utf8'); expect(persisted.includes(running.code)).toBe(false);
+    const persisted = await readFile(join(dir, 'data/party-v6.json'), 'utf8'); expect(persisted.includes(running.code)).toBe(false);
     value(await send(host, 'room:close', { roomId: room.id }));
     running.child.kill('SIGTERM'); await running.exited; sockets.splice(0).forEach(p => p.disconnect());
     running = await processServer(dir); host = await connect(running.port); sockets.push(host);
@@ -101,13 +106,13 @@ it('rejects a competing executable before it can listen or replace the session',
   let first: Awaited<ReturnType<typeof processServer>> | undefined;
   try {
     first = await processServer(dir);
-    const before = await readFile(join(dir, 'data/session.json'), 'utf8');
+    const before = await readFile(join(dir, 'data/party-v6.json'), 'utf8');
     const other = spawn(process.execPath, [fileURLToPath(new URL('../../dist/server/index.js', import.meta.url))], {
       cwd: dir, env: { ...process.env, NODE_ENV: 'production', HOST: '127.0.0.1', PORT: '0' }, stdio: ['ignore', 'ignore', 'pipe', 'ipc'],
     });
     const messages: unknown[] = []; other.on('message', m => messages.push(m)); other.stderr!.resume();
     const [exitCode] = await once(other, 'exit'); expect(exitCode).toBe(1); expect(messages).toEqual([]);
-    expect(await readFile(join(dir, 'data/session.json'), 'utf8')).toBe(before);
+    expect(await readFile(join(dir, 'data/party-v6.json'), 'utf8')).toBe(before);
     expect((await fetch(`http://127.0.0.1:${first.port}/api/health`)).status).toBe(200);
   } finally {
     if (first && first.child.exitCode === null && first.child.signalCode === null) { first.child.kill('SIGTERM'); await first.exited; }
@@ -126,4 +131,85 @@ it('bounds stop during a stalled load and never starts listening when that load 
   finally { release(); }
   await expect.poll(() => closed).toBe(true);
   await expect(runtime.start()).rejects.toMatchObject({ name: 'AbortError' });
+});
+
+it('reconciles delayed phone reports and restores retained groups with the version six disk store', async () => {
+  const dir = await mkdtemp(join(tmpdir(), 'pomekhi-first-game-')), clients: Client[] = [];
+  const time = controlledClock();
+  const make = () => createServerRuntime({ firstGame: true, config: { host: '127.0.0.1', port: 0 }, organizerCode: 'FIRSTGAME', sessionStore: createFileSessionStore(dir, true), clock: time.clock });
+  let runtime = make(), sequence = 0;
+  let port = (await runtime.start()).port;
+  const newClient = async () => { const client = await connect(port); clients.push(client); return client; };
+  let host = await newClient(), phones: Client[] = [];
+  const roomView = async () => {
+    const view = value(await send(host, 'lobby:sync', {}));
+    if (view.kind !== 'organizer' || !view.room) throw Error('No room.');
+    return { ...view, room: view.room };
+  };
+  const current = async () => (await roomView()).room;
+  const base = async () => {
+    const room = await current();
+    return { roomId: room.id, roundId: room.game.roundId, gameVersion: room.game.version, requestId: `first-game-request-${++sequence}` };
+  };
+  const deal = async () => {
+    const room = await current();
+    return value(await send(host, 'deal:create', { roomId: room.id, requestId: `first-game-request-${++sequence}`, dealId: room.dealing.dealId, dealVersion: room.dealing.version, possessedCount: 0 }));
+  };
+  const personal = async (index: number) => {
+    const v = value(await send(phones[index], 'lobby:sync', {})); if (v.kind !== 'player') throw Error('No player.'); return v;
+  };
+  try {
+    value(await send(host, 'organizer:authorize', { code: 'FIRSTGAME' })); value(await send(host, 'room:create', {}));
+    const { id: roomId, code: roomCode } = await current();
+    const enter = async (resume = false) => {
+      phones = [];
+      for (let i = 0; i < 7; i++) {
+        const p = await newClient(); phones.push(p);
+        const resumeKey = String(i + 1).padStart(64, '0');
+        value(await send(p, resume ? 'player:resume' : 'player:join', { roomCode, resumeKey, name: `Медиум ${i}` }));
+      }
+    };
+    await enter(); const ids = (await current()).players.map(p => p.id);
+    value(await send(host, 'venue:configure', { ...await base(), venue: { base: 'База', zones: ['Кухня'], dwelling: { zone: 'Кухня', place: 'Угол' }, storyId: 'S001', harder: false, order: ids } }));
+    await deal();
+    expect((await roomView()).roles?.[ids[1]]).toBe('possessed');
+    expect((await personal(0)).room.dealing.assignments.map(a => a.playerId)).toEqual([ids[0]]);
+    value(await send(host, 'round:start', { ...await base(), confirmWarnings: true }));
+    value(await send(phones[1], 'play:location', { ...await base(), zone: 'Кухня' }));
+    for (let i = 0; i < 45; i++) { time.advance(1000); await current(); }
+    expect((await current()).game.phase).toBe('search');
+    const play = async (i: number) => ({ ...await base(), playVersion: (await personal(i)).play!.version });
+    value(await send(phones[1], 'play:infect', { ...await play(1), targetId: ids[0] }));
+    const retained = (await personal(0)).play!.card;
+    value(await send(phones[3], 'play:release', await play(3)));
+    value(await send(phones[5], 'play:release', await play(5)));
+    value(await send(host, 'round:return', await base())); value(await send(host, 'round:return', await base()));
+    const roundId = (await current()).game.roundId!;
+    const late = { id: 'first-game-mission', roundId, clientId: 'first-game-phone', sequence: 1, previousId: null,
+      action: { kind: 'mission' as const, completed: true }, phase: 'search' as const, paused: false, estimatedServerTime: null };
+    const upload = { roomId, roundId, events: [late] };
+    value(await send(phones[2], 'play:sync', upload));
+    expect((await roomView()).review?.find(e => e.id === late.id)?.status).toBe('review');
+    value(await send(host, 'sync:resolve', { ...await base(), eventId: late.id, decision: 'accept' }));
+    expect((await current()).game.ritual?.preview?.remainingSteps).toBe(28);
+    value(await send(host, 'sync:resolve', { ...await base(), eventId: late.id, decision: 'reject' }));
+    expect((await current()).game.ritual?.preview?.remainingSteps).toBe(29);
+    await runtime.stop(); clients.splice(0).forEach(client => client.disconnect());
+    runtime = make(); port = (await runtime.start()).port; host = await newClient();
+    value(await send(host, 'organizer:authorize', { code: 'FIRSTGAME' })); await enter(true);
+    expect((await roomView()).review?.find(e => e.id === late.id)?.status).toBe('rejected');
+    for (const [i, id] of ids.entries()) value(await send(phones[i], 'play:presence', { ...await base(), status: (await roomView()).presence!.find(p => p.playerId === id)!.expected }));
+    value(await send(host, 'sync:close', { ...await base(), confirm: true }));
+    const confirm = await base();
+    value(await send(host, 'results:finalize', confirm)); value(await send(host, 'results:finalize', confirm));
+    expect((await current()).game.ritual?.remainingSteps).toBe(29);
+    expect((await personal(0)).play).toMatchObject({ status: 'captured', location: 'Кухня', card: retained });
+    await deal();
+    expect((await current()).dealing.assignments).toHaveLength(5);
+    expect((await personal(0)).assignment).toBeNull();
+    expect((await personal(0)).play).toMatchObject({ retained: true, card: retained });
+    value(await send(host, 'round:start', { ...await base(), confirmWarnings: true }));
+    expect((await personal(0)).play).toMatchObject({ retained: true, card: retained, location: 'Кухня' });
+    expect(JSON.parse(await readFile(join(dir, 'party-v6.json'), 'utf8')).schemaVersion).toBe(6);
+  } finally { clients.forEach(client => client.disconnect()); await runtime.stop(); await rm(dir, { recursive: true, force: true }); }
 });

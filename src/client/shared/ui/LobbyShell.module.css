@@ -33,3 +33,23 @@
 
 .screen textarea { width: 100%; min-height: 6rem; padding: .8rem; background: #0b0e09; color: #eeeee3; border: 1px solid #686e59; font: inherit; resize: vertical; }
 .screen textarea:focus-visible { outline: 3px solid #ebd59a; outline-offset: 3px; }
+
+.firstGame { color: #f2edf8; background: #110e16; min-height: 100dvh; }
+.firstGame h1 { font-size: clamp(1.5rem, 4vw, 2rem); letter-spacing: .05em; }
+.firstGame section, .firstGame > form { background: #191522; border-color: #655774; border-radius: .65rem; }
+.firstGame section form { background: transparent; }
+.firstGame button { background: #b7a1e1; border-color: #ae98d3; color: #1c1329; border-radius: .5rem; }
+.firstGame :is(input, select, textarea) { background: #1e1929; border-color: #796889; color: #f2edf8; }
+.firstGame a, .firstGame code { color: #dfcef8; }
+.firstGame small, .firstGame .intro { color: #c4b8d0; }
+.firstGame { font-family: system-ui, sans-serif; }
+.firstGame header { display: flex; flex-wrap: wrap; align-items: baseline; gap: .35rem 1rem; padding-bottom: .5rem; margin-bottom: .65rem; }
+.firstGame header :is(h1, p) { margin: .15rem 0; }
+.firstGame header :is(.frequency, .intro) { display: none; }
+.firstGame h2 { font-size: 1.1rem; }
+.firstGame > details { border-block-end: 1px solid #655774; }
+.firstGame [role=timer] { font-family: ui-monospace, monospace; }
+.firstGame [role=timer] { font-variant-numeric: tabular-nums; }
+.firstGame > header > output[role=timer] { color: #decdf5; font-size: 1.45rem; }
+.firstGame dialog:not([open]) { display: none; }
+.firstGame :is(summary, button, input, select, textarea):focus-visible { outline: 2px solid #dac2f4; outline-offset: 2px; }

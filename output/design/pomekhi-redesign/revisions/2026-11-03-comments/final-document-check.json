@@ -1,0 +1,11 @@
+{
+  "type": "pomekhi-task-result",
+  "taskId": "mvzo40ioz6lreytjp1c",
+  "ok": true,
+  "result": {
+    "selected": "17:20657",
+    "frameCount": 190,
+    "mainFrames": 152,
+    "overlayFrames": 38
+  }
+}

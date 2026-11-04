@@ -1,5 +1,7 @@
 # Timed rounds and party lifecycle
 
+> The executable uses the [first-game design](first-game.md). Below, older round, dealing, scoring and schema behavior applies to compatibility fixtures; shared foundation behavior still applies.
+
 Status: implemented. Timers coordinate physical play; [search actions and results](search-actions.md) extend these phases. Tutorial and difficulty progression are implemented; procedural atmosphere is implemented, while recorded music and voice remain future work. [Paused disk recovery](session-persistence.md) is implemented.
 
 ## Ownership and state

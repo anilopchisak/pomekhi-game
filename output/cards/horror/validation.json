@@ -1,0 +1,47 @@
+{
+  "status": "pass",
+  "cards": 38,
+  "counts": {
+    "possessed": 26,
+    "exorcist": 12
+  },
+  "mergedCards": 147,
+  "replacements": 38,
+  "harder": [
+    "HP011",
+    "HP012",
+    "HE005",
+    "HP025"
+  ],
+  "contact": [
+    "HP018",
+    "HP019",
+    "HP020",
+    "HP021",
+    "HP022",
+    "HP023",
+    "HP024",
+    "HE011"
+  ],
+  "checks": [
+    "Every revision has a unique matching base card and preserves its role.",
+    "Every possessed revision has distinct behavior, capture and release text.",
+    "Every exorcist revision has a mission and explicit completion conditions.",
+    "No helper fields, helper blocks or placeholder text.",
+    "Harder membership matches explicit card metadata; fear is collection membership.",
+    "All replacements preserve the 147-card composition; original and variant never coexist.",
+    "No active revision requires paper, printed cards, tokens or cardboard.",
+    "Nonselected cards are copied verbatim; no base or runtime file is written."
+  ],
+  "inputs": {
+    "cards.json": "e738c10b1c704e54eb9f2656c465ddee8b00034d9c7b8ff00cb0a3ed03f0f2b4",
+    "editorial-review.json": "1ecd36f35d1ac684c59470cc7573995c9d445504d7a55ed7cb2811e7f4fe230a",
+    "build.py": "97d772eaf35c7485468c9c142368b66c2469a4061d93e656acb3bca9c280887c"
+  },
+  "baseSha256": "a5054fad8b7c2dc2c6c5894cb097fcc7b72b4b2eb10ff65e83d8d7ef17a9fc92",
+  "styleSourceSha256": "127af52842c619c9efeaa164b4e4ba9610f82aeb4f1860625bdf3e866688a983",
+  "limits": [
+    "Editorial checks cannot establish actual fear, discoverability or game balance.",
+    "This is authored content, not runtime integration or a current-game import."
+  ]
+}

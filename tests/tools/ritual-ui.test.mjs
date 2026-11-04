@@ -29,3 +29,18 @@ it('marks closed rules inactive and excludes freeplay from original team totals'
   expect(container.textContent).toContain('Спасено групп: 12 / 12. Миссии: 16 / 16.');
   expect(container.textContent).toContain('Завершено дополнительных раундов: 1.');
 });
+it('shows the committed reveal immediately when the player requests reduced motion', async () => {
+  const media = vi.spyOn(globalThis.window, 'matchMedia').mockReturnValue({ matches: true });
+  try {
+    const ritual = newRitual(5, 7, () => 0, () => 'ui-id', true);
+    const game = { ...state(), firstGame: true, phase: 'between_rounds' };
+    await act(async () => root.render(createElement(RitualBoard, { animate: true, game: { ...game, ritual: ritual.snapshot() } })));
+    expect(container.textContent).not.toContain(ritual.exportState().cards[0].title);
+
+    ritual.commit(row(1));
+    await act(async () => root.render(createElement(RitualBoard, { animate: true, game: { ...game, ritual: ritual.snapshot() } })));
+    expect(container.textContent).toContain(ritual.exportState().cards[0].title);
+    expect(container.textContent).toContain('Осталось шагов 18');
+    expect(container.textContent).not.toContain('Пропустить движение свечей');
+  } finally { media.mockRestore(); }
+});

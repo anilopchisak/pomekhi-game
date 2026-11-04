@@ -1,0 +1,18 @@
+{
+  "jsonrpc": "2.0",
+  "id": 6723566,
+  "result": {
+    "content": [
+      {
+        "type": "text",
+        "text": "{\"error\":\"TypeError: Cannot read properties of undefined (reading 'transition')\\nSource (eval_script line 1): const R={\\\"nodes\\\": {\\\"L01\\\": \\\"3:123\\\", \\\"P01\\\": \\\"3:288\\\", \\\"P02\\\": \\\"3:317\\\", \\\"L07\\\": \\\"3:991\\\", \\\"L08\\\": \\\"3:1184\\\", \\\"L09\\\": \\\"3:1357\\\", \\\"L10\\\": \\\"3:1530\\\", \\\"L11\\\": \\\"3:1697\\\", \\\"L12\\\": \\\"3:1864\\\", \\\"L13\\\": \\\"3:2039\\\", \\\"L14\\\": \\\"3:2208\\\", \\\"L15\\\": \\\"3:2375\\\", \\\"L16\\\": \\\"3:2542\\\", \\\"L17...\\n    at <anonymous> (mcp-evaluate-script.js)\\n    at <anonymous> (find-method-factory.js:26)\\n    at <anonymous> (mcp-evaluate-script.js:2)\\n\",\"rollback\":{\"status\":\"attempted\"}}"
+      }
+    ],
+    "structuredContent": {
+      "error": "TypeError: Cannot read properties of undefined (reading 'transition')\nSource (eval_script line 1): const R={\"nodes\": {\"L01\": \"3:123\", \"P01\": \"3:288\", \"P02\": \"3:317\", \"L07\": \"3:991\", \"L08\": \"3:1184\", \"L09\": \"3:1357\", \"L10\": \"3:1530\", \"L11\": \"3:1697\", \"L12\": \"3:1864\", \"L13\": \"3:2039\", \"L14\": \"3:2208\", \"L15\": \"3:2375\", \"L16\": \"3:2542\", \"L17...\n    at <anonymous> (mcp-evaluate-script.js)\n    at <anonymous> (find-method-factory.js:26)\n    at <anonymous> (mcp-evaluate-script.js:2)\n",
+      "rollback": {
+        "status": "attempted"
+      }
+    }
+  }
+}
