@@ -2,6 +2,7 @@ import { networkInterfaces } from 'node:os';
 import { fileURLToPath } from 'node:url';
 import { resolve } from 'node:path';
 import { existsSync } from 'node:fs';
+import { createOrganizerBootstrap } from './organizer-bootstrap.js';
 import { getServerConfig } from './config.js';
 import { createServerRuntime } from './runtime.js';
 import { generateOrganizerCode } from './lobby.js';
@@ -15,8 +16,21 @@ async function main() {
     throw new Error('Client build is missing. Run npm run build before npm start.');
   }
   const organizerCode = generateOrganizerCode();
+  const key = process.connected && clientDirectory ? process.env.POMEKHI_BOOTSTRAP_KEY : undefined;
+  let redeem: ReturnType<typeof createOrganizerBootstrap>;
+  const bootstrap = key ? (...args: Parameters<NonNullable<typeof redeem>>) => redeem?.(...args) : undefined;
+  let panelHost: string | undefined;
+  let tunnelOrigin: string | undefined;
+  function receivePublicOrigin(message: unknown) {
+    const input = message as { type?: string; origin?: unknown } | null;
+    if (input?.type !== 'pomekhi:public-origin' || typeof input.origin !== 'string') return;
+    if (/^https:\/\/(?:[a-z0-9-]+\.)+tuna\.am$/i.test(input.origin)) tunnelOrigin = input.origin;
+  }
+  if (key) process.on('message', receivePublicOrigin);
+  const publicInvitation = key ? (host: string | undefined) => host && host === panelHost ? tunnelOrigin : undefined : undefined;
+  delete process.env.POMEKHI_BOOTSTRAP_KEY;
   const sessionStore = createFileSessionStore(resolve('data'), true);
-  const runtime = createServerRuntime({ config, clientDirectory, organizerCode, sessionStore, firstGame: true, onError: () => {
+  const runtime = createServerRuntime({ config, clientDirectory, organizerCode, bootstrap, publicInvitation, sessionStore, firstGame: true, onError: () => {
     console.error('Pomekhi server encountered a transport error.');
     process.exitCode = 1;
     stopServer();
@@ -26,6 +40,7 @@ async function main() {
   function removeSignals() {
     process.off('SIGINT', stopServer);
     process.off('SIGTERM', stopServer);
+    process.off('message', receivePublicOrigin);
   }
   function stopServer() {
     if (shutdown) return;
@@ -43,12 +58,16 @@ async function main() {
   try {
     const address = await runtime.start();
     if (!stopping) {
+      if (key) {
+        redeem = createOrganizerBootstrap(key, address.origin, organizerCode);
+        if (redeem) panelHost = new URL(address.origin).host;
+      }
       console.log(`Pomekhi foundation: ${address.origin}`);
       const panelOrigin = clientDirectory ? address.origin : 'http://localhost:5173';
       if (config.host === '0.0.0.0' || config.host === '::') for (const entries of Object.values(networkInterfaces())) for (const entry of entries ?? []) if (!entry.internal && entry.family === 'IPv4') console.log(`Local player address: http://${entry.address}:${address.port}`);
       console.log(`Organizer panel: ${panelOrigin}/?screen=host`);
       console.log(`Organizer code (keep private): ${organizerCode}`);
-      if (process.connected) process.send?.({ type: 'pomekhi:ready', port: address.port });
+      if (process.connected) process.send?.({ type: 'pomekhi:ready', port: address.port, origin: address.origin });
     }
   } catch (error) {
     removeSignals();

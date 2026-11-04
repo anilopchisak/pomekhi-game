@@ -15,6 +15,8 @@ export interface AppServerOptions {
   reportError?: HttpErrorReporter;
   shutdownTimeoutMs?: number;
   organizerCode?: string;
+  bootstrap?: Parameters<typeof createHttpApp>[0]['bootstrap'];
+  publicInvitation?: Parameters<typeof createHttpApp>[0]['publicInvitation'];
   clock?: GameClock;
   firstGame?: boolean;
   randomIndex?: (limit: number) => number;
@@ -32,7 +34,7 @@ export function createAppServer(options: AppServerOptions = {}) {
     throw new Error('shutdownTimeoutMs must be a positive timer-safe integer.');
   }
   const health = buildHealthResponse();
-  const app = createHttpApp({ health, clientDirectory: options.clientDirectory, reportError: options.reportError });
+  const app = createHttpApp({ health, clientDirectory: options.clientDirectory, reportError: options.reportError, bootstrap: options.bootstrap, publicInvitation: options.publicInvitation });
   const server = createServer(app);
   const lobby = createSession({ organizerCode: options.organizerCode ?? generateOrganizerCode(), clock: options.clock, randomIndex: options.randomIndex, firstGame: options.firstGame, store: options.sessionStore });
   const io = createSocketServer(server, health, lobby, options.clock, options.scareRandomIndex);

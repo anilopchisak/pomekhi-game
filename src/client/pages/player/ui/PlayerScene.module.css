@@ -13,7 +13,7 @@ main > header:has(> .toolbar) h1 { font-size: 14px; line-height: 24px; }
 .phaseMeta { display: flex; align-items: center; justify-content: space-between; gap: 8px; min-height: 28px; }
 .phaseMeta:empty { display: none; }
 .phaseMeta output { margin-inline-start: auto; border: 1px solid var(--border); border-radius: 8px; padding: 3px 8px; font-size: 18px; }
-.role { padding: 6px 4px; border-radius: 8px; background: var(--surface); color: var(--accent); font-size: 13px; line-height: 16px; text-transform: uppercase; }
+.role { padding: 6px 4px; border-radius: 8px; background: var(--surface); color: var(--accent); font-size: 14px; line-height: 16px; text-transform: uppercase; }
 .cardBody { border: 1px solid var(--border); border-radius: 12px; background: var(--panel); padding: 20px; }
 .cardBody[data-hidden=true] { display: grid; align-items: center; min-block-size: 12rem; padding: 24px; }
 .scene[data-phase=reading] .cardBody[data-hidden=true] { min-block-size: max(200px, calc(100dvh - 386px)); }
@@ -25,11 +25,11 @@ main > header:has(> .toolbar) h1 { font-size: 14px; line-height: 24px; }
 .cardBody p + p { margin-top: 16px; }
 .cardBody strong { display: block; }
 .scene .fullAction { width: 100%; margin: 12px 0 0; }
-.privacy { display: block; margin-top: 12px; font-size: 13px; }
+.privacy { display: block; margin-top: 12px; font-size: 14px; }
 .closedReadingTools { margin-top: 16px; }
 .journal { font-size: 14px; color: var(--muted); }
-.offline { display: flex; align-items: center; gap: 8px; margin-block: 8px; color: var(--danger); font-size: 13px; }
-.offline button { flex: 0 0 auto; max-width: 50%; margin: 0; padding-inline: 6px; font-size: 13px; }
+.offline { display: flex; align-items: center; gap: 8px; margin-block: 8px; color: var(--danger); font-size: 14px; }
+.offline button { flex: 0 0 auto; max-width: 50%; margin: 0; padding-inline: 6px; font-size: 14px; }
 .scene .personal > p[role=status] { margin: 8px 0; font-size: 14px; }
 @media (min-width: 375px) {
   .scene[data-phase=reading] .cardBody[data-hidden=true] { min-block-size: max(200px, calc(100dvh - 362px)); }

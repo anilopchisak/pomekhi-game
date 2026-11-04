@@ -180,6 +180,7 @@ export interface LobbyInputs {
   'player:audio': { roomId: string; enabled: boolean };
   'lobby:sync': Record<string, never>;
   'room:create': Record<string, never>;
+  'room:restart': { roomId: string };
   'room:close': { roomId: string };
   'player:join': { roomCode: string; name: string; resumeKey: string };
   'player:resume': { roomCode: string; resumeKey: string };

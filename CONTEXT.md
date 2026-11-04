@@ -28,8 +28,8 @@ The interface brand is **Oderzhimye** in both modes, including the browser title
 | Ritual call | The Master's announcement ending exorcism and recalling free exorcists; unreleased possessed and captured mediums stay in their locations. |
 | Return | A free medium's movement back to base after release or the ritual call. It does not free an unresolved group. |
 | Checking | The phase for reporting completed actions, resolving trial outcomes and moving candles. |
-| Returning medium | A free participant available at the ritual table for checking and the next alternating deal. |
-| Table order | The order in which returning mediums receive alternating exorcist and possessed cards, starting with exorcist. |
+| Returning medium | A free participant available at the ritual table for checking and the next deal. |
+| Table order | Historical order retained in older checkpoints. Current deals assign roles randomly within the eligible roster. |
 | Pause | A suspension of play during which participants stop actions and wait safely; possession and earned results are retained. |
 | Break | Waiting between rounds without clearing unresolved possession. |
 | Possessed player | A medium performing a possessed mission in a location until released. |

@@ -161,7 +161,7 @@ it('shows the join form after offline removal and rejoins with a new credential 
 
 it('uploads a retained phone release and acknowledges checking without a new card', async () => {
   const time = controlledClock();
-  const lobby = createLobby({ organizerCode: 'HOST', generateRoomCode: () => 'ABCDEF', clock: time.clock, firstGame: true });
+  const lobby = createLobby({ organizerCode: 'HOST', generateRoomCode: () => 'ABCDEF', randomIndex: () => 0, clock: time.clock, firstGame: true });
   const host = () => lobby.viewFor('host');
   const send = (connection, command, input) => expect(lobby.execute(connection, command, input)).toMatchObject({ ok: true });
   const game = (command, input = {}) => send('host', command, { ...gameCommand(host().room), ...input });

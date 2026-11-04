@@ -1,22 +1,30 @@
-import { useId, useState } from 'react';
+import { useEffect, useId, useRef, useState } from 'react';
 import type { ReactNode } from 'react';
 import { cardSets } from '../../../../shared/protocol.js';
-import type { LobbyCommand, LobbyInputs, LobbyView, RoomSnapshot } from '../../../../shared/protocol.js';
+import type { LobbyCommand, LobbyInputs, RoomSnapshot } from '../../../../shared/protocol.js';
 import { GameDialog } from '../../../shared/ui/index.js';
 import { gameCommand } from '../../../shared/api/index.js';
 import styles from './Broadcast.module.css';
 
 type Run = <C extends LobbyCommand>(command: C, input: LobbyInputs[C], onSuccess?: () => void) => Promise<void>;
-type HostView = Extract<LobbyView, { kind: 'organizer' }>;
 type SetupProps = { room: RoomSnapshot; disabled: boolean; run: Run };
 
 function PlaceField({ label, help, children }: { label: string; help: string; children: (id: string, helpId: string) => ReactNode }) {
   const id = useId();
   const helpId = id + '-help';
+  const details = useRef<HTMLDetailsElement>(null);
+  useEffect(() => {
+    function closeOutside(event: MouseEvent) {
+      const hint = details.current;
+      if (hint?.open && event.target instanceof Node && !hint.contains(event.target)) hint.open = false;
+    }
+    document.addEventListener('click', closeOutside, true);
+    return () => document.removeEventListener('click', closeOutside, true);
+  }, []);
   return <div className={styles.placeField}>
     <div>
       <label htmlFor={id}>{label}</label>
-      <details>
+      <details ref={details}>
         <summary aria-label={`Подсказка: ${label}`}>?</summary>
         <p>{help}</p>
       </details>
@@ -24,34 +32,6 @@ function PlaceField({ label, help, children }: { label: string; help: string; ch
     <span id={helpId} hidden>{help}</span>
     {children(id, helpId)}
   </div>;
-}
-
-function TableOrder({ players, order, disabled, move }: {
-  players: RoomSnapshot['players']; order: string[]; disabled: boolean; move: (index: number, offset: number) => void;
-}) {
-  return <div>
-    <h4>Порядок за столом</h4>
-    <p>При раздаче роли чередуются: экзорцист, одержимый, экзорцист и так далее.</p>
-    {order.length ? <ol>{order.map((id, index) => {
-      const name = players.find(player => player.id === id)?.name;
-      return <li key={id}><span>{index + 1}. {name}</span>
-        <button type="button" disabled={disabled || index === 0} aria-label={`Передвинуть выше: ${name}`} onClick={() => move(index, -1)}>↑</button>
-        <button type="button" disabled={disabled || index === order.length - 1} aria-label={`Передвинуть ниже: ${name}`} onClick={() => move(index, 1)}>↓</button>
-      </li>;
-    })}</ol> : <p>Участники появятся в списке, когда войдут в комнату.</p>}
-  </div>;
-}
-
-function useTableOrder(players: RoomSnapshot['players'], saved: string[] | undefined) {
-  const [draft, setDraft] = useState<string[]>();
-  const members = new Set(players.map(player => player.id));
-  const order = [...new Set([...(draft ?? saved ?? []), ...members])].filter(id => members.has(id));
-  function move(index: number, offset: number) {
-    const next = [...order];
-    [next[index], next[index + offset]] = [next[index + offset], next[index]];
-    setDraft(next);
-  }
-  return { order, move };
 }
 
 function PartyForm({ room, disabled, run, error, retry, close }: SetupProps & { error: string; retry: ReactNode; close: () => void }) {
@@ -63,7 +43,6 @@ function PartyForm({ room, disabled, run, error, retry, close }: SetupProps & { 
   const [place, setPlace] = useState(venue.dwelling?.place ?? '');
   const [sets, setSets] = useState(venue.sets ?? (venue.harder ? ['harder' as const] : []));
   const [validation, setValidation] = useState('');
-  const { order, move } = useTableOrder(room.players, venue.order);
   const zoneList = zones.split('\n').map(value => value.trim()).filter(Boolean);
   const setLabels = { indoor: 'В помещении', outdoor: 'На улице', contact: 'С физическим контактом', harder: 'Сложнее' };
   return <form onSubmit={event => {
@@ -80,7 +59,7 @@ function PartyForm({ room, disabled, run, error, retry, close }: SetupProps & { 
       return;
     }
     setValidation('');
-    void run('venue:configure', { ...gameCommand(room), venue: { base, zones: zoneList, dwelling: { zone, place }, sets, order } }, close);
+    void run('venue:configure', { ...gameCommand(room), venue: { base, zones: zoneList, dwelling: { zone, place }, sets } }, close);
   }}>
     {locked && <p>Настройки зафиксированы первой раздачей.</p>}
     <fieldset disabled={locked || disabled} className={styles.partyFields}>
@@ -104,14 +83,10 @@ function PartyForm({ room, disabled, run, error, retry, close }: SetupProps & { 
         </label>)}
         <p>Для любого прикосновения сначала получите согласие участника.</p>
       </fieldset>
-      {!locked && <TableOrder players={room.players} order={order} move={move} disabled={disabled} />}
     </fieldset>
     {(validation || error) && <p role="alert">{validation || error}</p>}
     {retry}
-    <div data-dialog-actions>
-      {!locked && <button type="submit" disabled={disabled}>Сохранить</button>}
-      <button type="button" data-secondary onClick={close}>Закрыть</button>
-    </div>
+    {!locked && <div data-dialog-actions><button type="submit" disabled={disabled}>Сохранить</button></div>}
   </form>;
 }
 
@@ -124,21 +99,4 @@ export function PartySettings({ room, disabled, run, error, retry }: SetupProps 
       <PartyForm room={room} disabled={disabled} run={run} error={error} retry={retry} close={close} />
     </GameDialog>}
   </>;
-}
-
-export function FirstGameSetup({ room, view, disabled, run }: SetupProps & { view: HostView }) {
-  const players = room.players.filter(player =>
-    view.presence?.some(item => item.playerId === player.id && item.confirmed && item.expected === 'at_base'));
-  const { order, move } = useTableOrder(players, room.game.venue.order);
-  if (room.game.phase !== 'between_rounds' || room.game.results.at(-1)?.status !== 'final' || !order.length) return null;
-  return <section aria-label="Порядок вернувшихся">
-    <h3>Порядок вернувшихся</h3>
-    <form onSubmit={event => {
-      event.preventDefault();
-      void run('venue:configure', { ...gameCommand(room), venue: { ...room.game.venue, order } });
-    }}>
-      <TableOrder players={players} order={order} move={move} disabled={disabled} />
-      <button disabled={disabled}>Сохранить порядок</button>
-    </form>
-  </section>;
 }

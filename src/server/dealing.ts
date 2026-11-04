@@ -37,7 +37,7 @@ export function createDealing({ generateId, randomIndex, getCards = () => CARD_B
     return {
       version, dealId, initialPossessedCount,
       compositionValid: ordered ? assignments.size >= ordered.minimum() && assignments.size <= 12 &&
-        [...assignments.values()].every((item, i) => item.card.role === (i % 2 ? 'possessed' : 'exorcist'))
+        possessed === Math.floor(assignments.size / 2)
         : assignments.size >= 4 && assignments.size <= 12 && possessed >= 1 && exorcists >= 2 && possessed <= exorcists,
       assignments: [...assignments].sort(([a], [b]) => a.localeCompare(b)).map(([playerId, item]) => ({ playerId, assignmentId: item.id, ready: item.ready, replacementRequested: item.replacementRequested })),
     };
@@ -53,7 +53,12 @@ export function createDealing({ generateId, randomIndex, getCards = () => CARD_B
       const pool = ordered.pool().filter(card => !used.has(card.id));
       if (pool.filter(card => card.role === 'possessed').length < Math.floor(players.length / 2) ||
         pool.filter(card => card.role === 'exorcist').length < Math.ceil(players.length / 2)) return 'CARD_POOL_INSUFFICIENT';
-      for (const [index, playerId] of players.entries()) {
+      const shuffled = [...players];
+      for (let index = 0; index < shuffled.length - 1; index++) {
+        const other = index + randomIndex(shuffled.length - index);
+        [shuffled[index], shuffled[other]] = [shuffled[other], shuffled[index]];
+      }
+      for (const [index, playerId] of shuffled.entries()) {
         const role = index % 2 ? 'possessed' : 'exorcist';
         const card = drawOrdered(role, used, draft);
         if (!card) return 'CARD_POOL_INSUFFICIENT';

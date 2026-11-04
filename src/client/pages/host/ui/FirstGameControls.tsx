@@ -27,8 +27,8 @@ export function FirstGameControls({ room, disabled, run, newParty, trialPending 
     </div>;
   }
   if (game.phase === 'finished') return <div aria-label="Управление раундом"><ConfirmButton title="Начать новую партию?"
-    description="Текущая комната закроется. Для новой партии игроки получат новое приглашение."
-    confirm="Закрыть текущую комнату" onConfirm={newParty} disabled={disabled}>Новая партия</ConfirmButton></div>;
+    description="Текущая комната закроется. Откроется пустая комната с новым приглашением."
+    confirm="Создать новую комнату" onConfirm={newParty} disabled={disabled}>Новая партия</ConfirmButton></div>;
 
   return <div aria-label="Управление раундом">
     {game.phase === 'reading' && <ReadingControls room={room} disabled={disabled} run={run} />}
@@ -116,7 +116,6 @@ function ReadingControls({ room, disabled, run }: Pick<Parameters<typeof FirstGa
         <ConfirmButton data-danger title="Отменить текущую раздачу?" confirm="Отменить раздачу" disabled={disabled} fallbackFocus={opener}
           onConfirm={() => runFromDialog('deal:cancel', dealCommand(room))}>Отменить раздачу</ConfirmButton>
       </details>
-      <div data-dialog-actions><button type="button" data-secondary onClick={close}>Закрыть</button></div>
     </GameDialog>}
   </div>;
 }

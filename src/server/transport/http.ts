@@ -35,6 +35,8 @@ export function createHttpApp(options: {
   health: HealthResponse;
   clientDirectory?: string;
   reportError?: HttpErrorReporter;
+  publicInvitation?: (host: string | undefined) => string | undefined;
+  bootstrap?: (origin: string | undefined, host: string | undefined, key: string | undefined) => string | undefined;
 }) {
   const app = express();
   const notFound: RequestHandler = (_request, response) => {
@@ -43,6 +45,18 @@ export function createHttpApp(options: {
   app.disable('x-powered-by');
   app.get('/api/health', (_request, response) => {
     response.set('Cache-Control', 'no-store').json(options.health);
+  });
+  if (options.bootstrap) app.post('/api/organizer-bootstrap', (request, response) => {
+    response.set('Cache-Control', 'no-store');
+    const code = options.bootstrap?.(request.get('origin'), request.get('host'), request.get('x-pomekhi-bootstrap'));
+    if (!code) { response.status(403).json({ error: 'Bootstrap unavailable' }); return; }
+    response.json({ code });
+  });
+  if (options.publicInvitation) app.get('/api/public-invitation', (request, response) => {
+    response.set('Cache-Control', 'no-store');
+    const origin = options.publicInvitation?.(request.get('host'));
+    if (origin) response.json({ origin });
+    else response.status(204).end();
   });
   app.use('/api', notFound);
   const clientDirectory = options.clientDirectory;

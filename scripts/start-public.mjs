@@ -1,14 +1,18 @@
+import { randomBytes } from 'node:crypto';
+import { createInterface } from 'node:readline';
 import { existsSync } from 'node:fs';
 import { join } from 'node:path';
 import { spawn } from 'node:child_process';
 import { checkNode, nodePath, projectRoot, toolEnvironment } from './runtime.mjs';
-import { tunaLaunch } from './tuna.mjs';
+import { openOrganizer } from './open-organizer.mjs';
+import { publicTunnelOrigin, tunaLaunch } from './tuna.mjs';
 
 checkNode();
 if (!existsSync(join(projectRoot, 'dist/server/index.js')) || !existsSync(join(projectRoot, 'dist/client/index.html'))) {
   throw new Error('Production build is missing. Run npm run build first.');
 }
 const launch = tunaLaunch();
+const bootstrapKey = randomBytes(32).toString('hex');
 const children = [];
 let stopping = false;
 let tunnelStarted = false;
@@ -46,7 +50,7 @@ function own(child, label) {
 
 const server = own(spawn(nodePath(), ['--env-file-if-exists=.env', 'dist/server/index.js'], {
   cwd: projectRoot,
-  env: toolEnvironment({ NODE_ENV: 'production' }),
+  env: toolEnvironment({ NODE_ENV: 'production', POMEKHI_BOOTSTRAP_KEY: bootstrapKey }),
   stdio: ['inherit', 'inherit', 'inherit', 'ipc'],
 }), 'the local server');
 
@@ -59,10 +63,29 @@ server.on('message', message => {
   if (stopping || tunnelStarted || message?.type !== 'pomekhi:ready' || message.port !== launch.port) return;
   tunnelStarted = true;
   clearTimeout(startupTimer);
-  console.log('Local server ready. Starting Tuna; share its HTTPS address with players.');
-  own(spawn(launch.executable, launch.args, {
-    cwd: projectRoot, env: toolEnvironment(), stdio: 'inherit',
+  console.log('Local server ready. Starting Tuna...');
+  openOrganizer(launch.origin, bootstrapKey, { waitForTunnel: true });
+  const tunnel = own(spawn(launch.executable, [...launch.args.filter(arg => arg !== '--qr'), '--log=stdout', '--log-format=text'], {
+    cwd: projectRoot, env: toolEnvironment({ TUNA_TUI: '0' }), stdio: ['ignore', 'pipe', 'pipe'],
   }), 'Tuna');
+  let addressFound = false;
+  startupTimer = setTimeout(() => {
+    if (!addressFound) console.log('Still waiting for the Tuna address. The local organizer panel can already be used.');
+  }, 15000);
+  for (const [input, output] of [[tunnel.stdout, process.stdout], [tunnel.stderr, process.stderr]]) {
+    const lines = createInterface({ input, crlfDelay: Infinity });
+    lines.on('line', line => {
+      output.write(line + '\n');
+      if (addressFound || stopping) return;
+      const publicOrigin = publicTunnelOrigin(line);
+      if (!publicOrigin) return;
+      addressFound = true;
+      clearTimeout(startupTimer);
+      server.send({ type: 'pomekhi:public-origin', origin: publicOrigin }, error => {
+        if (error && !stopping) console.error('Could not send the Tuna address to the panel. Copy it from the terminal.');
+      });
+    });
+  }
 });
 
 process.once('SIGINT', () => stop(0));

@@ -52,7 +52,7 @@ The party has seven rounds. Each round consists of preparation, exorcism and che
 
 ### Preparation
 
-Deal alternating exorcist and possessed mission cards in order around the ritual table, starting with an exorcist. Participants read privately and conceal their cards. Changing position at the table between rounds changes which role they receive (page 7). The computer uses an explicit virtual table order in place of a physical dealer; it must preserve this alternation rather than introduce fairness-weighted role selection.
+Deal alternating exorcist and possessed mission cards in order around the ritual table, starting with an exorcist. Participants read privately and conceal their cards. Changing position at the table between rounds changes which role they receive (page 7). The computer adapts this by randomly assigning the same counts, with one extra exorcist when the eligible roster is odd.
 
 Unreleased possessed and captured mediums remain in their locations and keep their mission. Only free mediums at the ritual table take part in the next deal. This returner-only dealing follows the combined instructions on pages 7, 9 and 14; the digital edge cases are made explicit below.
 
@@ -93,7 +93,7 @@ Each success moves one candle one position to the right. Resolve the ritual and 
 
 Retain each unresolved mission, its possessed/captured members and physical location between rounds. The next preparation neither clears these groups nor redeals their members. Members do not gain a new mission merely because a new numbered round begins.
 
-Deal to the returning subset in virtual table order, starting with an exorcist. One returning medium therefore receives an exorcist card and can attempt to free retained groups. The minimum size for starting a party must not prevent a later deal to fewer returners. Do not force at least two exorcists or restore a global possessed/exorcist ratio by releasing or redealing unresolved groups.
+Deal to the returning subset using the same randomized role balance. One returning medium therefore receives an exorcist card and can attempt to free retained groups. The minimum size for starting a party must not prevent a later deal to fewer returners. Do not force at least two exorcists or restore a global possessed/exorcist ratio by releasing or redealing unresolved groups.
 
 For example, seven mediums begin with four exorcists and three possessed. If two possessed are released and the third captures an exorcist, five mediums are available at the table and two remain in one unresolved group. The next deal gives new cards only to those five. If later only one medium is free, that medium can continue as the sole newly dealt exorcist.
 

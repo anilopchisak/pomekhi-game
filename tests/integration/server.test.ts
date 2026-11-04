@@ -5,7 +5,7 @@ import { mkdtemp, rm } from 'node:fs/promises';
 import { tmpdir } from 'node:os';
 import { join } from 'node:path';
 import { createServer } from 'node:net';
-import { afterAll, beforeAll, describe, expect, it } from 'vitest';
+import { afterAll, beforeAll, describe, expect, it, vi } from 'vitest';
 import { io } from 'socket.io-client';
 import type { Socket } from 'socket.io-client';
 import type { ClientToServerEvents, HealthResponse, ServerToClientEvents } from '../../src/shared/protocol.js';
@@ -78,17 +78,33 @@ describe('built client and actual HTTP / Socket.IO server', () => {
     reconnected.disconnect();
   });
 
-  it('announces readiness only after the production process actually listens', async () => {
+  it('allows organizer sign-in before Tuna reports the invitation address', async () => {
     const directory = await mkdtemp(join(tmpdir(), 'pomekhi-entry-'));
+    const key = 'a'.repeat(64);
     const child = spawn(process.execPath, ['dist/server/index.js'], {
-      env: { ...process.env, HOST: '127.0.0.1', PORT: '0', NODE_ENV: 'production', POMEKHI_TEST_DIRECTORY: directory, NODE_OPTIONS: `--import=${new URL('./fixtures/isolated-data.mjs', import.meta.url).href}` },
+      env: { ...process.env, HOST: '127.0.0.1', PORT: '0', NODE_ENV: 'production', POMEKHI_BOOTSTRAP_KEY: key, POMEKHI_TEST_DIRECTORY: directory, NODE_OPTIONS: `--import=${new URL('./fixtures/isolated-data.mjs', import.meta.url).href}` },
       stdio: ['ignore', 'ignore', 'ignore', 'ipc'],
     });
     try {
       const [message] = await once(child, 'message') as [{ type: string; port: number }];
       expect(message.type).toBe('pomekhi:ready');
       expect(message.port).toBeGreaterThan(0);
-      expect((await fetch(`http://127.0.0.1:${message.port}/api/health`)).status).toBe(200);
+      const panel = `http://127.0.0.1:${message.port}`;
+      expect((await fetch(panel + '/api/health')).status).toBe(200);
+      const invitation = panel + '/api/public-invitation';
+      expect((await fetch(invitation)).status).toBe(204);
+      const bootstrap = () => fetch(panel + '/api/organizer-bootstrap', {
+        method: 'POST', headers: { Origin: panel, 'X-Pomekhi-Bootstrap': key },
+      });
+      expect((await bootstrap()).status).toBe(200);
+      expect((await bootstrap()).status).toBe(403);
+      const origin = 'https://game-22.ru.tuna.am';
+      child.send({ type: 'pomekhi:public-origin', origin });
+      await vi.waitFor(async () => {
+        const response = await fetch(invitation);
+        expect(response.status).toBe(200);
+        expect(await response.json()).toEqual({ origin });
+      });
     } finally {
       const exit = once(child, 'exit');
       child.kill('SIGTERM');

@@ -159,7 +159,7 @@ export function createLobby({ organizerCode, generateId = randomUUID, generateRo
       if (command === 'organizer:atmosphere' ? actor?.kind !== 'organizer' : actor?.kind !== 'player') return fail('FORBIDDEN');
       if (!room || room.id !== data.roomId) return fail('ROOM_NOT_FOUND');
       if (typeof data.enabled !== 'boolean') return fail('INVALID_INPUT');
-      if (command === 'organizer:atmosphere') phoneScaresEnabled = data.enabled;
+      if (command === 'organizer:atmosphere') phoneScaresEnabled = !firstGame && data.enabled;
       else if (actor?.kind === 'player') {
         if (data.enabled) phoneOwners.set(actor.playerId, connection);
         else if (phoneOwners.get(actor.playerId) === connection) phoneOwners.delete(actor.playerId);
@@ -169,17 +169,23 @@ export function createLobby({ organizerCode, generateId = randomUUID, generateRo
       if (typeof data.enabled !== 'boolean') return fail('INVALID_INPUT');
       if (data.enabled) audioOwner = connection;
       else if (audioOwner === connection) audioOwner = null;
-    } else if (command === 'room:create' || command === 'room:close' || command === 'player:remove') {
+    } else if (command === 'room:restart' || command === 'room:create' || command === 'room:close' || command === 'player:remove') {
       if (actor?.kind !== 'organizer') return fail('FORBIDDEN');
-      if (command === 'room:create') {
-        if (!room) {
-          phoneScaresEnabled = true; phoneOwners.clear();
+      if (command === 'room:restart' && (typeof data.roomId !== 'string' || room?.id !== data.roomId)) return fail('ROOM_NOT_FOUND');
+      if (command === 'room:create' || command === 'room:restart') {
+        if (!room || command === 'room:restart') {
           let code = generateRoomCode();
           for (let attempts = 0; usedCodes.has(code) && attempts < 32; attempts++) code = generateRoomCode();
           if (usedCodes.has(code)) throw new Error('Room code generator did not provide an unused code.');
+          const next: Room = { id: generateId(), code, players: new Map(), revoked: new Set(), game: createGame({ generateId, randomIndex, clock, firstGame, onChange: notify, getCards: catalog.cards }), requests: new Map() };
+          next.game.initializeStory();
           usedCodes.add(code);
-          room = { id: generateId(), code, players: new Map(), revoked: new Set(), game: createGame({ generateId, randomIndex, clock, firstGame, onChange: notify, getCards: catalog.cards }), requests: new Map() };
-          room.game.initializeStory();
+          if (room) {
+            for (const [id, current] of actors) if (current.kind === 'player') actors.set(id, { kind: 'ended', reason: 'closed' });
+            room.game.dispose();
+          }
+          room = next;
+          audioOwner = null; phoneOwners.clear(); phoneScaresEnabled = !firstGame;
         }
       } else {
         if (typeof data.roomId !== 'string') return fail('INVALID_INPUT');
@@ -208,7 +214,7 @@ export function createLobby({ organizerCode, generateId = randomUUID, generateRo
         if ([...room.players.values()].some(item => item.name.toLocaleLowerCase('ru-RU') === name.toLocaleLowerCase('ru-RU'))) return fail('NAME_TAKEN');
         if (room.players.size >= 12) return fail('ROOM_FULL');
         player = { id: generateId(), name, key: data.resumeKey, connections: new Set() };
-        const error = room.game.add(player.id);
+        const error = room.game.add(player.id, room.players.size);
         if (error) return fail(error);
         room.players.set(player.id, player);
       }
@@ -290,7 +296,7 @@ export function createLobby({ organizerCode, generateId = randomUUID, generateRo
       if (command === 'deal:create' || command === 'deal:shuffle') error = room.game.deal([...room.players.keys()], data.possessedCount as number, command === 'deal:shuffle');
       else if (command === 'deal:cancel') error = room.game.cancelDeal();
       else if (command === 'deal:replace') error = room.game.change(data.playerId as string, data.assignmentId as string, 'replace');
-      else if (command === 'venue:configure') error = room.game.configureVenue(data.venue, [...room.players.keys()]);
+      else if (command === 'venue:configure') error = room.game.configureVenue(data.venue);
       else if (command === 'round:presence' || command === 'play:presence') error = room.game.confirmPresence(command === 'round:presence' ? data.playerId as string : actor!.kind === 'player' ? actor!.playerId : '', data.status as PhysicalStatus);
       else if (command === 'round:location') error = room.game.setLocation(data.playerId as string, data.zone as string, true);
       else if (command === 'play:location' && actor!.kind === 'player') error = room.game.setLocation(actor!.playerId, data.zone as string);

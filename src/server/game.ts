@@ -227,9 +227,15 @@ export function createGame({ generateId, randomIndex, clock = defaultClock, onCh
     };
   }
   function configure(next: GameSettings): LobbyError | undefined {
-    if (firstGame) return 'SETTINGS_LOCKED';
     if (!['lobby', 'reading', 'between_rounds'].includes(phase)) return 'INVALID_PHASE';
     if (!validSettings(next, Math.max(99, settings.roundLimit ?? 99))) return 'INVALID_INPUT';
+    if (firstGame) {
+      if ((Object.keys(settings) as (keyof GameSettings)[]).some(key =>
+        key !== 'placementSeconds' && key !== 'searchSeconds' && next[key] !== settings[key])) return 'SETTINGS_LOCKED';
+      settings = { ...settings, placementSeconds: next.placementSeconds, searchSeconds: next.searchSeconds };
+      bump();
+      return;
+    }
     const progressionChanged = (['ritualEnabled', 'roundLimit', 'tutorialEnabled', 'initialDifficulty', 'maximumDifficulty'] as const).some(key => settings[key] !== next[key]);
     if (progressionChanged && (started || phase === 'reading')) return 'SETTINGS_LOCKED';
     const infectionChanged = settings.infectionMode !== next.infectionMode;
@@ -245,10 +251,11 @@ export function createGame({ generateId, randomIndex, clock = defaultClock, onCh
     if (firstGame && violations.some(item => item.status === 'review')) return 'RITUAL_REVIEW_PENDING';
     if (!shuffle && reviewPending()) return 'RITUAL_REVIEW_PENDING';
     if (firstGame) {
-      if (!venue.dwelling || !venue.storyId || !venue.order || !started && players.some(id => !venue.order!.includes(id))) return 'PREPARATION_REQUIRED';
-      const allowed = new Set(started ? (shuffle ? dealing.publicState().assignments.map(item => item.playerId) : returners()) : players);
-      const current = new Set(players);
-      players = [...new Set([...venue.order, ...players])].filter(id => allowed.has(id) && current.has(id));
+      if (!venue.dwelling || !venue.storyId) return 'PREPARATION_REQUIRED';
+      if (shuffle || started) {
+        const eligible = new Set(shuffle ? dealing.publicState().assignments.map(item => item.playerId) : returners());
+        players = players.filter(id => eligible.has(id));
+      }
     }
     if (firstGame && !locked && venue.mode === 'ordinary' && eligibleTrials(venue).length < 7) return 'TRIAL_POOL_INSUFFICIENT';
     const plan = phase === 'reading' ? roundPlan! : nextPlan();
@@ -333,16 +340,10 @@ export function createGame({ generateId, randomIndex, clock = defaultClock, onCh
     if (phase !== 'finished' || settings.roundLimit === null || ritualActive()) return 'INVALID_PHASE';
     settings.roundLimit = completedRounds + 1; phase = 'between_rounds'; bump();
   }
-  function add(playerId: string) {
+  function add(playerId: string, members = 0) {
     if (firstGame && locked) {
-      if (started || phase !== 'lobby' || !venue.order || venue.order.length >= FIRST_DEAL_MINIMUM) return 'SETTINGS_LOCKED';
-      venue.order = [...venue.order, playerId];
-      bump();
+      if (started || phase !== 'lobby' || members >= FIRST_DEAL_MINIMUM) return 'SETTINGS_LOCKED';
       return;
-    }
-    if (firstGame && venue.order) {
-      venue.order = [...venue.order, playerId];
-      bump();
     }
     if (phase === 'reading') return dealing.add(playerId);
   }
@@ -537,7 +538,7 @@ export function createGame({ generateId, randomIndex, clock = defaultClock, onCh
     if (!error) { activePlayerIds = activePlayerIds.filter(id => id !== actor); bump(); finishSearchIfNeeded(); }
     return error;
   }
-  function configureVenue(next: unknown, members: string[] = []): LobbyError | undefined {
+  function configureVenue(next: unknown): LobbyError | undefined {
     if (!['lobby', 'between_rounds'].includes(phase)) return 'INVALID_PHASE';
     if (firstGame && locked && phase === 'lobby') return 'SETTINGS_LOCKED';
     if (!next || typeof next !== 'object') return 'INVALID_INPUT';
@@ -547,17 +548,12 @@ export function createGame({ generateId, randomIndex, clock = defaultClock, onCh
     const names = [v.base, ...v.zones].map(n => n.trim());
     if (new Set(names.map(n => n.toLocaleLowerCase('ru'))).size !== names.length) return 'INVALID_INPUT';
     if (firstGame) {
-      const order = v.order, eligible = phase === 'lobby' ? members : returners();
-      if (!Array.isArray(order) || order.length !== eligible.length || new Set(order).size !== order.length || !order.every(id => eligible.includes(id))) return 'INVALID_INPUT';
-      if (phase !== 'lobby') {
-        if (results.at(-1)?.status !== 'final') return 'RITUAL_REVIEW_PENDING';
-        venue = { ...venue, order }; bump(); return;
-      }
+      if (phase !== 'lobby') return 'SETTINGS_LOCKED';
       if (!v.dwelling || !valid(v.dwelling.place) || !names.slice(1).includes(v.dwelling.zone)) return 'INVALID_INPUT';
       const sets = v.sets === undefined ? (v.harder === true ? ['harder' as const] : []) : v.sets;
       if (!Array.isArray(sets) || !sets.every(set => cardSets.includes(set)) || new Set(sets).size !== sets.length) return 'INVALID_INPUT';
       initializeStory();
-      venue = { base: names[0], zones: names.slice(1), order: [...order], dwelling: { zone: v.dwelling.zone, place: v.dwelling.place.trim() },
+      venue = { base: names[0], zones: names.slice(1), dwelling: { zone: v.dwelling.zone, place: v.dwelling.place.trim() },
         storyId: venue.storyId, harder: sets.includes('harder'), mode: 'ordinary', bank: 'authored', sets: [...sets] };
     } else venue = { base: names[0], zones: names.slice(1) };
     bump();

@@ -14,7 +14,7 @@ function fixture(count: number, getCards?: () => readonly PersonalCard[]) {
   const game = make();
   const players = Array.from({ length: count }, (_, i) => ({ id: `p${i}`, online: true }));
   const ids = players.map(p => p.id);
-  expect(game.configureVenue({ base: 'База', zones: ['Кухня'], dwelling: { zone: 'Кухня', place: 'Угол' }, order: ids }, ids)).toBeUndefined();
+  expect(game.configureVenue({ base: 'База', zones: ['Кухня'], dwelling: { zone: 'Кухня', place: 'Угол' }, order: ids })).toBeUndefined();
   if (getCards) {
     const legacy = game.exportState();
     legacy.venue = { ...legacy.venue!, mode: 'first', bank: 'local' };
@@ -54,10 +54,10 @@ it.each([[5, 6, 25], [7, 8, 31], [12, 13, 46]])('deals in table order for %i and
 });
 
 it('does not unlock preparation when the first deal is canceled', () => {
-  const { game, ids, deal } = fixture(5);
+  const { game, deal } = fixture(5);
   const saved = game.publicState().venue;
   expect(game.cancelDeal()).toBeUndefined();
-  expect(game.configureVenue({ ...saved, mode: 'ordinary', prologueRead: false }, ids)).toBe('SETTINGS_LOCKED');
+  expect(game.configureVenue({ ...saved, mode: 'ordinary', prologueRead: false })).toBe('SETTINGS_LOCKED');
   expect(game.publicState().venue).toEqual(saved);
   deal();
 });
@@ -65,14 +65,14 @@ it('does not unlock preparation when the first deal is canceled', () => {
 it('allows a replacement to restore the minimum roster after canceling the first deal', () => {
   const { game, ids, make } = fixture(5);
   game.remove(ids[4]);
-  expect(game.add('replacement')).toBe('SETTINGS_LOCKED');
+  expect(game.add('replacement', 4)).toBe('SETTINGS_LOCKED');
   expect(game.cancelDeal()).toBeUndefined();
   const restored = make();
   restored.restore(game.exportState());
-  expect(restored.add('replacement')).toBeUndefined();
-  expect(restored.add('sixth')).toBe('SETTINGS_LOCKED');
+  expect(restored.add('replacement', 4)).toBeUndefined();
+  expect(restored.add('sixth', 5)).toBe('SETTINGS_LOCKED');
   const roster = [...ids.slice(0, 4), 'replacement'];
-  expect(restored.publicState().venue.order).toEqual(roster);
+  expect(restored.publicState().venue.order).toBeUndefined();
   expect(restored.deal(roster, 0, false)).toBeUndefined();
   expect(restored.start(roster.map(id => ({ id, online: true })), true)).toBeUndefined();
 });
@@ -273,7 +273,7 @@ it('keeps the chosen story when settings are saved before players join and the r
     expect(initial.game.story).toEqual(story);
     expect(initial.game.venue).toMatchObject({ storyId: id, mode: 'ordinary', bank: 'authored' });
     expect(lobby.execute('host', 'room:create', {}).ok).toBe(true);
-    const venue = { base: 'База', zones: ['Кухня'], dwelling: { zone: 'Кухня', place: 'Угол' }, order: [] };
+    const venue = { base: 'База', zones: ['Кухня'], dwelling: { zone: 'Кухня', place: 'Угол' } };
     for (const [i, place] of ['Угол', 'У стены'].entries()) expect(lobby.execute('host', 'venue:configure', {
       roomId: initial.id, requestId: 'save-party-' + i, roundId: null, gameVersion: roomOf(lobby).game.version,
       venue: { ...venue, dwelling: { zone: 'Кухня', place }, storyId: 'S001', mode: 'first', bank: 'local', horror: true, features: ['mirror'] },
@@ -284,7 +284,7 @@ it('keeps the chosen story when settings are saved before players join and the r
       roomCode: initial.code, name: 'Медиум ' + i, resumeKey: String(i).repeat(64),
     }).ok).toBe(true);
     const joined = roomOf(lobby);
-    expect(joined.game.venue.order).toEqual(joined.players.map(player => player.id));
+    expect(joined.game.venue.order).toBeUndefined();
     restored.restore(lobby.exportState());
     expect(restored.execute('host', 'organizer:authorize', { code: 'ORGANIZER' }).ok).toBe(true);
     const saved = roomOf(restored);
@@ -356,7 +356,7 @@ it.each([{ sets: [] }, { sets: ['contact'] }, { sets: ['indoor', 'harder'] }])('
   const game = make();
   const ids = ['p0', 'p1', 'p2', 'p3', 'p4'];
   expect(game.configureVenue({ base: 'База', zones: ['Кухня'], dwelling: { zone: 'Кухня', place: 'Угол' },
-    order: ids, sets, horror: true, features: ['space', 'mirror'] }, ids)).toBeUndefined();
+    order: ids, sets, horror: true, features: ['space', 'mirror'] })).toBeUndefined();
   const seen = new Map<string, PersonalCard>();
   // Canceled previews still consume cards. Walk through the pool via normal deals.
   for (let attempt = 0; attempt < 40; attempt++) {
@@ -381,4 +381,46 @@ it.each([{ sets: [] }, { sets: ['contact'] }, { sets: ['indoor', 'harder'] }])('
   expect(restored.start(ids.map(id => ({ id, online: true })), true)).toBeUndefined();
   expect(restored.exportState().ritual?.cards.map(card => card.id)).toEqual(['R001', 'R002', 'R011']);
   expect(restored.exportState().firstGame?.trials?.deck).toHaveLength(7);
+});
+
+it('applies saved timer durations and redraws roles within the balanced roster', () => {
+  const time = controlledClock();
+  let serial = 0;
+  const game = createGame({ firstGame: true, generateId: () => `timer-${++serial}`,
+    randomIndex: limit => limit - 1, clock: time.clock, onChange() {} });
+  const ids = ['p0', 'p1', 'p2', 'p3', 'p4'];
+  expect(game.configureVenue({ base: 'База', zones: ['Кухня'], dwelling: { zone: 'Кухня', place: 'Угол' } })).toBeUndefined();
+  const settings = { ...game.publicState().settings, placementSeconds: 2, searchSeconds: 3 };
+  expect(game.configure({ ...settings, searchSeconds: 0 })).toBe('INVALID_INPUT');
+  expect(game.configure(settings)).toBeUndefined();
+  expect(game.deal(ids, 0, false)).toBeUndefined();
+  const possessed = ids.filter(id => game.personal(id)?.card.role === 'possessed');
+  expect(possessed).toHaveLength(2);
+  expect(possessed).not.toEqual(['p1', 'p3']);
+  expect(game.start(ids.map(id => ({ id, online: true })), true)).toBeUndefined();
+  expect(game.configure(settings)).toBe('INVALID_PHASE');
+  time.advance(2000);
+  expect(game.publicState()).toMatchObject({ phase: 'search', remainingMs: 3000 });
+  time.advance(3000);
+  expect(game.publicState()).toMatchObject({ phase: 'return', deadline: null });
+  game.dispose();
+});
+
+it('replaces a room once, leaving the previous players and invitations closed', () => {
+  let serial = 0;
+  const codes = ['ROOM22', 'ROOM33'];
+  const lobby = createLobby({ organizerCode: 'ORGANIZER', firstGame: true, generateRoomCode: () => codes[serial++] });
+  try {
+    expect(lobby.execute('host', 'organizer:authorize', { code: 'ORGANIZER' }).ok).toBe(true);
+    expect(lobby.execute('host', 'room:create', {}).ok).toBe(true);
+    const roomId = lobby.exportState().room!.id;
+    const resumeKey = 'f'.repeat(64);
+    expect(lobby.execute('phone', 'player:join', { name: 'Медиум', roomCode: codes[0], resumeKey }).ok).toBe(true);
+    expect(lobby.execute('host', 'room:restart', { roomId }).ok).toBe(true);
+    expect(lobby.viewFor('phone')).toMatchObject({ kind: 'ended', reason: 'closed' });
+    expect(lobby.execute('host', 'room:restart', { roomId })).toMatchObject({ ok: false, error: 'ROOM_NOT_FOUND' });
+    expect(lobby.exportState()).toMatchObject({ usedCodes: codes, room: { code: codes[1], players: [],
+      game: { settings: { placementSeconds: 45, searchSeconds: 240 }, firstGame: { story: { title: expect.any(String) } } } } });
+    expect(lobby.execute('phone', 'player:resume', { roomCode: codes[0], resumeKey })).toMatchObject({ ok: false, error: 'SESSION_EXPIRED' });
+  } finally { lobby.dispose(); }
 });

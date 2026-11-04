@@ -168,7 +168,7 @@ export function validateSession(value: unknown): SavedSession {
     if (venue.order !== undefined) requireValue(strings(venue.order, 12).every(id => ids.includes(id)));
     if (state.locked) {
       const dwelling = object(venue.dwelling);
-      requireValue(state.story && zones.includes(dwelling.zone as string) && text(dwelling.place, 64) && text(venue.storyId, 40) && typeof venue.harder === 'boolean' && Array.isArray(venue.order));
+      requireValue(state.story && zones.includes(dwelling.zone as string) && text(dwelling.place, 64) && text(venue.storyId, 40) && typeof venue.harder === 'boolean');
     }
   } else requireValue(game.firstGame === undefined);
   if (game.roundSync !== null) {
@@ -198,7 +198,7 @@ export function validateSession(value: unknown): SavedSession {
   if (game.phase === 'lobby') requireValue(deal.dealId === null && game.roundId === null && !game.started);
   const settings = object(game.settings);
   if (firstGame) requireValue(settings.ritualEnabled === true && settings.roundLimit === 7 && settings.tutorialEnabled === false &&
-    settings.placementSeconds === 45 && settings.searchSeconds === 240 && settings.infectionMode === 'on' && settings.initialDifficulty === 3 && settings.maximumDifficulty === 3);
+    settings.infectionMode === 'on' && settings.initialDifficulty === 3 && settings.maximumDifficulty === 3);
   if (plan?.kind === 'tutorial') requireValue(settings.tutorialEnabled === true);
   requireValue(deal.dealId !== null || plan === null);
   if (plan && (game.phase === 'reading' || isTimedPhase(game.phase as Parameters<typeof isTimedPhase>[0])))

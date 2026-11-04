@@ -3,12 +3,13 @@ import broadcast from './Broadcast.module.css';
 import { useCallback, useEffect, useRef, useState } from 'react';
 import QRCode from 'qrcode';
 import { dealCommand, gameCommand, describeError, useLobbyConnection } from '../../../shared/api/index.js';
-import { HowToPlay, ConfirmButton, DialogButton, LobbyShell, ResultsSummary, RitualBoard, RoundStatus, RoundTimer } from '../../../shared/ui/index.js';
+import { PhaseSignals, HowToPlay, ConfirmButton, DialogButton, LobbyShell, ResultsSummary, RitualBoard, RoundStatus, RoundTimer } from '../../../shared/ui/index.js';
+import { loadPublicInvitation, redeemOrganizerBootstrap, savedInvitationAddress, saveInvitationAddress } from '../bootstrap.js';
 import { invitationUrl } from '../invitation.js';
-import type { LobbyInputs, LobbyCommand } from '../../../../shared/protocol.js';
+import type { LobbyInputs, LobbyCommand, RoomSnapshot } from '../../../../shared/protocol.js';
 import { DealControls } from './DealControls.js';
 import { RecoveryControls } from './RecoveryControls.js';
-import { FirstGameSetup, PartySettings } from './FirstGameSetup.js';
+import { PartySettings } from './FirstGameSetup.js';
 import { FirstGameControls } from './FirstGameControls.js';
 import { GameControls } from './GameControls.js';
 import { SoundControls } from './SoundControls.js';
@@ -26,10 +27,13 @@ export function HostPage({ display = false, editor = false }: { display?: boolea
   const [code, setCode] = useState(credential.current);
   const [busy, setBusy] = useState(false);
   const [error, setError] = useState('');
-  const [local, setLocal] = useState(false);
-  const [address, setAddress] = useState('');
-  const [publicAddress, setPublicAddress] = useState('');
+  const [local, setLocal] = useState(() => savedInvitationAddress().startsWith('http:'));
+  const [address, setAddress] = useState(savedInvitationAddress);
+  const [publicAddress, setPublicAddress] = useState(savedInvitationAddress);
+  const bootstrap = useRef<ReturnType<typeof redeemOrganizerBootstrap> | undefined>(undefined);
+  const bootstrapHandled = useRef(false);
   const [invitationError, setInvitationError] = useState('');
+  const [waitForTunnel, setWaitForTunnel] = useState(false);
   const [qr, setQr] = useState('');
   const [copied, setCopied] = useState(false);
   const [pending, setPending] = useState<{ command: LobbyCommand; input: LobbyInputs[LobbyCommand] } | null>(null);
@@ -40,7 +44,7 @@ export function HostPage({ display = false, editor = false }: { display?: boolea
   const waitingForSync = room?.game.phase === 'between_rounds' && sync && !sync.closed && (sync.conflicts > 0 || sync.waitingPlayerIds.length > 0);
   const joinUrl = room && publicAddress ? invitationUrl(publicAddress, room.code, local) : '';
 
-  const authorize = useCallback(async (value: string) => {
+  const authorize = useCallback(async (value: string, createRoom = false) => {
     try { sessionStorage.setItem(storageKey, value); }
     catch { setError('Браузер не позволяет сохранить вход. Разрешите хранилище сайта и повторите.'); return; }
     credential.current = value;
@@ -48,6 +52,12 @@ export function HostPage({ display = false, editor = false }: { display?: boolea
     setBusy(true); setError('');
     const result = await request('organizer:authorize', { code: value });
     if (attempt !== operation.current) return;
+    if (result.ok && createRoom && result.view.kind === 'organizer' && !result.view.room &&
+      (!result.view.persistence || result.view.persistence.state === 'ready')) {
+      const created = await request('room:create', {});
+      if (attempt !== operation.current) return;
+      if (!created.ok) setError(describeError(created.error));
+    }
     setBusy(false);
     if (!result.ok) {
       setError(describeError(result.error));
@@ -59,7 +69,56 @@ export function HostPage({ display = false, editor = false }: { display?: boolea
     }
   }, [request, resetView]);
 
-  useEffect(() => { if (generation && credential.current) void authorize(credential.current); }, [generation, authorize]);
+  useEffect(() => {
+    if (!generation) return;
+    if (!bootstrapHandled.current && !display && !editor && (bootstrap.current || location.hash)) {
+      let active = true;
+      setBusy(true);
+      bootstrap.current ??= redeemOrganizerBootstrap();
+      void bootstrap.current.then(result => {
+        if (!active) return;
+        bootstrapHandled.current = true;
+        if (result) {
+          setWaitForTunnel(result.waitForTunnel);
+          setLocal(result.local);
+          setAddress(result.address);
+          setPublicAddress(result.address);
+          saveInvitationAddress(result.address);
+          void authorize(result.code, result.createRoom);
+        } else if (credential.current) void authorize(credential.current);
+        else setBusy(false);
+      }).catch(() => {
+        if (!active) return;
+        bootstrapHandled.current = true;
+        setBusy(false);
+        setError('Автоматический вход недоступен. Введите код организатора из окна запуска.');
+      });
+      return () => { active = false; };
+    }
+    if (credential.current) void authorize(credential.current);
+  }, [generation, authorize, display, editor]);
+  useEffect(() => {
+    if (!waitForTunnel || publicAddress || view?.kind !== 'organizer') return;
+    const abort = new AbortController();
+    let timer: number | undefined;
+    const deadline = Date.now() + 60000;
+    async function check() {
+      const signal = AbortSignal.any([abort.signal, AbortSignal.timeout(3000)]);
+      const origin = await loadPublicInvitation(signal).catch(() => undefined);
+      if (abort.signal.aborted) return;
+      if (origin) {
+        setLocal(false);
+        setAddress(origin);
+        setPublicAddress(origin);
+        saveInvitationAddress(origin);
+        setWaitForTunnel(false);
+      } else if (Date.now() < deadline) timer = window.setTimeout(() => void check(), 1000);
+      else setWaitForTunnel(false);
+    }
+    void check();
+    return () => { abort.abort(); window.clearTimeout(timer); };
+  }, [waitForTunnel, publicAddress, view?.kind]);
+
   useEffect(() => {
     let cancelled = false;
     setQr(''); setCopied(false);
@@ -93,10 +152,10 @@ export function HostPage({ display = false, editor = false }: { display?: boolea
         <h3>Комната <code>{room.code}</code></h3>
         <form onSubmit={event => {
           event.preventDefault();
-          try { invitationUrl(address, room.code, local); setPublicAddress(address.trim()); setInvitationError(''); }
+          try { invitationUrl(address, room.code, local); setPublicAddress(address.trim()); saveInvitationAddress(address.trim()); setInvitationError(''); }
           catch { setInvitationError('Укажите HTTPS-адрес Tuna или включите локальный режим для HTTP-адреса ноутбука. Пути и параметры не нужны.'); }
         }}>
-          <label><input type="checkbox" checked={local} onChange={e => { setLocal(e.target.checked); setPublicAddress(''); setInvitationError(''); }} /> Локальное подключение</label>
+          <label><input type="checkbox" checked={local} onChange={e => { setWaitForTunnel(false); setLocal(e.target.checked); setPublicAddress(''); saveInvitationAddress(''); setInvitationError(''); }} /> Локальное подключение</label>
           <p>{local ? 'Все телефоны и ноутбук должны быть в одной сети. Возьмите адрес Local player address из окна запуска. Адрес выбирается до входа; автоматического переноса между сайтами нет.' : 'Вставьте HTTPS-адрес Tuna.'}</p>
           <label>{local ? 'Локальный адрес ноутбука' : 'Адрес Tuna'}<input type="url" value={address} placeholder="https://…" onChange={event => setAddress(event.target.value)} required /></label>
           <button>Показать приглашение</button>
@@ -111,24 +170,36 @@ export function HostPage({ display = false, editor = false }: { display?: boolea
           {qr && <img src={qr} width={280} height={280} alt="QR-код приглашения в комнату" />}
           <p>Отсканируйте QR или откройте ссылку. Если вводите адрес сайта вручную, используйте код комнаты.</p>
         </>}
+        {!display && <>
+        <ConfirmButton data-danger disabled={disabled} native={!room.game.firstGame} title="Закрыть комнату?"
+          description="Все участники выйдут. Прежнее приглашение перестанет действовать." confirm="Закрыть комнату"
+          onConfirm={() => void run('room:close', { roomId: room.id })}>Закрыть комнату</ConfirmButton>
+          {room.game.firstGame && <ConfirmButton data-danger disabled={disabled} title="Начать новую партию?"
+            description="Текущая партия завершится, и откроется пустая комната с новым кодом." confirm="Создать новую комнату"
+            onConfirm={() => void run('room:restart', { roomId: room.id })}>Новая партия</ConfirmButton>}
+        </>}
+        {waitForTunnel && !publicAddress && <p role="status">Ждём адрес Tuna. Ссылка и QR появятся автоматически.</p>}
         {invitationError && <p role="alert">{invitationError}</p>}
       </section>);
-  const settings = room && view?.kind === 'organizer' && <><section aria-label="Атмосфера">
-        <h3>Атмосфера</h3>
+  const settings = room && view?.kind === 'organizer' && <><section aria-label="Экран">
         <label><input type="checkbox" checked={effects} onChange={e => { setEffects(e.target.checked); try { sessionStorage.setItem('pomekhi.visuals', e.target.checked ? 'on' : 'off'); } catch { /* Visual effects still work. */ } }} /> Эффект старого телевизора</label>
-        {!display && <label><input type="checkbox" disabled={disabled} checked={room.phoneScaresEnabled} onChange={e => void run('organizer:atmosphere', { roomId: room.id, enabled: e.target.checked })} /> Редкие эффекты на телефонах</label>}
+        {!display && !room.game.firstGame && <label><input type="checkbox" disabled={disabled} checked={room.phoneScaresEnabled} onChange={e => void run('organizer:atmosphere', { roomId: room.id, enabled: e.target.checked })} /> Редкие эффекты на телефонах</label>}
         {display && <><button onClick={() => {
           if (document.fullscreenElement) void document.exitFullscreen().catch(() => setFullscreenMessage('Используйте обычное окно браузера.'));
           else if (document.documentElement.requestFullscreen) void document.documentElement.requestFullscreen().catch(() => setFullscreenMessage('Полноэкранный режим недоступен; эфир работает в окне.'));
           else setFullscreenMessage('Полноэкранный режим недоступен; эфир работает в окне.');
         }}>Полноэкранный режим</button><a href="/?screen=host">Открыть пульт</a>{fullscreenMessage && <p role="status">{fullscreenMessage}</p>}</>}
       </section>
-      <SoundControls game={room.game} online={connection === 'online' && restored && persistence?.state !== 'write_error' && persistence?.state !== 'load_error'} enabled={view.audioEnabled} disabled={disabled} cue={cue} prepareRef={prepareSound} gameVersion={room.game.version} clockOffset={clockOffset} claim={async enabled => {
+      {room.game.firstGame && <PhaseSignals key={room.id} cue={cue} enabled={view.audioEnabled}
+        online={connection === 'online' && restored && (!persistence || persistence.state === 'ready')} clockOffset={clockOffset}
+        claim={async enabled => (await request('organizer:audio', { enabled })).ok} />}
+      {room.game.firstGame && !display && <TimerSettings key={`${room.id}:${room.game.settings.placementSeconds}:${room.game.settings.searchSeconds}`} room={room} disabled={disabled} error={error} run={run} />}
+      {!room.game.firstGame && <SoundControls game={room.game} online={connection === 'online' && restored && persistence?.state !== 'write_error' && persistence?.state !== 'load_error'} enabled={view.audioEnabled} disabled={disabled} cue={cue} prepareRef={prepareSound} gameVersion={room.game.version} clockOffset={clockOffset} claim={async enabled => {
         const result = await request('organizer:audio', { enabled });
         if (!result.ok) setError(describeError(result.error));
         if (result.ok && display && enabled) window.scrollTo(0, 0);
         return result.ok;
-      }} /></>;
+      }} />}</>;
   const roster = room && (<section>
         <h3>Участники: {room.players.length} / {room.capacity}</h3>
         <p>Организатор тоже входит с телефона. Этот экран не занимает место.</p>
@@ -146,11 +217,9 @@ export function HostPage({ display = false, editor = false }: { display?: boolea
             onConfirm={() => void run('player:remove', { roomId: room.id, playerId: player.id })}
             aria-label={`Удалить участника ${player.name}`}>Удалить</ConfirmButton>
         </li>)}</ul> : <p>Пока здесь тихо. Ждём первого участника.</p>}
-        <ConfirmButton data-danger disabled={disabled} native={!room.game.firstGame} title="Закрыть комнату?"
-          description="Все участники выйдут. Прежнее приглашение перестанет действовать." confirm="Закрыть комнату"
-          onConfirm={() => void run('room:close', { roomId: room.id })}>Закрыть комнату</ConfirmButton>
+
       </section>);
-  const work = room && view?.kind === 'organizer' && <>{room.game.firstGame && <FirstGameSetup key={`${room.id}:${room.game.phase}:${room.game.results.at(-1)?.status}`} room={room} view={view} disabled={disabled} run={run} />}
+  const work = room && view?.kind === 'organizer' && <>
       {room.game.firstGame && room.game.phase === 'between_rounds' && room.game.results.at(-1)?.status === 'provisional' && <section aria-label="Физический статус">
         <h3>Кто где после призыва</h3><p>Подтверждайте только то, что сообщили участники. Отключённый телефон ничего не доказывает.</p>
         <ul>{room.players.map(player => {
@@ -236,9 +305,9 @@ export function HostPage({ display = false, editor = false }: { display?: boolea
         <RoundTimer game={room.game} clockOffset={clockOffset} connection={liveConnection} />
       </div>}
       <DialogButton data-secondary title="Как играть" content={<HowToPlay game={room.game} />}>Как играть</DialogButton>
-      <DialogButton data-secondary title="Сюжет" content={room.game.story && <>
+      <DialogButton data-secondary title="Сюжет" content={room.game.story ? <>
         <h3>{room.game.story.title}</h3><p className={broadcast.prologue}>{room.game.story.prologue}</p>
-      </>}>Сюжет</DialogButton>
+      </> : <p>Сюжет пока недоступен. Проверьте, что сервер запущен из актуальной сборки.</p>}>Сюжет</DialogButton>
       {!display && <PartySettings key={room.id} room={room} disabled={disabled} run={run} error={error}
         retry={pending?.command === 'venue:configure' && <button type="button" data-secondary disabled={disabled}
           onClick={() => void run(pending.command, pending.input)}>Повторить сохранение</button>} />}
@@ -252,7 +321,7 @@ export function HostPage({ display = false, editor = false }: { display?: boolea
           <ResultsSummary results={room.game.results} firstGame />
           {!display && work}
         </section>}
-        {!display && <><p><a href="/?screen=display" target="_blank" rel="opener">Открыть эфир</a> · <a href="/?screen=editor" target="_blank" rel="opener">Редактор карточек</a></p>{roster}</>}
+        {!display && <><p><a href="/?screen=display" target="_blank" rel="opener">Открыть эфир</a> · <a href="/?screen=editor" target="_blank" rel="opener">Редактор карточек</a></p></>}
       </>}>Настройки</DialogButton>
     </div>
   </> : undefined;
@@ -288,8 +357,7 @@ export function HostPage({ display = false, editor = false }: { display?: boolea
       {firstGame && <section className={broadcast.roster} aria-label="Участники за столом">
         <h3>Участники <span>{room.players.length}/{room.capacity}</span></h3>
         <ol tabIndex={0} aria-label="Список участников">{[...room.players].sort((a, b) => {
-          const order = room.game.venue.order ?? [];
-          return (order.indexOf(a.id) + 1 || Infinity) - (order.indexOf(b.id) + 1 || Infinity);
+          return a.name.localeCompare(b.name, 'ru');
         }).map((player, index) => {
           const role = view.roles?.[player.id];
           const physical = view.presence?.find(item => item.playerId === player.id);
@@ -310,6 +378,9 @@ export function HostPage({ display = false, editor = false }: { display?: boolea
                 ? physical.expected === 'at_base' ? 'На базе' : 'С группой'
                 : physical.expected === 'at_base' ? 'Ожидается на базе' : 'Ожидается в группе'
                 : 'Статус неизвестен'}</small>}
+              {!display && <ConfirmButton data-danger disabled={disabled} className={broadcast.replace} title={`Удалить участника «${player.name}»?`}
+                description="Его прежний вход перестанет действовать." confirm="Удалить" aria-label={`Удалить участника ${player.name}`}
+                onConfirm={() => void run('player:remove', { roomId: room.id, playerId: player.id })}>×</ConfirmButton>}
               {!checking && room.game.phase !== 'reading' && role && <small>В игре</small>}
             </div>
           </li>;
@@ -347,7 +418,7 @@ export function HostPage({ display = false, editor = false }: { display?: boolea
       {firstGame && !display && <footer className={broadcast.primary}>
         <FirstGameControls key={room.id} room={room} disabled={disabled} run={run}
           trialPending={view?.kind === 'organizer' && view.trialReview?.lateVisit?.status === 'review'}
-          newParty={() => void run('room:close', { roomId: room.id })} />
+          newParty={() => void run('room:restart', { roomId: room.id })} />
       </footer>}
       </div>
       {room.game.firstGame && <RitualBoard game={room.game} online={connection === 'online' && restored} animate />}
@@ -363,4 +434,26 @@ export function HostPage({ display = false, editor = false }: { display?: boolea
       </>}
     </>}
   </LobbyShell></div>;
+}
+
+function TimerSettings({ room, disabled, error, run }: {
+  room: RoomSnapshot; disabled: boolean; error: string;
+  run: (command: 'game:configure', input: LobbyInputs['game:configure']) => Promise<void>;
+}) {
+  const { settings, phase } = room.game;
+  const [placement, setPlacement] = useState(String(settings.placementSeconds));
+  const [search, setSearch] = useState(String(settings.searchSeconds));
+  const locked = !['lobby', 'reading', 'between_rounds'].includes(phase);
+  return <form onSubmit={event => {
+    event.preventDefault();
+    if (locked || disabled) return;
+    void run('game:configure', { ...gameCommand(room), settings: { ...settings, placementSeconds: Number(placement), searchSeconds: Number(search) } });
+  }}>
+    <h3>Таймеры этапов</h3>
+    {locked && <p>Таймеры можно изменить между раундами.</p>}
+    <label>Расстановка, секунды<input type="number" min={1} max={3600} required value={placement} disabled={locked || disabled} onChange={event => setPlacement(event.target.value)} /></label>
+    <label>Поиск, секунды<input type="number" min={1} max={3600} required value={search} disabled={locked || disabled} onChange={event => setSearch(event.target.value)} /></label>
+    <button disabled={locked || disabled}>Сохранить таймеры</button>
+    {error && <p role="alert">{error}</p>}
+  </form>;
 }

@@ -13,7 +13,7 @@ export function ResultsSummary({ results, freeplayFrom = null, firstGame = false
     {extra.length > 0 && <p>Свободная игра. Завершено дополнительных раундов: {extra.filter(r => r.status !== 'aborted').length}. Дополнительные результаты не меняют исход и итог ритуала.</p>}
     {results.map((row, index) => <div key={row.roundId}>
       <h4>{freeplayFrom !== null && index >= freeplayFrom ? 'Свободная игра · ' : ''}{row.kind === 'tutorial' ? 'Обучение · без общего зачёта' : `Раунд ${row.number}`} · {!firstGame && `Уровень ${row.difficulty} · `}{row.status === 'provisional' ? 'Предварительный итог' : row.status === 'aborted' ? 'Отменён, без зачёта' : 'Результат зафиксирован'}</h4>
-      {row.status !== 'aborted' && <p>Спасено групп: {row.rescuedGroups} / {row.totalGroups}. Миссии: {row.missions} / {row.totalMissions}. {row.trialBonus !== undefined && <>Испытание Мастера: +{row.trialBonus}. </>} {firstGame ? 'Взято в плен' : 'Заражено'}: {row.infectedPlayers}. Время: {time(row.activeMs)}.</p>}
+      {row.status !== 'aborted' && <p>Спасено групп: {row.rescuedGroups} / {row.totalGroups}. Миссии: {row.missions} / {row.totalMissions}. {row.trialBonus !== undefined && <>Испытание Мастера: +{row.trialBonus}. </>} Заражено: {row.infectedPlayers}. Время: {time(row.activeMs)}.</p>}
       {row.status === 'provisional' && <p>Можно дополнить миссии и отменить допустимые действия до фиксации.</p>}
     </div>)}
   </div>;

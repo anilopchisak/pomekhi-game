@@ -84,7 +84,7 @@ export function useLobbyConnection() {
     socket.on('lobby:state', accept);
     socket.on('game:cue', next => {
       const current = latestView.current;
-      if (current?.kind === 'organizer' && current.audioEnabled && current.room?.id === next.roomId
+      if (current && current.kind !== 'ended' && current.audioEnabled && current.room?.id === next.roomId
         && current.room.game.version === next.version && offsetRef.current !== null
         && Math.abs(performance.now() + offsetRef.current - next.serverNow) < 2000) setCue(next);
     });

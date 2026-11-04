@@ -16,7 +16,7 @@ export function DealControls({ room, disabled, run }: {
   if (room.game.firstGame) return <section aria-label="Раздача">
     <h3>{reading ? 'Чтение карточек' : room.game.started ? 'Новая раздача — только свободным' : 'Подготовка раздачи'}</h3>
     {reading ? <p role="status">Прочитали: {readyCount} / {room.dealing.assignments.length}. Чтение без таймера.</p>
-      : <p>Карточки чередуются по порядку за столом. Группы в локациях сохраняют свои карточки.</p>}
+      : <p>Роли распределяются случайно. Группы в локациях сохраняют свои карточки.</p>}
     {reading ? <>
       <ConfirmButton title="Перевыдать карточки?" description="Новые карточки получат участники текущей раздачи."
         confirm="Перевыдать карточки" disabled={disabled}

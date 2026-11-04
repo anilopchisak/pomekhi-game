@@ -8,7 +8,7 @@ import { join } from 'node:path';
 it.skipIf(process.platform === 'win32')('launches the production LAN process with a loopback panel and releases its port on stop', async () => {
   const directory = await mkdtemp(join(tmpdir(), 'pomekhi-lan-'));
   const child = spawn(process.execPath, ['scripts/start-lan.mjs'], {
-    env: { ...process.env, HOST: '127.0.0.1', PORT: '0', POMEKHI_TEST_DIRECTORY: directory,
+    env: { ...process.env, HOST: '127.0.0.1', PORT: '0', POMEKHI_NO_BROWSER: '1', POMEKHI_TEST_DIRECTORY: directory,
       NODE_OPTIONS: `--import=${new URL('./fixtures/isolated-data.mjs', import.meta.url).href}` },
     stdio: ['ignore', 'pipe', 'pipe'],
   });

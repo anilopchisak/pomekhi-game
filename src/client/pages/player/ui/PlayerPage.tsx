@@ -2,7 +2,7 @@ import styles from './PlayerScene.module.css';
 import { PhoneSound } from './PhoneSound.js';
 import { useCallback, useEffect, useRef, useState } from 'react';
 import { dealCommand, gameCommand, describeError, useLobbyConnection } from '../../../shared/api/index.js';
-import { HowToPlay, ConfirmButton, DialogButton, LobbyShell, ResultsSummary, RitualBoard, RoundStatus, RoundTimer } from '../../../shared/ui/index.js';
+import { PhaseSignals, HowToPlay, ConfirmButton, DialogButton, LobbyShell, ResultsSummary, RitualBoard, RoundStatus, RoundTimer } from '../../../shared/ui/index.js';
 import { clearPlayerSession, createResumeKey, readPlayerSession, savePlayerSession } from '../session.js';
 import type { PlayerSession } from '../session.js';
 import { PersonalCardPanel } from './PersonalCardPanel.js';
@@ -17,7 +17,7 @@ function isPrivateForm(command: LobbyCommand): command is PrivateFormCommand {
 }
 
 export function PlayerPage() {
-  const { connection, generation, view, request, clockOffset, scare, reconnect, resetView } = useLobbyConnection();
+  const { connection, generation, view, request, clockOffset, scare, cue, reconnect, resetView } = useLobbyConnection();
   const invitationCode = new URLSearchParams(window.location.search).get('room')?.toUpperCase() ?? '';
   const initial = readPlayerSession();
   const saved = useRef(initial && (!invitationCode || initial.roomCode === invitationCode) ? initial : null);
@@ -110,10 +110,12 @@ export function PlayerPage() {
   }
 
   const firstGame = playerView?.room.game.firstGame;
-  const sound = playerView && <PhoneSound key={playerView.room.id} view={playerView} scare={scare} online={connection === 'online' && authorizedGeneration === generation} clockOffset={clockOffset} claim={async enabled => {
+  const sound = playerView && (firstGame ? <PhaseSignals key={playerView.room.id} cue={cue} enabled={Boolean(playerView.audioEnabled)}
+      online={liveConnection === 'online' && playerView.persistence?.state !== 'write_error'} clockOffset={clockOffset}
+      claim={async enabled => (await request('player:audio', { roomId: playerView.room.id, enabled })).ok} /> : <PhoneSound key={playerView.room.id} view={playerView} scare={scare} online={connection === 'online' && authorizedGeneration === generation} clockOffset={clockOffset} claim={async enabled => {
       const result = await request('player:audio', { roomId: playerView.room.id, enabled });
       if (!result.ok) setError(describeError(result.error)); return result.ok;
-    }} />;
+    }} />);
   const sync = offline.available && playerView && <section aria-label="Синхронизация телефона">
       <p>{shellReady ? 'Офлайн-перезагрузка подготовлена. Сохраняйте этот адрес и браузер.' : 'Держите вкладку открытой: офлайн-перезагрузка пока недоступна. В локальном HTTP после закрытия вкладки потребуется связь с ноутбуком.'}</p><p role="status">{offline.pending ? `Сохранено на телефоне: ${offline.pending}. Ждёт отправки.` : offline.conflicts ? `Нужен разбор: ${offline.conflicts}.` : 'Все отправленные действия подтверждены сервером.'}</p>
       {offline.rejected.length > 0 && <p role="alert">Не зачтено действий: {offline.rejected.length}. Проверьте результат на базе: запись отклонена организатором, закрытием итога или правилами раунда.</p>}
@@ -197,7 +199,7 @@ export function PlayerPage() {
     {privateFeedback('play:trial')}
   </>}>{trial.reporter === 'actor' ? 'Личное поручение Мастера' : 'Дать свидетельство'}</DialogButton>;
   const cardId = playerView?.play?.cardKey ?? playerView?.assignment?.id;
-  const card = playerView && <>    {offline.pendingCapture && <p>Вы отметили плен. Прочитайте задание на телефоне заразившего вас участника. Новая карточка появится после согласования с сервером.</p>}
+  const card = playerView && <>    {offline.pendingCapture && <p>Вы отметили заражение. Прочитайте задание на телефоне заразившего вас участника. Новая карточка появится после согласования с сервером.</p>}
     {(playerView.assignment || playerView.play) && !offline.pendingCapture && <PersonalCardPanel disclosure={firstGame ? { revealedCard, setRevealedCard } : undefined} firstGame={playerView.room.game.firstGame} tutorial={playerView.room.game.roundPlan.kind === 'tutorial'} infectionEnabled={playerView.room.game.roundPlan.infectionEnabled} assignment={playerView.play ? { ready: false, replacementRequested: false, id: playerView.play.cardKey, card: playerView.play.card } : playerView.assignment!} disabled={busy || liveConnection !== 'online'} readOnly={playerView.room.game.phase !== 'reading' || !playerView.assignment} act={async (action, flag) => {
       const base = { ...dealCommand(playerView.room), assignmentId: playerView.assignment!.id };
       await cardAction(action, action === 'card:ready' ? { ...base, ready: flag } : { ...base, requested: flag });

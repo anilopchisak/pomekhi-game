@@ -23,7 +23,8 @@ export function createSocketServer(server: HttpServer, health: HealthResponse, l
       if (view) socket.emit('lobby:state', view);
       // A volatile packet immediately after a snapshot can be dropped while that write drains.
       // Clients discard old cues by timestamp/version; cues are never restored from state.
-      if (cue && view?.kind === 'organizer' && view.audioEnabled) socket.emit('game:cue', cue);
+      if (cue && view && view.kind !== 'ended' && view.audioEnabled &&
+        (view.kind === 'organizer' || view.room.game.firstGame && view.room.game.activePlayerIds.includes(view.playerId))) socket.emit('game:cue', cue);
     }
   }
   const unsubscribe = lobby.subscribe(cue => { publish(cue); scares.update(); });
@@ -36,7 +37,7 @@ export function createSocketServer(server: HttpServer, health: HealthResponse, l
       if (!withinPayloadLimit(input, limit)) { acknowledge({ ok: false, error: 'INVALID_INPUT' }); return; }
       void lobby.catalogExecute(socket.id, input).then(acknowledge, () => acknowledge({ ok: false, error: 'STORAGE_UNAVAILABLE' }));
     });
-    const commands: LobbyCommand[] = ['organizer:authorize', 'room:create', 'room:close', 'player:join', 'player:resume', 'player:leave', 'player:remove',
+    const commands: LobbyCommand[] = ['organizer:authorize', 'room:create', 'room:restart', 'room:close', 'player:join', 'player:resume', 'player:leave', 'player:remove',
       'deal:create', 'deal:shuffle', 'deal:cancel', 'deal:replace', 'card:ready', 'card:request', 'lobby:sync', 'organizer:audio', 'organizer:atmosphere', 'player:audio',
       'game:configure', 'round:start', 'round:pause', 'round:resume', 'round:return', 'round:abort', 'party:finish', 'party:extend', 'play:infect', 'play:release', 'play:mission', 'play:undo', 'results:finalize', 'storage:retry', 'storage:reset', 'venue:configure', 'play:withdraw', 'play:sync', 'play:complete', 'play:presence', 'play:location', 'round:location', 'round:presence', 'sync:preview', 'sync:resolve', 'sync:close', 'play:trial', 'round:trial-review', 'play:violation', 'ritual:review', 'ritual:penalty', 'ritual:undo-penalty', 'party:freeplay'];
     for (const command of commands) socket.on(command, (input: unknown, acknowledge: (reply: LobbyReply) => void) => {

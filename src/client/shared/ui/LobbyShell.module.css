@@ -18,7 +18,7 @@
 .screen :is(summary, button, input, select, textarea, a):focus-visible { outline: 2px solid var(--accent); outline-offset: 2px; }
 .screen button:disabled { opacity: .5; cursor: default; }
 .screen [role=alert] { border-inline-start: 3px solid var(--danger); padding: 12px; background: var(--surface); color: var(--danger); }
-.screen [data-connection] { font-size: 13px; color: var(--muted); }
+.screen [data-connection] { font-size: 14px; color: var(--muted); }
 .screen [data-connection=offline] { color: var(--danger); }
 .screen ul { padding: 0; list-style: none; }
 :where(.screen) li { display: flex; align-items: center; flex-wrap: wrap; gap: 8px; padding-block: 8px; border-bottom: 1px solid var(--line); }

@@ -12,7 +12,7 @@
 
 .board[data-first-game=true] { padding: 20px; background: var(--panel); border-color: var(--border); }
 .board[data-first-game=true] h3 { margin: 0 0 8px; font-size: 22px; }
-.board[data-first-game=true] p { margin: 8px 0; color: var(--muted); font-size: 13px; }
+.board[data-first-game=true] p { margin: 8px 0; color: var(--muted); font-size: 14px; }
 .round { text-transform: uppercase; }
 .stepsLabel .steps { margin-top: 6px; color: var(--gold); font: 600 48px/1.2 var(--font-numeric); }
 .board[data-first-game=true] .stages { grid-template-columns: repeat(3, minmax(0, 1fr)); gap: 8px; }
@@ -64,7 +64,7 @@
 .board[data-first-game=true] :is(.caption, .stages small, .stages li > button) {
   overflow-wrap: normal;
   hyphens: none;
-  font-size: 11px;
+  font-size: 14px;
 }
 .board[data-first-game=true] .stages li > button { color: inherit; background: none; border: 0; min-height: 44px; padding: 0; margin: 0; width: 100%; line-height: 1.3; overflow: hidden; text-overflow: ellipsis; }
 .board[data-first-game=true] > button { width: 100%; margin: 0; }

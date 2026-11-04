@@ -49,3 +49,9 @@ In-memory room membership and authorization belong to the [lobby owner](lobby-se
 ## Durable initialization
 
 The executable injects a local file store; programmatic factories default to memory. Runtime awaits session initialization before listening and cancellation prevents late readiness after a pending load. The factory drains/checkpoints the serialized session while closing transports under the existing shared deadline. Lock failure aborts startup; a damaged save opens organizer-only recovery controls instead of replacing the file. See [session persistence](session-persistence.md) for commit order, writer claims and failure recovery.
+
+## Launcher handoff
+
+The public launcher opens the local organizer panel as soon as the server sends readiness. The panel clears the URL fragment and exchanges its short-lived, one-use key for the existing organizer credential through a no-store POST restricted to the configured local origin. The launcher sends the Tuna forwarding address to the server over IPC when it becomes available. The local panel polls briefly for that address and generates an invitation as soon as both the room and address are available. The manual organizer code and invitation form remain available if automatic launch fails.
+
+The laptop and LAN launchers also use the one-use local sign-in. The LAN launcher prefills the first eligible private IPv4 address or a matching configured address. The automatic LAN command asks the authorized panel to create a room only when no active checkpoint was restored. The selected invitation origin remains in the browser tab.

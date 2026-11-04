@@ -136,7 +136,7 @@ it('bounds stop during a stalled load and never starts listening when that load 
 it('reconciles delayed phone reports and restores retained groups with the current disk store', async () => {
   const dir = await mkdtemp(join(tmpdir(), 'pomekhi-first-game-')), clients: Client[] = [];
   const time = controlledClock();
-  const make = () => createServerRuntime({ firstGame: true, config: { host: '127.0.0.1', port: 0 }, organizerCode: 'FIRSTGAME', sessionStore: createFileSessionStore(dir, true), clock: time.clock });
+  const make = () => createServerRuntime({ firstGame: true, config: { host: '127.0.0.1', port: 0 }, organizerCode: 'FIRSTGAME', randomIndex: () => 0, sessionStore: createFileSessionStore(dir, true), clock: time.clock });
   let runtime = make(), sequence = 0;
   let port = (await runtime.start()).port;
   const newClient = async () => { const client = await connect(port); clients.push(client); return client; };

@@ -1,6 +1,6 @@
 import { describe, expect, it } from 'vitest';
 import { resolve } from 'node:path';
-import { tunaExecutable, tunaLaunch, requireLocalApp } from '../../scripts/tuna.mjs';
+import { tunaExecutable, tunaLaunch, requireLocalApp, publicTunnelOrigin } from '../../scripts/tuna.mjs';
 
 describe('Tuna launch boundary', () => {
   it('uses the configured application port and disables traffic-body inspection', () => {
@@ -33,4 +33,12 @@ describe('Tuna launch boundary', () => {
   it('gives a normalized failure for an invalid upstream instead of exposing transport details', async () => {
     await expect(requireLocalApp('not a URL')).rejects.toThrow('Start the application first');
   });
+});
+
+it('selects the forwarding address and ignores help, inspector and lookalike domains', () => {
+  expect(publicTunnelOrigin('INFO Forwarding https://example-22.ru.tuna.am → http://127.0.0.1:3000')).toBe('https://example-22.ru.tuna.am');
+  expect(publicTunnelOrigin('Forwarding: https://example-22.ru.tuna.am')).toBe('https://example-22.ru.tuna.am');
+  expect(publicTunnelOrigin('Docs https://tuna.am/docs/tunnels/http')).toBeUndefined();
+  expect(publicTunnelOrigin('Forwarding https://example.ru.tuna.am.invalid')).toBeUndefined();
+  expect(publicTunnelOrigin('Forwarding https://example.ru.tuna.am/path')).toBeUndefined();
 });

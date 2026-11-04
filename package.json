@@ -34,7 +34,8 @@
     "agent:graph:explain": "node scripts/agent.mjs graph explain",
     "agent:graph:path": "node scripts/agent.mjs graph path",
     "agent:graph:eval": "node scripts/agent.mjs graph eval",
-    "start:lan": "node scripts/start-lan.mjs"
+    "start:lan": "node --env-file-if-exists=.env scripts/start-lan.mjs",
+    "start:lan:auto": "node --env-file-if-exists=.env scripts/start-lan.mjs --create-room"
   },
   "dependencies": {
     "express": "5.3.0",

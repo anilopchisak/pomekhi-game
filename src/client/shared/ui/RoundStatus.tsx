@@ -58,7 +58,7 @@ export function RoundStatus({ game, clockOffset, connection, role, playStatus, w
     if (game.phase === 'return' || game.phase === 'between_rounds') instruction = inGroup
       ? 'Оставайтесь в локации с вашей группой. Отчёт можно отправить с места.'
       : isPhone ? (playStatus === 'released' ? 'Оставайтесь на базе.' : 'Свободные возвращаются на базу.')
-      : 'Свободные возвращаются на базу. Одержимые и пленённые остаются на местах.';
+      : 'Свободные возвращаются на базу. Одержимые и заражённые остаются на местах.';
   }
   if (game.paused) instruction = 'Прекратите действия и ждите в безопасном месте. Продолжение объявит ноутбук.';
   let title = labels[game.phase];

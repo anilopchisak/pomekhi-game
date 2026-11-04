@@ -25,10 +25,10 @@ export function PersonalCardPanel({ assignment, disabled, readOnly = false, infe
         : 'Обучение: дождитесь поиска, затем помогайте одержимым по их подсказкам. Если выполните необязательную миссию, нажмите «Миссия выполнена».'}</p>}
       {tutorial && infectionEnabled && <p>Попробуйте заражение: заражённый читает поведение группы и может её освободить. Заражение лишает зачёта миссии. Это обучение без общего зачёта.</p>}
       {card.role === 'possessed' ? <>
-        <p><strong>Поведение:</strong> {card.behavior}</p>
+        <p><strong>Поведение:</strong> {card.behavior.replaceAll('Пленённые повторяют позу', 'Заражённые повторяют позу')}</p>
         {card.clue && <p><strong>Подсказка:</strong> {card.clue} Её можно произнести, если экзорцисту нужна помощь.</p>}
         <p><strong>Условие освобождения:</strong> {card.releaseCondition}</p>
-        {infectionEnabled && <p><strong>{firstGame ? 'Условие плена:' : 'Условие заражения:'}</strong> {card.infectionCondition}</p>}
+        {infectionEnabled && <p><strong>Условие заражения:</strong> {card.infectionCondition}</p>}
       </> : <>
         <p>Ваша основная цель — находить одержимых и помогать им освободиться.</p>
         <p><strong>Дополнительная миссия:</strong> {card.mission}</p>

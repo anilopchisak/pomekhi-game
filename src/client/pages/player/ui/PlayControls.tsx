@@ -44,17 +44,17 @@ export function PlayControls({ view, disabled, run, queue, online = true, estima
   </label>;
 
   return <section aria-label="Игровые действия">
-    <h3>{({ exorcist: 'Вы — экзорцист', possessed: 'Вы — одержимый', captured: game.firstGame ? 'Вы в плену' : 'Вы заражены', released: 'Вы освобождены' })[play.status]}</h3>
+    <h3>{({ exorcist: 'Вы — экзорцист', possessed: 'Вы — одержимый', captured: 'Вы заражены', released: 'Вы освобождены' })[play.status]}</h3>
     {play.status === 'captured' && <p>Ваша дополнительная миссия не засчитывается.</p>}
-    {play.wasCaptured && play.status === 'released' && <p>После плена дополнительная миссия этого раунда не засчитывается.</p>}
+    {play.wasCaptured && play.status === 'released' && <p>После заражения дополнительная миссия этого раунда не засчитывается.</p>}
     {game.firstGame && searching && unavailable && <p role="status">Этот участник уже недоступен. Выберите имя из обновлённого списка.</p>}
     {game.firstGame && searching && !online && <p>Список сохранён при последней связи. Отметка дождётся проверки.</p>}
     {queue && play.status === 'exorcist' && game.roundPlan.infectionEnabled && <div>
-      {targetSelect(game.firstGame ? 'Кто взял вас в плен' : 'Кто вас заразил')}
-      <ConfirmButton native={native} title="Сообщить о плене?"
+      {targetSelect('Кто вас заразил')}
+      <ConfirmButton native={native} title="Сообщить о заражении?"
         description={unavailable ? 'Участник уже недоступен. Вернитесь к списку.' : 'Прочитайте карточку этого участника вживую.'}
-        disabled={disabled || !searching || !name} confirm="Сообщить о плене" fallbackFocus={selectRef}
-        onConfirm={() => void queue({ kind: 'captured', by: target })}>{game.firstGame ? 'Я в плену' : 'Меня заразили'}</ConfirmButton>
+        disabled={disabled || !searching || !name} confirm="Сообщить о заражении" fallbackFocus={selectRef}
+        onConfirm={() => void queue({ kind: 'captured', by: target })}>Меня заразили</ConfirmButton>
     </div>}
     {possessed && <>
       {game.firstGame && play.location && <p>Ваша локация: {play.location}.</p>}
@@ -63,12 +63,12 @@ export function PlayControls({ view, disabled, run, queue, online = true, estima
         confirm="Подтвердить освобождение" disabled={disabled || !searching}
         onConfirm={() => void (queue ? queue({ kind: 'release' }) : run('play:release', base))}>Нас освободили</ConfirmButton>
       {game.roundPlan.infectionEnabled && <>
-        {targetSelect(game.firstGame ? 'Кого взять в плен' : 'Кого заразить')}
-        <ConfirmButton native={native} title={name ? `Взять в плен участника «${name}»?` : 'Участник уже недоступен'}
-          description={unavailable ? 'Вернитесь к обновлённому списку.' : 'Подтвердите, что участник выполнил условие плена. Он присоединится к вашей группе.'}
-          confirm="Подтвердить плен" fallbackFocus={selectRef} cancel={unavailable ? 'Вернуться к списку' : 'Отмена'} disabled={disabled || !searching || !name}
+        {targetSelect('Кого заразить')}
+        <ConfirmButton native={native} title={name ? `Заразить участника «${name}»?` : 'Участник уже недоступен'}
+          description={unavailable ? 'Вернитесь к обновлённому списку.' : 'Подтвердите, что участник выполнил условие заражения. Он присоединится к вашей группе.'}
+          confirm="Подтвердить заражение" fallbackFocus={selectRef} cancel={unavailable ? 'Вернуться к списку' : 'Отмена'} disabled={disabled || !searching || !name}
           onConfirm={() => void (queue ? queue({ kind: 'infect', targetId: target }) : run('play:infect', { ...base, targetId: target }))}>
-          {game.firstGame ? 'Взять в плен' : 'Заразить выбранного'}
+          Заразить выбранного
         </ConfirmButton>
       </>}
     </>}

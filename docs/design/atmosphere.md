@@ -1,6 +1,6 @@
 # Atmosphere and broadcast
 
-Status: implemented. Atmosphere consumes committed game state and never controls phases, scoring or persistence.
+The seven-round game plays short placement, search and recall signals after committed transitions. Each organizer laptop and player identity has one authorized audio source. A user gesture unlocks playback. Hidden or disconnected views skip signals and no signal replays on recovery. The ambient and scare behavior described below applies to compatibility fixtures.
 
 ## Ownership and public contracts
 

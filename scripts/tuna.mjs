@@ -32,6 +32,11 @@ export function tunaLaunch(env = process.env) {
   };
 }
 
+export function publicTunnelOrigin(line) {
+  const candidate = /\bForwarding\s*:?\s+(https:\/\/(?:[a-z0-9-]+\.)+tuna\.am)\/?(?=\s|$)/i.exec(line)?.[1];
+  if (candidate) return new URL(candidate).origin;
+}
+
 export async function requireLocalApp(origin) {
   try {
     const response = await fetch(`${origin}/api/health`, { signal: AbortSignal.timeout(3000) });
