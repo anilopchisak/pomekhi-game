@@ -2,7 +2,7 @@ import { useEffect, useId, useRef, useState } from 'react';
 import type { ReactNode } from 'react';
 import { cardSets } from '../../../../shared/protocol.js';
 import type { LobbyCommand, LobbyInputs, RoomSnapshot } from '../../../../shared/protocol.js';
-import { GameDialog } from '../../../shared/ui/index.js';
+import { ConfirmButton, GameDialog } from '../../../shared/ui/index.js';
 import { gameCommand } from '../../../shared/api/index.js';
 import styles from './Broadcast.module.css';
 
@@ -97,6 +97,10 @@ export function PartySettings({ room, disabled, run, error, retry }: SetupProps 
     <button type="button" data-secondary onClick={() => setOpen(true)}>Настройки партии</button>
     {open && <GameDialog title="Настройки партии" onClose={close}>
       <PartyForm room={room} disabled={disabled} run={run} error={error} retry={retry} close={close} />
+      {room.game.firstGame && !['lobby', 'finished'].includes(room.game.phase) &&
+        <ConfirmButton data-danger title="Остановить партию?"
+          description="Все вернутся на базу. Текущий неподтверждённый раунд не засчитывается."
+          confirm="Остановить партию" disabled={disabled} onConfirm={() => void run('party:finish', gameCommand(room), close)}>Остановить партию</ConfirmButton>}
     </GameDialog>}
   </>;
 }

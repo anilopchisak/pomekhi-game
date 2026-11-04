@@ -5,9 +5,10 @@ import type { ProceduralAudio } from '../audio/index.js';
 
 const levels = { ...defaultLevels, background: 0, effects: 0 };
 
-export function PhaseSignals({ cue, online, enabled, clockOffset, claim }: {
+export function PhaseSignals({ cue, online, enabled, clockOffset, claim, previewOnEnable = false }: {
   cue?: GameCue; online: boolean; enabled: boolean; clockOffset: number | null;
   claim: (enabled: boolean) => Promise<boolean>;
+  previewOnEnable?: boolean;
 }) {
   const engine = useRef<ProceduralAudio | null>(null);
   const consumed = useRef('');
@@ -44,6 +45,10 @@ export function PhaseSignals({ cue, online, enabled, clockOffset, claim }: {
       }
       if (!await claim(!enabled)) throw new Error('Audio ownership request failed.');
       if (enabled) engine.current?.stop();
+      else if (previewOnEnable && !document.hidden && engine.current?.state() === 'running') {
+        engine.current.update({ phase: 'placement', paused: false, running: true, levels });
+        engine.current.cue('start', 'placement');
+      }
     } catch {
       setMessage(enabled ? 'Не удалось выключить сигналы этапов. Повторите попытку.'
         : 'Не удалось включить сигналы этапов. Следите за этапами на экране.');

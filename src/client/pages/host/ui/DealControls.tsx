@@ -21,8 +21,6 @@ export function DealControls({ room, disabled, run }: {
       <ConfirmButton title="Перевыдать карточки?" description="Новые карточки получат участники текущей раздачи."
         confirm="Перевыдать карточки" disabled={disabled}
         onConfirm={() => void run('deal:shuffle', { ...dealCommand(room), possessedCount: count })}>Перевыдать карточки</ConfirmButton>
-      <ConfirmButton data-danger title="Отменить текущую раздачу?" confirm="Отменить раздачу" disabled={disabled}
-        onConfirm={() => void run('deal:cancel', dealCommand(room))}>Отменить раздачу</ConfirmButton>
     </> : <button disabled={disabled || !room.game.started && room.players.length < 5 || !room.game.venue.dwelling}
       onClick={() => void run('deal:create', { ...dealCommand(room), possessedCount: count })}>
       {room.game.started ? 'Раздать свободным' : 'Раздать карточки'}
@@ -44,8 +42,5 @@ export function DealControls({ room, disabled, run }: {
       if (reading && !window.confirm('Заново распределить роли и карточки всем участникам? Готовность и запросы замены будут сброшены.')) return;
       void run(reading ? 'deal:shuffle' : 'deal:create', { ...dealCommand(room), possessedCount: count });
     }}>{reading ? 'Перетасовать роли и карточки' : 'Раздать роли и карточки'}</button>
-    {reading && <button data-danger disabled={disabled} onClick={() => {
-      if (window.confirm('Отменить раздачу? Карточки и готовность будут очищены, участники останутся в комнате.')) void run('deal:cancel', dealCommand(room));
-    }}>Отменить раздачу</button>}
   </section>;
 }

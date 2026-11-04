@@ -212,10 +212,6 @@ export function HostPage({ display = false, editor = false }: { display?: boolea
             })} aria-label={`Заменить карточку ${player.name}`}>Заменить карточку</button>}
           </span>)}
           {!room.dealing.assignments.some(item => item.playerId === player.id) && <small>Ждёт следующей раздачи</small>}
-          <ConfirmButton data-danger disabled={disabled} native={!room.game.firstGame} title={`Удалить участника «${player.name}»?`}
-            description="Его прежний вход перестанет действовать." confirm="Удалить"
-            onConfirm={() => void run('player:remove', { roomId: room.id, playerId: player.id })}
-            aria-label={`Удалить участника ${player.name}`}>Удалить</ConfirmButton>
         </li>)}</ul> : <p>Пока здесь тихо. Ждём первого участника.</p>}
 
       </section>);
@@ -354,8 +350,19 @@ export function HostPage({ display = false, editor = false }: { display?: boolea
       {!display && <a href="/?screen=editor" target="_blank" rel="opener">Редактор карточек</a>}
     </section> : <>
       <div className={room.game.firstGame ? broadcast.ritualRoom : display ? broadcast.display : undefined}>
-      {firstGame && <section className={broadcast.roster} aria-label="Участники за столом">
-        <h3>Участники <span>{room.players.length}/{room.capacity}</span></h3>
+      {firstGame && <section className={broadcast.roster} aria-label="Участники за столом"
+        data-organizer={!display} data-reading={room.game.phase === 'reading'}>
+        <div className={broadcast.rosterHeader}>
+          <h3>Участники <span>{room.players.length}/{room.capacity}</span></h3>
+          {!display && room.game.phase === 'reading' && <ConfirmButton data-secondary className={broadcast.rosterIcon}
+            aria-label="Перевыдать карточки" title="Перевыдать карточки?"
+            description="Все участники текущей раздачи получат новые карточки и отметят готовность заново."
+            confirm="Перевыдать карточки" disabled={disabled}
+            onConfirm={() => void run('deal:shuffle', {
+              ...dealCommand(room),
+              possessedCount: Math.min(room.dealing.initialPossessedCount ?? 3, Math.max(1, Math.floor(room.players.length / 2))),
+            })}><span aria-hidden="true">↻</span></ConfirmButton>}
+        </div>
         <ol tabIndex={0} aria-label="Список участников">{[...room.players].sort((a, b) => {
           return a.name.localeCompare(b.name, 'ru');
         }).map((player, index) => {
@@ -365,12 +372,15 @@ export function HostPage({ display = false, editor = false }: { display?: boolea
           const checking = ['return', 'between_rounds'].includes(room.game.phase);
           return <li key={player.id}>
             <span className={broadcast.seat}>{String(index + 1).padStart(2, '0')}</span>
-            <div><strong title={player.name}>{player.name}</strong>
-              <small>{role && <span>{role === 'exorcist' ? 'Экзорцист' : 'Одержимый'} · </span>}{player.online ? 'На связи' : 'Нет связи'}</small>
+            <div className={broadcast.playerName}><strong title={player.name}>{player.name}</strong>
+              <small title={`${role ? (role === 'exorcist' ? 'Экзорцист · ' : 'Одержимый · ') : ''}${player.online ? 'на связи' : 'нет связи'}`}
+                data-roster-online={player.online}>
+                {role && <>{role === 'exorcist' ? 'Экзорцист' : 'Одержимый'} · </>}{player.online ? 'на связи' : 'нет связи'}
+              </small>
             </div>
             <div className={broadcast.playerState}>
               {room.game.phase === 'reading' && assignment && <small>{assignment.replacementRequested ? 'Просит замену' : assignment.ready ? 'Готов' : 'Читает'}</small>}
-              {!display && room.game.phase === 'reading' && assignment && <button type="button" data-secondary className={broadcast.replace}
+              {!display && room.game.phase === 'reading' && assignment && <button type="button" data-secondary className={broadcast.rosterIcon}
                 title="Заменить карточку" aria-label={`Заменить карточку ${player.name}`} disabled={disabled} onClick={() => void run('deal:replace', {
                   ...dealCommand(room), playerId: player.id, assignmentId: assignment.assignmentId,
                 })}>↻</button>}
@@ -378,14 +388,10 @@ export function HostPage({ display = false, editor = false }: { display?: boolea
                 ? physical.expected === 'at_base' ? 'На базе' : 'С группой'
                 : physical.expected === 'at_base' ? 'Ожидается на базе' : 'Ожидается в группе'
                 : 'Статус неизвестен'}</small>}
-              {!display && <ConfirmButton data-danger disabled={disabled} className={broadcast.replace} title={`Удалить участника «${player.name}»?`}
-                description="Его прежний вход перестанет действовать." confirm="Удалить" aria-label={`Удалить участника ${player.name}`}
-                onConfirm={() => void run('player:remove', { roomId: room.id, playerId: player.id })}>×</ConfirmButton>}
               {!checking && room.game.phase !== 'reading' && role && <small>В игре</small>}
             </div>
           </li>;
         })}</ol>
-        <p>Исходные роли открыты.<br />Задания остаются личными.</p>
       </section>}
       <div className={broadcast.mainScene} data-phase={room.game.phase}>
       {!firstGame && <p key={`${room.game.phase}:${room.game.paused}`} className={broadcast.banner}>{room.game.paused ? 'ЗАПИСЬ ПРИОСТАНОВЛЕНА' : ({ lobby: 'ОЖИДАНИЕ СИГНАЛА', reading: 'ЛИЧНЫЕ ЗАПИСИ ПОЛУЧЕНЫ', placement: 'ЗАЙМИТЕ СВОИ МЕСТА', search: 'ДОМ СЛУШАЕТ', return: 'ВОЗВРАЩАЙТЕСЬ НА БАЗУ', between_rounds: 'СВЕРЬТЕ ПОКАЗАНИЯ', finished: 'ЗАПИСЬ ЗАВЕРШЕНА' }[room.game.phase])}</p>}

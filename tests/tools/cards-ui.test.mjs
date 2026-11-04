@@ -159,7 +159,7 @@ function gameBase() {
   return { roomId: room.id, gameVersion: room.game.version, roundId: room.game.roundId, requestId: `round-request-${++sequence}` };
 }
 
-it('closes the readiness dialog so the organizer can retry a shuffle with a lost acknowledgement', async () => {
+it('closes the roster shuffle confirmation so the organizer can retry a lost acknowledgement', async () => {
   lobby.dispose();
   lobby = createLobby({ firstGame: true, organizerCode: 'HOST', generateRoomCode: () => 'ABCDEF', clock: clock.clock });
   lobby.subscribe(publish);
@@ -177,17 +177,17 @@ it('closes the readiness dialog so the organizer can retry a shuffle with a lost
   io.mockReturnValue(socket('panel', 'deal:shuffle'));
   await act(async () => root.render(createElement(HostPage)));
 
-  await click('Проверить готовность');
-  const readiness = button('Начать без полной готовности').closest('dialog');
-  expect(readiness.open).toBe(true);
-  await click('Перевыдать карточки');
-  const confirmation = [...container.querySelectorAll('dialog[open]')].find(dialog => dialog !== readiness);
+  const shuffle = container.querySelector('section[aria-label="Участники за столом"] button[aria-label="Перевыдать карточки"]');
+  expect(container.textContent).not.toContain('Проверить готовность');
+  expect(container.textContent).not.toContain('Исходные роли открыты');
+  await act(async () => shuffle.click());
+  const confirmation = container.querySelector('dialog[open]');
   await act(async () => [...confirmation.querySelectorAll('button')].find(button => button.textContent === 'Перевыдать карточки').click());
 
   const shuffled = lobby.viewFor('host').room.dealing.dealId;
   expect(shuffled).not.toBe(original);
   expect(container.querySelector('dialog[open]')).toBeNull();
-  expect(globalThis.document.activeElement).toBe(button('Проверить готовность'));
+  expect(globalThis.document.activeElement).toBe(container.querySelector('[data-scene-heading]'));
   expect(container.querySelector('[role="alert"]').textContent).toContain('Ответ задерживается');
   await click('Повторить действие');
   expect(lobby.viewFor('host').room.dealing.dealId).toBe(shuffled);

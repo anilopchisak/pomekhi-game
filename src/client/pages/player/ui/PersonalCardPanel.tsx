@@ -74,13 +74,13 @@ export function PersonalCardActions({ assignment, open, disabled, readOnly, togg
   return <footer className={styles.cardActions} aria-label="Действия с карточкой">
     <button type="button" data-secondary aria-expanded={open} onClick={toggle}>{open ? 'Скрыть карточку' : 'Открыть карточку'}</button>
     {!readOnly && <div className={styles.readingActions}>
-      <button type="button" disabled={disabled || assignment.replacementRequested || !open && !assignment.ready}
+      <button type="button" data-ready={assignment.ready} disabled={disabled || assignment.replacementRequested}
         onClick={() => void act('card:ready', !assignment.ready)}>{assignment.ready ? 'Не готов' : 'Готов'}</button>
-      <button type="button" data-secondary disabled={disabled}
+      <button type="button" data-secondary={!assignment.replacementRequested || undefined}
+        data-replacement-requested={assignment.replacementRequested} disabled={disabled}
         onClick={() => void act('card:request', !assignment.replacementRequested)}>
         {assignment.replacementRequested ? 'Отменить замену' : 'Заменить карточку'}
       </button>
     </div>}
-    {!readOnly && assignment.replacementRequested && <p role="status">Запрос на замену отправлен.</p>}
   </footer>;
 }
