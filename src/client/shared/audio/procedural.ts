@@ -83,7 +83,7 @@ export function createProceduralAudio(audio: AudioContext, random = Math.random)
   }
   function cue(kind: GameCue['kind'], cuePhase: GamePhase = phase, outcome?: RitualOutcome) {
     if (closed || !running || levels.muted) return;
-    const pitch = kind === 'pause' || kind === 'abort' ? 100 : kind === 'resume' ? 240 : kind === 'finish' ? outcome === 'won' ? 330 : 95 : cuePhase === 'return' ? 310 : cuePhase === 'search' ? 210 : 180;
+    const pitch = kind === 'pause' ? 440 : kind === 'abort' ? 100 : kind === 'resume' ? 620 : kind === 'finish' ? outcome === 'won' ? 330 : 95 : cuePhase === 'return' ? 310 : cuePhase === 'search' ? 210 : 180;
     if (drone) ramp(drone.gain, target() * .2, .04);
     clearTimeout(duckTimer); duckTimer = setTimeout(() => { if (drone) ramp(drone.gain, target(), .4); }, 650);
     oscillator(pitch, kind === 'finish' ? .65 : .5, levels.signals);

@@ -194,6 +194,46 @@ it('closes the roster shuffle confirmation so the organizer can retry a lost ack
   expect(container.querySelector('[role="alert"]')).toBeNull();
 });
 
+it('lets the organizer reverse an accepted correction after all journals are confirmed', async () => {
+  lobby.dispose();
+  lobby = createLobby({ firstGame: true, organizerCode: 'HOST', generateRoomCode: () => 'ABCDEF', randomIndex: () => 0, clock: clock.clock });
+  lobby.subscribe(publish);
+  value(lobby.execute('host', 'organizer:authorize', { code: 'HOST' }));
+  const { code } = value(lobby.execute('host', 'room:create', {})).room;
+  const phones = Array.from({ length: 5 }, (_, i) => ({
+    id: `phone-${i}`, credentials: { roomCode: code, resumeKey: String(i).repeat(64) },
+  }));
+  const players = phones.map(({ id, credentials }, i) =>
+    value(lobby.execute(id, 'player:join', { ...credentials, name: `Player ${i}` })));
+  value(lobby.execute('host', 'venue:configure', { ...gameBase(), venue: {
+    base: 'База', zones: ['Кухня'], dwelling: { zone: 'Кухня', place: 'Угол' },
+  } }));
+  value(lobby.execute('host', 'deal:create', { ...base(), possessedCount: 0 }));
+  value(lobby.execute('host', 'round:start', { ...gameBase(), confirmWarnings: true }));
+  clock.advance(45000);
+  const { id, credentials } = phones[0];
+  value(lobby.execute(id, 'play:mission', { ...gameBase(), playVersion: lobby.viewFor(id).play.version, completed: true }));
+  lobby.disconnect(id);
+  value(lobby.execute('host', 'round:return', gameBase()));
+  value(lobby.execute('host', 'round:return', gameBase()));
+  value(lobby.execute('host', 'round:reconcile', { ...gameBase(), playerId: players[0].playerId, correction: 'infected' }));
+  value(lobby.execute(id, 'player:resume', credentials));
+  const { room: checked } = lobby.viewFor('host');
+  for (const phone of phones) value(lobby.execute(phone.id, 'play:complete', {
+    roomId: checked.id, roundId: checked.game.roundId, syncRevision: checked.game.synchronization.revision,
+  }));
+  expect(lobby.viewFor('host').room.game.results.at(-1).missions).toBe(0);
+
+  globalThis.sessionStorage.setItem('pomekhi.organizer', 'HOST');
+  io.mockReturnValue(socket('panel'));
+  await act(async () => root.render(createElement(HostPage)));
+  await click('Показать все записи журнала');
+  const correction = [...container.querySelectorAll('li')].find(item => item.textContent.includes('Отметка сверки · заражение'));
+  await act(async () => correction.querySelector('button').click());
+  await click('Отклонить запись');
+  expect(lobby.viewFor('host').room.game.results.at(-1).missions).toBe(1);
+});
+
 it('confirms a warned start, retries a lost acknowledgement once and restores paused controls', async () => {
   globalThis.sessionStorage.setItem('pomekhi.organizer', 'HOST');
   io.mockReturnValue(socket('panel', 'round:start'));

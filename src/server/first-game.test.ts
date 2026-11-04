@@ -7,10 +7,10 @@ import { createCatalog } from './catalog.js';
 import { createRitual, newRitual, validateRitual } from './ritual.js';
 import type { PersonalCard, PhysicalStatus, RoundResult } from '../shared/protocol.js';
 
-function fixture(count: number, getCards?: () => readonly PersonalCard[]) {
+function fixture(count: number, getCards?: () => readonly PersonalCard[], online?: Set<string>) {
   const time = controlledClock(); let sequence = 0;
   const generateId = () => `id-first-game-${++sequence}`;
-  const make = () => createGame({ firstGame: true, generateId, randomIndex: () => 0, clock: time.clock, getCards, onChange() {} });
+  const make = () => createGame({ firstGame: true, generateId, randomIndex: () => 0, clock: time.clock, getCards, onlinePlayers: online ? () => online : undefined, onChange() {} });
   const game = make();
   const players = Array.from({ length: count }, (_, i) => ({ id: `p${i}`, online: true }));
   const ids = players.map(p => p.id);
@@ -180,7 +180,7 @@ it('allows verification to be corrected against an updated report', () => {
   expect(game.confirmPresence('p1', 'at_base' satisfies PhysicalStatus)).toBe('ACTION_UNAVAILABLE');
 });
 
-it.each(['return', 'between_rounds'] as const)('reviews missions reported during %s from both phone paths', phase => {
+it.each(['return', 'between_rounds'] as const)('applies online missions and reviews offline missions during %s', phase => {
   const { game, start, check } = fixture(5);
   start();
   if (phase === 'between_rounds') check();
@@ -195,15 +195,14 @@ it.each(['return', 'between_rounds'] as const)('reviews missions reported during
   expect(game.personalSync('p0')?.receipts).toEqual([{ id: 'mission-report', status: 'review', reason: 'timing' }]);
   expect(game.playAction('p2', 'mission', undefined, true)).toBeUndefined();
   expect(game.personalPlay('p0')?.missionCompleted).toBe(false);
-  expect(game.personalPlay('p2')?.missionCompleted).toBe(false);
+  expect(game.personalPlay('p2')?.missionCompleted).toBe(true);
   if (phase === 'return') check();
-  const direct = game.review().find(row => row.actor === 'p2')!;
-  expect(game.reviewPreview('mission-report', 'accept')).toMatchObject({ successes: 1, remainingSteps: 24, applied: true });
-  expect(game.reviewPreview('mission-report', 'reject')).toMatchObject({ successes: 0, remainingSteps: 25, applied: true });
+  expect(game.review().filter(row => row.status === 'review').map(row => row.actor)).toEqual(['p0']);
+  expect(game.reviewPreview('mission-report', 'accept')).toMatchObject({ successes: 2, remainingSteps: 23, applied: true });
+  expect(game.reviewPreview('mission-report', 'reject')).toMatchObject({ successes: 1, remainingSteps: 24, applied: true });
   expect(game.resolveSync('mission-report', 'accept')).toBeUndefined();
-  expect(game.resolveSync(direct.id, 'reject')).toBeUndefined();
   expect(game.personalPlay('p0')?.missionCompleted).toBe(true);
-  expect(game.personalPlay('p2')?.missionCompleted).toBe(false);
+  expect(game.personalPlay('p2')?.missionCompleted).toBe(true);
 });
 
 it('retains a group when its original member leaves and does not award a rescue for departure', () => {
@@ -423,4 +422,155 @@ it('replaces a room once, leaving the previous players and invitations closed', 
       game: { settings: { placementSeconds: 45, searchSeconds: 240 }, firstGame: { story: { title: expect.any(String) } } } } });
     expect(lobby.execute('phone', 'player:resume', { roomCode: codes[0], resumeKey })).toMatchObject({ ok: false, error: 'SESSION_EXPIRED' });
   } finally { lobby.dispose(); }
+});
+
+it('undoes an earlier independent infection and releases selected groups once', () => {
+  const { game, start, make, check } = fixture(9);
+  start();
+  expect(game.playAction('p1', 'infect', 'p0')).toBeUndefined();
+  expect(game.playAction('p1', 'infect', 'p2')).toBeUndefined();
+  const [earlier, later] = game.personalPlay('p1')!.infections!;
+  expect([earlier.targetId, later.targetId]).toEqual(['p0', 'p2']);
+  expect(game.personalPlay('p4')!.infections).toEqual([]);
+  expect(game.playAction('p1', 'undo', earlier.id)).toBeUndefined();
+  expect(game.personalPlay('p0')!.status).toBe('exorcist');
+  expect(game.personalPlay('p2')!.status).toBe('captured');
+  expect(game.playAction('p2', 'release', undefined, undefined, undefined, ['p1'])).toBe('ACTION_UNAVAILABLE');
+  expect(game.playAction('p4', 'release', undefined, undefined, undefined, ['p1', 'p6'])).toBe('ACTION_UNAVAILABLE');
+  expect(game.personalPlay('p1')!.status).toBe('possessed');
+
+  expect(game.playAction('p4', 'release', undefined, undefined, undefined, ['p1', 'p2', 'p3'])).toBeUndefined();
+  expect(game.personalPlay('p4')!.status).toBe('exorcist');
+  for (const id of ['p1', 'p2', 'p3']) expect(game.personalPlay(id)!.status).toBe('released');
+  expect(game.personalPlay('p1')!.infections).toEqual([expect.objectContaining({ id: later.id, available: false, canRequestReview: true })]);
+  expect(game.playAction('p1', 'undo', later.id)).toBe('UNDO_DEPENDENCY');
+  check();
+  expect(game.publicState().results.at(-1)?.rescuedGroups).toBe(2);
+  const restored = make();
+  restored.restore(game.exportState());
+  expect(restored.publicState().results.at(-1)?.rescuedGroups).toBe(2);
+  expect(restored.personalPlay('p2')!.status).toBe('released');
+});
+
+it('reviews a late offline release selection as one journal record', () => {
+  const { game, start, check } = fixture(7);
+  start();
+  const roundId = game.publicState().roundId!;
+  check();
+  const release = {
+    id: 'offline-release', clientId: 'offline-phone', sequence: 1, previousId: null, roundId,
+    phase: 'search' as const, paused: false, estimatedServerTime: null,
+    action: { kind: 'release' as const, targetIds: ['p1', 'p3'] },
+  };
+  expect(game.syncEvents('p0', roundId, [release])).toBeUndefined();
+  expect(game.syncEvents('p0', roundId, [release])).toBeUndefined();
+  expect(game.review().filter(row => row.id === release.id)).toEqual([expect.objectContaining({ status: 'review', action: release.action })]);
+  expect(game.publicState().results.at(-1)?.rescuedGroups).toBe(0);
+  expect(game.resolveSync(release.id, 'accept')).toBeUndefined();
+  expect(game.publicState().results.at(-1)?.rescuedGroups).toBe(2);
+});
+
+function recallFixture() {
+  const online = new Set(['p0', 'p1', 'p2', 'p3', 'p4']);
+  const fixtureGame = fixture(5, undefined, online);
+  const { game, start } = fixtureGame;
+  expect(game.configure({ ...game.publicState().settings, offlineWaitSeconds: 2 })).toBeUndefined();
+  start();
+  expect(game.playAction('p1', 'infect', 'p2')).toBeUndefined();
+  expect(game.playAction('p1', 'infect', 'p4')).toBeUndefined();
+  online.delete('p0');
+  expect(game.beginReturn()).toBeUndefined();
+  game.reconcileRecall();
+  return { ...fixtureGame, online };
+}
+
+it('starts waiting at recall and restores the remaining time before committing defeat once', () => {
+  const { game, time, make } = recallFixture();
+  expect(game.physicalStatus('p2')).toMatchObject({ status: 'captured', confirmed: true });
+  expect(game.physicalStatus('p0')).toMatchObject({ status: 'exorcist', confirmed: false });
+  time.advance(750);
+  const saved = game.exportState();
+  expect(saved.firstGame?.recallWait?.remainingMs).toBe(1250);
+  game.dispose();
+  time.advance(90000);
+  const restored = make();
+  restored.restore(saved);
+  time.advance(1249);
+  expect(restored.publicState().phase).toBe('return');
+  time.advance(1);
+  restored.reconcileRecall();
+  expect(restored.publicState()).toMatchObject({ phase: 'finished', ritual: { outcome: 'no_return' },
+    results: [{ lossReason: 'no_return', status: 'final', infectedPlayers: 2 }] });
+  const version = restored.publicState().version;
+  restored.reconcileRecall();
+  expect(restored.publicState().version).toBe(version);
+  expect(restored.exportState().ritual?.events.filter(event => event.kind === 'no_return')).toHaveLength(1);
+});
+
+it.each(['manual', 'reconnect', 'all_offline'] as const)('does not declare defeat on %s', scenario => {
+  const { game, time, online } = recallFixture();
+  if (scenario === 'manual') expect(game.confirmPresence('p0', 'at_base')).toBeUndefined();
+  if (scenario === 'reconnect') { online.add('p0'); game.reconcileRecall(); online.delete('p0'); }
+  if (scenario === 'all_offline') online.clear();
+  time.advance(2000);
+  expect(game.publicState().phase).toBe('return');
+  expect(game.physicalStatus('p0')?.confirmed).toBe(scenario !== 'all_offline');
+});
+
+it.each(['accept', 'reject'] as const)('waits for a disputed liberation and reevaluates when the organizer chooses %s', decision => {
+  const { game, time } = recallFixture();
+  const roundId = game.publicState().roundId!;
+  const event = { id: 'late-liberation', clientId: 'offline-rescuer', sequence: 1, previousId: null, roundId,
+    action: { kind: 'release' as const, targetIds: ['p1'] }, phase: 'search' as const, paused: false, estimatedServerTime: null };
+  expect(game.syncEvents('p0', roundId, [event])).toBeUndefined();
+  time.advance(2000);
+  expect(game.publicState()).toMatchObject({ phase: 'between_rounds', offlineWait: { awaitingReview: true } });
+  expect(game.closeSync()).toBe('PRESENCE_REQUIRED');
+  expect(game.resolveSync(event.id, decision)).toBeUndefined();
+  game.reconcileRecall();
+  expect(game.publicState().phase).toBe(decision === 'accept' ? 'between_rounds' : 'finished');
+  if (decision === 'accept') expect(game.physicalStatus('p1')).toMatchObject({ status: 'released', confirmed: true });
+});
+
+it('records an unassigned infection without credit and later links the participant to a group', () => {
+  const online = new Set(['p0', 'p1', 'p2', 'p3', 'p4', 'p5', 'p6']);
+  const { game, start, check, deal, time } = fixture(7, undefined, online);
+  start();
+  expect(game.playAction('p0', 'mission', undefined, true)).toBeUndefined();
+  online.delete('p0');
+  online.delete('p5');
+  check();
+  expect(game.reconcilePresence('p0', 'infected')).toBeUndefined();
+  expect(game.personalPlay('p0')).toMatchObject({ status: 'captured', unknownGroup: true, missionEligible: false });
+  expect(game.reconcilePresence('p5', 'released')).toBeUndefined();
+  expect(game.reconcilePresence('p5', 'released')).toBe('ACTION_UNAVAILABLE');
+  expect(game.publicState().results.at(-1)).toMatchObject({ missions: 0, rescuedGroups: 1 });
+  game.reconcileRecall();
+  expect(game.closeSync()).toBeUndefined();
+  expect(game.finalize()).toBeUndefined();
+  deal();
+  expect(game.personal('p0')).toBeNull();
+  expect(game.personalPlay('p0')?.unknownGroup).toBe(true);
+  expect(game.start([...online, 'p0', 'p5'].map(id => ({ id, online: online.has(id) })), true)).toBeUndefined();
+  expect(game.personalPlay('p0')?.unknownGroup).toBe(true);
+  time.advance(45000);
+  check();
+  const group = ['p1', 'p3'].find(id => game.personalPlay(id)?.status === 'possessed')!;
+  expect(game.reconcilePresence('p0', 'assign', group)).toBeUndefined();
+  expect(game.personalPlay('p0')!.card).toEqual(game.personalPlay(group)!.card);
+  expect(game.personalPlay('p0')?.unknownGroup).toBeUndefined();
+});
+
+it.each(['offline', 'reconnected'])('can clear an unknown-group infection without release credit for a %s player', connection => {
+  const online = new Set(['p1', 'p2', 'p3', 'p4']);
+  const { game, start, check } = fixture(5, undefined, online);
+  start(); check();
+  expect(game.reconcilePresence('p0', 'infected')).toBeUndefined();
+  if (connection === 'reconnected') {
+    online.add('p0');
+    expect(game.reconcilePresence('p1', 'released')).toBe('ACTION_UNAVAILABLE');
+  }
+  expect(game.reconcilePresence('p0', 'released')).toBeUndefined();
+  expect(game.physicalStatus('p0')).toMatchObject({ expected: 'at_base', status: 'released', confirmed: true });
+  expect(game.publicState().results.at(-1)).toMatchObject({ rescuedGroups: 0, infectedPlayers: 1 });
 });

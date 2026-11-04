@@ -18,10 +18,10 @@ export function RoundTimer({ game, clockOffset, connection }: {
   return <output role="timer" aria-label="Осталось времени" aria-live="off">{label}</output>;
 }
 
-const endings = { won: 'Победа · дом освобождён', lost: 'Поражение после 7-го раунда', all_possessed: 'Поражение · все одержимы', stopped: 'Партия остановлена', playing: labels.finished };
+const endings = { won: 'Победа · дом освобождён', lost: 'Поражение после 7-го раунда', all_possessed: 'Поражение · все одержимы', no_return: 'Поражение · никто не вернулся на базу', stopped: 'Партия остановлена', playing: labels.finished };
 
-export function RoundStatus({ game, clockOffset, connection, role, playStatus, waiting = false, retained = false, showRitual = true, compact = false, timerInHeader = false, cardHidden, metadata, estimatedSearchEnded = false, children }: {
-  game: GameSnapshot; clockOffset: number | null; connection: ConnectionState; role?: Role; playStatus?: 'exorcist' | 'possessed' | 'captured' | 'released'; waiting?: boolean; retained?: boolean; showRitual?: boolean; compact?: boolean; timerInHeader?: boolean; cardHidden?: boolean; metadata?: ReactNode; estimatedSearchEnded?: boolean; children?: ReactNode;
+export function RoundStatus({ game, clockOffset, connection, role, playStatus, waiting = false, retained = false, showRitual = true, compact = false, timerInHeader = false, cardHidden, metadata, estimatedSearchEnded = false, unknownGroup = false, children }: {
+  game: GameSnapshot; clockOffset: number | null; connection: ConnectionState; role?: Role; playStatus?: 'exorcist' | 'possessed' | 'captured' | 'released'; waiting?: boolean; retained?: boolean; showRitual?: boolean; compact?: boolean; timerInHeader?: boolean; cardHidden?: boolean; metadata?: ReactNode; estimatedSearchEnded?: boolean; unknownGroup?: boolean; children?: ReactNode;
 }) {
   const clock = useRoundClock(game, timerInHeader ? null : clockOffset);
   const remaining = game.firstGame && connection !== 'online' ? null : clock;
@@ -58,6 +58,7 @@ export function RoundStatus({ game, clockOffset, connection, role, playStatus, w
       : isPhone ? (playStatus === 'released' ? 'Оставайтесь на базе.' : 'Свободные возвращаются на базу.')
       : 'Свободные возвращаются на базу. Одержимые и заражённые остаются на местах.';
   }
+  if (unknownGroup && game.phase !== 'finished') instruction = 'Заражение подтверждено. Организатор уточнит вашу группу или возвращение на базу.';
   if (game.paused) instruction = 'Прекратите действия и ждите в безопасном месте. Продолжение объявит ноутбук.';
   let title = labels[game.phase];
   if (game.firstGame) {

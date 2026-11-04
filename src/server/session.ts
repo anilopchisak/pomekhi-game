@@ -53,7 +53,8 @@ export function createSession(options: LobbyOptions & { store?: SessionStore }) 
   async function transaction<T>(mutate: () => T): Promise<{ value: T; durable: boolean }> {
     const before = committed ?? saved(), live = lobby.liveState();
     const value = mutate();
-    try { await write(); refreshViews(); if (dirty) publish(); return { value, durable: true }; }
+    if (dirty && status.state === 'ready') lobby.reconcileRecall();
+    try { await write(); refreshViews(); if (dirty && status.state === 'ready') publish(); return { value, durable: true }; }
     catch {
       // A rename may have succeeded before its directory sync failed. Read back the actual commit.
       const after = saved();
@@ -102,7 +103,10 @@ export function createSession(options: LobbyOptions & { store?: SessionStore }) 
       }
     } catch { status = { ...status, state: 'load_error' }; cue = undefined; publish(); return false; }
     // Recovery itself has the same save-before-publish guarantee as a game command.
-    const result = await transaction(() => { lobby.restore(target, 'server_restarted', live); });
+    const result = await transaction(() => {
+      lobby.restore(target, 'server_restarted', live);
+      lobby.reconcileRecall();
+    });
     if (!result.durable) return false;
     status = { ...status, state: 'ready', recovered: !reset && target.room !== null };
     cue = undefined; publish(); return true;

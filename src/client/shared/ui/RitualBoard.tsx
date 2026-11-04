@@ -90,7 +90,7 @@ export function RitualBoard({ game, online = true, animate = false }: { game: Ga
     {last?.kind === 'tutorial' && last.status !== 'aborted' && <p>Учебных успехов: {last.rescuedGroups + last.missions}. Настоящий ритуал пока не изменён.</p>}
   </section> : null;
   if (!game.firstGame) {
-    const labels = { playing: 'Ритуал продолжается', won: 'Победа · дом освобождён', lost: 'Поражение · дух остался', stopped: 'Партия остановлена', all_possessed: 'Поражение · все одержимы' };
+    const labels = { playing: 'Ритуал продолжается', won: 'Победа · дом освобождён', lost: 'Поражение · дух остался', stopped: 'Партия остановлена', all_possessed: 'Поражение · все одержимы', no_return: 'Поражение · никто не вернулся на базу' };
     return <section className={styles.board} aria-label="Общий ритуал">
       <h3 aria-live="polite">{labels[ritual.outcome]}</h3>
       {game.freeplayFrom !== null && <p>Сейчас идёт свободная игра. Исход ритуала сохранён.</p>}

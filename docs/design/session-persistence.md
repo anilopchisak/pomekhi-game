@@ -34,6 +34,8 @@ Successful request IDs survive restart. Retry lookup still precedes stale-versio
 
 A write failure withholds successful acknowledgement and publication. The coordinator reads back the primary file because rename may have committed before a later sync error. Otherwise it restores the last known committed checkpoint, reconciles live connections and freezes active play with storage_error. No new gameplay is permitted until recovery succeeds. The failure notification contains a generic public status, never filesystem contents or credentials.
 
+During recall, automatic presence confirmation and any no-return result share the session transaction. Recovery-only connection changes can update connectivity while storage is unavailable. Recall reconciliation resumes from the durable wait checkpoint in the recovery transaction.
+
 Only an authorized organizer can use storage:retry or storage:reset. Retry loads/validates the primary and commits a freshly versioned paused state before clearing the error. Reset requires confirm:true and first preserves the original file as a diagnostic copy in data, then writes an empty room. A bad file is never replaced automatically. Browser recovery retains its key on STORAGE_UNAVAILABLE so temporary disk failure cannot strand a valid player. The status screen remains available even without an active room.
 
 ## Verification

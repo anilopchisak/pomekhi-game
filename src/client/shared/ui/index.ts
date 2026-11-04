@@ -8,3 +8,4 @@ export { RoundTimer } from './RoundStatus.js';
 export { ResultsSummary } from './ResultsSummary.js';
 export { HowToPlay } from './HowToPlay.js';
 export { PhaseSignals } from './PhaseSignals.js';
+export { FullscreenButton } from './FullscreenButton.js';

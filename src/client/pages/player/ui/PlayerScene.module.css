@@ -2,6 +2,7 @@
 .scene > section > div > h3 { margin: 12px 0; font-size: 22px; line-height: 28px; }
 .scene > section > p { margin: 0 0 12px; color: var(--muted); }
 .scene .personal[aria-label] { margin: 0; padding: 0; border: 0; background: transparent; }
+.scene [aria-label="Игровые действия"]:empty { display: none; }
 .scene [aria-label="Игровые действия"] > button { min-width: min(100%, 12rem); }
 .toolbar { display: grid; grid-template-columns: 48px minmax(0, 1fr) 48px; width: 100%; gap: 8px; margin-top: 4px; }
 .toolbar > button { margin: 0; min-width: 0; padding-inline: 6px; }
@@ -65,7 +66,12 @@ main:has(> .scene[data-card-layout=true]) > :not(.scene) { flex: none; }
   background: var(--background);
 }
 .readingActions { display: grid; grid-template-columns: repeat(2, minmax(0, 1fr)); gap: 8px; }
-.cardActions button { width: 100%; margin: 0; padding-inline: 8px; }
+.roleActionsSlot:empty, .roleActions:empty { display: none; }
+.roleActions { display: grid; grid-auto-flow: column; grid-auto-columns: minmax(0, 1fr); gap: 8px; }
+.roleActions > button[data-role-action=infect] { background: #682337; color: #fff2f5; border-color: #a65369; }
+.roleActions > button[data-role-action=missions] { background: #233a65; color: #edf4ff; border-color: #5c78ac; }
+.roleActions > button[data-role-action=release] { background: var(--gold); color: var(--background); border-color: var(--gold); }
+.cardActions > button, .cardActions .readingActions > button, .cardActions .roleActions > button { width: 100%; margin: 0; padding-inline: 8px; }
 .readingActions label.readyToggle {
   display: flex;
   align-items: center;
@@ -82,4 +88,3 @@ main:has(> .scene[data-card-layout=true]) > :not(.scene) { flex: none; }
 .readingActions label.readyToggle:has(input:disabled) { opacity: .5; cursor: default; }
 .readyToggle input { accent-color: #315c46; }
 .readingActions button[data-replacement-requested=true] { background: var(--gold); color: var(--background); border-color: var(--gold); }
-.cardActions p { margin: 0; color: var(--muted); font-size: 14px; }

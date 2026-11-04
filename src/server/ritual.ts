@@ -4,7 +4,7 @@ import { finalProphecy, prophecies } from './prophecies.js';
 
 type Positions = [number, number, number, number];
 type RitualEvent = { kind: 'round'; id: string; number: number; successes: number }
-  | { kind: 'penalty'; id: string; undone: boolean } | { kind: 'lock' } | { kind: 'stop' } | { kind: 'all_possessed' } | { kind: 'dismissed_penalty' };
+  | { kind: 'penalty'; id: string; undone: boolean } | { kind: 'lock' } | { kind: 'stop' } | { kind: 'all_possessed' | 'no_return' } | { kind: 'dismissed_penalty' };
 export interface SavedRitual { players: number; roundLimit: number; cards: [Prophecy, Prophecy, Prophecy]; events: RitualEvent[]; firstGame?: true }
 export function ritualSetup(players: number, rounds: number) {
   const target = Math.max(3, Math.round((3 * players + 7) * rounds / 7));
@@ -61,7 +61,7 @@ export function createRitual(saved: SavedRitual, generateId: () => string) {
         const move = penaltyMove();
         if (move) positions = move.positions;
       } else if (event.kind === 'stop') outcome = 'stopped';
-      else if (event.kind === 'all_possessed') outcome = 'all_possessed';
+      else if (event.kind === 'all_possessed' || event.kind === 'no_return') outcome = event.kind;
     }
   }
   rebuild();
@@ -100,7 +100,7 @@ export function createRitual(saved: SavedRitual, generateId: () => string) {
   }
   return { snapshot, commit, penalty, undoPenalty, lastPenaltyId: () => { const last = state.events.at(-1); return last?.kind === 'penalty' && !last.undone ? last.id : undefined; },
     lock: () => { if (outcome === 'playing' && state.events.at(-1)?.kind === 'penalty') state.events.push({ kind: 'lock' }); },
-    stop: (reason: 'stop' | 'all_possessed' = 'stop') => { if (outcome === 'playing' || reason === 'all_possessed' && (outcome === 'lost' || outcome === 'won')) { state.events.push({ kind: reason }); rebuild(); } },
+    stop: (reason: 'stop' | 'all_possessed' | 'no_return' = 'stop') => { if (outcome === 'playing' || reason !== 'stop' && (outcome === 'lost' || outcome === 'won')) { state.events.push({ kind: reason }); rebuild(); } },
     exportState: (): SavedRitual => structuredClone(state) };
 }
 
@@ -117,7 +117,7 @@ export function validateRitual(value: unknown): asserts value is SavedRitual {
   const replay = createRitual({ ...s, events: [] }, () => nextId);
   const ids = new Set<string>();
   for (const e of s.events) {
-    check(e && (replay.snapshot().outcome === 'playing' || s.firstGame && e.kind === 'all_possessed' && ['lost', 'won'].includes(replay.snapshot().outcome)));
+    check(e && (replay.snapshot().outcome === 'playing' || s.firstGame && (e.kind === 'all_possessed' || e.kind === 'no_return') && ['lost', 'won'].includes(replay.snapshot().outcome)));
     if (e.kind === 'round' || e.kind === 'penalty') {
       check(typeof e.id === 'string' && e.id.length > 0 && e.id.length <= 256 && !ids.has(e.id)); ids.add(e.id); nextId = e.id;
     }
@@ -130,7 +130,7 @@ export function validateRitual(value: unknown): asserts value is SavedRitual {
       if (e.undone) check(replay.undoPenalty() === undefined);
     } else if (e.kind === 'lock') replay.lock();
     else if (e.kind === 'dismissed_penalty') { check(s.firstGame && replay.snapshot().penaltyDisputed); replay.penalty(); }
-    else { check(e.kind === 'stop' || s.firstGame && e.kind === 'all_possessed'); replay.stop(e.kind); }
+    else { check(e.kind === 'stop' || s.firstGame && (e.kind === 'all_possessed' || e.kind === 'no_return')); replay.stop(e.kind); }
     check(replay.exportState().events.length === before + 1);
   }
 }

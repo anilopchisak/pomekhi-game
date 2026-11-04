@@ -31,14 +31,14 @@ export type PauseReason = 'organizer' | 'organizer_disconnected' | 'participant_
 export type Difficulty = 1 | 2 | 3;
 export type InfectionMode = 'auto' | 'on' | 'off';
 export interface GameSettings {
-  ritualEnabled: boolean; roundLimit: number | null; placementSeconds: number; searchSeconds: number; returnSeconds: number;
+  ritualEnabled: boolean; roundLimit: number | null; placementSeconds: number; searchSeconds: number; returnSeconds: number; offlineWaitSeconds?: number;
   tutorialEnabled: boolean; initialDifficulty: Difficulty; maximumDifficulty: Difficulty; infectionMode: InfectionMode;
 }
 export interface RoundPlan { kind: 'tutorial' | 'regular'; number: number; difficulty: Difficulty; infectionEnabled: boolean }
 export interface RoundResult extends Omit<RoundPlan, 'infectionEnabled'> {
   infectionEnabled: boolean | null;
   roundId: string; number: number; status: 'provisional' | 'final' | 'aborted';
-  rescuedGroups: number; totalGroups: number; missions: number; totalMissions: number; infectedPlayers: number; activeMs: number; trialBonus?: 0 | 1;
+  rescuedGroups: number; totalGroups: number; missions: number; totalMissions: number; infectedPlayers: number; activeMs: number; trialBonus?: 0 | 1; lossReason?: 'no_return';
 }
 export interface PersonalPlay {
   roundId: string; version: number; status: 'exorcist' | 'possessed' | 'captured' | 'released';
@@ -47,6 +47,8 @@ export interface PersonalPlay {
   location?: string | null;
   retained?: boolean;
   targets?: string[];
+  unknownGroup?: boolean;
+  infections?: { id: string; targetId: string; available: boolean; canRequestReview?: boolean; pending?: boolean }[];
 }
 interface PlayCommand extends GameCommand { playVersion: number }
 export type GameMode = 'first' | 'ordinary';
@@ -56,11 +58,16 @@ export const venueFeatures = ['space', 'door', 'mirror', 'tree', 'dimLight', 'wa
 export type VenueFeature = typeof venueFeatures[number];
 export interface Venue { mode?: GameMode; bank?: 'local' | 'authored'; horror?: boolean; sets?: CardSet[]; features?: VenueFeature[]; prologueRead?: boolean; base: string; zones: string[]; dwelling?: { zone: string; place: string }; storyId?: string; harder?: boolean; order?: string[] }
 export type PhysicalStatus = 'at_base' | 'in_group';
-export interface Presence { playerId: string; expected: PhysicalStatus; confirmed: boolean }
+export interface Presence {
+  playerId: string; expected: PhysicalStatus; confirmed: boolean;
+  status?: PersonalPlay['status']; unknownGroup?: boolean;
+}
+export type PresenceCorrection = 'infected' | 'released' | 'assign';
 export type OfflineAction =
   | { kind: 'infect'; targetId: string }
   | { kind: 'captured'; by: string }
-  | { kind: 'release' }
+  | { kind: 'presence_correction'; correction: PresenceCorrection; groupMemberId?: string }
+  | { kind: 'release'; targetIds?: string[] }
   | { kind: 'mission'; completed: boolean }
   | { kind: 'undo'; actionId: string; requestReview?: true }
   | { kind: 'withdraw' };
@@ -92,7 +99,7 @@ export interface MissingLocation { memberId: string; proposed?: string; confirme
 export interface ReviewEvent extends EventReceipt { actor: string; actorName?: string; targetName?: string; dependsOn?: string[]; action: OfflineAction; blockers?: string[] }
 export interface RoundSyncSnapshot { waitingPlayerIds: string[]; waitingPlayers?: { id: string; name: string }[]; conflicts: number; closed: boolean; revision: number }
 export interface PersonalSync { roundId: string; receipts: EventReceipt[]; complete: boolean; withdrawn: boolean; undoRequests?: { id: string; actionId: string; status: EventReceipt['status'] | 'queued' }[] }
-export type RitualOutcome = 'playing' | 'won' | 'lost' | 'stopped' | 'all_possessed';
+export type RitualOutcome = 'playing' | 'won' | 'lost' | 'stopped' | 'all_possessed' | 'no_return';
 export interface Prophecy { id: string; title: string; rule: string }
 export interface RitualSnapshot {
   players: number; roundLimit: number; target: number; positions: [number, number, number, number];
@@ -104,6 +111,7 @@ export interface RitualSnapshot {
   preview: { successes: number; positions: [number, number, number, number]; remainingSteps: number } | null;
 }
 export interface GameSnapshot {
+  offlineWait?: { deadline: number; awaitingReview: boolean };
   references?: { id: string; title: string; sections: { title: string; text: string }[] }[];
   firstGame?: true;
   preparationLocked?: boolean;
@@ -201,7 +209,7 @@ export interface LobbyInputs {
   'party:finish': GameCommand;
   'party:extend': GameCommand;
   'play:infect': PlayCommand & { targetId: string };
-  'play:release': PlayCommand;
+  'play:release': PlayCommand & { targetIds?: string[] };
   'play:mission': PlayCommand & { completed: boolean };
   'play:undo': PlayCommand & { actionId: string; requestReview?: true };
   'results:finalize': GameCommand;
@@ -216,6 +224,7 @@ export interface LobbyInputs {
   'round:location': GameCommand & { playerId: string; zone: string };
   'play:location': GameCommand & { zone: string };
   'play:presence': GameCommand & { status: PhysicalStatus };
+  'round:reconcile': GameCommand & { playerId: string; correction: PresenceCorrection; groupMemberId?: string };
   'round:presence': GameCommand & { playerId: string; status: PhysicalStatus };
   'play:withdraw': PlayCommand;
   'play:sync': { roomId: string; roundId: string; events: OfflineEvent[] };

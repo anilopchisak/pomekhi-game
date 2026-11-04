@@ -1,22 +1,23 @@
-import type { Assignment, LobbyError, PersonalPlay, RoundResult } from '../shared/protocol.js';
+import type { Assignment, LobbyError, PersonalPlay, PresenceCorrection, RoundResult } from '../shared/protocol.js';
 
 type Action = { kind: 'infect'; actor: string; target: string; group: string }
-  | { kind: 'release'; actor: string; group: string }
+  | { kind: 'release'; actor: string; group: string; targetIds?: string[] }
+  | { kind: 'presence_correction'; actor: string; correction: PresenceCorrection; groupMemberId?: string; group?: string }
   | { kind: 'mission'; actor: string; completed: boolean }
   | { kind: 'depart'; actor: string };
 interface Event { id: string; action: Action; touches: Set<string>; undone: boolean }
-interface State { group: string | null; released: boolean; left: boolean; captured: boolean; mission: boolean; cardKey: string }
+interface State { group: string | null; released: boolean; left: boolean; captured: boolean; unknownGroup: boolean; mission: boolean; cardKey: string }
 export interface RetainedGroup {
   id: string; origin: string; assignment: Assignment; location: string | null;
   members: [string, Assignment][];
 }
 export interface SavedSearch {
   roundId: string; roster: [string, Assignment][]; events: { id: string; action: Action; touches: string[]; undone: boolean }[];
-  version: number; finalized: boolean; retained?: RetainedGroup[]; locations?: [string, string][];
+  version: number; finalized: boolean; retained?: RetainedGroup[]; unassigned?: string[]; locations?: [string, string][];
 }
 
 /** A round-local action ledger. Rebuild once per mutation; projections are detached reads. */
-export function createSearch(roundId: string, initial: ReadonlyMap<string, Assignment>, generateId: () => string, retained?: RetainedGroup[]) {
+export function createSearch(roundId: string, initial: ReadonlyMap<string, Assignment>, generateId: () => string, retained?: RetainedGroup[], unassigned: string[] = []) {
   const roster = new Map([...initial].map(([id, assignment]) => [id, structuredClone(assignment)]));
   const inherited = structuredClone(retained ?? []);
   const inheritedMembers = new Map(inherited.flatMap(group => group.members.map(([id]) => [id, group] as const)));
@@ -34,7 +35,7 @@ export function createSearch(roundId: string, initial: ReadonlyMap<string, Assig
     states = new Map([...roster].map(([id, a]) => {
       const carried = inheritedMembers.get(id);
       return [id, { group: carried?.id ?? initialGroups.get(id) ?? null,
-        released: false, left: false, captured: !!carried && carried.origin !== id, mission: false, cardKey: carried?.id ?? a.id }];
+        released: false, left: false, captured: unassigned.includes(id) || !!carried && carried.origin !== id, unknownGroup: unassigned.includes(id), mission: false, cardKey: carried?.id ?? a.id }];
     }));
     released = new Set();
     for (const event of events) {
@@ -45,6 +46,10 @@ export function createSearch(roundId: string, initial: ReadonlyMap<string, Assig
       else if (action.kind === 'infect') {
         const target = states.get(action.target)!;
         target.group = action.group; target.captured = true; target.cardKey = event.id;
+      } else if (action.kind === 'presence_correction' && (action.correction !== 'released' || !action.group)) {
+        if (action.correction === 'infected') { player.captured = true; player.unknownGroup = true; }
+        else if (action.correction === 'assign') { player.group = action.group!; player.unknownGroup = false; player.cardKey = event.id; }
+        else { player.released = true; player.unknownGroup = false; }
       } else {
         const freed = [...event.touches].filter(key => key.startsWith('g:')).map(key => key.slice(2));
         for (const group of freed) released.add(group);
@@ -56,16 +61,24 @@ export function createSearch(roundId: string, initial: ReadonlyMap<string, Assig
   function append(action: Action, touches: string[]) {
     events.push({ id: generateId(), action, touches: new Set(touches), undone: false }); version++; rebuild();
   }
-  function latest(playerId: string) { return events.findLast(event => !event.undone && event.action.actor === playerId && event.action.kind !== 'depart'); }
+  function latest(playerId: string) { return events.findLast(event => !event.undone && event.action.actor === playerId && event.action.kind !== 'depart' && event.action.kind !== 'presence_correction'); }
   function dependencies(event: Event) {
-    return events.slice(events.indexOf(event) + 1).filter(next => !next.undone && [...next.touches].some(key => event.touches.has(key)));
+    const infection = retained && event.action.kind === 'infect' ? event.action : null;
+    return events.slice(events.indexOf(event) + 1).filter(next => {
+      if (next.undone) return false;
+      if (infection && next.action.kind === 'infect') return next.touches.has(`p:${infection.target}`);
+      return [...next.touches].some(key => event.touches.has(key));
+    });
+  }
+  function ownedAction(actor: string, actionId: string) {
+    return events.find(event => event.id === actionId && event.action.actor === actor && !event.undone && event.action.kind !== 'depart' && event.action.kind !== 'presence_correction');
   }
   function undoBlockers(actor: string, actionId: string) {
-    const event = events.find(item => item.id === actionId && item.action.actor === actor && !item.undone);
+    const event = ownedAction(actor, actionId);
     if (!event) return [];
     const blockers = new Set(dependencies(event).map(item => item.id));
     const newest = latest(actor);
-    if (newest && newest !== event) blockers.add(newest.id);
+    if (newest && newest !== event && !(retained && event.action.kind === 'infect')) blockers.add(newest.id);
     return [...blockers];
   }
   function personal(playerId: string): PersonalPlay | null {
@@ -76,10 +89,16 @@ export function createSearch(roundId: string, initial: ReadonlyMap<string, Assig
     const cardKey = retained
       ? state.group ?? (cardVersion ? `${assignment.id}:${cardVersion}` : assignment.id)
       : `${state.cardKey}:${cardVersion}`;
-    return { roundId, version, status: state.released ? 'released' : state.captured ? 'captured' : state.group ? 'possessed' : 'exorcist',
+    return { roundId, version, ...(state.unknownGroup ? { unknownGroup: true } : {}), status: state.released ? 'released' : state.captured ? 'captured' : state.group ? 'possessed' : 'exorcist',
       card: structuredClone(state.group ? groups.get(state.group)!.assignment.card : assignment.card), cardKey,
       ...(retained ? { location: state.group ? locations.get(state.group) ?? null : null, retained: inheritedMembers.has(playerId) } : {}),
       wasCaptured: state.captured, missionCompleted: state.mission, missionEligible: assignment.card.role === 'exorcist' && !state.captured,
+      ...(retained ? { infections: events.flatMap(entry => {
+        const action = entry.action;
+        if (entry.undone || action.kind !== 'infect' || action.actor !== playerId) return [];
+        const blocked = dependencies(entry).length > 0;
+        return [{ id: entry.id, targetId: action.target, available: !finalized && !blocked, canRequestReview: !finalized && blocked }];
+      }) } : {}),
       undo: event ? { id: event.id, label: event.action.kind === 'infect' ? 'Заражение' : event.action.kind === 'release' ? 'Освобождение группы' : 'Отметка миссии', available: !finalized && dependencies(event).length === 0, ...(!finalized && (event.action.kind === 'infect' || event.action.kind === 'release') && dependencies(event).length > 0 ? { canRequestReview: true } : {}) } : null };
   }
   // Undoing capture also closes a previously revealed card, without closing unrelated cards.
@@ -95,27 +114,64 @@ export function createSearch(roundId: string, initial: ReadonlyMap<string, Assig
       if (!player.group || player.released) return 'ACTION_UNAVAILABLE';
       if (kind === 'infect') {
         const other = states.get(target!);
-        if (!other || other.left || other.group || other.released || target === actor) return 'ACTION_UNAVAILABLE';
+        if (!other || other.left || other.group || other.unknownGroup || other.released || target === actor) return 'ACTION_UNAVAILABLE';
         append({ kind, actor, target: target!, group: player.group }, [`p:${actor}`, `p:${target}`, `g:${player.group}`]);
       } else {
-        const matching = [...groups].filter(([id, group]) => id === player.group || retained && !released.has(id) && locations.has(id) &&
-          locations.get(id) === locations.get(player.group!) && group.assignment.card.id === groups.get(player.group!)!.assignment.card.id)
-          .map(([id]) => id);
-        const members = [...states].filter(([, state]) => state.group && matching.includes(state.group)).map(([id]) => `p:${id}`);
-        append({ kind, actor, group: player.group }, [...matching.map(id => `g:${id}`), ...members]);
+        releaseGroups(actor, [player.group]);
       }
     }
   }
+  function releaseGroups(actor: string, selected: string[], targetIds?: string[], correction?: 'released') {
+    const matching = [...groups].filter(([id, group]) => !released.has(id) && selected.some(source => id === source ||
+      retained && locations.has(id) && locations.get(id) === locations.get(source) &&
+      group.assignment.card.id === groups.get(source)!.assignment.card.id)).map(([id]) => id);
+    const members = [...states].filter(([, state]) => state.group && matching.includes(state.group)).map(([id]) => `p:${id}`);
+    const touches = [...matching.map(id => `g:${id}`), ...members];
+    if (targetIds || correction) touches.push(`p:${actor}`);
+    append(correction ? { kind: 'presence_correction', actor, correction, group: selected[0] } :
+      { kind: 'release', actor, group: selected[0], ...(targetIds ? { targetIds: [...targetIds] } : {}) }, [...new Set(touches)]);
+  }
+
+  function releaseSelected(actor: string, targetIds: string[]): LobbyError | undefined {
+    if (finalized) return 'RESULTS_FINAL';
+    const player = states.get(actor);
+    if (!retained || !player || player.left || player.group || player.unknownGroup || player.released || targetIds.length === 0) return 'ACTION_UNAVAILABLE';
+    const selected: string[] = [];
+    for (const id of targetIds) {
+      const target = states.get(id);
+      if (!target?.group || target.left || target.released) return 'ACTION_UNAVAILABLE';
+      if (!selected.includes(target.group)) selected.push(target.group);
+    }
+    releaseGroups(actor, selected, targetIds);
+  }
+
+  function reconcile(actor: string, correction: PresenceCorrection, groupMemberId?: string): LobbyError | undefined {
+    if (finalized) return 'RESULTS_FINAL';
+    const player = states.get(actor);
+    if (!retained || !player || player.left || player.released) return 'ACTION_UNAVAILABLE';
+    if (correction === 'infected' && !player.group && !player.captured) {
+      append({ kind: 'presence_correction', actor, correction }, [`p:${actor}`]);
+    } else if (correction === 'released' && (player.group || player.unknownGroup)) {
+      if (player.group) releaseGroups(actor, [player.group], undefined, correction);
+      else append({ kind: 'presence_correction', actor, correction }, [`p:${actor}`]);
+    } else if (correction === 'assign' && player.unknownGroup) {
+      const member = states.get(groupMemberId!);
+      if (!member?.group || member.released || member.left) return 'ACTION_UNAVAILABLE';
+      append({ kind: 'presence_correction', actor, correction, groupMemberId, group: member.group },
+        [`p:${actor}`, `p:${groupMemberId}`, `g:${member.group}`]);
+    } else return 'ACTION_UNAVAILABLE';
+  }
+
   function undoError(actor: string, actionId: string): LobbyError | undefined {
     if (finalized) return 'RESULTS_FINAL';
-    const event = latest(actor);
-    if (!event || event.id !== actionId || states.get(actor)?.left) return 'ACTION_UNAVAILABLE';
+    const event = ownedAction(actor, actionId);
+    if (!event || !(retained && event.action.kind === 'infect') && event !== latest(actor) || states.get(actor)?.left) return 'ACTION_UNAVAILABLE';
     if (dependencies(event).length) return 'UNDO_DEPENDENCY';
   }
   function undo(actor: string, actionId: string): LobbyError | undefined {
     const error = undoError(actor, actionId);
     if (error) return error;
-    const event = latest(actor)!;
+    const event = ownedAction(actor, actionId)!;
     event.undone = true; version++; rebuild();
   }
   function depart(playerId: string) {
@@ -124,13 +180,13 @@ export function createSearch(roundId: string, initial: ReadonlyMap<string, Assig
   }
   function canSearch() {
     const live = [...states.values()].filter(s => !s.left);
-    return live.some(s => !s.group && !s.released) && live.some(s => s.group && !s.released);
+    return live.some(s => !s.group && !s.unknownGroup && !s.released) && live.some(s => s.group && !s.released);
   }
   function result(number: number, status: RoundResult['status'], activeMs: number): Omit<RoundResult, 'kind' | 'difficulty' | 'infectionEnabled'> {
     return { roundId, number, status, activeMs, rescuedGroups: released.size, totalGroups: groups.size,
       missions: [...states].filter(([id, s]) => roster.get(id)!.card.role === 'exorcist' && s.mission && !s.captured).length,
-      totalMissions: [...roster].filter(([id, a]) => a.card.role === 'exorcist' && !inheritedMembers.has(id)).length,
-      infectedPlayers: [...states].filter(([id, s]) => s.captured && !inheritedMembers.has(id)).length };
+      totalMissions: [...roster].filter(([id, a]) => a.card.role === 'exorcist' && !inheritedMembers.has(id) && !unassigned.includes(id)).length,
+      infectedPlayers: [...states].filter(([id, s]) => s.captured && !inheritedMembers.has(id) && !unassigned.includes(id)).length };
   }
   function carry(eligible: ReadonlySet<string>): RetainedGroup[] {
     return [...groups].filter(([id]) => !released.has(id)).flatMap(([id, group]) => {
@@ -144,12 +200,14 @@ export function createSearch(roundId: string, initial: ReadonlyMap<string, Assig
     locations.set(id, zone);
   }
   function exportState(): SavedSearch { return structuredClone({ roundId, roster: [...roster], events: events.map(e => ({ ...e, touches: [...e.touches] })), version, finalized,
-    ...(retained ? { retained: inherited, locations: [...locations] } : {}) }); }
+    ...(retained ? { retained: inherited, locations: [...locations] } : {}), ...(unassigned.length ? { unassigned } : {}) }); }
   function restore(state: SavedSearch, bump = true) {
     events.splice(0, events.length, ...structuredClone(state.events).map(e => ({ ...e, touches: new Set(e.touches) })));
     locations = new Map(state.locations ?? []); version = state.version + Number(bump); finalized = state.finalized; rebuild();
   }
-  return { group: (playerId: string) => states.get(playerId)?.group ?? null, personal, act, undo, undoError, undoBlockers, depart, canSearch, result, carry, place,
-    targets: () => [...states].filter(([, s]) => !s.group && !s.released && !s.left).map(([id]) => id),
+  return { group: (playerId: string) => states.get(playerId)?.group ?? null, personal, act, releaseSelected, reconcile,
+    unassigned: () => [...roster].filter(([id]) => states.get(id)?.unknownGroup && !states.get(id)?.left),
+    undo, undoError, undoBlockers, depart, canSearch, result, carry, place,
+    targets: () => [...states].filter(([, s]) => !s.group && !s.unknownGroup && !s.released && !s.left).map(([id]) => id),
     exportState, restore, seal: () => { finalized = true; }, version: () => version };
 }

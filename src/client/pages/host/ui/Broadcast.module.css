@@ -76,6 +76,18 @@
 .roster strong { display: block; overflow: hidden; white-space: nowrap; text-overflow: ellipsis; font-size: 14px; font-weight: 500; line-height: 1.3; }
 .seat { padding: 4px 0; text-align: center; border-radius: 8px; background: var(--surface); color: var(--muted); font: 14px var(--font-numeric); }
 .sceneWork { min-height: 0; padding: 2px; overflow: auto; overscroll-behavior: contain; }
+.sceneWork label.presenceRow {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 12px;
+  width: 100%;
+  min-height: 44px;
+  margin: 0;
+}
+.sceneWork .presenceItem { display: block; }
+.presenceRow small { display: block; }
+.sceneWork .presenceRow input[type=checkbox] { flex: none; margin: 0; }
 .sceneWork > section { margin: 8px 0; padding: 12px; }
 .sceneWork [aria-label="Подготовка партии"] label > small { display: block; margin: 4px 0 0 28px; }
 .sceneWork [data-preparation-submit] { position: sticky; inset-block-end: 0; width: 100%; }

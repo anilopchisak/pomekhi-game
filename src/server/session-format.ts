@@ -6,7 +6,7 @@ import type { SavedLobby } from './lobby.js';
 import { createSearch } from './search.js';
 import type { SavedSearch } from './search.js';
 import { createRitual, validateRitual } from './ritual.js';
-import { createRoundSync, validateRoundSync } from './round-sync.js';
+import { createRoundSync, validateRoundSync, validReleaseTargets } from './round-sync.js';
 import { validDifficulty, validSettings, isTimedPhase } from './game.js';
 
 /** Private disk contract. Never import this module from the browser or wire protocol. */
@@ -56,6 +56,8 @@ function validateSearchBase(base: Record<string, unknown>, zones: string[]) {
   const roster = pairs(base.roster, 12).map(([id, a]) => [id, assignment(a)] as const);
   for (const [id, a] of roster) if (!members.has(id) && a.card.role === 'possessed') { requireValue(!groups.has(a.id)); groups.add(a.id); }
   requireValue([...members].every(id => roster.some(([playerId]) => playerId === id)));
+  if (base.unassigned !== undefined) requireValue(strings(base.unassigned, 12).every(id => !members.has(id) &&
+    roster.some(([playerId, a]) => playerId === id && a.card.role === 'exorcist')));
   for (const [id, location] of pairs(base.locations, 12)) requireValue(groups.has(id) && typeof location === 'string' && zones.includes(location));
   return [...groups];
 }
@@ -160,6 +162,14 @@ export function validateSession(value: unknown): SavedSession {
       validateTrials(state.trials);
     } else requireValue(venue.mode !== 'ordinary' || !state.locked);
     requireValue(typeof state.locked === 'boolean' && (!game.started || state.locked) && [...members].every(id => ids.includes(id)));
+    if (state.unassigned !== undefined) for (const [id, value] of pairs(state.unassigned, 12)) {
+      requireValue(ids.includes(id) && !members.has(id) && assignment(value).card.role === 'exorcist');
+    }
+    if (state.recallWait !== undefined) {
+      const wait = object(state.recallWait);
+      requireValue(['return', 'between_rounds'].includes(game.phase as string) && strings(wait.players, 12).length > 0 &&
+        duration(wait.remainingMs) && wait.remainingMs <= 3600000);
+    }
     requireValue(strings(state.waitingFree, 12).every(id => ids.includes(id) && !members.has(id)));
     if (state.story !== undefined) {
       const story = object(state.story); requireValue(text(story.title, 120) && text(story.prologue, 4000));
@@ -176,7 +186,7 @@ export function validateSession(value: unknown): SavedSession {
     validateRoundSync(game.roundSync, game.roundId);
     const rebuilt = createRoundSync(game.roundSync, () => 'validation-only').current().exportState();
     const actual = object(game.search);
-    requireValue(JSON.stringify(rebuilt.roster) === JSON.stringify(actual.roster) && JSON.stringify(rebuilt.events) === JSON.stringify(actual.events) && rebuilt.finalized === actual.finalized && JSON.stringify(rebuilt.retained) === JSON.stringify(actual.retained) && JSON.stringify(rebuilt.locations) === JSON.stringify(actual.locations));
+    requireValue(JSON.stringify(rebuilt.roster) === JSON.stringify(actual.roster) && JSON.stringify(rebuilt.events) === JSON.stringify(actual.events) && rebuilt.finalized === actual.finalized && JSON.stringify(rebuilt.retained) === JSON.stringify(actual.retained) && JSON.stringify(rebuilt.locations) === JSON.stringify(actual.locations) && JSON.stringify(rebuilt.unassigned) === JSON.stringify(actual.unassigned));
   }
   const deal = object(game.dealing);
   for (const [key, ids] of pairs(deal.usage, 6)) { requireValue(/^(possessed|exorcist):[123]$/.test(key)); strings(ids); }
@@ -216,6 +226,7 @@ export function validateSession(value: unknown): SavedSession {
     validatePlan(r, true);
     requireValue(text(r.roundId, 256) && integer(r.number) && ['provisional', 'final', 'aborted'].includes(r.status as string) && duration(r.activeMs));
     requireValue(['rescuedGroups', 'totalGroups', 'missions', 'totalMissions', 'infectedPlayers'].every(k => integer(r[k]) && r[k] <= 12));
+    requireValue(r.lossReason === undefined || firstGame && r.lossReason === 'no_return' && r.status === 'final');
     requireValue(r.trialBonus === undefined || venue.mode === 'ordinary' && (r.trialBonus === 0 || r.trialBonus === 1));
     requireValue((r.rescuedGroups as number) <= (r.totalGroups as number) && (r.missions as number) <= (r.totalMissions as number));
   }
@@ -236,20 +247,29 @@ export function validateSession(value: unknown): SavedSession {
       const touches = strings(e.touches, 25); requireValue(touches.every(t => t.startsWith('p:') ? rosterIds.includes(t.slice(2)) : t.startsWith('g:') && groups.includes(t.slice(2))));
       requireValue(touches.includes(`p:${a.actor}`));
       if (a.kind === 'infect') requireValue(plan?.infectionEnabled === true && rosterIds.includes(a.target as string) && a.target !== a.actor && groups.includes(a.group as string) && touches.includes(`p:${a.target}`) && touches.includes(`g:${a.group}`));
-      else if (a.kind === 'release') requireValue(groups.includes(a.group as string) && touches.includes(`g:${a.group}`));
+      else if (a.kind === 'release') {
+        requireValue(groups.includes(a.group as string) && touches.includes(`g:${a.group}`));
+        if (a.targetIds !== undefined) requireValue(firstGame && validReleaseTargets(a.targetIds) && a.targetIds.every(id => rosterIds.includes(id)));
+      }
+      else if (a.kind === 'presence_correction') requireValue(firstGame && !e.undone &&
+        ['infected', 'released', 'assign'].includes(a.correction as string) &&
+        (a.group === undefined || groups.includes(a.group as string)) &&
+        (a.correction === 'assign' ? rosterIds.includes(a.groupMemberId as string) && groups.includes(a.group as string) : a.groupMemberId === undefined));
       else if (a.kind === 'mission') requireValue(typeof a.completed === 'boolean');
       else requireValue(a.kind === 'depart' && !e.undone);
     }
     // Reconstruct effective actions through the real rule boundary, including dependency keys.
     const typed = game.search as SavedSearch;
     let eventId = '';
-    const replay = createSearch(typed.roundId, new Map(typed.roster), () => eventId, typed.retained);
+    const replay = createSearch(typed.roundId, new Map(typed.roster), () => eventId, typed.retained, typed.unassigned);
     if (firstGame) replay.restore({ ...typed, events: [], version: 0, finalized: false }, false);
     let effective = 0;
     for (const e of typed.events) {
       if (e.undone) continue;
       eventId = e.id; const a = e.action;
       if (a.kind === 'depart') replay.depart(a.actor);
+      else if (a.kind === 'presence_correction') requireValue(replay.reconcile(a.actor, a.correction, a.groupMemberId) === undefined);
+      else if (a.kind === 'release' && a.targetIds) requireValue(replay.releaseSelected(a.actor, a.targetIds) === undefined);
       else requireValue(replay.act(a.actor, a.kind, a.kind === 'infect' ? a.target : undefined, a.kind === 'mission' ? a.completed : undefined) === undefined);
       const generated = replay.exportState().events;
       requireValue(generated.length === ++effective && generated.at(-1)!.id === e.id && JSON.stringify(generated.at(-1)!.touches.sort()) === JSON.stringify([...e.touches].sort()));
@@ -272,6 +292,9 @@ export function validateSession(value: unknown): SavedSession {
     const projection = createRitual(ritual, () => 'validation').snapshot();
     requireValue(ritual.roundLimit === game.progressionRounds);
     const expected = results.slice(0, game.freeplayFrom === null ? results.length : game.freeplayFrom as number).filter(r => r.kind === 'regular' && r.status === 'final');
+    const noReturn = results.filter(r => r.lossReason === 'no_return');
+    requireValue(noReturn.length === (projection.outcome === 'no_return' ? 1 : 0) &&
+      (!noReturn.length || noReturn[0] === results.at(-1) && game.phase === 'finished'));
     const applied = ritual.events.filter(e => e.kind === 'round');
     requireValue(applied.length === expected.length && applied.every((e, i) => e.id === expected[i].roundId && e.number === expected[i].number && e.successes === Number(expected[i].rescuedGroups) + Number(expected[i].missions) + Number(expected[i].trialBonus ?? 0)));
     const initial = results.find(r => r.kind === 'regular' && r.status !== 'aborted');

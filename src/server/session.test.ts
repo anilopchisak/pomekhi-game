@@ -19,9 +19,10 @@ function memoryDisk() {
 }
 function value(reply: LobbyReply) { if (!reply.ok) throw new Error(reply.error); return reply.view; }
 const code = 'ABCDEFGHJKLM', key = (n: number) => n.toString(16).padStart(64, '0');
-async function fixture(tutorialEnabled = false) {
+async function fixture(tutorialEnabled = false, firstGame = false) {
   const disk = memoryDisk(), time = controlledClock();
-  let session = createSession({ organizerCode: code, store: disk.store, clock: time.clock });
+  let session = createSession({ organizerCode: code, store: disk.store, clock: time.clock, firstGame,
+    ...(firstGame ? { randomIndex: () => 0 } : {}) });
   let sequence = 0;
   const room = (who = 'host') => { const v = session.viewFor(who); if (!v || v.kind === 'ended' || !v.room) throw new Error('No room'); return v.room; };
   const send = <C extends LobbyCommand>(who: string, command: C, input: LobbyInputs[C]) => session.execute(who, command, input);
@@ -30,7 +31,12 @@ async function fixture(tutorialEnabled = false) {
   const playCommand = (id: string) => { const v = session.viewFor(id); if (v?.kind !== 'player') throw new Error('No player'); return { ...gameCommand(), playVersion: v.play!.version }; };
   await session.initialize(); value(await send('host', 'organizer:authorize', { code })); value(await send('host', 'room:create', {}));
   for (let n = 1; n <= 7; n++) value(await send(`p${n}`, 'player:join', { roomCode: room().code, name: `Игрок ${n}`, resumeKey: key(n) }));
-  value(await send('host', 'game:configure', { ...gameCommand(), settings: { ...room().game.settings, ritualEnabled: false, roundLimit: 5, infectionMode: 'auto', tutorialEnabled } }));
+  if (firstGame) value(await send('host', 'venue:configure', { ...gameCommand(), venue: {
+    base: 'База', zones: ['Кухня'], dwelling: { zone: 'Кухня', place: 'Угол' },
+  } }));
+  const settings = { ...room().game.settings, ...(firstGame ? { placementSeconds: 1, offlineWaitSeconds: 2 } :
+    { ritualEnabled: false, roundLimit: 5, infectionMode: 'auto' as const, tutorialEnabled }) };
+  value(await send('host', 'game:configure', { ...gameCommand(), settings }));
   const phones = Array.from({ length: 7 }, (_, i) => `p${i + 1}`);
   async function restart() {
     const roomCode = room().code;
@@ -48,7 +54,8 @@ async function fixture(tutorialEnabled = false) {
   const deal = async () => { await settle(); return value(await send('host', 'deal:create', { ...dealCommand(), possessedCount: 3 })); };
   const start = async () => value(await send('host', 'round:start', { ...gameCommand(), confirmWarnings: true }));
   const advance = async (ms: number) => { while (ms > 0) { const step = Math.min(ms, 1000); time.advance(step); value(await send('host', 'lobby:sync', {})); ms -= step; } };
-  return { disk, time, room, send, gameCommand, dealCommand, playCommand, phones, deal, settle, start, advance, restart, view: (id: string) => session.viewFor(id), close: () => session.close() };
+  return { disk, time, room, send, gameCommand, dealCommand, playCommand, phones, deal, settle, start, advance, restart, view: (id: string) => session.viewFor(id),
+    disconnect: (id: string) => session.disconnect(id), close: () => session.close() };
 }
 
 it('restores full cards, readiness, pending requests and journal retries without using the bank', async () => {
@@ -219,6 +226,40 @@ it('freezes a failed timer checkpoint at the previous durable remainder without 
     expect(f.room().game).toMatchObject({ phase: before.phase, remainingMs: before.remainingMs, paused: true, pauseReason: 'storage_error' });
     expect(f.disk.read().lobby.room!.game.activeMs).toBe(before.activeMs);
     f.disk.fail(false); value(await f.send('host', 'storage:retry', {})); expect(f.time.pending()).toBe(0);
+  } finally { f.disk.fail(false); await f.close(); }
+});
+
+it('keeps recall in the last committed phase during recovery-only connection changes', async () => {
+  const f = await fixture(false, true);
+  try {
+    await f.deal(); await f.start(); await f.advance(1000);
+    const exorcists = f.phones.filter(id => {
+      const view = f.view(id);
+      return view?.kind === 'player' && view.play?.status === 'exorcist';
+    });
+    expect(exorcists).toHaveLength(4);
+    for (const id of exorcists) await f.disconnect(id);
+    value(await f.send('host', 'round:return', f.gameCommand()));
+    expect(f.room().game.phase).toBe('return');
+    const checkpoint = f.disk.read();
+    f.disk.fail();
+    expect(await f.send('host', 'round:return', f.gameCommand())).toEqual({ ok: false, error: 'STORAGE_UNAVAILABLE' });
+    f.time.advance(3000);
+
+    value(await f.send('second-host', 'organizer:authorize', { code }));
+    expect(f.view('second-host')).toMatchObject({ persistence: { state: 'write_error' }, room: { game: { phase: 'return', results: [] } } });
+    const phone = exorcists[0];
+    const resumed = value(await f.send(phone, 'player:resume', { roomCode: f.room().code, resumeKey: key(Number(phone.slice(1))) }));
+    expect(resumed).toMatchObject({ presence: { expected: 'at_base', confirmed: false } });
+    await f.disconnect(phone);
+    expect(f.room().game).toMatchObject({ phase: 'return', results: [] });
+    expect(f.disk.read()).toEqual(checkpoint);
+
+    f.disk.fail(false);
+    value(await f.send('host', 'storage:retry', {}));
+    await f.advance(2000);
+    expect(f.room().game).toMatchObject({ phase: 'finished', ritual: { outcome: 'no_return' } });
+    expect(f.disk.read().lobby.room?.game.results).toMatchObject([{ status: 'final', lossReason: 'no_return' }]);
   } finally { f.disk.fail(false); await f.close(); }
 });
 

@@ -62,10 +62,18 @@ export function projectOffline(view: PlayerView, entries: LocalEvent[]): PlayerV
     if (action.kind === 'withdraw') { result.play = null; result.synchronization = { roundId: round!, receipts: result.synchronization?.receipts ?? [], complete: false, withdrawn: true }; }
     else if (action.kind === 'undo') {
       const original = entries.find(e => e.event.id === action.actionId);
-      if (original?.before && !result.synchronization?.withdrawn) result.play = structuredClone(original.before);
+      const infection = result.play?.infections?.find(row => row.id === action.actionId);
+      if (infection) result.play!.infections = result.play!.infections!.filter(row => row.id !== action.actionId);
+      else if (!(view.room.game.firstGame && original?.event.action.kind === 'infect') && original?.before && !result.synchronization?.withdrawn) result.play = structuredClone(original.before);
     } else if (result.play) {
       if (action.kind === 'mission') result.play.missionCompleted = action.completed;
-      if (action.kind === 'release') result.play.status = 'released';
+      if (action.kind === 'release' && !action.targetIds) result.play.status = 'released';
+      if (action.kind === 'infect' && view.room.game.firstGame) {
+        const infections = result.play.infections ?? [];
+        if (!infections.some(row => row.targetId === action.targetId)) result.play.infections = [
+          ...infections, { id: item.event.id, targetId: action.targetId, available: true, pending: true },
+        ];
+      }
       if (action.kind === 'captured') {
         if (result.play.status !== 'exorcist') continue;
         result.play.status = 'captured';
@@ -76,6 +84,10 @@ export function projectOffline(view: PlayerView, entries: LocalEvent[]): PlayerV
       }
       result.play.undo = { id: item.event.id, label: action.kind === 'infect' ? 'Заражение' : action.kind === 'release' ? 'Освобождение группы' : 'Отметка миссии', available: true };
     }
+  }
+  if (result.play?.targets && result.play.infections) {
+    const pending = new Set(result.play.infections.filter(row => row.pending).map(row => row.targetId));
+    result.play.targets = result.play.targets.filter(id => !pending.has(id));
   }
   return result;
 }

@@ -183,7 +183,12 @@ it('reconciles delayed phone reports and restores retained groups with the curre
     const retained = (await personal(0)).play!.card;
     value(await send(phones[3], 'play:infect', { ...await play(3), targetId: ids[4] }));
     const blocked = (await personal(3)).play!.undo!;
-    value(await send(phones[4], 'play:release', await play(4)));
+    expect(await send(phones[4], 'play:release', { ...await play(4), targetIds: [ids[3]] })).toEqual({ ok: false, error: 'ACTION_UNAVAILABLE' });
+    expect(await send(phones[2], 'play:release', { ...await play(2), targetIds: [ids[3], ids[6]] })).toEqual({ ok: false, error: 'ACTION_UNAVAILABLE' });
+    expect((await personal(4)).play?.status).toBe('captured');
+    const release = { ...await play(2), targetIds: [ids[3], ids[4]] };
+    value(await send(phones[2], 'play:release', release));
+    value(await send(phones[2], 'play:release', release));
     expect((await personal(3)).play?.undo).toMatchObject({ id: blocked.id, canRequestReview: true });
     const request = { ...await play(3), actionId: blocked.id, requestReview: true as const };
     value(await send(phones[3], 'play:undo', request));
@@ -192,7 +197,7 @@ it('reconciles delayed phone reports and restores retained groups with the curre
     const undoRequest = (await personal(3)).synchronization!.undoRequests![0];
     expect(undoRequest).toMatchObject({ status: 'review' });
     expect((await personal(4)).synchronization?.undoRequests).toBeUndefined();
-    value(await send(phones[5], 'play:release', await play(5)));
+    value(await send(phones[2], 'play:release', { ...await play(2), targetIds: [ids[5]] }));
     value(await send(host, 'round:return', await base())); value(await send(host, 'round:return', await base()));
     const roundId = (await current()).game.roundId!;
     const hostRow = (await roomView()).review!.find(row => row.id === undoRequest.id)!;

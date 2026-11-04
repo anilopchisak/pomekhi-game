@@ -1,11 +1,11 @@
 import { createCatalog } from './catalog.js';
 import { trialTraits } from '../shared/protocol.js';
-import type { TrialReviewFact } from '../shared/protocol.js';
+import type { PresenceCorrection, TrialReviewFact } from '../shared/protocol.js';
 import type { SavedCatalog } from './catalog.js';
 import type { CatalogReply } from '../shared/protocol.js';
 import { createHash, randomInt, randomUUID, timingSafeEqual } from 'node:crypto';
 import type { GameCue, GameSettings, LobbyCommand, LobbyError, LobbyReply, LobbyView, PhysicalStatus, RoomSnapshot } from '../shared/protocol.js';
-import { validOfflineEvent } from './round-sync.js';
+import { validOfflineEvent, validReleaseTargets } from './round-sync.js';
 import { createGame, validSettings } from './game.js';
 import type { GameClock, SavedGame } from './game.js';
 
@@ -50,11 +50,17 @@ export function createLobby({ organizerCode, generateId = randomUUID, generateRo
   let phoneScaresEnabled = true;
   const phoneOwners = new Map<string, string>();
 
+  const onlinePlayers = () => new Set([...(room?.players.values() ?? [])].filter(player => player.connections.size > 0).map(player => player.id));
+
   function notify() {
     revision++;
     const pending = room?.game.takeCue();
     const cue = pending && room ? { ...pending, roomId: room.id } : undefined;
     for (const listener of listeners) listener(cue);
+  }
+
+  function reconcileRecall() {
+    if (room?.game.reconcileRecall()) notify();
   }
 
   function snapshot(): RoomSnapshot | null {
@@ -177,7 +183,7 @@ export function createLobby({ organizerCode, generateId = randomUUID, generateRo
           let code = generateRoomCode();
           for (let attempts = 0; usedCodes.has(code) && attempts < 32; attempts++) code = generateRoomCode();
           if (usedCodes.has(code)) throw new Error('Room code generator did not provide an unused code.');
-          const next: Room = { id: generateId(), code, players: new Map(), revoked: new Set(), game: createGame({ generateId, randomIndex, clock, firstGame, onChange: notify, getCards: catalog.cards }), requests: new Map() };
+          const next: Room = { id: generateId(), code, players: new Map(), revoked: new Set(), game: createGame({ generateId, randomIndex, clock, firstGame, onlinePlayers, onChange: notify, getCards: catalog.cards }), requests: new Map() };
           next.game.initializeStory();
           usedCodes.add(code);
           if (room) {
@@ -227,7 +233,7 @@ export function createLobby({ organizerCode, generateId = randomUUID, generateRo
       if (!player) return fail('SESSION_EXPIRED');
       remove(player, 'left');
     } else if (['deal:create', 'deal:shuffle', 'deal:cancel', 'deal:replace', 'card:ready', 'card:request',
-      'game:configure', 'round:start', 'round:pause', 'round:resume', 'round:return', 'round:abort', 'party:finish', 'party:extend', 'play:infect', 'play:release', 'play:mission', 'play:undo', 'results:finalize', 'venue:configure', 'play:withdraw', 'sync:resolve', 'sync:close', 'play:presence', 'play:location', 'round:location', 'round:presence', 'play:trial', 'round:trial-review', 'play:violation', 'ritual:review', 'ritual:penalty', 'ritual:undo-penalty', 'party:freeplay'].includes(command)) {
+      'game:configure', 'round:start', 'round:pause', 'round:resume', 'round:return', 'round:abort', 'party:finish', 'party:extend', 'play:infect', 'play:release', 'play:mission', 'play:undo', 'results:finalize', 'venue:configure', 'play:withdraw', 'sync:resolve', 'sync:close', 'play:presence', 'play:location', 'round:location', 'round:presence', 'round:reconcile', 'play:trial', 'round:trial-review', 'play:violation', 'ritual:review', 'ritual:penalty', 'ritual:undo-penalty', 'party:freeplay'].includes(command)) {
       const personalReport = command === 'play:presence' || command === 'play:location' || command === 'play:violation' || command === 'play:trial';
       const playAction = command.startsWith('play:') && !personalReport;
       const gameAction = command.startsWith('game:') || command.startsWith('round:') || command.startsWith('party:') || playAction || personalReport || command === 'results:finalize' || command === 'venue:configure' || command.startsWith('sync:') || command.startsWith('ritual:');
@@ -243,10 +249,13 @@ export function createLobby({ organizerCode, generateId = randomUUID, generateRo
       } else if (!Number.isInteger(data.dealVersion) || (data.dealVersion as number) < 0
         || !(data.dealId === null || typeof data.dealId === 'string')) return fail('INVALID_INPUT');
       if ((command === 'play:presence' || command === 'round:presence') && data.status !== 'at_base' && data.status !== 'in_group') return fail('INVALID_INPUT');
+      if (command === 'round:reconcile' && (typeof data.playerId !== 'string' ||
+        (data.correction === 'assign' ? typeof data.groupMemberId !== 'string' : !['infected', 'released'].includes(data.correction as string) || data.groupMemberId !== undefined))) return fail('INVALID_INPUT');
       if ((command === 'round:presence' || command === 'round:location') && typeof data.playerId !== 'string' || (command === 'play:location' || command === 'round:location') && typeof data.zone !== 'string') return fail('INVALID_INPUT');
       if (playAction && (!Number.isInteger(data.playVersion) || (data.playVersion as number) < 0)) return fail('INVALID_INPUT');
       if (command === 'play:infect' && typeof data.targetId !== 'string') return fail('INVALID_INPUT');
       if (command === 'play:undo' && (typeof data.actionId !== 'string' || data.requestReview !== undefined && data.requestReview !== true)) return fail('INVALID_INPUT');
+      if (command === 'play:release' && (firstGame || data.targetIds !== undefined) && !validReleaseTargets(data.targetIds)) return fail('INVALID_INPUT');
       if (command === 'play:mission' && typeof data.completed !== 'boolean') return fail('INVALID_INPUT');
       if ((command === 'deal:create' || command === 'deal:shuffle') && !Number.isInteger(data.possessedCount)) return fail('INVALID_INPUT');
       if (command === 'deal:replace' && typeof data.playerId !== 'string') return fail('INVALID_INPUT');
@@ -263,6 +272,7 @@ export function createLobby({ organizerCode, generateId = randomUUID, generateRo
       if (command === 'game:configure') {
         const settings = data.settings as GameSettings;
         fields.push(settings.ritualEnabled, settings.tutorialEnabled, settings.initialDifficulty, settings.maximumDifficulty, settings.infectionMode, settings.roundLimit, settings.placementSeconds, settings.searchSeconds, settings.returnSeconds);
+        if (settings.offlineWaitSeconds !== undefined) fields.push(settings.offlineWaitSeconds);
       }
       if (command === 'venue:configure') fields.push(data.venue);
       if (command === 'sync:resolve') fields.push(data.eventId, data.decision, data.beforeId);
@@ -270,9 +280,11 @@ export function createLobby({ organizerCode, generateId = randomUUID, generateRo
       if (command === 'play:location' || command === 'round:location') fields.push(data.zone, data.playerId);
       if (playAction) fields.push(data.playVersion);
       if (command === 'play:infect') fields.push(data.targetId);
+      if (command === 'play:release' && data.targetIds !== undefined) fields.push(data.targetIds);
       if (command === 'play:undo') fields.push(data.actionId, ...(data.requestReview === undefined ? [] : [data.requestReview]));
       if (command === 'play:mission') fields.push(data.completed);
       if (command === 'play:trial') fields.push(data.values);
+      if (command === 'round:reconcile') fields.push(data.playerId, data.correction, data.groupMemberId);
       if (command === 'round:trial-review') fields.push(data.playerId, data.accepted, ...(data.fact === undefined ? [] : [data.fact]));
       if (command === 'play:violation') fields.push(data.slot, data.details);
       if (command === 'ritual:review') fields.push(data.reportId, data.accept);
@@ -298,6 +310,7 @@ export function createLobby({ organizerCode, generateId = randomUUID, generateRo
       else if (command === 'deal:replace') error = room.game.change(data.playerId as string, data.assignmentId as string, 'replace');
       else if (command === 'venue:configure') error = room.game.configureVenue(data.venue);
       else if (command === 'round:presence' || command === 'play:presence') error = room.game.confirmPresence(command === 'round:presence' ? data.playerId as string : actor!.kind === 'player' ? actor!.playerId : '', data.status as PhysicalStatus);
+      else if (command === 'round:reconcile') error = room.game.reconcilePresence(data.playerId as string, data.correction as PresenceCorrection, data.groupMemberId as string | undefined);
       else if (command === 'round:location') error = room.game.setLocation(data.playerId as string, data.zone as string, true);
       else if (command === 'play:location' && actor!.kind === 'player') error = room.game.setLocation(actor!.playerId, data.zone as string);
       else if (command === 'sync:resolve') error = room.game.resolveSync(data.eventId as string, data.decision as 'accept' | 'reject', data.beforeId as string | undefined);
@@ -318,7 +331,7 @@ export function createLobby({ organizerCode, generateId = randomUUID, generateRo
       else if (command === 'party:freeplay') error = room.game.freeplay();
       else if (command === 'party:extend') error = room.game.extend();
       else if (command === 'results:finalize') error = room.game.finalize();
-      else if (playAction && actor!.kind === 'player') error = room.game.playAction(actor!.playerId, command.slice(5) as 'infect' | 'release' | 'mission' | 'undo', (command === 'play:undo' ? data.actionId : data.targetId) as string, data.completed as boolean, command === 'play:undo' && data.requestReview === true ? true : undefined);
+      else if (playAction && actor!.kind === 'player') error = room.game.playAction(actor!.playerId, command.slice(5) as 'infect' | 'release' | 'mission' | 'undo', (command === 'play:undo' ? data.actionId : data.targetId) as string, data.completed as boolean, command === 'play:undo' && data.requestReview === true ? true : undefined, command === 'play:release' ? data.targetIds as string[] | undefined : undefined);
       else if (actor!.kind === 'player') error = room.game.change(actor!.playerId, data.assignmentId as string, command === 'card:ready' ? 'ready' : 'request', (command === 'card:ready' ? data.ready : data.requested) as boolean);
       if (error) return fail(error);
       if (requests) requests.set(data.requestId, fingerprint);
@@ -342,7 +355,7 @@ export function createLobby({ organizerCode, generateId = randomUUID, generateRo
     revision = Math.max(revision, state.revision) + 1; usedCodes.clear(); for (const code of state.usedCodes) usedCodes.add(code);
     if (state.room) {
       const saved = state.room;
-      const game = createGame({ generateId, randomIndex, clock, firstGame, onChange: notify, getCards: catalog.cards });
+      const game = createGame({ generateId, randomIndex, clock, firstGame, onlinePlayers, onChange: notify, getCards: catalog.cards });
       const restored = structuredClone(saved.game);
       restored.version = Math.max(restored.version, previousGame?.version ?? 0);
       restored.dealing.version = Math.max(restored.dealing.version, previousGame?.dealing.version ?? 0);
@@ -377,7 +390,7 @@ export function createLobby({ organizerCode, generateId = randomUUID, generateRo
   }
   function checkpoint() { if (room?.game.synchronize()) notify(); }
   function dispose() { room?.game.dispose(); room = undefined; listeners.clear(); actors.clear(); audioOwner = null; phoneOwners.clear(); }
-  return { execute, catalogExecute, disconnect, viewFor, subscribe, dispose, exportState, restore, liveState, checkpoint };
+  return { execute, catalogExecute, disconnect, viewFor, subscribe, dispose, exportState, restore, liveState, checkpoint, reconcileRecall };
 }
 
 export type Lobby = ReturnType<typeof createLobby>;

@@ -9,13 +9,20 @@ export interface SavedRoundSync {
 const INBOX_LIMIT = 12000;
 const validEventId = (value: unknown) => typeof value === 'string' && /^[a-zA-Z0-9_-]{8,100}$/.test(value);
 
+export function validReleaseTargets(value: unknown): value is string[] {
+  return Array.isArray(value) && value.length > 0 && value.length <= 12 &&
+    value.every(id => typeof id === 'string' && id.length > 0 && id.length <= 256) && new Set(value).size === value.length;
+}
+
 export function validOfflineEvent(value: unknown): value is OfflineEvent {
   if (!value || typeof value !== 'object') return false;
   const e = value as OfflineEvent, a = e.action;
   return validEventId(e.id) && validEventId(e.clientId) && Number.isSafeInteger(e.sequence) && e.sequence > 0 && (e.previousId === null || validEventId(e.previousId))
     && typeof e.roundId === 'string' && e.roundId.length > 0 && e.roundId.length <= 256 && ['placement', 'search', 'return', 'between_rounds', 'finished'].includes(e.phase)
     && typeof e.paused === 'boolean' && (e.estimatedServerTime === null || typeof e.estimatedServerTime === 'number' && Number.isFinite(e.estimatedServerTime))
-    && Boolean(a && typeof a === 'object' && (a.kind === 'release' || a.kind === 'withdraw' || a.kind === 'mission' && typeof a.completed === 'boolean'
+    && Boolean(a && typeof a === 'object' && (a.kind === 'release' && (a.targetIds === undefined || validReleaseTargets(a.targetIds)) || a.kind === 'withdraw' || a.kind === 'presence_correction' &&
+      (a.correction === 'assign' ? typeof a.groupMemberId === 'string' && a.groupMemberId.length <= 256 :
+        (a.correction === 'infected' || a.correction === 'released') && a.groupMemberId === undefined) || a.kind === 'mission' && typeof a.completed === 'boolean'
       || a.kind === 'infect' && typeof a.targetId === 'string' && a.targetId.length <= 256 || a.kind === 'captured' && typeof a.by === 'string' && a.by.length <= 256 || a.kind === 'undo' && typeof a.actionId === 'string' && a.actionId.length <= 256 && (a.requestReview === undefined || a.requestReview === true)));
 }
 
@@ -24,6 +31,8 @@ function canonicalEvent(event: OfflineEvent): OfflineEvent {
   const { kind } = action;
   let intent: OfflineAction;
   switch (kind) {
+    case 'release': intent = { kind, ...(action.targetIds ? { targetIds: [...action.targetIds] } : {}) }; break;
+    case 'presence_correction': intent = { kind, correction: action.correction, ...(action.groupMemberId ? { groupMemberId: action.groupMemberId } : {}) }; break;
     case 'infect': intent = { kind, targetId: action.targetId }; break;
     case 'captured': intent = { kind, by: action.by }; break;
     case 'mission': intent = { kind, completed: action.completed }; break;
@@ -37,7 +46,7 @@ function canonicalEvent(event: OfflineEvent): OfflineEvent {
 export function createRoundSync(saved: SavedRoundSync, generateId: () => string) {
   let state = structuredClone(saved);
   for (const entry of state.entries) entry.event = canonicalEvent(entry.event);
-  let search = createSearch(state.base.roundId, new Map(state.base.roster), generateId, state.base.retained);
+  let search = createSearch(state.base.roundId, new Map(state.base.roster), generateId, state.base.retained, state.base.unassigned);
   let actionId = '';
   function ownedUndoTarget(actor: string, actionId: string) {
     return state.entries.some(row => row.actor === actor && row.event.id === actionId && row.receipt.status === 'accepted' &&
@@ -48,8 +57,10 @@ export function createRoundSync(saved: SavedRoundSync, generateId: () => string)
       row.event.action.kind === 'undo' && row.event.action.requestReview && row.event.action.actionId === actionId);
   }
   function apply(actor: string, action: OfflineAction): LobbyError | undefined {
+    if (action.kind === 'presence_correction') return search.reconcile(actor, action.correction, action.groupMemberId);
     if (action.kind === 'withdraw') { if (!search.personal(actor)) return 'ACTION_UNAVAILABLE'; search.depart(actor); return; }
     if (action.kind === 'undo') return search.undo(actor, action.actionId);
+    if (action.kind === 'release' && action.targetIds) return search.releaseSelected(actor, action.targetIds);
     if (action.kind === 'captured') {
       const player = search.personal(actor), group = search.group(actor);
       if (player && group && search.group(action.by) === group) return;
@@ -62,7 +73,7 @@ export function createRoundSync(saved: SavedRoundSync, generateId: () => string)
     return search.act(actor, action.kind, action.kind === 'infect' ? action.targetId : undefined, action.kind === 'mission' ? action.completed : undefined);
   }
   function rebuild() {
-    search = createSearch(state.base.roundId, new Map(state.base.roster), () => actionId, state.base.retained);
+    search = createSearch(state.base.roundId, new Map(state.base.roster), () => actionId, state.base.retained, state.base.unassigned);
     search.restore(state.base, false);
     const pending = state.entries.filter(e => e.receipt.status !== 'rejected');
     const done = new Set(state.entries.filter(e => e.receipt.status === 'rejected').map(e => e.event.id));
@@ -89,6 +100,7 @@ export function createRoundSync(saved: SavedRoundSync, generateId: () => string)
     const incoming = new Map<string, OfflineEvent>();
     let newEvents = 0;
     for (const raw of events) {
+      if (raw.action.kind === 'presence_correction') return 'FORBIDDEN';
       const event = canonicalEvent(raw);
       const repeated = incoming.get(event.id);
       if (repeated) {
@@ -102,6 +114,7 @@ export function createRoundSync(saved: SavedRoundSync, generateId: () => string)
       const old = state.entries.find(e => e.event.id === event.id);
       if (old && (old.actor !== actor || JSON.stringify(old.event) !== JSON.stringify(event))) return 'INVALID_INPUT';
       if (!old) {
+        if (event.action.kind === 'release' && event.action.targetIds?.some(id => !state.players.includes(id))) return 'INVALID_INPUT';
         if (event.action.kind === 'undo' && !validEventId(event.action.actionId)) return 'INVALID_INPUT';
         newEvents++;
       }
@@ -224,7 +237,8 @@ export function validateRoundSync(value: unknown, roundId: unknown): asserts val
   for (const event of s.base.events) {
     assert(event && typeof event.id === 'string' && typeof event.undone === 'boolean' && Array.isArray(event.touches) && event.touches.every(k => typeof k === 'string'));
     assert(event.action && s.base.roster.some(([id]) => id === event.action.actor));
-    assert(['infect', 'release', 'mission', 'depart'].includes(event.action.kind));
+    assert(['infect', 'release', 'mission', 'depart', 'presence_correction'].includes(event.action.kind));
+    if (event.action.kind === 'release' && event.action.targetIds !== undefined) assert(validReleaseTargets(event.action.targetIds));
     if (event.action.kind === 'infect') assert(s.base.roster.some(([id]) => event.action.kind === 'infect' && id === event.action.target));
   }
   assert(s.sealed === undefined || typeof s.sealed === 'boolean');
@@ -234,6 +248,7 @@ export function validateRoundSync(value: unknown, roundId: unknown): asserts val
   const ids = new Set<string>();
   for (const entry of s.entries) {
     assert(entry && validOfflineEvent(entry.event) && entry.event.roundId === roundId && s.players.includes(entry.actor) && !ids.has(entry.event.id));
+    if (entry.event.action.kind === 'presence_correction') assert(entry.event.clientId === 'server_direct' && entry.approved);
     assert(entry.receipt?.id === entry.event.id && ['accepted', 'review', 'rejected'].includes(entry.receipt.status) && (entry.receipt.reason === null || typeof entry.receipt.reason === 'string') && typeof entry.approved === 'boolean');
     ids.add(entry.event.id);
   }

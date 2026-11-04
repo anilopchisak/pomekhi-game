@@ -3,7 +3,7 @@ import broadcast from './Broadcast.module.css';
 import { useCallback, useEffect, useRef, useState } from 'react';
 import QRCode from 'qrcode';
 import { dealCommand, gameCommand, describeError, useLobbyConnection } from '../../../shared/api/index.js';
-import { PhaseSignals, HowToPlay, ConfirmButton, DialogButton, LobbyShell, ResultsSummary, RitualBoard, RoundStatus, RoundTimer } from '../../../shared/ui/index.js';
+import { FullscreenButton, PhaseSignals, HowToPlay, ConfirmButton, DialogButton, LobbyShell, ResultsSummary, RitualBoard, RoundStatus, RoundTimer } from '../../../shared/ui/index.js';
 import { loadPublicInvitation, redeemOrganizerBootstrap, savedInvitationAddress, saveInvitationAddress } from '../bootstrap.js';
 import { invitationUrl } from '../invitation.js';
 import type { LobbyInputs, LobbyCommand, RoomSnapshot } from '../../../../shared/protocol.js';
@@ -47,7 +47,6 @@ export function HostPage({ display = false, editor = false }: { display?: boolea
   const operation = useRef(0);
   const prepareSound = useRef<(() => Promise<void>) | null>(null);
   const [effects, setEffects] = useState(() => { try { return sessionStorage.getItem('pomekhi.visuals') === 'on'; } catch { return false; } });
-  const [fullscreenMessage, setFullscreenMessage] = useState('');
   const [code, setCode] = useState(credential.current);
   const [busy, setBusy] = useState(false);
   const [error, setError] = useState('');
@@ -208,16 +207,13 @@ export function HostPage({ display = false, editor = false }: { display?: boolea
   const settings = room && view?.kind === 'organizer' && <><section aria-label="Экран">
         <label><input type="checkbox" checked={effects} onChange={e => { setEffects(e.target.checked); try { sessionStorage.setItem('pomekhi.visuals', e.target.checked ? 'on' : 'off'); } catch { /* Visual effects still work. */ } }} /> Эффект старого телевизора</label>
         {!display && !room.game.firstGame && <label><input type="checkbox" disabled={disabled} checked={room.phoneScaresEnabled} onChange={e => void run('organizer:atmosphere', { roomId: room.id, enabled: e.target.checked })} /> Редкие эффекты на телефонах</label>}
-        {display && <><button onClick={() => {
-          if (document.fullscreenElement) void document.exitFullscreen().catch(() => setFullscreenMessage('Используйте обычное окно браузера.'));
-          else if (document.documentElement.requestFullscreen) void document.documentElement.requestFullscreen().catch(() => setFullscreenMessage('Полноэкранный режим недоступен; эфир работает в окне.'));
-          else setFullscreenMessage('Полноэкранный режим недоступен; эфир работает в окне.');
-        }}>Полноэкранный режим</button><a href="/?screen=host">Открыть пульт</a>{fullscreenMessage && <p role="status">{fullscreenMessage}</p>}</>}
+        <FullscreenButton />
+        {display && <a href="/?screen=host">Открыть пульт</a>}
       </section>
       {room.game.firstGame && <PhaseSignals key={room.id} cue={cue} enabled={view.audioEnabled}
         online={connection === 'online' && restored && (!persistence || persistence.state === 'ready')} clockOffset={clockOffset}
         claim={async enabled => (await request('organizer:audio', { enabled })).ok} />}
-      {room.game.firstGame && !display && <TimerSettings key={`${room.id}:${room.game.settings.placementSeconds}:${room.game.settings.searchSeconds}`} room={room} disabled={disabled} error={error} run={run} />}
+      {room.game.firstGame && !display && <TimerSettings key={`${room.id}:${room.game.settings.placementSeconds}:${room.game.settings.searchSeconds}:${room.game.settings.offlineWaitSeconds ?? 90}`} room={room} disabled={disabled} error={error} run={run} />}
       {!room.game.firstGame && <SoundControls game={room.game} online={connection === 'online' && restored && persistence?.state !== 'write_error' && persistence?.state !== 'load_error'} enabled={view.audioEnabled} disabled={disabled} cue={cue} prepareRef={prepareSound} gameVersion={room.game.version} clockOffset={clockOffset} claim={async enabled => {
         const result = await request('organizer:audio', { enabled });
         if (!result.ok) setError(describeError(result.error));
@@ -239,21 +235,48 @@ export function HostPage({ display = false, editor = false }: { display?: boolea
         </li>)}</ul> : <p>Пока здесь тихо. Ждём первого участника.</p>}
 
       </section>);
+  const checkingPresence = room?.game.phase === 'return' || room?.game.phase === 'between_rounds' && room.game.results.at(-1)?.status === 'provisional';
+  const cleanReview = room?.game.phase === 'between_rounds' && room.game.results.at(-1)?.status === 'provisional' && !waitingForSync;
   const work = room && view?.kind === 'organizer' && <>
-      {room.game.firstGame && room.game.phase === 'between_rounds' && room.game.results.at(-1)?.status === 'provisional' && <section aria-label="Физический статус">
-        <h3>Кто где после призыва</h3><p>Подтверждайте только то, что сообщили участники. Отключённый телефон ничего не доказывает.</p>
+      {room.game.firstGame && (checkingPresence || ['between_rounds', 'finished'].includes(room.game.phase) && Boolean(view.presence?.length)) && <section aria-label="Физический статус">
+        <h3>Кто где после призыва</h3>
+        {!cleanReview && room.game.offlineWait && <p role="status">{room.game.offlineWait.awaitingReview
+          ? 'Время истекло. Сначала разберите спорные отметки о возвращении.'
+          : room.game.offlineWait.deadline <= room.game.serverNow ? 'Время ожидания истекло. Сверка остаётся открытой.'
+          : `Ожидание участников без связи · ${Math.ceil((room.game.offlineWait.deadline - room.game.serverNow) / 1000)} с`}</p>}
         <ul>{room.players.map(player => {
           const item = view.presence?.find(status => status.playerId === player.id);
-          return <li key={player.id}><span>{player.name}</span><small>{item?.confirmed ? item.expected === 'at_base' ? 'На базе' : 'В локации с группой' : 'Статус не подтверждён'}</small>
-            {item && !item.confirmed && <ConfirmButton disabled={disabled} title={`${player.name} · ${item.expected === 'at_base' ? 'возвращение на базу' : 'ожидание с группой'}`}
-              description="Подтвердите статус, который сообщил участник." confirm="Подтвердить статус"
-              onConfirm={() => void run('round:presence', { ...gameCommand(room), playerId: player.id, status: item.expected })}>
-              {item.expected === 'at_base' ? 'Подтвердить возвращение' : 'Подтвердить группу'}
-            </ConfirmButton>}
+          const state = item?.status;
+          const label = state ? { exorcist: 'Свободен', released: 'Освобождён', possessed: 'Одержимый', captured: 'Заражён' }[state] : 'Нет подтверждения';
+          const atBase = item?.expected === 'at_base' && item.confirmed;
+          const canMarkBase = checkingPresence && !player.online && item?.expected === 'at_base' && !atBase;
+          const canCorrect = checkingPresence && item && (!player.online || item.unknownGroup);
+          const groups = view.presence?.filter(row => row.expected === 'in_group' && !row.unknownGroup && row.playerId !== player.id) ?? [];
+          return <li key={player.id} className={broadcast.presenceItem}>
+            <label className={broadcast.presenceRow}>
+              <span>{player.name}<small>{!player.online && 'Нет связи · '}{!player.online && !item?.confirmed && state ? `Последний статус: ${label}` : label}{item?.unknownGroup && ' · группа неизвестна'}</small></span>
+              <input type="checkbox" checked={Boolean(atBase)} disabled={disabled || !canMarkBase}
+                aria-label={`${player.name} · На базе`}
+                onChange={() => void run('round:presence', { ...gameCommand(room), playerId: player.id, status: 'at_base' })} />
+            </label>
+            {canCorrect && state === 'exorcist' && !atBase && <button type="button" data-secondary disabled={disabled}
+              onClick={() => void run('round:reconcile', { ...gameCommand(room), playerId: player.id, correction: 'infected' })}>Заражён</button>}
+            {canCorrect && item.expected === 'in_group' && <button type="button" data-secondary disabled={disabled}
+              onClick={() => void run('round:reconcile', { ...gameCommand(room), playerId: player.id, correction: 'released' })}>Освобождён</button>}
+            {checkingPresence && item?.unknownGroup && groups.length > 0 && <form onSubmit={event => {
+              event.preventDefault();
+              const groupMemberId = new FormData(event.currentTarget).get('group');
+              if (typeof groupMemberId === 'string' && groupMemberId) void run('round:reconcile', { ...gameCommand(room), playerId: player.id, correction: 'assign', groupMemberId });
+            }}>
+              <label>Участник известной группы<select name="group" required disabled={disabled}><option value="">Выберите имя</option>
+                {groups.map(row => <option key={row.playerId} value={row.playerId}>{room.players.find(member => member.id === row.playerId)?.name}</option>)}
+              </select></label>
+              <button disabled={disabled}>Подтвердить группу</button>
+            </form>}
           </li>;
         })}</ul>
       </section>}
-      {view.trialReview && <section aria-label="Сверка свидетельств испытания">
+      {view.trialReview && (!cleanReview || view.trialReview.reports.length > 0 || view.trialReview.lateVisit?.status === 'review') && <section aria-label="Сверка свидетельств испытания">
         <h3>Испытание Мастера</h3>
         <p>{view.trialReview.status === 'unavailable' ? 'Цель недоступна. Испытание закроется без бонуса.' :
           view.trialReview.status === 'waiting' ? 'Часть свидетельств отсутствует. Итог учитывает только подтверждённые факты.' :
@@ -287,7 +310,7 @@ export function HostPage({ display = false, editor = false }: { display?: boolea
           </ConfirmButton>
         </details>)}
       </section>}
-      {view.violations && view.violations.length > 0 && <section aria-label="Доклады о прорицаниях">
+      {view.violations && view.violations.some(report => !cleanReview || report.status === 'review') && <section aria-label="Доклады о прорицаниях">
         <h3>Доклады о прорицаниях</h3>
         <ul>{view.violations.map(report => {
           const rule = room.game.ritual?.cards.find(card => card.slot === report.slot);
@@ -312,7 +335,7 @@ export function HostPage({ display = false, editor = false }: { display?: boolea
         })}</ul>
       </section>}
       <RecoveryControls request={request} missingLocations={view.missingLocations} room={room} review={view.review ?? []} disabled={disabled} run={run} />
-      {(!room.game.firstGame || room.game.phase === 'between_rounds') &&
+      {(!room.game.firstGame || room.game.phase === 'between_rounds' && !cleanReview) &&
         <DealControls room={room} disabled={disabled || Boolean(waitingForSync) || room.game.settings.ritualEnabled && room.game.results.at(-1)?.status === 'provisional'} run={run} />}</>;
   const toolbar = firstGame && room ? <>
     <div className={broadcast.roomIdentity}>
@@ -442,7 +465,7 @@ export function HostPage({ display = false, editor = false }: { display?: boolea
       {firstGame && (['return', 'between_rounds'].includes(room.game.phase) || room.game.phase === 'reading' &&
         !display && Boolean(view.violations?.length)) && <div className={broadcast.sceneWork} tabIndex={0} aria-label="Сверка и история">
         {!display && work}
-        {room.game.results.length > 0 && room.game.phase === 'between_rounds' &&
+        {room.game.results.length > 0 && room.game.phase === 'between_rounds' && !cleanReview &&
           <details><summary>История партии</summary><ResultsSummary results={room.game.results} firstGame /></details>}
       </div>}
       {firstGame && !display && <footer className={broadcast.primary}>
@@ -473,16 +496,18 @@ function TimerSettings({ room, disabled, error, run }: {
   const { settings, phase } = room.game;
   const [placement, setPlacement] = useState(String(settings.placementSeconds));
   const [search, setSearch] = useState(String(settings.searchSeconds));
+  const [wait, setWait] = useState(String(settings.offlineWaitSeconds ?? 90));
   const locked = !['lobby', 'reading', 'between_rounds'].includes(phase);
   return <form onSubmit={event => {
     event.preventDefault();
     if (locked || disabled) return;
-    void run('game:configure', { ...gameCommand(room), settings: { ...settings, placementSeconds: Number(placement), searchSeconds: Number(search) } });
+    void run('game:configure', { ...gameCommand(room), settings: { ...settings, placementSeconds: Number(placement), searchSeconds: Number(search), offlineWaitSeconds: Number(wait) } });
   }}>
     <h3>Таймеры этапов</h3>
     {locked && <p>Таймеры можно изменить между раундами.</p>}
     <label>Расстановка, секунды<input type="number" min={1} max={3600} required value={placement} disabled={locked || disabled} onChange={event => setPlacement(event.target.value)} /></label>
     <label>Поиск, секунды<input type="number" min={1} max={3600} required value={search} disabled={locked || disabled} onChange={event => setSearch(event.target.value)} /></label>
+    <label>Ожидание участников без связи, секунды<input type="number" min={1} max={3600} required value={wait} disabled={locked || disabled} onChange={event => setWait(event.target.value)} /></label>
     <button disabled={locked || disabled}>Сохранить таймеры</button>
     {error && <p role="alert">{error}</p>}
   </form>;

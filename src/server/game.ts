@@ -2,7 +2,7 @@ import { cardSets, DEFAULT_ROUND_LIMIT } from '../shared/protocol.js';
 import { createRitual, newRitual } from './ritual.js';
 import type { SavedRitual } from './ritual.js';
 import { performance } from 'node:perf_hooks';
-import type { Difficulty, GameCue, GamePhase, GameSettings, GameSnapshot, LobbyError, PersonalCard, PauseReason, RoundPlan, RoundResult, TimedPhase } from '../shared/protocol.js';
+import type { Assignment, PresenceCorrection, Difficulty, GameCue, GamePhase, GameSettings, GameSnapshot, LobbyError, PersonalCard, PauseReason, RoundPlan, RoundResult, TimedPhase } from '../shared/protocol.js';
 import { createDealing } from './dealing.js';
 import { createSearch } from './search.js';
 import type { SavedDealing } from './dealing.js';
@@ -26,7 +26,7 @@ export const defaultClock: GameClock = {
   schedule: (callback, delay) => { const timer = setTimeout(callback, delay); return () => clearTimeout(timer); },
 };
 export interface SavedGame {
-  firstGame?: { locked: boolean; retained: RetainedGroup[]; presence: [string, PhysicalStatus][]; waitingFree: string[]; trials?: SavedTrials; violations?: ViolationReview[]; locations?: [string, { proposed?: string; confirmed?: string }][]; story?: { title: string; prologue: string } };
+  firstGame?: { locked: boolean; retained: RetainedGroup[]; presence: [string, PhysicalStatus][]; waitingFree: string[]; trials?: SavedTrials; violations?: ViolationReview[]; locations?: [string, { proposed?: string; confirmed?: string }][]; story?: { title: string; prologue: string }; unassigned?: [string, Assignment][]; recallWait?: { players: string[]; remainingMs: number } };
   ritual?: SavedRitual | null; freeplayFrom?: number | null;
   venue?: Venue; roundSync?: SavedRoundSync | null; playerNames?: [string, string][];
   tutorialCompleted: boolean; progressionRounds: number; roundPlan: RoundPlan | null;
@@ -49,7 +49,7 @@ export function validSettings(value: unknown, maximumRounds = 99): value is Game
   return typeof data.ritualEnabled === 'boolean' && (!data.ritualEnabled || data.roundLimit !== null) && typeof data.tutorialEnabled === 'boolean' && ['auto', 'on', 'off'].includes(data.infectionMode)
     && validDifficulty(data.initialDifficulty) && validDifficulty(data.maximumDifficulty) && data.initialDifficulty <= data.maximumDifficulty
     && (data.roundLimit === null || Number.isInteger(data.roundLimit) && data.roundLimit >= 1 && data.roundLimit <= maximumRounds)
-    && [data.placementSeconds, data.searchSeconds, data.returnSeconds].every(item => Number.isInteger(item) && item >= 1 && item <= 3600);
+    && data.offlineWaitSeconds !== null && [data.placementSeconds, data.searchSeconds, data.returnSeconds, data.offlineWaitSeconds ?? 90].every(item => Number.isInteger(item) && item >= 1 && item <= 3600);
 }
 
 export function validDifficulty(value: unknown): value is Difficulty { return value === 1 || value === 2 || value === 3; }
@@ -65,11 +65,14 @@ export function planRound(settings: GameSettings, completedRounds: number, tutor
 }
 
 /** Owns the party lifecycle; membership, authorization and publication belong to lobby. */
-export function createGame({ generateId, randomIndex, clock = defaultClock, onChange, getCards = () => CARD_BANK, firstGame = false }: {
-  generateId: () => string; randomIndex: (limit: number) => number; clock?: GameClock; onChange: () => void; getCards?: () => readonly PersonalCard[]; firstGame?: boolean;
+export function createGame({ generateId, randomIndex, clock = defaultClock, onChange, onlinePlayers, getCards = () => CARD_BANK, firstGame = false }: {
+  generateId: () => string; randomIndex: (limit: number) => number; clock?: GameClock; onChange: () => void; onlinePlayers?: () => ReadonlySet<string>; getCards?: () => readonly PersonalCard[]; firstGame?: boolean;
 }) {
   let locked = false;
   let retained: RetainedGroup[] = [];
+  let unassigned: [string, Assignment][] = [];
+  let recallWait: { players: string[]; deadline: number } | undefined;
+  let cancelRecall: (() => void) | undefined;
   let waitingFree: string[] = [];
   let selectedStory: { title: string; prologue: string } | undefined;
   let trials: SavedTrials | undefined;
@@ -87,7 +90,7 @@ export function createGame({ generateId, randomIndex, clock = defaultClock, onCh
       return (usesAuthoredBank() ? authoredMissions : [...getCards(), ...dwellingMissions]).filter(eligible);
     },
   } : undefined });
-  let settings: GameSettings = { ritualEnabled: true, roundLimit: DEFAULT_ROUND_LIMIT, placementSeconds: 45, searchSeconds: firstGame ? 240 : 180, returnSeconds: 45, tutorialEnabled: !firstGame, initialDifficulty: firstGame ? 3 : 1, maximumDifficulty: 3, infectionMode: 'on' };
+  let settings: GameSettings = { ritualEnabled: true, roundLimit: DEFAULT_ROUND_LIMIT, placementSeconds: 45, searchSeconds: firstGame ? 240 : 180, returnSeconds: 45, ...(firstGame ? { offlineWaitSeconds: 90 } : {}), tutorialEnabled: !firstGame, initialDifficulty: firstGame ? 3 : 1, maximumDifficulty: 3, infectionMode: 'on' };
   let playerNames = new Map<string, string>();
   let venue: Venue = { base: 'База', zones: [], ...(firstGame ? { mode: 'ordinary', bank: 'authored' } : {}) };
   function initializeStory() {
@@ -140,6 +143,12 @@ export function createGame({ generateId, randomIndex, clock = defaultClock, onCh
     if (!firstGame) { enterTimed('return'); bump('phase'); return; }
     account(); clearTimer();
     phase = 'return'; paused = false; pauseReason = null; deadline = null; remainingMs = null;
+    const online = onlinePlayers?.();
+    const players = online && activePlayerIds.filter(id => !online.has(id) && playerNames.has(id));
+    if (players?.length) {
+      recallWait = { players, deadline: clock.now() + (settings.offlineWaitSeconds ?? 90) * 1000 };
+      scheduleRecall();
+    }
     bump('phase');
   }
   function finishSearchIfNeeded() { if (phase === 'search' && !paused && search && !search.canSearch()) recall(); }
@@ -179,6 +188,55 @@ export function createGame({ generateId, randomIndex, clock = defaultClock, onCh
     deadline = null; paused = true; pauseReason = reason;
     clearTimer(); bump('pause');
   }
+  function clearRecall() {
+    cancelRecall?.(); cancelRecall = undefined; recallWait = undefined;
+  }
+
+  function reviewCanReturnPlayer() {
+    const rows = roundSync?.review() ?? [];
+    return rows.some(row => {
+      if (row.status !== 'review') return false;
+      if (row.action.kind === 'release') return true;
+      if (row.action.kind !== 'undo') return false;
+      const { actionId } = row.action;
+      return rows.some(action => action.id === actionId && action.action.kind === 'infect');
+    });
+  }
+
+  function scheduleRecall() {
+    cancelRecall?.();
+    const wait = recallWait;
+    if (!wait || wait.deadline <= clock.now()) return;
+    cancelRecall = clock.schedule(() => {
+      if (disposed || recallWait !== wait) return;
+      reconcileRecall();
+      scheduleRecall();
+      onChange();
+    }, Math.min(1000, wait.deadline - clock.now()));
+  }
+
+  function reconcileRecall() {
+    const connected = onlinePlayers?.();
+    if (!connected || !(phase === 'return' || phase === 'between_rounds' && results.at(-1)?.status === 'provisional')) return false;
+    const before = version;
+    let confirmed = false;
+    for (const id of connected) {
+      const status = physicalStatus(id);
+      if (status && presence.get(id) !== status.expected) {
+        presence.set(id, status.expected);
+        confirmed = true;
+      }
+    }
+    if (confirmed) bump();
+    if (!recallWait || recallWait.deadline > clock.now() ||
+      returners().length || !recallWait.players.some(id => playerNames.has(id) && !connected.has(id))) return confirmed;
+    const online = [...playerNames.keys()].filter(id => connected.has(id));
+    if (!online.length || !online.every(id => physicalStatus(id)?.expected === 'in_group')) return confirmed;
+    if (phase === 'return') finishRound();
+    if (!reviewCanReturnPlayer()) finalize(true);
+    return version !== before;
+  }
+
   function finishRound() {
     account(); clearTimer();
     if (trials?.current) trials.current.branch = (ritual?.snapshot().cards.slice(0, 2).filter(card => card.revealed).length ?? 0) >= 2 ? 'late' : 'early';
@@ -219,6 +277,7 @@ export function createGame({ generateId, randomIndex, clock = defaultClock, onCh
       ...(usesAuthoredBank() ? { references: structuredClone(authoredReferences) } : {}),
       ...(story ? { story: { title: story.title, prologue: story.prologue } } : {}),
       ritual: ritual?.snapshot(['between_rounds', 'finished'].includes(phase) ? results.at(-1) : undefined) ?? null, freeplayFrom,
+      ...(recallWait ? { offlineWait: { deadline: recallWait.deadline, awaitingReview: recallWait.deadline <= clock.now() && reviewCanReturnPlayer() } } : {}),
       phase, version, roundId, roundNumber: (roundPlan ?? nextPlan()).number,
       venue: structuredClone(venue), synchronization: sync ? { ...sync, waitingPlayers: sync.waitingPlayerIds.map(id => ({ id, name: playerNames.get(id) ?? id })) } : null,
       tutorialCompleted, roundPlan: { ...(roundPlan ?? nextPlan()) },
@@ -231,8 +290,8 @@ export function createGame({ generateId, randomIndex, clock = defaultClock, onCh
     if (!validSettings(next, Math.max(99, settings.roundLimit ?? 99))) return 'INVALID_INPUT';
     if (firstGame) {
       if ((Object.keys(settings) as (keyof GameSettings)[]).some(key =>
-        key !== 'placementSeconds' && key !== 'searchSeconds' && next[key] !== settings[key])) return 'SETTINGS_LOCKED';
-      settings = { ...settings, placementSeconds: next.placementSeconds, searchSeconds: next.searchSeconds };
+        key !== 'placementSeconds' && key !== 'searchSeconds' && key !== 'offlineWaitSeconds' && next[key] !== settings[key])) return 'SETTINGS_LOCKED';
+      settings = { ...settings, placementSeconds: next.placementSeconds, searchSeconds: next.searchSeconds, offlineWaitSeconds: next.offlineWaitSeconds ?? settings.offlineWaitSeconds };
       bump();
       return;
     }
@@ -261,7 +320,7 @@ export function createGame({ generateId, randomIndex, clock = defaultClock, onCh
     const plan = phase === 'reading' ? roundPlan! : nextPlan();
     const error = dealing.deal(players, count, history, plan.difficulty);
     if (error) return error;
-    if (phase !== 'reading') { sealResult(); search = undefined; roundSync = undefined; }
+    if (phase !== 'reading') { clearRecall(); sealResult(); search = undefined; roundSync = undefined; }
     if (firstGame && !locked && venue.mode === 'ordinary') trials = selectTrials(venue, randomIndex);
     if (firstGame) locked = true;
     roundPlan = { ...plan };
@@ -285,10 +344,10 @@ export function createGame({ generateId, randomIndex, clock = defaultClock, onCh
     ritual?.lock();
     playerNames = new Map(names.map(item => [item.id, item.name ?? item.id]));
     const assigned = new Map(players.map(item => [item.id, dealing.personal(item.id)!]));
-    activePlayerIds = [...new Set([...assigned.keys(), ...retained.flatMap(group => group.members.map(([id]) => id))])];
+    activePlayerIds = [...new Set([...assigned.keys(), ...retained.flatMap(group => group.members.map(([id]) => id)), ...unassigned.map(([id]) => id)])];
     originalPossessed = players.map(p => p.id).filter(id => assigned.get(id)?.card.role === 'possessed');
     rosterChanged = false; lastRoundAborted = false; started = true; roundId = generateId();
-    search = createSearch(roundId, new Map([...assigned, ...retained.flatMap(group => group.members)]), generateId, firstGame ? retained : undefined);
+    search = createSearch(roundId, new Map([...assigned, ...retained.flatMap(group => group.members), ...unassigned]), generateId, firstGame ? retained : undefined, unassigned.map(([id]) => id));
     if (firstGame) waitingFree = waitingFree.filter(id => !assigned.has(id));
     presence.clear(); locations.clear(); if (trials) delete trials.current;
     roundSync = undefined; ensureSync();
@@ -323,7 +382,7 @@ export function createGame({ generateId, randomIndex, clock = defaultClock, onCh
       if (results.at(-1)?.status === 'provisional') { results.at(-1)!.status = 'aborted'; completedRounds--; }
       if (roundId && search && !results.some(row => row.roundId === roundId))
         results.push({ ...search.result(roundPlan!.number, 'aborted', activeMs), ...roundPlan! });
-      roundSync?.close(); sealResult(); ritual!.stop();
+      clearRecall(); roundSync?.close(); sealResult(); ritual!.stop();
       for (const report of violations) if (report.status === 'review') report.status = 'rejected';
       if (trials?.current?.lateVisit === 'review') trials.current.lateVisit = 'rejected';
       clearTimer(); phase = 'finished'; deadline = null; remainingMs = null; paused = false; pauseReason = null;
@@ -351,6 +410,7 @@ export function createGame({ generateId, randomIndex, clock = defaultClock, onCh
     if (roundSync) { roundSync.legacy(playerId, { kind: 'withdraw' }); search = roundSync.current(); } else search?.depart(playerId);
     dealing.remove(playerId);
     if (firstGame) {
+      unassigned = unassigned.filter(([id]) => id !== playerId);
       playerNames.delete(playerId); presence.delete(playerId); waitingFree = waitingFree.filter(id => id !== playerId);
       retained = retained.map(g => ({ ...g, members: g.members.filter(([id]) => id !== playerId) })).filter(g => g.members.length > 0);
       venue.order = venue.order?.filter(id => id !== playerId);
@@ -366,43 +426,51 @@ export function createGame({ generateId, randomIndex, clock = defaultClock, onCh
   function change(...args: Parameters<typeof dealing.change>): LobbyError | undefined {
     return phase === 'reading' ? dealing.change(...args) : 'INVALID_PHASE';
   }
-  function playAction(playerId: string, action: 'infect' | 'release' | 'mission' | 'undo', target?: string, completed?: boolean, requestReview?: true): LobbyError | undefined {
+  function playAction(playerId: string, action: 'infect' | 'release' | 'mission' | 'undo', target?: string, completed?: boolean, requestReview?: true, targetIds?: string[]): LobbyError | undefined {
     if (!search || phase === 'reading' || phase === 'lobby' || phase === 'placement') return 'INVALID_PHASE';
     if (lastRoundAborted || results.at(-1)?.roundId === roundId && results.at(-1)?.status === 'final') return 'RESULTS_FINAL';
     if (firstGame && action === 'mission' && !isMissionReportPhase(phase)) return 'RESULTS_FINAL';
     if (firstGame && paused || action !== 'undo' && (paused || action !== 'mission' && phase !== 'search')) return 'INVALID_PHASE';
     if (action === 'infect' && !roundPlan!.infectionEnabled) return 'ACTION_UNAVAILABLE';
-    const intent = action === 'infect' ? { kind: action, targetId: target! } as const : action === 'undo' ? { kind: action, actionId: target!, ...(requestReview ? { requestReview } : {}) } as const : action === 'mission' ? { kind: action, completed: completed! } as const : { kind: action } as const;
+    const intent = action === 'infect' ? { kind: action, targetId: target! } as const : action === 'undo' ? { kind: action, actionId: target!, ...(requestReview ? { requestReview } : {}) } as const : action === 'mission' ? { kind: action, completed: completed! } as const : { kind: action, ...(targetIds ? { targetIds } : {}) } as const;
+    if (targetIds && !firstGame) return 'ACTION_UNAVAILABLE';
     if (requestReview && (!firstGame || action !== 'undo' || !roundSync)) return 'ACTION_UNAVAILABLE';
-    const deferredMission = firstGame && action === 'mission' && phase !== 'search';
-    if (deferredMission && !search.personal(playerId)?.missionEligible) return 'ACTION_UNAVAILABLE';
-    const error = roundSync ? roundSync.legacy(playerId, intent, deferredMission, phase) : action === 'undo' ? search.undo(playerId, target!) : search.act(playerId, action, target, completed);
+    const error = roundSync ? roundSync.legacy(playerId, intent, false, phase) : action === 'undo' ? search.undo(playerId, target!) : search.act(playerId, action, target, completed);
     if (roundSync) search = roundSync.current();
     if (error) return error;
     bump(); updateResult(); finishSearchIfNeeded();
   }
-  function finalize(): LobbyError | undefined {
+  function finalize(noReturn = false): LobbyError | undefined {
     if (!['between_rounds', 'finished'].includes(phase) || !results.length) return 'INVALID_PHASE';
-    if (firstGame && violations.some(item => item.status === 'review')) return 'RITUAL_REVIEW_PENDING';
-    if (roundSync && !roundSync.ready()) return 'SYNC_PENDING';
-    if (trials?.current?.lateVisit === 'review') return 'TRIAL_REVIEW_PENDING';
+    if (noReturn) {
+      roundSync?.close();
+      search = roundSync?.current() ?? search;
+      for (const report of violations) if (report.status === 'review') report.status = 'rejected';
+      if (trials?.current?.lateVisit === 'review') trials.current.lateVisit = 'rejected';
+    } else {
+      if (firstGame && violations.some(item => item.status === 'review')) return 'RITUAL_REVIEW_PENDING';
+      if (roundSync && !roundSync.ready()) return 'SYNC_PENDING';
+      if (trials?.current?.lateVisit === 'review') return 'TRIAL_REVIEW_PENDING';
+    }
     updateResult();
     const last = results.at(-1)!;
     if (ritualActive() && last.status === 'provisional' && last.kind === 'regular') {
-      const fullyPossessed = firstGame && playerNames.size > 0 && [...playerNames.keys()].every(id => {
+      const fullyPossessed = !recallWait?.players.some(id => playerNames.has(id) && !onlinePlayers?.().has(id)) && firstGame && playerNames.size > 0 && [...playerNames.keys()].every(id => {
         const state = physicalStatus(id);
         return state?.expected === 'in_group' && state.confirmed;
       });
-      if (firstGame && !returners().length && !fullyPossessed && last.number < DEFAULT_ROUND_LIMIT &&
+      if (!noReturn && firstGame && !returners().length && !fullyPossessed && last.number < DEFAULT_ROUND_LIMIT &&
         ritual!.snapshot(last).preview!.remainingSteps > 0) return 'PRESENCE_REQUIRED';
       const error = ritual!.commit({ ...last, status: 'final' }); if (error) return error;
       if (firstGame) {
+        unassigned = search!.unassigned().filter(([id]) => playerNames.has(id));
         retained = search!.carry(new Set(playerNames.keys())).map(group => ({ ...group, location: group.location ?? locations.get(group.id)?.confirmed ?? null }));
         waitingFree = [...playerNames.keys()].filter(id => physicalStatus(id)?.expected === 'at_base');
       }
-      if (fullyPossessed) ritual!.stop('all_possessed');
+      if (noReturn) { last.lossReason = 'no_return'; ritual!.stop('no_return'); }
+      else if (fullyPossessed) ritual!.stop('all_possessed');
     }
-    sealResult();
+    clearRecall(); sealResult();
     if (ritualActive() && ritual && ritual.snapshot().outcome !== 'playing') { phase = 'finished'; bump('finish'); } else bump();
   }
   function trialCard() { return roundPlan && trials?.deck[roundPlan.number - 1]; }
@@ -529,6 +597,7 @@ export function createGame({ generateId, randomIndex, clock = defaultClock, onCh
   }
   function closeSync(): LobbyError | undefined {
     if (!roundSync || isTimedPhase(phase) || phase === 'reading') return 'INVALID_PHASE';
+    if (recallWait && !returners().length && (recallWait.deadline > clock.now() || reviewCanReturnPlayer())) return 'PRESENCE_REQUIRED';
     roundSync.close(); bump(); return;
   }
   function withdraw(actor: string): LobbyError | undefined {
@@ -563,15 +632,27 @@ export function createGame({ generateId, randomIndex, clock = defaultClock, onCh
     const play = search?.personal(playerId);
     if (!play) {
       if (waitingFree.includes(playerId))
-        return { playerId, expected: 'at_base' as const, confirmed: presence.get(playerId) === 'at_base' };
+        return { playerId, status: 'exorcist' as const, expected: 'at_base' as const, confirmed: presence.get(playerId) === 'at_base' };
       return undefined;
     }
     const expected: PhysicalStatus = play.status === 'captured' || play.status === 'possessed' ? 'in_group' : 'at_base';
-    return { playerId, expected, confirmed: presence.get(playerId) === expected };
+    return { playerId, expected, status: play.status, unknownGroup: play.unknownGroup,
+      confirmed: presence.get(playerId) === expected };
   }
   function confirmPresence(playerId: string, status: PhysicalStatus) {
-    if (!firstGame || phase !== 'between_rounds' || physicalStatus(playerId)?.expected !== status) return 'ACTION_UNAVAILABLE';
+    if (!firstGame || !['return', 'between_rounds'].includes(phase) || physicalStatus(playerId)?.expected !== status) return 'ACTION_UNAVAILABLE';
     if (presence.get(playerId) !== status) { presence.set(playerId, status); bump(); }
+  }
+  function reconcilePresence(playerId: string, correction: PresenceCorrection, groupMemberId?: string): LobbyError | undefined {
+    if (!firstGame || !roundSync || !(phase === 'return' || phase === 'between_rounds' && results.at(-1)?.status === 'provisional') ||
+      !playerNames.has(playerId)) return 'ACTION_UNAVAILABLE';
+    const releasesUnknownGroup = correction === 'released' && search?.personal(playerId)?.unknownGroup;
+    if (onlinePlayers?.().has(playerId) && correction !== 'assign' && !releasesUnknownGroup) return 'ACTION_UNAVAILABLE';
+    const error = roundSync.legacy(playerId, { kind: 'presence_correction', correction, ...(groupMemberId ? { groupMemberId } : {}) }, false, phase);
+    search = roundSync.current();
+    if (error) return error;
+    presence.set(playerId, correction === 'released' ? 'at_base' : 'in_group');
+    bump(); updateResult();
   }
   function returners() { return [...playerNames.keys()].filter(id => {
     const item = physicalStatus(id);
@@ -613,10 +694,14 @@ export function createGame({ generateId, randomIndex, clock = defaultClock, onCh
     const play = search?.personal(playerId);
     if (!firstGame) return play ?? null;
     if (play) {
-      if (phase === 'search' && !paused && (play.status === 'captured' || play.status === 'possessed')) play.targets = search!.targets();
+      if (play.unknownGroup) play.retained = true;
+      if (phase === 'search' && !paused && !play.unknownGroup && (play.status === 'captured' || play.status === 'possessed')) play.targets = search!.targets();
       if (play.location === null) play.location = locations.get(search!.group(playerId) ?? '')?.confirmed ?? null;
       return play;
     }
+    const unresolved = unassigned.find(([id]) => id === playerId);
+    if (unresolved) return { roundId: '', version, status: 'captured' as const, unknownGroup: true, card: structuredClone(unresolved[1].card),
+      cardKey: unresolved[1].id, wasCaptured: true, missionCompleted: false, missionEligible: false, undo: null, retained: true };
     const group = retained.find(g => g.members.some(([id]) => id === playerId));
     return group ? { roundId: '', version, status: group.origin === playerId ? 'possessed' as const : 'captured' as const,
       card: structuredClone(group.assignment.card), cardKey: group.id, wasCaptured: group.origin !== playerId, missionCompleted: false,
@@ -627,16 +712,18 @@ export function createGame({ generateId, randomIndex, clock = defaultClock, onCh
     return Object.fromEntries(entries.map(([id, a]) => [id, a.card.role]));
   }
   function takeCue() { const result = cue; cue = undefined; return result; }
-  function dispose() { disposed = true; clearTimer(); cue = undefined; }
+  function dispose() { disposed = true; clearTimer(); clearRecall(); cue = undefined; }
   function exportState(): SavedGame {
     updateResult();
     // lastNow/remainingMs are the last healthy clock checkpoint, including clock-gap protection.
-    return structuredClone({ ...(firstGame ? { firstGame: { locked, retained, presence: [...presence], waitingFree, story: selectedStory, trials, violations, locations: [...locations] } } : {}), ritual: ritual?.exportState() ?? null, freeplayFrom, venue, playerNames: [...playerNames], roundSync: roundSync?.exportState() ?? null, tutorialCompleted, progressionRounds, roundPlan, dealing: dealing.exportState(), settings, phase, waitingPhase, version, roundId, completedRounds, started,
+    return structuredClone({ ...(firstGame ? { firstGame: { locked, retained, presence: [...presence], waitingFree, story: selectedStory, trials, violations, locations: [...locations],
+      ...(unassigned.length ? { unassigned } : {}), ...(recallWait ? { recallWait: { players: recallWait.players, remainingMs: Math.max(0, recallWait.deadline - clock.now()) } } : {}) } } : {}), ritual: ritual?.exportState() ?? null, freeplayFrom, venue, playerNames: [...playerNames], roundSync: roundSync?.exportState() ?? null, tutorialCompleted, progressionRounds, roundPlan, dealing: dealing.exportState(), settings, phase, waitingPhase, version, roundId, completedRounds, started,
       paused, pauseReason, remainingMs, activePlayerIds, rosterChanged, lastRoundAborted, history: [...history], originalPossessed,
       search: search?.exportState() ?? null, results, activeMs: activeMs + (runStarted === null ? 0 : Math.max(0, lastNow - runStarted)) });
   }
   function restore(state: SavedGame, reason: PauseReason = 'server_restarted', bumpVersion = true) {
-    clearTimer(); cue = undefined;
+    clearTimer(); clearRecall(); cue = undefined;
+    unassigned = structuredClone(state.firstGame?.unassigned ?? []);
     locked = state.firstGame?.locked ?? false; retained = structuredClone(state.firstGame?.retained ?? []);
     waitingFree = [...(state.firstGame?.waitingFree ?? [])]; selectedStory = structuredClone(state.firstGame?.story);
     trials = structuredClone(state.firstGame?.trials);
@@ -656,19 +743,24 @@ export function createGame({ generateId, randomIndex, clock = defaultClock, onCh
     }
     roundSync = state.roundSync ? createRoundSync(state.roundSync, generateId) : undefined;
     tutorialCompleted = state.tutorialCompleted; progressionRounds = state.progressionRounds; roundPlan = structuredClone(state.roundPlan);
-    dealing.restore(state.dealing, bumpVersion); settings = { ...state.settings }; phase = state.phase; waitingPhase = state.waitingPhase;
+    dealing.restore(state.dealing, bumpVersion); settings = { ...state.settings, ...(firstGame ? { offlineWaitSeconds: state.settings.offlineWaitSeconds ?? 90 } : {}) }; phase = state.phase; waitingPhase = state.waitingPhase;
     version = state.version + Number(bumpVersion); roundId = state.roundId; completedRounds = state.completedRounds; started = state.started;
     paused = timed() ? true : state.paused; pauseReason = timed() ? reason : state.pauseReason;
     remainingMs = state.remainingMs; deadline = null; activePlayerIds = [...state.activePlayerIds]; rosterChanged = state.rosterChanged;
     lastRoundAborted = state.lastRoundAborted; history.clear(); for (const [id, count] of state.history) history.set(id, count);
     originalPossessed = [...state.originalPossessed]; results.splice(0, results.length, ...structuredClone(state.results));
     activeMs = state.activeMs; runStarted = null; lastNow = clock.now(); lastWall = clock.wallNow();
-    search = state.search ? createSearch(state.search.roundId, new Map(state.search.roster), generateId, state.search.retained) : undefined;
+    search = state.search ? createSearch(state.search.roundId, new Map(state.search.roster), generateId, state.search.retained, state.search.unassigned) : undefined;
     if (state.search) search!.restore(state.search, bumpVersion);
     if (roundSync) search = roundSync.current();
     else if (search && !search.exportState().finalized) ensureSync();
+    const wait = state.firstGame?.recallWait;
+    if (wait) {
+      recallWait = { players: [...wait.players], deadline: clock.now() + wait.remainingMs };
+      scheduleRecall();
+    }
   }
   return { publicState, dealingState: dealing.publicState, personal: dealing.personal, configure, deal, cancelDeal,
-    initializeStory, configureVenue, confirmPresence, setLocation, missingLocations, locationProposal, physicalStatus, roles, syncEvents, completeSync, resolveSync, reviewPreview, closeSync, withdraw, personalSync: (id: string) => roundSync?.personal(id) ?? null, review: () => (roundSync?.review() ?? []).map(entry => ({ ...entry, actorName: playerNames.get(entry.actor), targetName: playerNames.get('targetId' in entry.action ? entry.action.targetId : 'by' in entry.action ? entry.action.by : '') })),
+    initializeStory, configureVenue, confirmPresence, reconcilePresence, reconcileRecall, setLocation, missingLocations, locationProposal, physicalStatus, roles, syncEvents, completeSync, resolveSync, reviewPreview, closeSync, withdraw, personalSync: (id: string) => roundSync?.personal(id) ?? null, review: () => (roundSync?.review() ?? []).map(entry => ({ ...entry, actorName: playerNames.get(entry.actor), targetName: playerNames.get('targetId' in entry.action ? entry.action.targetId : 'by' in entry.action ? entry.action.by : '') })),
     trialFor, trialStatus, reportTrial, reviewTrial, canReportViolation, reportViolation, reviewViolation, violations: () => structuredClone(violations), ritualAction, freeplay, start, pause, resume, beginReturn, abort, finishParty, extend, add, remove, change, synchronize, takeCue, dispose, playAction, personalPlay, finalize, exportState, restore };
 }

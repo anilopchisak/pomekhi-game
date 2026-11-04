@@ -34,7 +34,6 @@ export function PersonalCardPanel({ assignment, disabled, readOnly = false, infe
       <h4>Задание скрыто</h4>
     </div>}
     {open && <div>
-      {!firstGame && <h3>{card.role === 'possessed' ? 'Вы — одержимый' : 'Вы — экзорцист'}</h3>}
       <h4>{card.title}</h4>
       {card.setup && <p><strong>Условия места и подготовки:</strong> {card.setup}</p>}
       {!firstGame && <p>Сложность карточки: {card.difficulty}</p>}
@@ -67,9 +66,10 @@ export function PersonalCardPanel({ assignment, disabled, readOnly = false, infe
   </section>;
 }
 
-export function PersonalCardActions({ assignment, open, disabled, readOnly, toggle, act }: {
+export function PersonalCardActions({ assignment, open, disabled, readOnly, toggle, act, roleControlsRef }: {
   assignment: Assignment; open: boolean; disabled: boolean; readOnly: boolean;
   toggle: () => void; act: CardAction;
+  roleControlsRef: (element: HTMLDivElement | null) => void;
 }) {
   return <footer className={styles.cardActions} aria-label="Действия с карточкой">
     <button type="button" data-secondary aria-expanded={open} onClick={toggle}>{open ? 'Скрыть карточку' : 'Открыть карточку'}</button>
@@ -85,5 +85,6 @@ export function PersonalCardActions({ assignment, open, disabled, readOnly, togg
         {assignment.replacementRequested ? 'Отменить замену' : 'Заменить карточку'}
       </button>
     </div>}
+    <div ref={roleControlsRef} className={styles.roleActionsSlot} />
   </footer>;
 }

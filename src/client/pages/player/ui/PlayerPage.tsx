@@ -2,7 +2,7 @@ import styles from './PlayerScene.module.css';
 import { PhoneSound } from './PhoneSound.js';
 import { useCallback, useEffect, useRef, useState } from 'react';
 import { dealCommand, gameCommand, describeError, useLobbyConnection } from '../../../shared/api/index.js';
-import { PhaseSignals, HowToPlay, ConfirmButton, DialogButton, LobbyShell, ResultsSummary, RitualBoard, RoundStatus, RoundTimer } from '../../../shared/ui/index.js';
+import { FullscreenButton, PhaseSignals, HowToPlay, ConfirmButton, DialogButton, LobbyShell, ResultsSummary, RitualBoard, RoundStatus, RoundTimer } from '../../../shared/ui/index.js';
 import { clearPlayerSession, createResumeKey, readPlayerSession, savePlayerSession } from '../session.js';
 import type { PlayerSession } from '../session.js';
 import { PersonalCardActions, PersonalCardPanel } from './PersonalCardPanel.js';
@@ -30,6 +30,7 @@ export function PlayerPage() {
   const [pending, setPending] = useState<{ command: LobbyCommand; input: LobbyInputs[LobbyCommand] } | null>(null);
   const [authorizedGeneration, setAuthorizedGeneration] = useState(0);
   const liveConnection = connection === 'online' && authorizedGeneration !== generation ? 'connecting' : connection;
+  const [roleControlsTarget, setRoleControlsTarget] = useState<HTMLDivElement | null>(null);
   const [revealedCard, setRevealedCard] = useState<string | null>(null);
   const [shellReady, setShellReady] = useState(false);
   useEffect(() => {
@@ -77,7 +78,7 @@ export function PlayerPage() {
     setError({ closed: 'Комната закрыта. Для новой встречи потребуется новое приглашение.', removed: 'Организатор удалил ваш вход. При необходимости войдите заново.', left: 'Вы вышли из комнаты.' }[ended]);
   }, [ended, offline.clear]);
 
-  async function cardAction<C extends LobbyCommand>(command: C, input: LobbyInputs[C]) {
+  async function cardAction<C extends LobbyCommand>(command: C, input: LobbyInputs[C], onSuccess?: () => void) {
     const attempt = ++operation.current;
     setBusy(true); setError('');
     setFormError(undefined);
@@ -92,7 +93,7 @@ export function PlayerPage() {
         setFormError({ command, roomId, roundId, message });
       } else setError(describeError(result.error));
       setPending(result.error === 'TIMEOUT' || result.error === 'CONNECTION_LOST' ? { command, input } : null);
-    } else setPending(null);
+    } else { setPending(null); onSuccess?.(); }
   }
 
   async function join() {
@@ -110,7 +111,7 @@ export function PlayerPage() {
   }
 
   const firstGame = playerView?.room.game.firstGame;
-  const sound = playerView && (firstGame ? <PhaseSignals key={playerView.room.id} cue={cue} enabled={Boolean(playerView.audioEnabled)} previewOnEnable signalVolume={0.65}
+  const sound = playerView && (firstGame ? <PhaseSignals key={playerView.room.id} cue={cue} enabled={Boolean(playerView.audioEnabled)} previewOnEnable allowVibration signalVolume={0.65}
       online={liveConnection === 'online' && playerView.persistence?.state !== 'write_error'} clockOffset={clockOffset}
       claim={async enabled => (await request('player:audio', { roomId: playerView.room.id, enabled })).ok} /> : <PhoneSound key={playerView.room.id} view={playerView} scare={scare} online={connection === 'online' && authorizedGeneration === generation} clockOffset={clockOffset} claim={async enabled => {
       const result = await request('player:audio', { roomId: playerView.room.id, enabled });
@@ -129,26 +130,6 @@ export function PlayerPage() {
       {pending?.command === command && <button type="button" disabled={busy || liveConnection !== 'online'} onClick={() => void cardAction(pending.command, pending.input)}>Повторить действие</button>}
     </>;
   }
-  const actions = playerView && <>    {playerView.room.game.firstGame && playerView.room.game.phase === 'placement' && !playerView.room.game.paused && playerView.play?.status === 'possessed' && !playerView.play.retained &&
-      <section><label>Ваша локация<select value={playerView.play.location ?? ''} disabled={busy || liveConnection !== 'online'} onChange={event => {
-        if (event.target.value) void cardAction('play:location', { ...gameCommand(playerView.room), zone: event.target.value });
-      }}><option value="">Выберите место</option>{playerView.room.game.venue.zones.map(zone => <option key={zone}>{zone}</option>)}</select></label></section>}
-    {playerView.room.game.firstGame && ['return', 'between_rounds'].includes(playerView.room.game.phase) &&
-      !playerView.room.game.results.some(row => row.roundId === playerView.room.game.roundId && row.status === 'final') &&
-      playerView.play && ['possessed', 'captured'].includes(playerView.play.status) && !playerView.play.location &&
-      <label>Сообщить пропущенную локацию
-        <select value={playerView.locationProposal ?? ''} disabled={busy || liveConnection !== 'online'} onChange={event => {
-          if (event.target.value) void cardAction('play:location', { ...gameCommand(playerView.room), zone: event.target.value });
-        }}><option value="">Выберите место</option>{playerView.room.game.venue.zones.map(zone => <option key={zone}>{zone}</option>)}</select>
-        {playerView.locationProposal && <small>Ждёт подтверждения на ноутбуке.</small>}
-      </label>}
-    {playerView.room.game.firstGame && playerView.room.game.phase === 'between_rounds' && playerView.presence && !playerView.presence.confirmed &&
-      <button disabled={busy || liveConnection !== 'online'} onClick={() => void cardAction('play:presence', { ...gameCommand(playerView.room), status: playerView.presence!.expected })}>
-        {playerView.presence.expected === 'at_base' ? 'Я на базе' : 'Я в локации с группой'}
-      </button>}
-    {playerView.play && (!playerView.room.game.firstGame || ['search', 'return', 'between_rounds'].includes(playerView.room.game.phase)) && !playerView.synchronization?.withdrawn && <PlayControls view={playerView} disabled={offlineDisabled} run={cardAction} queue={offline.available ? offline.queue : undefined} online={liveConnection === 'online'} estimatedSearchEnded={offline.estimatedSearchEnded} />}
-    {!playerView.room.game.firstGame && ['placement', 'search', 'return'].includes(playerView.room.game.phase) && playerView.room.game.activePlayerIds.includes(playerView.playerId) && !playerView.synchronization?.withdrawn && <button data-danger disabled={offlineDisabled} onClick={() => { if (window.confirm('Пропустить текущий раунд и вернуться на базу? Остальные продолжают игру, место в комнате сохранится.')) { if (offline.available) void offline.queue({ kind: 'withdraw' }); else if (playerView.play) void cardAction('play:withdraw', { ...dealCommand(playerView.room), roomId: playerView.room.id, requestId: dealCommand(playerView.room).requestId, gameVersion: playerView.room.game.version, roundId: playerView.room.game.roundId, playVersion: playerView.play.version }); } }}>Пропустить этот раунд</button>}
-</>;
   const violationCards = playerView?.room.game.ritual?.cards.filter(card => card.revealed && card.slot !== 'C') ?? [];
   const violationControl = playerView && playerView.room.game.firstGame && (violationCards.length > 0 || Boolean(playerView.violations?.length)) &&
     <DialogButton title="Доклады о прорицаниях" content={<>
@@ -166,7 +147,7 @@ export function PlayerPage() {
       <ul>{playerView.violations?.map(report => <li key={report.id}>{report.details} · {{ review: 'Ждёт сверки', applied: 'Штраф применён', rejected: 'Отклонено', dismissed: 'Закрыто без движения', reversed: 'Штраф отменён' }[report.status]}</li>)}</ul>
     </>}>Доклады о прорицаниях</DialogButton>;
   const trial = playerView?.trial;
-  const trialControl = trial && playerView && <DialogButton key={playerView.room.game.roundId} title={trial.title} content={<>
+  const trialContent = trial && playerView && <>
     <p>{trial.instruction}</p>
     {trial.message && <p role="status">{trial.message}</p>}
     {trial.submitted && <p>Ответ сохранён. Другие игроки его не видят.</p>}
@@ -197,12 +178,39 @@ export function PlayerPage() {
       <button disabled={busy || liveConnection !== 'online'}>Сохранить свидетельство</button>
     </form>}
     {privateFeedback('play:trial')}
-  </>}>{trial.reporter === 'actor' ? 'Личное поручение Мастера' : 'Дать свидетельство'}</DialogButton>;
+  </>;
+  const trialControl = trial && playerView && (!firstGame || trial.reporter === 'witness') &&
+    <DialogButton key={playerView.room.game.roundId} title={trial.title} content={trialContent}>
+      {trial.reporter === 'actor' ? 'Личное поручение Мастера' : 'Дать свидетельство'}
+    </DialogButton>;
+  const actorTrial = firstGame && trial?.reporter === 'actor' && <section aria-label="Личное поручение Мастера">
+    <h3>{trial.title}</h3>
+    {trialContent}
+  </section>;
+  const actions = playerView && <>    {playerView.room.game.firstGame && playerView.room.game.phase === 'placement' && !playerView.room.game.paused && playerView.play?.status === 'possessed' && !playerView.play.retained &&
+      <section><label>Ваша локация<select value={playerView.play.location ?? ''} disabled={busy || liveConnection !== 'online'} onChange={event => {
+        if (event.target.value) void cardAction('play:location', { ...gameCommand(playerView.room), zone: event.target.value });
+      }}><option value="">Выберите место</option>{playerView.room.game.venue.zones.map(zone => <option key={zone}>{zone}</option>)}</select></label></section>}
+    {playerView.room.game.firstGame && ['return', 'between_rounds'].includes(playerView.room.game.phase) &&
+      !playerView.room.game.results.some(row => row.roundId === playerView.room.game.roundId && row.status === 'final') &&
+      playerView.play && ['possessed', 'captured'].includes(playerView.play.status) && !playerView.play.unknownGroup && !playerView.play.location &&
+      <label>Сообщить пропущенную локацию
+        <select value={playerView.locationProposal ?? ''} disabled={busy || liveConnection !== 'online'} onChange={event => {
+          if (event.target.value) void cardAction('play:location', { ...gameCommand(playerView.room), zone: event.target.value });
+        }}><option value="">Выберите место</option>{playerView.room.game.venue.zones.map(zone => <option key={zone}>{zone}</option>)}</select>
+        {playerView.locationProposal && <small>Ждёт подтверждения на ноутбуке.</small>}
+      </label>}
+    {playerView.play && (!playerView.room.game.firstGame || ['search', 'return', 'between_rounds'].includes(playerView.room.game.phase)) && !playerView.synchronization?.withdrawn && <PlayControls key={playerView.play.roundId} view={playerView} actorTrial={actorTrial} roleControlsTarget={roleControlsTarget} pendingReports={offline.pending > 0}
+      feedback={<>{error && <p role="alert">{error}</p>}{offline.error && <p role="alert">{offline.error}</p>}
+        {pending && !isPrivateForm(pending.command) && <button type="button" disabled={busy || liveConnection !== 'online'}
+          onClick={() => void cardAction(pending.command, pending.input)}>Повторить действие</button>}</>} disabled={offlineDisabled} run={cardAction} queue={offline.available ? offline.queue : undefined} online={liveConnection === 'online'} estimatedSearchEnded={offline.estimatedSearchEnded} />}
+    {!playerView.room.game.firstGame && ['placement', 'search', 'return'].includes(playerView.room.game.phase) && playerView.room.game.activePlayerIds.includes(playerView.playerId) && !playerView.synchronization?.withdrawn && <button data-danger disabled={offlineDisabled} onClick={() => { if (window.confirm('Пропустить текущий раунд и вернуться на базу? Остальные продолжают игру, место в комнате сохранится.')) { if (liveConnection !== 'online' && offline.available) void offline.queue({ kind: 'withdraw' }); else if (playerView.play) void cardAction('play:withdraw', { ...dealCommand(playerView.room), roomId: playerView.room.id, requestId: dealCommand(playerView.room).requestId, gameVersion: playerView.room.game.version, roundId: playerView.room.game.roundId, playVersion: playerView.play.version }); } }}>Пропустить этот раунд</button>}
+</>;
   const assignment = playerView?.play
     ? { ready: false, replacementRequested: false, id: playerView.play.cardKey, card: playerView.play.card }
     : playerView?.assignment;
   const cardId = assignment?.id;
-  const cardVisible = assignment && !offline.pendingCapture;
+  const cardVisible = assignment && !offline.pendingCapture && !playerView?.play?.unknownGroup;
   const cardReadOnly = playerView?.room.game.phase !== 'reading' || !playerView.assignment;
   const cardActionsDisabled = busy || liveConnection !== 'online';
   const cardLayout = Boolean(firstGame && cardVisible && playerView?.room.game.phase !== 'finished');
@@ -252,7 +260,7 @@ export function PlayerPage() {
       {playerName && <> · {playerName}</>}
     </span>
     <nav className={styles.toolbar} aria-label="Комната и справка">
-      <DialogButton data-secondary title="Звук и связь" aria-label="Настройки" keepMounted content={<>{sound}{sync}</>}>
+      <DialogButton data-secondary title="Звук и связь" aria-label="Настройки" keepMounted content={<>{sound}<FullscreenButton />{sync}</>}>
         <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.7" strokeLinejoin="round" aria-hidden="true">
           <path d="M10 3h4l.6 2.4 1.7 1 2.4-.7 2 3.5-1.8 1.7v2.2l1.8 1.7-2 3.5-2.4-.7-1.7 1L14 21h-4l-.6-2.4-1.7-1-2.4.7-2-3.5 1.8-1.7v-2.2L3.3 9.2l2-3.5 2.4.7 1.7-1L10 3Z" />
           <circle cx="12" cy="12" r="3" />
@@ -296,9 +304,9 @@ export function PlayerPage() {
     </form> : <>
     {firstGame ? <div className={styles.scene} data-card-layout={cardLayout} data-phase={playerView.room.game.phase}>
       <RoundStatus game={playerView.room.game} clockOffset={offline.clockOffset} connection={liveConnection} estimatedSearchEnded={offline.estimatedSearchEnded}
-      role={playerView.play?.card.role ?? playerView.assignment?.card.role} playStatus={playerView.play?.status} retained={playerView.play?.retained} waiting={!playerView.assignment && !playerView.play || playerView.synchronization?.withdrawn} showRitual={!playerView.room.game.firstGame} compact timerInHeader cardHidden={cardId ? revealedCard !== cardId : undefined}
+      role={playerView.play?.card.role ?? playerView.assignment?.card.role} playStatus={playerView.play?.status} unknownGroup={playerView.play?.unknownGroup} retained={playerView.play?.retained} waiting={!playerView.assignment && !playerView.play || playerView.synchronization?.withdrawn} showRitual={!playerView.room.game.firstGame} compact timerInHeader cardHidden={cardId ? revealedCard !== cardId : undefined}
       metadata={<div className={styles.phaseMeta}>
-        {playerRole && playerView.room.game.phase !== 'finished' && <span className={styles.role}>{playerRole === 'possessed' ? 'Одержимый' : 'Экзорцист'}</span>}
+        {playerRole && !playerView.play?.unknownGroup && playerView.room.game.phase !== 'finished' && <span className={styles.role}>{playerRole === 'possessed' ? 'Одержимый' : 'Экзорцист'}</span>}
         <RoundTimer game={playerView.room.game} clockOffset={offline.clockOffset} connection={liveConnection} />
       </div>}>
         {playerView.room.game.phase !== 'finished' && card}
@@ -311,12 +319,12 @@ export function PlayerPage() {
           <details><summary>История партии</summary><ResultsSummary results={playerView.room.game.results} firstGame /></details>
         </>}
       </RoundStatus>
-      {cardLayout && assignment && <PersonalCardActions assignment={assignment} open={revealedCard === assignment.id}
+      {cardLayout && assignment && <PersonalCardActions roleControlsRef={setRoleControlsTarget} assignment={assignment} open={revealedCard === assignment.id}
         disabled={cardActionsDisabled} readOnly={cardReadOnly} act={actOnCard}
         toggle={() => setRevealedCard(revealedCard === assignment.id ? null : assignment.id)} />}
     </div> : <>
       <RoundStatus game={playerView.room.game} clockOffset={offline.clockOffset} connection={connection === 'online' && authorizedGeneration !== generation ? 'connecting' : connection}
-      role={playerView.play?.card.role ?? playerView.assignment?.card.role} playStatus={playerView.play?.status} retained={playerView.play?.retained} waiting={!playerView.assignment && !playerView.play || playerView.synchronization?.withdrawn} showRitual={!playerView.room.game.firstGame} compact={firstGame} />
+      role={playerView.play?.card.role ?? playerView.assignment?.card.role} playStatus={playerView.play?.status} unknownGroup={playerView.play?.unknownGroup} retained={playerView.play?.retained} waiting={!playerView.assignment && !playerView.play || playerView.synchronization?.withdrawn} showRitual={!playerView.room.game.firstGame} compact={firstGame} />
       {actions}
         {trialControl}{card}{roster}
     </>}
