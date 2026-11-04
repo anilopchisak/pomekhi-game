@@ -20,8 +20,8 @@ export function RoundTimer({ game, clockOffset, connection }: {
 
 const endings = { won: 'Победа · дом освобождён', lost: 'Поражение после 7-го раунда', all_possessed: 'Поражение · все одержимы', stopped: 'Партия остановлена', playing: labels.finished };
 
-export function RoundStatus({ game, clockOffset, connection, role, playStatus, waiting = false, retained = false, showRitual = true, compact = false, timerInHeader = false, cardHidden, cardReady, metadata, estimatedSearchEnded = false, children }: {
-  game: GameSnapshot; clockOffset: number | null; connection: ConnectionState; role?: Role; playStatus?: 'exorcist' | 'possessed' | 'captured' | 'released'; waiting?: boolean; retained?: boolean; showRitual?: boolean; compact?: boolean; timerInHeader?: boolean; cardHidden?: boolean; cardReady?: boolean; metadata?: ReactNode; estimatedSearchEnded?: boolean; children?: ReactNode;
+export function RoundStatus({ game, clockOffset, connection, role, playStatus, waiting = false, retained = false, showRitual = true, compact = false, timerInHeader = false, cardHidden, metadata, estimatedSearchEnded = false, children }: {
+  game: GameSnapshot; clockOffset: number | null; connection: ConnectionState; role?: Role; playStatus?: 'exorcist' | 'possessed' | 'captured' | 'released'; waiting?: boolean; retained?: boolean; showRitual?: boolean; compact?: boolean; timerInHeader?: boolean; cardHidden?: boolean; metadata?: ReactNode; estimatedSearchEnded?: boolean; children?: ReactNode;
 }) {
   const clock = useRoundClock(game, timerInHeader ? null : clockOffset);
   const remaining = game.firstGame && connection !== 'online' ? null : clock;
@@ -43,9 +43,7 @@ export function RoundStatus({ game, clockOffset, connection, role, playStatus, w
   if (game.firstGame) {
     const inGroup = playStatus === 'captured' || playStatus === 'possessed';
     const isPhone = !!(role || playStatus || waiting);
-    if (game.phase === 'reading' && cardHidden === true) instruction = cardReady
-      ? 'Готовность подтверждена. Дождитесь начала раунда.'
-      : 'Откройте карточку и прочитайте задание. Готовность ещё не подтверждена.';
+    if (game.phase === 'reading' && cardHidden !== undefined) instruction = '';
     if (game.phase === 'reading' && retained) instruction = 'Оставайтесь на месте. У вас та же карточка и группа.';
     if (game.phase === 'placement') instruction = retained ? 'Оставайтесь с группой на прежнем месте.'
       : role === 'possessed' ? 'Займите место в разрешённой локации и погасите свет.'
@@ -63,8 +61,6 @@ export function RoundStatus({ game, clockOffset, connection, role, playStatus, w
   if (game.paused) instruction = 'Прекратите действия и ждите в безопасном месте. Продолжение объявит ноутбук.';
   let title = labels[game.phase];
   if (game.firstGame) {
-    if (game.phase === 'reading' && cardHidden !== undefined)
-      title = cardHidden ? 'Чтение · карточка скрыта' : 'Чтение · личная карточка';
     if (game.phase === 'placement' && cardHidden !== undefined)
       title = cardHidden ? 'Расстановка · карточка скрыта' : 'Расстановка · карточка открыта';
     if (game.phase === 'search') title = compact ? 'Изгнание' : 'Дом слушает';
@@ -90,7 +86,7 @@ export function RoundStatus({ game, clockOffset, connection, role, playStatus, w
       {remaining === 0 && !game.paused && <p>{connection !== 'online' && game.phase === 'search' ? 'Расчётное время поиска истекло. Вернитесь на базу и сверьтесь с общим экраном.' : 'Ожидаем подтверждения следующей фазы от сервера…'}</p>}
     </>}
     {game.paused && <p>{game.pauseReason && reasons[game.pauseReason]} Время сохранено.</p>}
-    <p>{instruction}</p>
+    {instruction && <p>{instruction}</p>}
     {connection !== 'online' && !(game.firstGame && compact && timerInHeader && (role || playStatus || waiting)) &&
       <p role="alert">Нет связи. Фаза и таймер не подтверждены. Сверьтесь с общим экраном.</p>}
     {showRitual && <RitualBoard game={game} online={connection === 'online'} />}

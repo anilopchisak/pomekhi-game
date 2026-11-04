@@ -6,7 +6,7 @@
 .toolbar { display: grid; grid-template-columns: 48px minmax(0, 1fr) 48px; width: 100%; gap: 8px; margin-top: 4px; }
 .toolbar > button { margin: 0; min-width: 0; padding-inline: 6px; }
 .toolbar svg { display: block; width: 22px; height: 22px; margin: auto; }
-.connection { margin-inline: auto 40px; }
+.connection { min-width: 0; margin-inline-start: auto; text-align: end; }
 main:has(> header > .toolbar) { padding: 16px; }
 main > header:has(> .toolbar) { margin-bottom: 12px; }
 main > header:has(> .toolbar) h1 { font-size: 14px; line-height: 24px; }
@@ -15,22 +15,49 @@ main > header:has(> .toolbar) h1 { font-size: 14px; line-height: 24px; }
 .phaseMeta output { margin-inline-start: auto; border: 1px solid var(--border); border-radius: 8px; padding: 3px 8px; font-size: 18px; }
 .role { padding: 6px 4px; border-radius: 8px; background: var(--surface); color: var(--accent); font-size: 14px; line-height: 16px; text-transform: uppercase; }
 .cardBody { border: 1px solid var(--border); border-radius: 12px; background: var(--panel); padding: 20px; }
-.cardBody[data-hidden=true] { display: grid; align-items: center; min-block-size: 12rem; padding: 24px; }
-.scene[data-phase=reading] .cardBody[data-hidden=true] { min-block-size: max(200px, calc(100dvh - 386px)); }
-.scene[data-phase=placement] .cardBody { min-block-size: max(200px, calc(100dvh - 368px)); }
+.cardBody[data-hidden=true] {
+  display: grid;
+  place-items: center;
+  padding: 12px;
+  background: radial-gradient(ellipse at center, var(--surface), var(--panel) 72%);
+}
 .cardBody h4 { margin: 0 0 12px; font-size: 22px; font-weight: 500; }
-.cardBody[data-hidden=true] h4 { color: var(--accent); }
-.cardBody[data-hidden=true] p { color: var(--muted); }
+.cardBack { display: grid; justify-items: center; gap: 8px; color: var(--gold); text-align: center; }
+.cardBack[data-card-role=possessed] { color: #b44652; }
+.cardBack svg { display: block; height: clamp(44px, 14dvh, 104px); width: auto; }
+.cardBack h4 { margin: 0; color: var(--muted); font-size: 16px; }
 .cardBody p { margin: 0; }
 .cardBody p + p { margin-top: 16px; }
 .cardBody strong { display: block; }
-.scene .fullAction { width: 100%; margin: 12px 0 0; }
-.privacy { display: block; margin-top: 12px; font-size: 14px; }
-.closedReadingTools { margin-top: 16px; }
 .journal { font-size: 14px; color: var(--muted); }
 .offline { display: flex; align-items: center; gap: 8px; margin-block: 8px; color: var(--danger); font-size: 14px; }
 .offline button { flex: 0 0 auto; max-width: 50%; margin: 0; padding-inline: 6px; font-size: 14px; }
-.scene .personal > p[role=status] { margin: 8px 0; font-size: 14px; }
-@media (min-width: 375px) {
-  .scene[data-phase=reading] .cardBody[data-hidden=true] { min-block-size: max(200px, calc(100dvh - 362px)); }
+main:has(> .scene[data-card-layout=true]) {
+  display: flex;
+  flex-direction: column;
+  height: 100dvh;
+  padding-block-end: max(16px, env(safe-area-inset-bottom));
 }
+main:has(> .scene[data-card-layout=true]) > :not(.scene) { flex: none; }
+.scene[data-card-layout=true] { display: flex; flex-direction: column; flex: 1; min-height: 0; }
+.scene[data-card-layout=true] > section {
+  display: flex;
+  flex-direction: column;
+  flex: 1;
+  min-height: 0;
+  overflow: auto;
+}
+.scene[data-card-layout=true] > section > :not(.personal) { flex: none; }
+.scene[data-card-layout=true] .personal { display: flex; flex-direction: column; flex: 1; min-height: 7rem; }
+.cardBody { flex: 1; min-height: 0; overflow: auto; }
+.cardBody:focus-visible { outline: 2px solid var(--accent); outline-offset: -2px; }
+.cardActions {
+  display: grid;
+  gap: 8px;
+  flex: none;
+  padding-top: 12px;
+  background: var(--background);
+}
+.readingActions { display: grid; grid-template-columns: repeat(2, minmax(0, 1fr)); gap: 8px; }
+.cardActions button { width: 100%; margin: 0; padding-inline: 8px; }
+.cardActions p { margin: 0; color: var(--muted); font-size: 14px; }

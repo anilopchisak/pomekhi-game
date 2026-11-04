@@ -5,7 +5,7 @@ import { dealCommand, gameCommand, describeError, useLobbyConnection } from '../
 import { PhaseSignals, HowToPlay, ConfirmButton, DialogButton, LobbyShell, ResultsSummary, RitualBoard, RoundStatus, RoundTimer } from '../../../shared/ui/index.js';
 import { clearPlayerSession, createResumeKey, readPlayerSession, savePlayerSession } from '../session.js';
 import type { PlayerSession } from '../session.js';
-import { PersonalCardPanel } from './PersonalCardPanel.js';
+import { PersonalCardActions, PersonalCardPanel } from './PersonalCardPanel.js';
 import { purgeOffline } from '../model/offline-store.js';
 import { useOfflinePlayer } from '../model/useOfflinePlayer.js';
 import { PlayControls } from './PlayControls.js';
@@ -198,13 +198,26 @@ export function PlayerPage() {
     </form>}
     {privateFeedback('play:trial')}
   </>}>{trial.reporter === 'actor' ? 'Личное поручение Мастера' : 'Дать свидетельство'}</DialogButton>;
-  const cardId = playerView?.play?.cardKey ?? playerView?.assignment?.id;
-  const card = playerView && <>    {offline.pendingCapture && <p>Вы отметили заражение. Прочитайте задание на телефоне заразившего вас участника. Новая карточка появится после согласования с сервером.</p>}
-    {(playerView.assignment || playerView.play) && !offline.pendingCapture && <PersonalCardPanel disclosure={firstGame ? { revealedCard, setRevealedCard } : undefined} firstGame={playerView.room.game.firstGame} tutorial={playerView.room.game.roundPlan.kind === 'tutorial'} infectionEnabled={playerView.room.game.roundPlan.infectionEnabled} assignment={playerView.play ? { ready: false, replacementRequested: false, id: playerView.play.cardKey, card: playerView.play.card } : playerView.assignment!} disabled={busy || liveConnection !== 'online'} readOnly={playerView.room.game.phase !== 'reading' || !playerView.assignment} act={async (action, flag) => {
-      const base = { ...dealCommand(playerView.room), assignmentId: playerView.assignment!.id };
-      await cardAction(action, action === 'card:ready' ? { ...base, ready: flag } : { ...base, requested: flag });
-    }} />}
-</>;
+  const assignment = playerView?.play
+    ? { ready: false, replacementRequested: false, id: playerView.play.cardKey, card: playerView.play.card }
+    : playerView?.assignment;
+  const cardId = assignment?.id;
+  const cardVisible = assignment && !offline.pendingCapture;
+  const cardReadOnly = playerView?.room.game.phase !== 'reading' || !playerView.assignment;
+  const cardActionsDisabled = busy || liveConnection !== 'online';
+  const cardLayout = Boolean(firstGame && cardVisible && playerView?.room.game.phase !== 'finished');
+  async function actOnCard(action: 'card:ready' | 'card:request', flag: boolean) {
+    if (!playerView?.assignment) return;
+    const base = { ...dealCommand(playerView.room), assignmentId: playerView.assignment.id };
+    await cardAction(action, action === 'card:ready' ? { ...base, ready: flag } : { ...base, requested: flag });
+  }
+  const card = playerView && <>
+    {offline.pendingCapture && <p>Вы отметили заражение. Прочитайте задание на телефоне заразившего вас участника. Новая карточка появится после согласования с сервером.</p>}
+    {cardVisible && <PersonalCardPanel disclosure={firstGame ? { revealedCard, setRevealedCard } : undefined}
+      firstGame={firstGame} tutorial={playerView.room.game.roundPlan.kind === 'tutorial'}
+      infectionEnabled={playerView.room.game.roundPlan.infectionEnabled} assignment={assignment}
+      disabled={cardActionsDisabled} readOnly={cardReadOnly} act={actOnCard} />}
+  </>;
   const roster = playerView && (<section>
       <h3>{playerView.room.players.find(player => player.id === playerView.playerId)?.name}, оставайтесь на связи</h3>
       <p>Комната <code>{playerView.room.code}</code></p>
@@ -232,9 +245,11 @@ export function PlayerPage() {
     (accepted > 0 || offline.pending > 0 || offline.conflicts > 0 || offline.rejected.length > 0) &&
     <p className={styles.journal} role="status">Ждут отправки: {offline.pending} · Принято: {accepted} · На сверке: {offline.conflicts} · Отклонено: {offline.rejected.length}</p>;
   const playerRole = playerView?.play?.card.role ?? playerView?.assignment?.card.role;
+  const playerName = playerView?.room.players.find(player => player.id === playerView.playerId)?.name;
   const toolbar = firstGame && playerView ? <>
     <span className={styles.connection} role="status" data-connection={liveConnection}>
       {liveConnection === 'online' ? 'На связи' : liveConnection === 'offline' ? 'Нет связи' : 'Подключаемся'}
+      {playerName && <> · {playerName}</>}
     </span>
     <nav className={styles.toolbar} aria-label="Комната и справка">
       <DialogButton data-secondary title="Звук и связь" aria-label="Настройки" keepMounted content={<>{sound}{sync}</>}>
@@ -245,9 +260,12 @@ export function PlayerPage() {
       </DialogButton>
       <DialogButton data-secondary title="Комната" content={roster}>{playerView.room.game.venue.base || playerView.room.code}</DialogButton>
       <DialogButton data-secondary title="Как играть и прорицания" aria-label="Как играть и прорицания" content={<>
-        <RitualBoard game={playerView.room.game} online={liveConnection === 'online'} />
-        {violationControl}
-        <HowToPlay game={playerView.room.game} />
+        <HowToPlay game={playerView.room.game} compact />
+        <details>
+          <summary>Открытые прорицания и свечи</summary>
+          <RitualBoard game={playerView.room.game} online={liveConnection === 'online'} />
+          {violationControl}
+        </details>
       </>}>
         <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.7" strokeLinecap="round" aria-hidden="true">
           <circle cx="12" cy="12" r="9" />
@@ -276,9 +294,9 @@ export function PlayerPage() {
       <label>Ваше имя<input value={name} autoComplete="nickname" maxLength={48} onChange={event => setName(event.target.value)} required /></label>
       <button disabled={busy || connection !== 'online'}>{busy ? 'Входим…' : 'Войти в комнату'}</button>
     </form> : <>
-    {firstGame ? <div className={styles.scene} data-phase={playerView.room.game.phase}>
+    {firstGame ? <div className={styles.scene} data-card-layout={cardLayout} data-phase={playerView.room.game.phase}>
       <RoundStatus game={playerView.room.game} clockOffset={offline.clockOffset} connection={liveConnection} estimatedSearchEnded={offline.estimatedSearchEnded}
-      role={playerView.play?.card.role ?? playerView.assignment?.card.role} playStatus={playerView.play?.status} retained={playerView.play?.retained} waiting={!playerView.assignment && !playerView.play || playerView.synchronization?.withdrawn} showRitual={!playerView.room.game.firstGame} compact timerInHeader cardHidden={cardId ? revealedCard !== cardId : undefined} cardReady={playerView.assignment?.ready}
+      role={playerView.play?.card.role ?? playerView.assignment?.card.role} playStatus={playerView.play?.status} retained={playerView.play?.retained} waiting={!playerView.assignment && !playerView.play || playerView.synchronization?.withdrawn} showRitual={!playerView.room.game.firstGame} compact timerInHeader cardHidden={cardId ? revealedCard !== cardId : undefined}
       metadata={<div className={styles.phaseMeta}>
         {playerRole && playerView.room.game.phase !== 'finished' && <span className={styles.role}>{playerRole === 'possessed' ? 'Одержимый' : 'Экзорцист'}</span>}
         <RoundTimer game={playerView.room.game} clockOffset={offline.clockOffset} connection={liveConnection} />
@@ -293,6 +311,9 @@ export function PlayerPage() {
           <details><summary>История партии</summary><ResultsSummary results={playerView.room.game.results} firstGame /></details>
         </>}
       </RoundStatus>
+      {cardLayout && assignment && <PersonalCardActions assignment={assignment} open={revealedCard === assignment.id}
+        disabled={cardActionsDisabled} readOnly={cardReadOnly} act={actOnCard}
+        toggle={() => setRevealedCard(revealedCard === assignment.id ? null : assignment.id)} />}
     </div> : <>
       <RoundStatus game={playerView.room.game} clockOffset={offline.clockOffset} connection={connection === 'online' && authorizedGeneration !== generation ? 'connecting' : connection}
       role={playerView.play?.card.role ?? playerView.assignment?.card.role} playStatus={playerView.play?.status} retained={playerView.play?.retained} waiting={!playerView.assignment && !playerView.play || playerView.synchronization?.withdrawn} showRitual={!playerView.room.game.firstGame} compact={firstGame} />

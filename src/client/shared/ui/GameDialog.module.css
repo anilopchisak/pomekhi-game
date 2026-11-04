@@ -22,4 +22,7 @@
 .dialog [data-dialog-panel] strong { display: block; color: var(--accent); font-weight: 500; }
 .dialog [data-dialog-panel] p { margin: 4px 0 0; }
 .guide { font-size: 1.125rem; }
-.guide h3 { font-size: 1.375rem; }
+.guide > details { border-block-start: 1px solid var(--line); }
+.guide > details > summary { font-weight: 600; }
+.guide ol { padding-inline-start: 1.5em; }
+.guide ol > li { display: list-item; padding-block: 6px; border: 0; line-height: 1.5; }
