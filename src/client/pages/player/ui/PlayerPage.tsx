@@ -2,7 +2,7 @@ import styles from './PlayerScene.module.css';
 import { PhoneSound } from './PhoneSound.js';
 import { useCallback, useEffect, useRef, useState } from 'react';
 import { dealCommand, gameCommand, describeError, useLobbyConnection } from '../../../shared/api/index.js';
-import { GameReferences, ConfirmButton, DialogButton, LobbyShell, ResultsSummary, RitualBoard, RoundStatus, RoundTimer } from '../../../shared/ui/index.js';
+import { HowToPlay, ConfirmButton, DialogButton, LobbyShell, ResultsSummary, RitualBoard, RoundStatus, RoundTimer } from '../../../shared/ui/index.js';
 import { clearPlayerSession, createResumeKey, readPlayerSession, savePlayerSession } from '../session.js';
 import type { PlayerSession } from '../session.js';
 import { PersonalCardPanel } from './PersonalCardPanel.js';
@@ -243,11 +243,9 @@ export function PlayerPage() {
       </DialogButton>
       <DialogButton data-secondary title="Комната" content={roster}>{playerView.room.game.venue.base || playerView.room.code}</DialogButton>
       <DialogButton data-secondary title="Как играть и прорицания" aria-label="Как играть и прорицания" content={<>
-        <p>Ходите по одному и шагом. О просьбе о помощи или остановке можно сообщить в любой момент.</p>
-        {playerView.room.game.venue.dwelling && <p>Обитель: {playerView.room.game.venue.dwelling.zone}, {playerView.room.game.venue.dwelling.place}.</p>}
         <RitualBoard game={playerView.room.game} online={liveConnection === 'online'} />
-        <GameReferences references={playerView.room.game.references} />
         {violationControl}
+        <HowToPlay game={playerView.room.game} />
       </>}>
         <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.7" strokeLinecap="round" aria-hidden="true">
           <circle cx="12" cy="12" r="9" />

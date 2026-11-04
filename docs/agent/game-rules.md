@@ -1,6 +1,6 @@
 # Game rules workflow for agents
 
-Use this workflow for gameplay questions, player instructions, rule reviews and changes toward the original game. The accepted target is Oderzhimye with the computer replacing the Great Master. The executable implements First Game and Ordinary on an authored adaptation; exact original card content remains outside the implementation. A document about the target does not establish current behavior.
+Use this workflow for gameplay questions, player instructions, rule reviews and changes toward the original game. The accepted target is Oderzhimye with the computer replacing the Great Master. New rooms use Ordinary on an authored adaptation. Locked First Game checkpoints remain playable. Exact original card content remains outside the implementation. A document about the target does not establish current behavior.
 
 ## Select the ruleset
 

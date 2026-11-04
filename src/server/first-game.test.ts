@@ -1,6 +1,8 @@
 import { expect, it } from 'vitest';
 import { controlledClock } from '../../tests/helpers/game-clock.js';
 import { createGame } from './game.js';
+import { createLobby } from './lobby.js';
+import { stories } from './first-game-content.js';
 import { createCatalog } from './catalog.js';
 import { createRitual, newRitual, validateRitual } from './ritual.js';
 import type { PersonalCard, PhysicalStatus, RoundResult } from '../shared/protocol.js';
@@ -12,7 +14,13 @@ function fixture(count: number, getCards?: () => readonly PersonalCard[]) {
   const game = make();
   const players = Array.from({ length: count }, (_, i) => ({ id: `p${i}`, online: true }));
   const ids = players.map(p => p.id);
-  expect(game.configureVenue({ base: 'База', zones: ['Кухня'], dwelling: { zone: 'Кухня', place: 'Угол' }, storyId: 'S001', prologueRead: true, harder: false, order: ids, ...(getCards ? { bank: 'local' } : {}) }, ids)).toBeUndefined();
+  expect(game.configureVenue({ base: 'База', zones: ['Кухня'], dwelling: { zone: 'Кухня', place: 'Угол' }, order: ids }, ids)).toBeUndefined();
+  if (getCards) {
+    const legacy = game.exportState();
+    legacy.venue = { ...legacy.venue!, mode: 'first', bank: 'local' };
+    legacy.firstGame!.locked = true;
+    game.restore(legacy);
+  }
   const deal = () => expect(game.deal(ids, 0, false)).toBeUndefined();
   const start = () => {
     expect(game.start(players, true)).toBeUndefined();
@@ -246,26 +254,54 @@ it('preserves accepted marks during pause and rejects actions recorded while pau
   expect(game.resolveSync(event.id, 'accept')).toBe('ACTION_UNAVAILABLE');
 });
 
-it('filters optional missions by every chosen subset and verified venue feature', () => {
-  const time = controlledClock(); let sequence = 0;
-  const special = { id: 'special', title: 'Сложная карта у зеркала', role: 'exorcist', mission: 'Миссия', difficulty: 1,
-    sets: ['indoor', 'contact', 'harder'], requirements: ['mirror'] } satisfies PersonalCard;
-  const players = ['p0', 'p1', 'p2', 'p3', 'p4'];
-  for (const [sets, features, selected] of [
-    [['indoor', 'contact', 'harder'], ['mirror'], true],
-    [['indoor', 'harder'], ['mirror'], false],
-    [['indoor', 'contact', 'harder'], [], false],
-  ] as const) {
-    const owned = createGame({ firstGame: true, generateId: () => 'optional-' + ++sequence, randomIndex: () => 0, clock: time.clock,
-      getCards: () => [special, ...createCatalog().cards()], onChange() {} });
-    expect(owned.configureVenue({ base: 'База', zones: ['Кухня'], dwelling: { zone: 'Кухня', place: 'Угол' },
-      storyId: 'S001', prologueRead: false, harder: true, order: players, sets, features, bank: 'local' }, players)).toBeUndefined();
-    expect(owned.deal(players, 0, false)).toBe('PREPARATION_REQUIRED');
-    expect(owned.configureVenue({ ...owned.publicState().venue, prologueRead: true }, players)).toBeUndefined();
-    expect(owned.deal(players, 0, false)).toBeUndefined();
-    expect(owned.personal('p0')?.card.id === special.id).toBe(selected);
-    owned.dispose();
+it('keeps the chosen story when settings are saved before players join and the room is restored', () => {
+  const selected: number[] = [];
+  const make = () => createLobby({ firstGame: true, organizerCode: 'ORGANIZER',
+    generateRoomCode: () => 'ROOM22', randomIndex: limit => { selected.push(limit); return limit - 1; } });
+  const lobby = make(), restored = make();
+  function roomOf(owner: typeof lobby) {
+    const view = owner.viewFor('host');
+    if (view?.kind !== 'organizer' || !view.room) throw Error('No organizer room');
+    expect(view).not.toHaveProperty('stories');
+    return view.room;
   }
+  try {
+    expect(lobby.execute('host', 'organizer:authorize', { code: 'ORGANIZER' }).ok).toBe(true);
+    expect(lobby.execute('host', 'room:create', {}).ok).toBe(true);
+    const initial = roomOf(lobby);
+    const { id, ...story } = stories.at(-1)!;
+    expect(initial.game.story).toEqual(story);
+    expect(initial.game.venue).toMatchObject({ storyId: id, mode: 'ordinary', bank: 'authored' });
+    expect(lobby.execute('host', 'room:create', {}).ok).toBe(true);
+    const venue = { base: 'База', zones: ['Кухня'], dwelling: { zone: 'Кухня', place: 'Угол' }, order: [] };
+    for (const [i, place] of ['Угол', 'У стены'].entries()) expect(lobby.execute('host', 'venue:configure', {
+      roomId: initial.id, requestId: 'save-party-' + i, roundId: null, gameVersion: roomOf(lobby).game.version,
+      venue: { ...venue, dwelling: { zone: 'Кухня', place }, storyId: 'S001', mode: 'first', bank: 'local', horror: true, features: ['mirror'] },
+    }).ok).toBe(true);
+    expect(roomOf(lobby).game.venue).toEqual({ ...venue, dwelling: { zone: 'Кухня', place: 'У стены' },
+      storyId: id, mode: 'ordinary', bank: 'authored', harder: false, sets: [] });
+    for (let i = 0; i < 5; i++) expect(lobby.execute('phone-' + i, 'player:join', {
+      roomCode: initial.code, name: 'Медиум ' + i, resumeKey: String(i).repeat(64),
+    }).ok).toBe(true);
+    const joined = roomOf(lobby);
+    expect(joined.game.venue.order).toEqual(joined.players.map(player => player.id));
+    restored.restore(lobby.exportState());
+    expect(restored.execute('host', 'organizer:authorize', { code: 'ORGANIZER' }).ok).toBe(true);
+    const saved = roomOf(restored);
+    expect(saved.game.story).toEqual(story);
+    expect(selected).toEqual([stories.length]);
+    expect(restored.execute('host', 'deal:create', {
+      roomId: saved.id, dealId: null, dealVersion: saved.dealing.version, requestId: 'deal-party-1', possessedCount: 0,
+    }).ok).toBe(true);
+    const reading = roomOf(restored);
+    expect(reading.game.phase).toBe('reading');
+    expect(reading.game.story).toEqual(story);
+    expect(restored.exportState().room?.game.firstGame?.trials?.deck).toHaveLength(7);
+    const start = { roomId: saved.id, gameVersion: reading.game.version, roundId: null };
+    expect(restored.execute('host', 'round:start', { ...start, requestId: 'start-party-1', confirmWarnings: false }))
+      .toMatchObject({ ok: false, error: 'START_WARNING' });
+    expect(restored.execute('host', 'round:start', { ...start, requestId: 'start-party-2', confirmWarnings: true }).ok).toBe(true);
+  } finally { lobby.dispose(); restored.dispose(); }
 });
 
 it('reviews a prophecy report only once and leaves the revealed condition open', () => {
@@ -313,20 +349,14 @@ it('keeps confirmed total possession terminal if an ordinary trial would exhaust
   expect(() => validateRitual(ritual.exportState())).not.toThrow();
 });
 
-it.each([
-  { horror: false, sets: [], features: [] },
-  { horror: true, sets: [], features: [] },
-  { horror: true, sets: ['contact'], features: [] },
-  { horror: true, sets: ['indoor', 'harder'], features: ['space'] },
-  { horror: true, sets: ['indoor', 'harder'], features: ['space', 'mirror'] },
-])('selects eligible authored slots with $sets and $features (horror: $horror)', ({ horror, sets, features }) => {
+it.each([{ sets: [] }, { sets: ['contact'] }, { sets: ['indoor', 'harder'] }])('draws only eligible base missions for $sets', ({ sets }) => {
   const time = controlledClock();
   let sequence = 0;
-  const make = () => createGame({ firstGame: true, generateId: () => 'mixed-' + ++sequence, randomIndex: () => 0, clock: time.clock, onChange() {} });
+  const make = () => createGame({ firstGame: true, generateId: () => 'authored-' + ++sequence, randomIndex: () => 0, clock: time.clock, onChange() {} });
   const game = make();
   const ids = ['p0', 'p1', 'p2', 'p3', 'p4'];
-  expect(game.configureVenue({ base: 'База', zones: ['Кухня'], dwelling: { zone: 'Кухня', place: 'Угол' }, storyId: 'S001',
-    prologueRead: true, harder: false, order: ids, horror, sets, features }, ids)).toBeUndefined();
+  expect(game.configureVenue({ base: 'База', zones: ['Кухня'], dwelling: { zone: 'Кухня', place: 'Угол' },
+    order: ids, sets, horror: true, features: ['space', 'mirror'] }, ids)).toBeUndefined();
   const seen = new Map<string, PersonalCard>();
   // Canceled previews still consume cards. Walk through the pool via normal deals.
   for (let attempt = 0; attempt < 40; attempt++) {
@@ -339,16 +369,16 @@ it.each([
     if (attempt < 39) expect(game.cancelDeal()).toBeUndefined();
   }
   expect(seen.get('P001')).toMatchObject({ title: 'Колыбельная пустой комнаты' });
-  expect(seen.get('P007')?.title).toBe(horror ? 'Колыбельная снизу' : undefined);
-  expect(seen.get('E007')?.sets).toEqual(sets.includes('contact') && horror ? ['contact'] : []);
-  expect(seen.has('P030')).toBe(sets.includes('indoor') && features.includes('space'));
-  expect(seen.has('P026')).toBe(sets.includes('indoor') && sets.includes('harder') && features.includes('space') && features.includes('mirror'));
-  expect(game.publicState().venue).toMatchObject({ bank: 'authored' });
+  expect(seen.get('P007')?.title).toBe(sets.includes('harder') ? 'Запись из соседней жизни' : undefined);
+  expect(seen.has('P003')).toBe(sets.includes('contact'));
+  expect(seen.has('P030')).toBe(false);
+  expect(seen.has('P026')).toBe(false);
   const restored = make();
   restored.restore(game.exportState());
-  expect(restored.publicState().venue.horror).toBe(horror ? true : undefined);
+  expect(restored.publicState().venue).toMatchObject({ bank: 'authored', mode: 'ordinary' });
+  expect(restored.publicState().venue.horror).toBeUndefined();
   expect(ids.map(id => restored.personal(id))).toEqual(ids.map(id => game.personal(id)));
   expect(restored.start(ids.map(id => ({ id, online: true })), true)).toBeUndefined();
   expect(restored.exportState().ritual?.cards.map(card => card.id)).toEqual(['R001', 'R002', 'R011']);
-  expect(restored.exportState().firstGame?.trials).toBeUndefined();
+  expect(restored.exportState().firstGame?.trials?.deck).toHaveLength(7);
 });

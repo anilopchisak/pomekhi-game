@@ -160,7 +160,7 @@ export interface PersistenceStatus {
   mode: 'memory' | 'disk'; state: 'ready' | 'load_error' | 'write_error'; recovered: boolean;
 }
 export type LobbyView = { revision: number; persistence?: PersistenceStatus } & (
-  | { kind: 'organizer'; room: RoomSnapshot | null; audioEnabled: boolean; review?: ReviewEvent[]; missingLocations?: MissingLocation[]; violations?: ViolationReview[]; trialReview?: TrialReview; roles?: Record<string, Role>; presence?: Presence[]; stories?: { id: string; title: string; prologue: string }[] }
+  | { kind: 'organizer'; room: RoomSnapshot | null; audioEnabled: boolean; review?: ReviewEvent[]; missingLocations?: MissingLocation[]; violations?: ViolationReview[]; trialReview?: TrialReview; roles?: Record<string, Role>; presence?: Presence[] }
   | { kind: 'player'; room: RoomSnapshot; playerId: string; audioEnabled?: boolean; assignment: Assignment | null; play: PersonalPlay | null; synchronization?: PersonalSync | null; locationProposal?: string; violations?: ViolationReceipt[]; canReportViolation?: boolean; trial?: PersonalTrial; presence?: Presence }
   | { kind: 'ended'; reason: 'closed' | 'removed' | 'left' }
 );

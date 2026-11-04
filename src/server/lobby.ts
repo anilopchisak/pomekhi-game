@@ -1,4 +1,3 @@
-import { stories } from './first-game-content.js';
 import { createCatalog } from './catalog.js';
 import { trialTraits } from '../shared/protocol.js';
 import type { TrialReviewFact } from '../shared/protocol.js';
@@ -72,7 +71,7 @@ export function createLobby({ organizerCode, generateId = randomUUID, generateRo
     const actor = actors.get(connection);
     if (!actor) return undefined;
     if (actor.kind === 'organizer') return { revision, kind: 'organizer', room: snapshot(), audioEnabled: audioOwner === connection,
-      ...(firstGame && room ? { stories: structuredClone(stories), roles: room.game.roles(), missingLocations: room.game.missingLocations(), violations: room.game.violations(), trialReview: room.game.trialStatus(), presence: [...room.players.keys()].flatMap(id => {
+      ...(firstGame && room ? { roles: room.game.roles(), missingLocations: room.game.missingLocations(), violations: room.game.violations(), trialReview: room.game.trialStatus(), presence: [...room.players.keys()].flatMap(id => {
         const status = room!.game.physicalStatus(id); return status ? [status] : [];
       }) } : {}), review: room && ['between_rounds', 'finished'].includes(room.game.publicState().phase) ? room.game.review() : [] };
     if (actor.kind === 'ended') return { revision, ...actor };
@@ -180,6 +179,7 @@ export function createLobby({ organizerCode, generateId = randomUUID, generateRo
           if (usedCodes.has(code)) throw new Error('Room code generator did not provide an unused code.');
           usedCodes.add(code);
           room = { id: generateId(), code, players: new Map(), revoked: new Set(), game: createGame({ generateId, randomIndex, clock, firstGame, onChange: notify, getCards: catalog.cards }), requests: new Map() };
+          room.game.initializeStory();
         }
       } else {
         if (typeof data.roomId !== 'string') return fail('INVALID_INPUT');

@@ -1,7 +1,7 @@
 import { readFileSync } from 'node:fs';
 import { expect, it } from 'vitest';
 import type { PersonalCard } from '../shared/protocol.js';
-import { authoredMissions, authoredProphecies, authoredReferences, authoredTrials, horrorMissions } from './authored-content.js';
+import { authoredMissions, authoredProphecies, authoredReferences, authoredTrials } from './authored-content.js';
 import { stories } from './first-game-content.js';
 
 interface EditorialCard {
@@ -41,14 +41,4 @@ it('projects the complete 147-card editorial set into the game', () => {
   expect(authoredProphecies).toEqual(source.filter(card => card.type === 'prophecy').map(({ id, title, rule, final }) => ({ id, title, rule, final })));
   expect(stories).toEqual(source.filter(card => card.type === 'story').map(({ id, title, prologue }) => ({ id, title, prologue })));
   expect(authoredReferences).toEqual(source.filter(card => card.type === 'reference').map(({ id, title, sections }) => ({ id, title, sections })));
-});
-
-it('maps all 38 horror variants to unique missions of the same role', () => {
-  const source = readCards('horror/cards.json');
-  expect(source).toHaveLength(38);
-  expect([...horrorMissions.keys()]).toEqual(source.map(card => card.baseCard));
-  for (const card of source) {
-    expect(authoredMissions.find(candidate => candidate.id === card.baseCard)?.role).toBe(card.type);
-    expectMission(horrorMissions.get(card.baseCard!), card);
-  }
 });

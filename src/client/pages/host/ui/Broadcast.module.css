@@ -61,3 +61,56 @@
   .ritualRoom .mainScene { order: -1; }
   .roster ol { max-height: 24rem; }
 }
+
+.ritualRoom .mainScene .inviteScene { min-height: 0; overflow: auto; }
+.inviteCode { text-align: center; }
+.inviteCode p { color: var(--accent); font: 600 clamp(1rem, 2.2vw, 1.5rem) var(--font-numeric); }
+.inviteCode img { width: min(100%, 280px, 31dvh); }
+.ritualRoom .mainScene .readiness {
+  margin-block: 14px;
+  padding: 14px;
+  border: 1px solid var(--accent);
+  border-radius: 12px;
+  background: var(--surface);
+  color: var(--muted);
+}
+.readiness strong { color: var(--accent); font-weight: 600; }
+.ritualRoom .readiness p { margin-block: 6px 0; }
+.sceneActions { display: grid; width: 100%; gap: 8px; }
+.sceneActions > button { width: 100%; margin: 0; }
+.sceneActions > p { color: var(--muted); font-size: 14px; }
+.roster .replace { min-width: 44px; min-height: 44px; margin: 2px 0; padding: 0; font-size: 20px; }
+.partyFields { min-width: 0; margin: 0; padding: 0; border: 0; }
+.partyFields fieldset { min-width: 0; margin: 18px 0; border: 1px solid var(--border); border-radius: 8px; }
+.placeField { margin-block: 8px; }
+.placeField > div { display: flex; align-items: center; gap: 8px; }
+.placeField details { position: relative; }
+.placeField details summary {
+  display: grid;
+  width: 44px;
+  min-height: 44px;
+  place-items: center;
+  color: var(--accent);
+}
+.placeField details p {
+  position: absolute;
+  z-index: 1;
+  inset: 100% auto auto 0;
+  width: min(16rem, 58vw);
+  margin: 0;
+  padding: 10px;
+  border: 1px solid var(--border);
+  border-radius: 8px;
+  background: var(--surface);
+  color: var(--text);
+}
+@media (max-width: 40rem) {
+  .placeField > div { justify-content: space-between; }
+  .placeField details p { inset-inline: auto 0; }
+  .tools { width: 100%; }
+  .frame[data-first-game=true] header .tools > button,
+  .frame[data-first-game=true] header .tools > button:last-of-type {
+    flex: 1 1 calc(50% - 6px);
+    min-width: 0;
+  }
+}

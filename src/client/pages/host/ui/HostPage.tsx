@@ -3,12 +3,12 @@ import broadcast from './Broadcast.module.css';
 import { useCallback, useEffect, useRef, useState } from 'react';
 import QRCode from 'qrcode';
 import { dealCommand, gameCommand, describeError, useLobbyConnection } from '../../../shared/api/index.js';
-import { GameReferences, ConfirmButton, DialogButton, LobbyShell, ResultsSummary, RitualBoard, RoundStatus, RoundTimer } from '../../../shared/ui/index.js';
+import { HowToPlay, ConfirmButton, DialogButton, LobbyShell, ResultsSummary, RitualBoard, RoundStatus, RoundTimer } from '../../../shared/ui/index.js';
 import { invitationUrl } from '../invitation.js';
 import type { LobbyInputs, LobbyCommand } from '../../../../shared/protocol.js';
 import { DealControls } from './DealControls.js';
 import { RecoveryControls } from './RecoveryControls.js';
-import { FirstGameSetup } from './FirstGameSetup.js';
+import { FirstGameSetup, PartySettings } from './FirstGameSetup.js';
 import { FirstGameControls } from './FirstGameControls.js';
 import { GameControls } from './GameControls.js';
 import { SoundControls } from './SoundControls.js';
@@ -29,6 +29,7 @@ export function HostPage({ display = false, editor = false }: { display?: boolea
   const [local, setLocal] = useState(false);
   const [address, setAddress] = useState('');
   const [publicAddress, setPublicAddress] = useState('');
+  const [invitationError, setInvitationError] = useState('');
   const [qr, setQr] = useState('');
   const [copied, setCopied] = useState(false);
   const [pending, setPending] = useState<{ command: LobbyCommand; input: LobbyInputs[LobbyCommand] } | null>(null);
@@ -64,11 +65,11 @@ export function HostPage({ display = false, editor = false }: { display?: boolea
     setQr(''); setCopied(false);
     if (joinUrl) void QRCode.toDataURL(joinUrl, { width: 280, margin: 4, errorCorrectionLevel: 'M' }).then(value => {
       if (!cancelled) setQr(value);
-    }).catch(() => { if (!cancelled) setError('Не удалось построить QR. Можно скопировать ссылку или ввести код комнаты.'); });
+    }).catch(() => { if (!cancelled) setInvitationError('Не удалось построить QR. Можно скопировать ссылку или ввести код комнаты.'); });
     return () => { cancelled = true; };
   }, [joinUrl]);
 
-  async function run<Command extends LobbyCommand>(command: Command, input: LobbyInputs[Command]) {
+  async function run<Command extends LobbyCommand>(command: Command, input: LobbyInputs[Command], onSuccess?: () => void) {
     const attempt = ++operation.current;
     setBusy(true); setError('');
     if (command.startsWith('round:') || command === 'party:finish') await prepareSound.current?.();
@@ -77,9 +78,13 @@ export function HostPage({ display = false, editor = false }: { display?: boolea
     if (attempt !== operation.current) return;
     setBusy(false);
     if (!result.ok) {
-      setError(describeError(result.error));
+      setError(command === 'venue:configure' && result.error === 'INVALID_INPUT'
+        ? 'Проверьте названия локаций, место Обители и список участников.' : describeError(result.error));
       setPending(result.error === 'TIMEOUT' || result.error === 'CONNECTION_LOST' ? { command, input } : null);
-    } else setPending(null);
+    } else {
+      setPending(null);
+      onSuccess?.();
+    }
   }
 
   const firstGame = Boolean(room?.game.firstGame && !editor);
@@ -88,10 +93,10 @@ export function HostPage({ display = false, editor = false }: { display?: boolea
         <h3>Комната <code>{room.code}</code></h3>
         <form onSubmit={event => {
           event.preventDefault();
-          try { invitationUrl(address, room.code, local); setPublicAddress(address.trim()); setError(''); }
-          catch { setError('Укажите HTTPS-адрес Tuna или включите локальный режим для HTTP-адреса ноутбука. Пути и параметры не нужны.'); }
+          try { invitationUrl(address, room.code, local); setPublicAddress(address.trim()); setInvitationError(''); }
+          catch { setInvitationError('Укажите HTTPS-адрес Tuna или включите локальный режим для HTTP-адреса ноутбука. Пути и параметры не нужны.'); }
         }}>
-          <label><input type="checkbox" checked={local} onChange={e => { setLocal(e.target.checked); setPublicAddress(''); }} /> Локальное подключение</label>
+          <label><input type="checkbox" checked={local} onChange={e => { setLocal(e.target.checked); setPublicAddress(''); setInvitationError(''); }} /> Локальное подключение</label>
           <p>{local ? 'Все телефоны и ноутбук должны быть в одной сети. Возьмите адрес Local player address из окна запуска. Адрес выбирается до входа; автоматического переноса между сайтами нет.' : 'Вставьте HTTPS-адрес Tuna.'}</p>
           <label>{local ? 'Локальный адрес ноутбука' : 'Адрес Tuna'}<input type="url" value={address} placeholder="https://…" onChange={event => setAddress(event.target.value)} required /></label>
           <button>Показать приглашение</button>
@@ -99,12 +104,14 @@ export function HostPage({ display = false, editor = false }: { display?: boolea
         {joinUrl && <>
           <label>Ссылка для участников<input readOnly value={joinUrl} onFocus={event => event.target.select()} /></label>
           <button onClick={() => {
-            void navigator.clipboard?.writeText(joinUrl).then(() => setCopied(true)).catch(() => setError('Выделите и скопируйте ссылку из поля вручную.'));
-            if (!navigator.clipboard) setError('Выделите и скопируйте ссылку из поля вручную.');
+            void navigator.clipboard?.writeText(joinUrl).then(() => { setCopied(true); setInvitationError(''); })
+              .catch(() => setInvitationError('Выделите и скопируйте ссылку из поля вручную.'));
+            if (!navigator.clipboard) setInvitationError('Выделите и скопируйте ссылку из поля вручную.');
           }}>{copied ? 'Ссылка скопирована' : 'Скопировать ссылку'}</button>
           {qr && <img src={qr} width={280} height={280} alt="QR-код приглашения в комнату" />}
           <p>Отсканируйте QR или откройте ссылку. Если вводите адрес сайта вручную, используйте код комнаты.</p>
         </>}
+        {invitationError && <p role="alert">{invitationError}</p>}
       </section>);
   const settings = room && view?.kind === 'organizer' && <><section aria-label="Атмосфера">
         <h3>Атмосфера</h3>
@@ -216,10 +223,11 @@ export function HostPage({ display = false, editor = false }: { display?: boolea
         })}</ul>
       </section>}
       <RecoveryControls request={request} missingLocations={view.missingLocations} room={room} review={view.review ?? []} disabled={disabled} run={run} />
-      <DealControls room={room} disabled={disabled || Boolean(waitingForSync) || room.game.settings.ritualEnabled && room.game.results.at(-1)?.status === 'provisional'} run={run} /></>;
+      {(!room.game.firstGame || room.game.phase === 'between_rounds') &&
+        <DealControls room={room} disabled={disabled || Boolean(waitingForSync) || room.game.settings.ritualEnabled && room.game.results.at(-1)?.status === 'provisional'} run={run} />}</>;
   const toolbar = firstGame && room ? <>
     <div className={broadcast.roomIdentity}>
-      {!display ? <DialogButton data-secondary title="Приглашение" content={invitation}><code>{room.code}</code></DialogButton> : <code>{room.code}</code>}
+      <DialogButton key={room.id} data-secondary title="Приглашение" aria-label={`Приглашение · код комнаты ${room.code}`} content={invitation}><code>{room.code}</code></DialogButton>
       <span role="status" data-connection={liveConnection}>{liveConnection === 'online' ? 'Связь установлена' : liveConnection === 'offline' ? 'Нет связи' : 'Восстанавливаем связь'}</span>
     </div>
     <div className={broadcast.tools}>
@@ -227,12 +235,13 @@ export function HostPage({ display = false, editor = false }: { display?: boolea
         <span>{room.game.paused ? 'Пауза' : 'Осталось'}</span>
         <RoundTimer game={room.game} clockOffset={clockOffset} connection={liveConnection} />
       </div>}
-      <DialogButton data-secondary title="Как играть" content={<>
-        <p>Свободные игроки возвращаются на базу по призыву. Одержимые и пленённые остаются с группой.</p>
-        <p>База: {room.game.venue.base}. Разрешённые зоны: {room.game.venue.zones.join(', ') || 'ещё не заданы'}.</p>
-        <p>При остановке партии возвращаются все. За просьбу о помощи штрафа нет.</p>
-        <GameReferences references={room.game.references} />
-      </>}>Как играть</DialogButton>
+      <DialogButton data-secondary title="Как играть" content={<HowToPlay game={room.game} />}>Как играть</DialogButton>
+      <DialogButton data-secondary title="Сюжет" content={room.game.story && <>
+        <h3>{room.game.story.title}</h3><p className={broadcast.prologue}>{room.game.story.prologue}</p>
+      </>}>Сюжет</DialogButton>
+      {!display && <PartySettings key={room.id} room={room} disabled={disabled} run={run} error={error}
+        retry={pending?.command === 'venue:configure' && <button type="button" data-secondary disabled={disabled}
+          onClick={() => void run(pending.command, pending.input)}>Повторить сохранение</button>} />}
       <DialogButton data-secondary title="Настройки" keepMounted content={<>
         {settings}
         {!display && persistence?.state === 'ready' && <p className={broadcast.saveNote} role="status">
@@ -293,6 +302,10 @@ export function HostPage({ display = false, editor = false }: { display?: boolea
             </div>
             <div className={broadcast.playerState}>
               {room.game.phase === 'reading' && assignment && <small>{assignment.replacementRequested ? 'Просит замену' : assignment.ready ? 'Готов' : 'Читает'}</small>}
+              {!display && room.game.phase === 'reading' && assignment && <button type="button" data-secondary className={broadcast.replace}
+                title="Заменить карточку" aria-label={`Заменить карточку ${player.name}`} disabled={disabled} onClick={() => void run('deal:replace', {
+                  ...dealCommand(room), playerId: player.id, assignmentId: assignment.assignmentId,
+                })}>↻</button>}
               {checking && !display && <small>{physical ? physical.confirmed
                 ? physical.expected === 'at_base' ? 'На базе' : 'С группой'
                 : physical.expected === 'at_base' ? 'Ожидается на базе' : 'Ожидается в группе'
@@ -305,13 +318,28 @@ export function HostPage({ display = false, editor = false }: { display?: boolea
       </section>}
       <div className={broadcast.mainScene} data-phase={room.game.phase}>
       {!firstGame && <p key={`${room.game.phase}:${room.game.paused}`} className={broadcast.banner}>{room.game.paused ? 'ЗАПИСЬ ПРИОСТАНОВЛЕНА' : ({ lobby: 'ОЖИДАНИЕ СИГНАЛА', reading: 'ЛИЧНЫЕ ЗАПИСИ ПОЛУЧЕНЫ', placement: 'ЗАЙМИТЕ СВОИ МЕСТА', search: 'ДОМ СЛУШАЕТ', return: 'ВОЗВРАЩАЙТЕСЬ НА БАЗУ', between_rounds: 'СВЕРЬТЕ ПОКАЗАНИЯ', finished: 'ЗАПИСЬ ЗАВЕРШЕНА' }[room.game.phase])}</p>}
-      <RoundStatus game={room.game} clockOffset={clockOffset} connection={firstGame ? liveConnection : connection} showRitual={!firstGame} compact={firstGame} timerInHeader={firstGame}>
+      {firstGame && room.game.phase === 'lobby' ? <section className={broadcast.inviteScene}>
+        <p>Приглашение</p>
+        <h3 data-scene-heading tabIndex={-1}>Пригласите участников</h3>
+        <p>{qr ? 'Сканируйте QR с телефона.' : 'Введите код комнаты на телефоне.'} Организатор тоже входит как игрок.</p>
+        <div className={broadcast.inviteCode}>
+          {qr && <img src={qr} width={280} height={280} alt="QR-код приглашения в комнату" />}
+          <p>Код комнаты · <code>{room.code}</code></p>
+          <small>{qr ? 'Приглашение доступно по коду сверху.' : 'Чтобы получить ссылку и QR, нажмите на код в верхней панели.'}</small>
+        </div>
+      </section> : firstGame && room.game.phase === 'reading' ? <section>
+        <p>Чтение · без таймера</p>
+        <h3 data-scene-heading tabIndex={-1}>Прочитайте свои карточки</h3>
+        <p>На чтение можно взять сколько угодно времени. Неудобное задание можно заменить значком рядом с именем до старта.</p>
+        <div className={broadcast.readiness} role="status">
+          <strong>Готовы {room.dealing.assignments.filter(item => item.ready).length} из {room.dealing.assignments.length}</strong>
+          <p>Раунд не начнётся автоматически. Дождитесь, пока все прочитают карточки.</p>
+        </div>
+      </section> : <RoundStatus game={room.game} clockOffset={clockOffset} connection={firstGame ? liveConnection : connection} showRitual={!firstGame} compact={firstGame} timerInHeader={firstGame}>
         {firstGame && ['placement', 'search'].includes(room.game.phase) && <span className={broadcast.phaseMark} aria-hidden="true" />}
-      </RoundStatus>
-      {room.game.firstGame && room.game.story && !room.game.venue.prologueRead && room.game.phase === 'reading' && room.game.roundNumber === 1 && <section>
-        <h3>{room.game.story.title}</h3><p className={broadcast.prologue}>{room.game.story.prologue}</p>
-      </section>}
-      {firstGame && !['placement', 'search', 'finished'].includes(room.game.phase) && <div className={broadcast.sceneWork} tabIndex={0} aria-label="Подготовка, сверка и история">
+      </RoundStatus>}
+      {firstGame && (['return', 'between_rounds'].includes(room.game.phase) || room.game.phase === 'reading' &&
+        !display && Boolean(view.violations?.length)) && <div className={broadcast.sceneWork} tabIndex={0} aria-label="Сверка и история">
         {!display && work}
         {room.game.results.length > 0 && room.game.phase === 'between_rounds' &&
           <details><summary>История партии</summary><ResultsSummary results={room.game.results} firstGame /></details>}

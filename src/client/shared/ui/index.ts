@@ -6,4 +6,4 @@ export { DialogButton } from './GameDialog.js';
 export { GameDialog } from './GameDialog.js';
 export { RoundTimer } from './RoundStatus.js';
 export { ResultsSummary } from './ResultsSummary.js';
-export { GameReferences } from './GameReferences.js';
+export { HowToPlay } from './HowToPlay.js';

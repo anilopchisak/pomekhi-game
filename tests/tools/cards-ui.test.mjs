@@ -158,6 +158,42 @@ function gameBase() {
   const room = lobby.viewFor('host').room;
   return { roomId: room.id, gameVersion: room.game.version, roundId: room.game.roundId, requestId: `round-request-${++sequence}` };
 }
+
+it('closes the readiness dialog so the organizer can retry a shuffle with a lost acknowledgement', async () => {
+  lobby.dispose();
+  lobby = createLobby({ firstGame: true, organizerCode: 'HOST', generateRoomCode: () => 'ABCDEF', clock: clock.clock });
+  lobby.subscribe(publish);
+  value(lobby.execute('host', 'organizer:authorize', { code: 'HOST' }));
+  const { code } = value(lobby.execute('host', 'room:create', {})).room;
+  for (let i = 0; i < 5; i++) {
+    value(lobby.execute(`phone-${i}`, 'player:join', { roomCode: code, name: `Player ${i}`, resumeKey: String(i).repeat(64) }));
+  }
+  value(lobby.execute('host', 'venue:configure', { ...gameBase(), venue: {
+    base: 'База', zones: ['Кухня'], dwelling: { zone: 'Кухня', place: 'Угол' },
+    order: lobby.viewFor('host').room.players.map(player => player.id),
+  } }));
+  const original = value(lobby.execute('host', 'deal:create', { ...base(), possessedCount: 2 })).room.dealing.dealId;
+  globalThis.sessionStorage.setItem('pomekhi.organizer', 'HOST');
+  io.mockReturnValue(socket('panel', 'deal:shuffle'));
+  await act(async () => root.render(createElement(HostPage)));
+
+  await click('Проверить готовность');
+  const readiness = button('Начать без полной готовности').closest('dialog');
+  expect(readiness.open).toBe(true);
+  await click('Перевыдать карточки');
+  const confirmation = [...container.querySelectorAll('dialog[open]')].find(dialog => dialog !== readiness);
+  await act(async () => [...confirmation.querySelectorAll('button')].find(button => button.textContent === 'Перевыдать карточки').click());
+
+  const shuffled = lobby.viewFor('host').room.dealing.dealId;
+  expect(shuffled).not.toBe(original);
+  expect(container.querySelector('dialog[open]')).toBeNull();
+  expect(globalThis.document.activeElement).toBe(button('Проверить готовность'));
+  expect(container.querySelector('[role="alert"]').textContent).toContain('Ответ задерживается');
+  await click('Повторить действие');
+  expect(lobby.viewFor('host').room.dealing.dealId).toBe(shuffled);
+  expect(container.querySelector('[role="alert"]')).toBeNull();
+});
+
 it('confirms a warned start, retries a lost acknowledgement once and restores paused controls', async () => {
   globalThis.sessionStorage.setItem('pomekhi.organizer', 'HOST');
   io.mockReturnValue(socket('panel', 'round:start'));
