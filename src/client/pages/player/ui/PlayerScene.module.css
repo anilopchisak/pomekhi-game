@@ -26,6 +26,7 @@ main:has(> header > .toolbar) dialog :is(h2, h3, h4, summary) { color: var(--acc
   padding: 12px;
   background: radial-gradient(ellipse at center, var(--surface), var(--panel) 72%);
 }
+[data-personal-card] :is(h3, h4, p > strong) { color: var(--gold); }
 .cardBody h4 { margin: 0 0 12px; font-size: 22px; font-weight: 500; }
 .cardBack { display: grid; justify-items: center; gap: 8px; color: var(--gold); text-align: center; }
 .cardBack[data-card-role=possessed] { color: #b44652; }
@@ -65,6 +66,20 @@ main:has(> .scene[data-card-layout=true]) > :not(.scene) { flex: none; }
 }
 .readingActions { display: grid; grid-template-columns: repeat(2, minmax(0, 1fr)); gap: 8px; }
 .cardActions button { width: 100%; margin: 0; padding-inline: 8px; }
-.readingActions button[data-ready=true] { background: #9ccbb0; color: var(--background); border-color: #9ccbb0; }
+.readingActions label.readyToggle {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  min-height: 48px;
+  margin: 0;
+  padding-inline: 8px;
+  border: 1px solid var(--border);
+  border-radius: 8px;
+  background: var(--surface);
+  cursor: pointer;
+}
+.readingActions label.readyToggle:has(input:checked) { background: #9ccbb0; color: var(--background); border-color: #9ccbb0; }
+.readingActions label.readyToggle:has(input:disabled) { opacity: .5; cursor: default; }
+.readyToggle input { accent-color: #315c46; }
 .readingActions button[data-replacement-requested=true] { background: var(--gold); color: var(--background); border-color: var(--gold); }
 .cardActions p { margin: 0; color: var(--muted); font-size: 14px; }

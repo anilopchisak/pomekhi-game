@@ -21,6 +21,9 @@
 .dialog [data-dialog-panel] { border: 1px solid var(--line); border-radius: 12px; background: var(--surface); padding: 12px; margin-block: 12px; color: var(--muted); font-size: 14px; }
 .dialog [data-dialog-panel] strong { display: block; color: var(--accent); font-weight: 500; }
 .dialog [data-dialog-panel] p { margin: 4px 0 0; }
+.dialog:has(> .guide) > .heading h2,
+.dialog:has(> .guide) > details > summary,
+.dialog .guide > details > summary { color: var(--gold); }
 .guide { font-size: 1.125rem; }
 .guide > details { border-block-start: 1px solid var(--line); }
 .guide > details > summary { font-weight: 600; }

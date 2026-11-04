@@ -17,6 +17,30 @@ import { SoundControls } from './SoundControls.js';
 const storageKey = 'pomekhi.organizer';
 function storedCode() { try { return sessionStorage.getItem(storageKey) ?? ''; } catch { return ''; } }
 
+function ReadingStatus({ text }: { text: string }) {
+  const tooltip = useRef<HTMLSpanElement>(null);
+
+  function show(status: HTMLElement) {
+    const popup = tooltip.current;
+    if (!popup || status.scrollWidth <= status.clientWidth || typeof popup.showPopover !== 'function') return;
+    const { left, bottom } = status.getBoundingClientRect();
+    popup.style.top = `${bottom + 6}px`;
+    popup.showPopover();
+    popup.style.left = `${Math.max(8, Math.min(left, window.innerWidth - popup.offsetWidth - 8))}px`;
+  }
+
+  function hide() {
+    tooltip.current?.hidePopover?.();
+  }
+
+  return <>
+    <small tabIndex={0} onPointerEnter={event => show(event.currentTarget)} onPointerLeave={hide}
+      onFocus={event => show(event.currentTarget)} onBlur={hide}
+      onKeyDown={event => { if (event.key === 'Escape') hide(); }}>{text}</small>
+    <span ref={tooltip} popover="manual" aria-hidden="true" className={broadcast.readingTooltip}>{text}</span>
+  </>;
+}
+
 export function HostPage({ display = false, editor = false }: { display?: boolean; editor?: boolean }) {
   const { connection, generation, restored, view, request, requestCatalog, clockOffset, cue, resetView } = useLobbyConnection();
   const credential = useRef(storedCode());
@@ -379,7 +403,7 @@ export function HostPage({ display = false, editor = false }: { display?: boolea
               </small>
             </div>
             <div className={broadcast.playerState}>
-              {room.game.phase === 'reading' && assignment && <small>{assignment.replacementRequested ? 'Просит замену' : assignment.ready ? 'Готов' : 'Читает'}</small>}
+              {room.game.phase === 'reading' && assignment && <ReadingStatus text={assignment.replacementRequested ? 'Просит замену' : assignment.ready ? 'Готов' : 'Читает'} />}
               {!display && room.game.phase === 'reading' && assignment && <button type="button" data-secondary className={broadcast.rosterIcon}
                 title="Заменить карточку" aria-label={`Заменить карточку ${player.name}`} disabled={disabled} onClick={() => void run('deal:replace', {
                   ...dealCommand(room), playerId: player.id, assignmentId: assignment.assignmentId,

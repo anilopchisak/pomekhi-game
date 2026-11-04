@@ -13,7 +13,7 @@ export function PersonalCardPanel({ assignment, disabled, readOnly = false, infe
   const open = (disclosure ? disclosure.revealedCard : revealed) === assignment.id;
   const toggle = disclosure?.setRevealedCard ?? setRevealed;
   const card = assignment.card;
-  return <section className={firstGame ? styles.personal : undefined} aria-label="Личная карточка">
+  return <section className={firstGame ? styles.personal : undefined} data-personal-card aria-label="Личная карточка">
     {!firstGame && <h3>Личная карточка</h3>}
     <div className={firstGame ? styles.cardBody : undefined} data-hidden={!open} tabIndex={firstGame && open ? 0 : undefined}>
     {firstGame && !open && <div className={styles.cardBack} data-card-role={card.role}>
@@ -74,8 +74,11 @@ export function PersonalCardActions({ assignment, open, disabled, readOnly, togg
   return <footer className={styles.cardActions} aria-label="Действия с карточкой">
     <button type="button" data-secondary aria-expanded={open} onClick={toggle}>{open ? 'Скрыть карточку' : 'Открыть карточку'}</button>
     {!readOnly && <div className={styles.readingActions}>
-      <button type="button" data-ready={assignment.ready} disabled={disabled || assignment.replacementRequested}
-        onClick={() => void act('card:ready', !assignment.ready)}>{assignment.ready ? 'Не готов' : 'Готов'}</button>
+      <label className={styles.readyToggle}>
+        <input type="checkbox" checked={assignment.ready} disabled={disabled || assignment.replacementRequested}
+          onChange={event => void act('card:ready', event.currentTarget.checked)} />
+        Готов
+      </label>
       <button type="button" data-secondary={!assignment.replacementRequested || undefined}
         data-replacement-requested={assignment.replacementRequested} disabled={disabled}
         onClick={() => void act('card:request', !assignment.replacementRequested)}>

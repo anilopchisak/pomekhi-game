@@ -110,7 +110,7 @@ export function PlayerPage() {
   }
 
   const firstGame = playerView?.room.game.firstGame;
-  const sound = playerView && (firstGame ? <PhaseSignals key={playerView.room.id} cue={cue} enabled={Boolean(playerView.audioEnabled)} previewOnEnable
+  const sound = playerView && (firstGame ? <PhaseSignals key={playerView.room.id} cue={cue} enabled={Boolean(playerView.audioEnabled)} previewOnEnable signalVolume={0.65}
       online={liveConnection === 'online' && playerView.persistence?.state !== 'write_error'} clockOffset={clockOffset}
       claim={async enabled => (await request('player:audio', { roomId: playerView.room.id, enabled })).ok} /> : <PhoneSound key={playerView.room.id} view={playerView} scare={scare} online={connection === 'online' && authorizedGeneration === generation} clockOffset={clockOffset} claim={async enabled => {
       const result = await request('player:audio', { roomId: playerView.room.id, enabled });
