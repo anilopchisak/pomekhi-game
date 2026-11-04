@@ -1,5 +1,7 @@
 import { stories } from './first-game-content.js';
 import { createCatalog } from './catalog.js';
+import { trialTraits } from '../shared/protocol.js';
+import type { TrialReviewFact } from '../shared/protocol.js';
 import type { SavedCatalog } from './catalog.js';
 import type { CatalogReply } from '../shared/protocol.js';
 import { createHash, randomInt, randomUUID, timingSafeEqual } from 'node:crypto';
@@ -70,7 +72,7 @@ export function createLobby({ organizerCode, generateId = randomUUID, generateRo
     const actor = actors.get(connection);
     if (!actor) return undefined;
     if (actor.kind === 'organizer') return { revision, kind: 'organizer', room: snapshot(), audioEnabled: audioOwner === connection,
-      ...(firstGame && room ? { stories: stories.map(({ id, title }) => ({ id, title })), roles: room.game.roles(), presence: [...room.players.keys()].flatMap(id => {
+      ...(firstGame && room ? { stories: structuredClone(stories), roles: room.game.roles(), missingLocations: room.game.missingLocations(), violations: room.game.violations(), trialReview: room.game.trialStatus(), presence: [...room.players.keys()].flatMap(id => {
         const status = room!.game.physicalStatus(id); return status ? [status] : [];
       }) } : {}), review: room && ['between_rounds', 'finished'].includes(room.game.publicState().phase) ? room.game.review() : [] };
     if (actor.kind === 'ended') return { revision, ...actor };
@@ -80,7 +82,7 @@ export function createLobby({ organizerCode, generateId = randomUUID, generateRo
       state.dealing = { ...state.dealing, initialPossessedCount: null, assignments: state.dealing.assignments.filter(item => item.playerId === actor.playerId) };
       delete state.game.venue.order;
     }
-    return { revision, kind: 'player', room: state, playerId: actor.playerId, audioEnabled: phoneOwners.get(actor.playerId) === connection, assignment: room!.game.personal(actor.playerId), play: room!.game.personalPlay(actor.playerId), synchronization: room!.game.personalSync(actor.playerId), presence: room!.game.physicalStatus(actor.playerId) };
+    return { revision, kind: 'player', room: state, playerId: actor.playerId, audioEnabled: phoneOwners.get(actor.playerId) === connection, assignment: room!.game.personal(actor.playerId), play: room!.game.personalPlay(actor.playerId), synchronization: room!.game.personalSync(actor.playerId), presence: room!.game.physicalStatus(actor.playerId), locationProposal: room!.game.locationProposal(actor.playerId), trial: room!.game.trialFor(actor.playerId), canReportViolation: firstGame ? room!.game.canReportViolation(actor.playerId, state.game.ritual ?? undefined) : undefined, violations: room!.game.violations().filter(row => row.reporterId === actor.playerId).map(({ id, slot, details, status }) => ({ id, slot, details, status })) };
   }
 
   function disconnect(connection: string) {
@@ -136,6 +138,15 @@ export function createLobby({ organizerCode, generateId = randomUUID, generateRo
         error = room.game.completeSync(actor.playerId, data.roundId, data.syncRevision as number);
       }
       if (error) return fail(error); notify(); return { ok: true, view: viewFor(connection)! };
+    }
+    if (command === 'sync:preview') {
+      if (actor?.kind !== 'organizer') return fail('FORBIDDEN');
+      if (!room || room.id !== data.roomId) return fail('ROOM_NOT_FOUND');
+      const state = room.game.publicState();
+      if (data.gameVersion !== state.version || data.roundId !== state.roundId) return fail('STALE_GAME');
+      if (typeof data.eventId !== 'string' || data.decision !== 'accept' && data.decision !== 'reject' || data.beforeId !== undefined && typeof data.beforeId !== 'string') return fail('INVALID_INPUT');
+      const preview = room.game.reviewPreview(data.eventId, data.decision, data.beforeId);
+      return typeof preview === 'string' ? fail(preview) : { ok: true, view: viewFor(connection)!, reviewPreview: preview };
     }
     if (command === 'lobby:sync') return actor ? { ok: true, view: viewFor(connection)! } : fail('FORBIDDEN');
     if (command === 'organizer:authorize') {
@@ -210,8 +221,8 @@ export function createLobby({ organizerCode, generateId = randomUUID, generateRo
       if (!player) return fail('SESSION_EXPIRED');
       remove(player, 'left');
     } else if (['deal:create', 'deal:shuffle', 'deal:cancel', 'deal:replace', 'card:ready', 'card:request',
-      'game:configure', 'round:start', 'round:pause', 'round:resume', 'round:return', 'round:abort', 'party:finish', 'party:extend', 'play:infect', 'play:release', 'play:mission', 'play:undo', 'results:finalize', 'venue:configure', 'play:withdraw', 'sync:resolve', 'sync:close', 'play:presence', 'play:location', 'round:presence', 'ritual:penalty', 'ritual:undo-penalty', 'party:freeplay'].includes(command)) {
-      const personalReport = command === 'play:presence' || command === 'play:location';
+      'game:configure', 'round:start', 'round:pause', 'round:resume', 'round:return', 'round:abort', 'party:finish', 'party:extend', 'play:infect', 'play:release', 'play:mission', 'play:undo', 'results:finalize', 'venue:configure', 'play:withdraw', 'sync:resolve', 'sync:close', 'play:presence', 'play:location', 'round:location', 'round:presence', 'play:trial', 'round:trial-review', 'play:violation', 'ritual:review', 'ritual:penalty', 'ritual:undo-penalty', 'party:freeplay'].includes(command)) {
+      const personalReport = command === 'play:presence' || command === 'play:location' || command === 'play:violation' || command === 'play:trial';
       const playAction = command.startsWith('play:') && !personalReport;
       const gameAction = command.startsWith('game:') || command.startsWith('round:') || command.startsWith('party:') || playAction || personalReport || command === 'results:finalize' || command === 'venue:configure' || command.startsWith('sync:') || command.startsWith('ritual:');
       const organizerAction = command.startsWith('deal:') || gameAction && !playAction && !personalReport;
@@ -226,10 +237,10 @@ export function createLobby({ organizerCode, generateId = randomUUID, generateRo
       } else if (!Number.isInteger(data.dealVersion) || (data.dealVersion as number) < 0
         || !(data.dealId === null || typeof data.dealId === 'string')) return fail('INVALID_INPUT');
       if ((command === 'play:presence' || command === 'round:presence') && data.status !== 'at_base' && data.status !== 'in_group') return fail('INVALID_INPUT');
-      if (command === 'round:presence' && typeof data.playerId !== 'string' || command === 'play:location' && typeof data.zone !== 'string') return fail('INVALID_INPUT');
+      if ((command === 'round:presence' || command === 'round:location') && typeof data.playerId !== 'string' || (command === 'play:location' || command === 'round:location') && typeof data.zone !== 'string') return fail('INVALID_INPUT');
       if (playAction && (!Number.isInteger(data.playVersion) || (data.playVersion as number) < 0)) return fail('INVALID_INPUT');
       if (command === 'play:infect' && typeof data.targetId !== 'string') return fail('INVALID_INPUT');
-      if (command === 'play:undo' && typeof data.actionId !== 'string') return fail('INVALID_INPUT');
+      if (command === 'play:undo' && (typeof data.actionId !== 'string' || data.requestReview !== undefined && data.requestReview !== true)) return fail('INVALID_INPUT');
       if (command === 'play:mission' && typeof data.completed !== 'boolean') return fail('INVALID_INPUT');
       if ((command === 'deal:create' || command === 'deal:shuffle') && !Number.isInteger(data.possessedCount)) return fail('INVALID_INPUT');
       if (command === 'deal:replace' && typeof data.playerId !== 'string') return fail('INVALID_INPUT');
@@ -237,6 +248,9 @@ export function createLobby({ organizerCode, generateId = randomUUID, generateRo
       if (command === 'card:ready' && typeof data.ready !== 'boolean') return fail('INVALID_INPUT');
       if (command === 'card:request' && typeof data.requested !== 'boolean') return fail('INVALID_INPUT');
       if (command === 'sync:resolve' && (typeof data.eventId !== 'string' || !['accept', 'reject'].includes(data.decision as string) || data.beforeId !== undefined && typeof data.beforeId !== 'string')) return fail('INVALID_INPUT');
+      if (command === 'round:trial-review' && (typeof data.playerId !== 'string' || typeof data.accepted !== 'boolean' || data.fact !== undefined && data.fact !== 'repeat' && !trialTraits.includes(data.fact as typeof trialTraits[number]))) return fail('INVALID_INPUT');
+      if (command === 'play:violation' && (data.slot !== 'A' && data.slot !== 'B' || typeof data.details !== 'string')) return fail('INVALID_INPUT');
+      if (command === 'ritual:review' && (typeof data.reportId !== 'string' || typeof data.accept !== 'boolean')) return fail('INVALID_INPUT');
       if (command === 'sync:close' && data.confirm !== true) return fail('INVALID_INPUT');
       const principal = actor!.kind === 'player' ? `player:${actor!.playerId}` : 'organizer';
       const fields: unknown[] = [command, data.roomId, gameAction ? data.gameVersion : data.dealVersion, gameAction ? data.roundId : data.dealId];
@@ -247,11 +261,15 @@ export function createLobby({ organizerCode, generateId = randomUUID, generateRo
       if (command === 'venue:configure') fields.push(data.venue);
       if (command === 'sync:resolve') fields.push(data.eventId, data.decision, data.beforeId);
       if (command === 'play:presence' || command === 'round:presence') fields.push(data.status, data.playerId);
-      if (command === 'play:location') fields.push(data.zone);
+      if (command === 'play:location' || command === 'round:location') fields.push(data.zone, data.playerId);
       if (playAction) fields.push(data.playVersion);
       if (command === 'play:infect') fields.push(data.targetId);
-      if (command === 'play:undo') fields.push(data.actionId);
+      if (command === 'play:undo') fields.push(data.actionId, ...(data.requestReview === undefined ? [] : [data.requestReview]));
       if (command === 'play:mission') fields.push(data.completed);
+      if (command === 'play:trial') fields.push(data.values);
+      if (command === 'round:trial-review') fields.push(data.playerId, data.accepted, ...(data.fact === undefined ? [] : [data.fact]));
+      if (command === 'play:violation') fields.push(data.slot, data.details);
+      if (command === 'ritual:review') fields.push(data.reportId, data.accept);
       if (command === 'round:start' || command === 'round:resume') fields.push(data.confirmWarnings);
       if (command === 'deal:create' || command === 'deal:shuffle') fields.push(data.possessedCount);
       if (command === 'deal:replace') fields.push(data.playerId, data.assignmentId);
@@ -274,6 +292,7 @@ export function createLobby({ organizerCode, generateId = randomUUID, generateRo
       else if (command === 'deal:replace') error = room.game.change(data.playerId as string, data.assignmentId as string, 'replace');
       else if (command === 'venue:configure') error = room.game.configureVenue(data.venue, [...room.players.keys()]);
       else if (command === 'round:presence' || command === 'play:presence') error = room.game.confirmPresence(command === 'round:presence' ? data.playerId as string : actor!.kind === 'player' ? actor!.playerId : '', data.status as PhysicalStatus);
+      else if (command === 'round:location') error = room.game.setLocation(data.playerId as string, data.zone as string, true);
       else if (command === 'play:location' && actor!.kind === 'player') error = room.game.setLocation(actor!.playerId, data.zone as string);
       else if (command === 'sync:resolve') error = room.game.resolveSync(data.eventId as string, data.decision as 'accept' | 'reject', data.beforeId as string | undefined);
       else if (command === 'sync:close') error = room.game.closeSync();
@@ -285,11 +304,15 @@ export function createLobby({ organizerCode, generateId = randomUUID, generateRo
       else if (command === 'round:return') error = room.game.beginReturn();
       else if (command === 'round:abort') error = room.game.abort();
       else if (command === 'party:finish') error = room.game.finishParty();
+      else if (command === 'play:trial' && actor!.kind === 'player') error = room.game.reportTrial(actor!.playerId, data.values);
+      else if (command === 'round:trial-review') error = room.game.reviewTrial(data.playerId as string, data.accepted as boolean, data.fact as TrialReviewFact | undefined);
+      else if (command === 'play:violation' && actor!.kind === 'player') error = room.game.reportViolation(actor!.playerId, data.slot as 'A' | 'B', data.details as string, generateId());
+      else if (command === 'ritual:review') error = room.game.reviewViolation(data.reportId as string, data.accept as boolean);
       else if (command === 'ritual:penalty' || command === 'ritual:undo-penalty') error = room.game.ritualAction(command === 'ritual:penalty' ? 'penalty' : 'undoPenalty');
       else if (command === 'party:freeplay') error = room.game.freeplay();
       else if (command === 'party:extend') error = room.game.extend();
       else if (command === 'results:finalize') error = room.game.finalize();
-      else if (playAction && actor!.kind === 'player') error = room.game.playAction(actor!.playerId, command.slice(5) as 'infect' | 'release' | 'mission' | 'undo', (command === 'play:undo' ? data.actionId : data.targetId) as string, data.completed as boolean);
+      else if (playAction && actor!.kind === 'player') error = room.game.playAction(actor!.playerId, command.slice(5) as 'infect' | 'release' | 'mission' | 'undo', (command === 'play:undo' ? data.actionId : data.targetId) as string, data.completed as boolean, command === 'play:undo' && data.requestReview === true ? true : undefined);
       else if (actor!.kind === 'player') error = room.game.change(actor!.playerId, data.assignmentId as string, command === 'card:ready' ? 'ready' : 'request', (command === 'card:ready' ? data.ready : data.requested) as boolean);
       if (error) return fail(error);
       if (requests) requests.set(data.requestId, fingerprint);

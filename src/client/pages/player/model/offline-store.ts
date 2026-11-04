@@ -32,7 +32,10 @@ export async function updateOffline(scope: string, mutate: (record: OfflineRecor
 export function appendOffline(scope: string, roundId: string, action: OfflineEvent['action'], view: PlayerView, estimatedServerTime: number | null) {
   return updateOffline(scope, record => {
     if (record.events.length >= 12000) throw new Error('Offline journal is full.');
-    const previous = record.events.findLast(e => e.event.roundId === roundId);
+    if (action.kind === 'undo' && action.requestReview && record.events.some(row => row.event.roundId === roundId &&
+      row.event.action.kind === 'undo' && row.event.action.requestReview && row.event.action.actionId === action.actionId &&
+      (!row.receipt || row.receipt.status === 'review'))) return;
+    const previous = record.events.findLast(e => e.event.roundId === roundId && !(e.event.action.kind === 'undo' && e.event.action.requestReview));
     record.events.push({ event: { id: randomId(), clientId: record.clientId, sequence: ++record.sequence, previousId: previous?.event.id ?? null,
       roundId, action, phase: view.room.game.phase === 'search' && view.room.game.deadline !== null && estimatedServerTime !== null && estimatedServerTime >= view.room.game.deadline ? 'return' : view.room.game.phase, paused: view.room.game.paused, estimatedServerTime }, before: structuredClone(projectOffline(view, record.events).play) });
   });
@@ -43,7 +46,15 @@ export async function purgeOffline(scope: string) {
 }
 export function projectOffline(view: PlayerView, entries: LocalEvent[]): PlayerView {
   const result = structuredClone(view), round = view.room.game.roundId;
-  const events = entries.filter(e => e.event.roundId === round && (!e.receipt || e.receipt.status === 'review'));
+  const requests = entries.filter(row => row.event.roundId === round && row.event.action.kind === 'undo' && row.event.action.requestReview && !row.receipt);
+  if (result.synchronization && requests.length) {
+    const existing = result.synchronization.undoRequests ?? [];
+    result.synchronization.undoRequests = [...existing, ...requests.flatMap(({ event }) => event.action.kind === 'undo' && !existing.some(row => row.id === event.id)
+      ? [{ id: event.id, actionId: event.action.actionId, status: 'queued' as const }] : [])];
+  }
+  if (view.room.game.firstGame && view.room.game.paused) return result;
+  const events = entries.filter(e => e.event.roundId === round && (!e.receipt || e.receipt.status === 'review') &&
+    !(e.event.action.kind === 'undo' && e.event.action.requestReview));
   const undone = new Set(events.filter(e => e.event.action.kind === 'undo').map(e => e.event.action.kind === 'undo' ? e.event.action.actionId : ''));
   for (const item of events) {
     const action = item.event.action;
@@ -55,8 +66,14 @@ export function projectOffline(view: PlayerView, entries: LocalEvent[]): PlayerV
     } else if (result.play) {
       if (action.kind === 'mission') result.play.missionCompleted = action.completed;
       if (action.kind === 'release') result.play.status = 'released';
-      if (action.kind === 'captured') { result.play.status = 'captured'; result.play.missionEligible = false; result.play.wasCaptured = true; }
-      if (action.kind === 'captured') { result.play.undo = null; continue; }
+      if (action.kind === 'captured') {
+        if (result.play.status !== 'exorcist') continue;
+        result.play.status = 'captured';
+        result.play.missionEligible = false;
+        result.play.wasCaptured = true;
+        result.play.undo = null;
+        continue;
+      }
       result.play.undo = { id: item.event.id, label: action.kind === 'infect' ? 'Заражение' : action.kind === 'release' ? 'Освобождение группы' : 'Отметка миссии', available: true };
     }
   }

@@ -1,3 +1,5 @@
+import { cardSets, venueFeatures } from '../shared/protocol.js';
+import { validateTrials } from './trials.js';
 import { standardCatalog, validateSavedCatalog } from './catalog.js';
 import type { Assignment } from '../shared/protocol.js';
 import type { SavedLobby } from './lobby.js';
@@ -8,7 +10,7 @@ import { createRoundSync, validateRoundSync } from './round-sync.js';
 import { validDifficulty, validSettings, isTimedPhase } from './game.js';
 
 /** Private disk contract. Never import this module from the browser or wire protocol. */
-export interface SavedSession { schemaVersion: 5 | 6; lobby: SavedLobby }
+export interface SavedSession { schemaVersion: 5 | 6 | 7; lobby: SavedLobby }
 function requireValue(condition: unknown): asserts condition { if (!condition) throw new Error('Invalid or incompatible session file.'); }
 function object(value: unknown): Record<string, unknown> { requireValue(value && typeof value === 'object' && !Array.isArray(value)); return value as Record<string, unknown>; }
 function array(value: unknown, limit = 100000): unknown[] { requireValue(Array.isArray(value) && value.length <= limit); return value; }
@@ -27,7 +29,8 @@ function assignment(value: unknown): Assignment {
   const a = object(value), card = object(a.card);
   requireValue(text(a.id, 256) && typeof a.ready === 'boolean' && typeof a.replacementRequested === 'boolean' && !(a.ready && a.replacementRequested));
   requireValue(text(card.id, 256) && text(card.title) && validDifficulty(card.difficulty));
-  if (card.role === 'possessed') requireValue(['behavior', 'clue', 'releaseCondition', 'infectionCondition'].every(k => text(card[k])));
+  requireValue(card.setup === undefined || text(card.setup, 2000));
+  if (card.role === 'possessed') requireValue(['behavior', 'releaseCondition', 'infectionCondition'].every(k => text(card[k])) && (card.clue === undefined || text(card.clue)));
   else requireValue(card.role === 'exorcist' && text(card.mission));
   return value as Assignment;
 }
@@ -110,8 +113,8 @@ export function validateSession(value: unknown): SavedSession {
       deal.usage ??= [...usage].map(([key, ids]) => [key, [...ids]]);
     }
   }
-  requireValue(saved.schemaVersion === 5 || saved.schemaVersion === 6);
-  const firstGame = saved.schemaVersion === 6;
+  requireValue(saved.schemaVersion === 5 || saved.schemaVersion === 6 || saved.schemaVersion === 7);
+  const firstGame = saved.schemaVersion !== 5;
   const lobby = object(saved.lobby); requireValue(integer(lobby.revision));
   validateSavedCatalog(lobby.catalog);
   const codes = strings(lobby.usedCodes); requireValue(codes.every(v => /^[A-Z2-9]{6}$/.test(v)));
@@ -136,6 +139,26 @@ export function validateSession(value: unknown): SavedSession {
   if (firstGame) {
     const state = object(game.firstGame);
     const { members } = validateRetained(state.retained);
+    requireValue(venue.mode === undefined || venue.mode === 'first' || saved.schemaVersion === 7 && venue.mode === 'ordinary');
+    requireValue(venue.bank === undefined || venue.bank === 'local' || venue.bank === 'authored');
+    requireValue(venue.horror === undefined || typeof venue.horror === 'boolean');
+    if (venue.sets !== undefined) requireValue(strings(venue.sets, cardSets.length).every(set => (cardSets as readonly string[]).includes(set)));
+    if (venue.features !== undefined) requireValue(strings(venue.features, venueFeatures.length).every(feature => (venueFeatures as readonly string[]).includes(feature)));
+    requireValue(venue.prologueRead === undefined || typeof venue.prologueRead === 'boolean');
+    if (state.locations !== undefined) for (const [id, location] of pairs(state.locations, 12)) {
+      const row = object(location);
+      requireValue(text(id, 256) && (row.proposed !== undefined || row.confirmed !== undefined) &&
+        (row.proposed === undefined || zones.includes(row.proposed as string)) && (row.confirmed === undefined || zones.includes(row.confirmed as string)));
+    }
+    if (state.violations !== undefined) {
+      const violations = array(state.violations, 200).map(object);
+      requireValue(new Set(violations.map(row => row.id)).size === violations.length && violations.every(row => text(row.id, 256) && text(row.reporterId, 256) &&
+        text(row.details, 500) && (row.slot === 'A' || row.slot === 'B') && ['review', 'applied', 'rejected', 'dismissed', 'reversed'].includes(row.status as string)));
+    }
+    if (state.trials !== undefined) {
+      requireValue(venue.mode === 'ordinary' && state.locked);
+      validateTrials(state.trials);
+    } else requireValue(venue.mode !== 'ordinary' || !state.locked);
     requireValue(typeof state.locked === 'boolean' && (!game.started || state.locked) && [...members].every(id => ids.includes(id)));
     requireValue(strings(state.waitingFree, 12).every(id => ids.includes(id) && !members.has(id)));
     if (state.story !== undefined) {
@@ -193,6 +216,7 @@ export function validateSession(value: unknown): SavedSession {
     validatePlan(r, true);
     requireValue(text(r.roundId, 256) && integer(r.number) && ['provisional', 'final', 'aborted'].includes(r.status as string) && duration(r.activeMs));
     requireValue(['rescuedGroups', 'totalGroups', 'missions', 'totalMissions', 'infectedPlayers'].every(k => integer(r[k]) && r[k] <= 12));
+    requireValue(r.trialBonus === undefined || venue.mode === 'ordinary' && (r.trialBonus === 0 || r.trialBonus === 1));
     requireValue((r.rescuedGroups as number) <= (r.totalGroups as number) && (r.missions as number) <= (r.totalMissions as number));
   }
   requireValue(results.filter(r => r.kind === 'regular' && r.status !== 'aborted').length === game.completedRounds && results.filter(r => r.status === 'provisional').length <= 1);
@@ -249,7 +273,7 @@ export function validateSession(value: unknown): SavedSession {
     requireValue(ritual.roundLimit === game.progressionRounds);
     const expected = results.slice(0, game.freeplayFrom === null ? results.length : game.freeplayFrom as number).filter(r => r.kind === 'regular' && r.status === 'final');
     const applied = ritual.events.filter(e => e.kind === 'round');
-    requireValue(applied.length === expected.length && applied.every((e, i) => e.id === expected[i].roundId && e.number === expected[i].number && e.successes === Number(expected[i].rescuedGroups) + Number(expected[i].missions)));
+    requireValue(applied.length === expected.length && applied.every((e, i) => e.id === expected[i].roundId && e.number === expected[i].number && e.successes === Number(expected[i].rescuedGroups) + Number(expected[i].missions) + Number(expected[i].trialBonus ?? 0)));
     const initial = results.find(r => r.kind === 'regular' && r.status !== 'aborted');
     if (initial) requireValue(ritual.players === Number(initial.totalGroups) + Number(initial.totalMissions));
     requireValue(projection.outcome === 'playing' ? settings.ritualEnabled === true && game.freeplayFrom === null && game.phase !== 'finished'

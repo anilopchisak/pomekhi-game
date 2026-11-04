@@ -57,8 +57,16 @@ export function createSearch(roundId: string, initial: ReadonlyMap<string, Assig
     events.push({ id: generateId(), action, touches: new Set(touches), undone: false }); version++; rebuild();
   }
   function latest(playerId: string) { return events.findLast(event => !event.undone && event.action.actor === playerId && event.action.kind !== 'depart'); }
-  function dependent(event: Event) {
-    return events.slice(events.indexOf(event) + 1).some(next => !next.undone && [...next.touches].some(key => event.touches.has(key)));
+  function dependencies(event: Event) {
+    return events.slice(events.indexOf(event) + 1).filter(next => !next.undone && [...next.touches].some(key => event.touches.has(key)));
+  }
+  function undoBlockers(actor: string, actionId: string) {
+    const event = events.find(item => item.id === actionId && item.action.actor === actor && !item.undone);
+    if (!event) return [];
+    const blockers = new Set(dependencies(event).map(item => item.id));
+    const newest = latest(actor);
+    if (newest && newest !== event) blockers.add(newest.id);
+    return [...blockers];
   }
   function personal(playerId: string): PersonalPlay | null {
     const state = states.get(playerId), assignment = roster.get(playerId);
@@ -72,7 +80,7 @@ export function createSearch(roundId: string, initial: ReadonlyMap<string, Assig
       card: structuredClone(state.group ? groups.get(state.group)!.assignment.card : assignment.card), cardKey,
       ...(retained ? { location: state.group ? locations.get(state.group) ?? null : null, retained: inheritedMembers.has(playerId) } : {}),
       wasCaptured: state.captured, missionCompleted: state.mission, missionEligible: assignment.card.role === 'exorcist' && !state.captured,
-      undo: event ? { id: event.id, label: event.action.kind === 'infect' ? 'Заражение' : event.action.kind === 'release' ? 'Освобождение группы' : 'Отметка миссии', available: !finalized && !dependent(event) } : null };
+      undo: event ? { id: event.id, label: event.action.kind === 'infect' ? 'Заражение' : event.action.kind === 'release' ? 'Освобождение группы' : 'Отметка миссии', available: !finalized && dependencies(event).length === 0, ...(!finalized && (event.action.kind === 'infect' || event.action.kind === 'release') && dependencies(event).length > 0 ? { canRequestReview: true } : {}) } : null };
   }
   // Undoing capture also closes a previously revealed card, without closing unrelated cards.
   function versionForCard(playerId: string) { return events.filter(e => e.action.kind === 'infect' && e.action.target === playerId).map(e => `${e.id}:${e.undone}`).join(','); }
@@ -98,11 +106,16 @@ export function createSearch(roundId: string, initial: ReadonlyMap<string, Assig
       }
     }
   }
-  function undo(actor: string, actionId: string): LobbyError | undefined {
+  function undoError(actor: string, actionId: string): LobbyError | undefined {
     if (finalized) return 'RESULTS_FINAL';
     const event = latest(actor);
     if (!event || event.id !== actionId || states.get(actor)?.left) return 'ACTION_UNAVAILABLE';
-    if (dependent(event)) return 'UNDO_DEPENDENCY';
+    if (dependencies(event).length) return 'UNDO_DEPENDENCY';
+  }
+  function undo(actor: string, actionId: string): LobbyError | undefined {
+    const error = undoError(actor, actionId);
+    if (error) return error;
+    const event = latest(actor)!;
     event.undone = true; version++; rebuild();
   }
   function depart(playerId: string) {
@@ -136,7 +149,7 @@ export function createSearch(roundId: string, initial: ReadonlyMap<string, Assig
     events.splice(0, events.length, ...structuredClone(state.events).map(e => ({ ...e, touches: new Set(e.touches) })));
     locations = new Map(state.locations ?? []); version = state.version + Number(bump); finalized = state.finalized; rebuild();
   }
-  return { group: (playerId: string) => states.get(playerId)?.group ?? null, personal, act, undo, depart, canSearch, result, carry, place,
+  return { group: (playerId: string) => states.get(playerId)?.group ?? null, personal, act, undo, undoError, undoBlockers, depart, canSearch, result, carry, place,
     targets: () => [...states].filter(([, s]) => !s.group && !s.released && !s.left).map(([id]) => id),
     exportState, restore, seal: () => { finalized = true; }, version: () => version };
 }

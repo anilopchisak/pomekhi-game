@@ -1,10 +1,10 @@
 # Behind Your Back: horror revisions
 
-This user-requested collection supplies 38 frightening entries of the authored original-rule adaptation: 26 possessed cards and 12 exorcist missions. It is content for review and future implementation, not a change to the current game. All game-facing text is Russian; author metadata is English. Active missions require no paper, printed token or cardboard task prop.
+This user-requested collection supplies 38 frightening entries of the authored original-rule adaptation: 26 possessed cards and 12 exorcist missions. The game offers these entries as optional one-for-one mission replacements in the authored bank. All game-facing text is Russian; author metadata is English. Active missions require no paper, printed token or cardboard task prop.
 
 Open [index.html](index.html). The offline catalog has deck/requirement filters, ID/action search and outcome concealment. Its print stylesheet is an optional author-review capability, never a requirement for play. Fear is the purpose of the collection. HP011, HP012, HP025 and HE005 are marked harder for reflection reasoning or optical placement; being frightening alone does not add that mark.
 
-The domestic revision retains 27 core variants, adapts nine and replaces HP009/HP017. The [complete decision register](../revision-audit.json), [human-source registry](../fiction-sources.json) and [research](../research.md) document the intention and physical causal chain for every variant. All six primary opening stories freely mix with this selection. Props are ordinary already-owned objects, not a special kit; scenes with two-hand actions need a stable nearby place for the lit phone. Captives can repeat shared-prop scenes with empty hands.
+The domestic revision retains 27 core variants, adapts nine and replaces HP009/HP017. The [complete decision register](../revision-audit.json), [human-source registry](../fiction-sources.json) and [research](../research.md) document the intention and physical causal chain for every variant. All six primary opening stories freely mix with this selection. Two-hand actions can use a safe nearby place for the lit phone. Captives use the same card as the group.
 
 ## Deliverables
 
@@ -24,7 +24,7 @@ The adjacent [primary set](../README.md) remains authoritative for its 147 origi
 python3 output/cards/horror/build.py
 ```
 
-The command checks the recorded base hash before producing a detached selection. It never writes to the primary files, source bank, saved session or runtime catalog. The current importer still requires its legacy clue field and format; neither file here is presented as a current-game import, and no placeholder helper is inserted.
+The command checks the recorded base hash before producing a detached selection. It never writes to the primary files, source bank, saved session or runtime catalog. The editable-bank importer has a separate personal-card format. The server ships the authored projection directly.
 
 ## No task props
 
@@ -34,7 +34,7 @@ The user explicitly keeps ordinary existing house mirrors: HP025 releases upon a
 
 ## Selection and mechanics
 
-Choose any horror revisions before dealing. For each chosen baseCard, remove that original card and use the horror entry instead. Do not append both entries of the same mission. Selecting all 38 still yields 147 cards with 75 possessed, 42 exorcist, 11 trial, 11 prophecy, six story and two reference cards. The two new requested behaviors, HP025 and HP026, share the same current physical edition as primary P026 and P030; they belong to both collections rather than introducing a second different solution. No trial, prophecy, ritual currency or phase is added.
+In the editorial selection, choose any horror revisions before dealing. In the game, turn on the horror option during preparation to apply all eligible replacements together. For each chosen baseCard, remove that original card and use the horror entry instead. Do not append both entries of the same mission. Selecting all 38 still yields 147 cards with 75 possessed, 42 exorcist, 11 trial, 11 prophecy, six story and two reference cards. The two new requested behaviors, HP025 and HP026, share the same current physical edition as primary P026 and P030; they belong to both collections rather than introducing a second different solution. No trial, prophecy, ritual currency or phase is added.
 
 Original optional categories remain available: indoor, outdoor, agreed physical contact and harder. Venue/contact labels are cumulative. Most old harder marks are deliberately removed from these versions when their actual action is simple; fear comes from pacing, gaze, voice, touch or anticipation. These are author revisions of the prior authored set, not newly recovered commercial card text.
 
@@ -48,4 +48,4 @@ Dwelling offerings use an actual visit to the agreed empty place and the card's 
 
 The local builder checks 38 complete entries, unique role-matching base IDs, a preserved 147-card composition, absent helper and paper requirements, distinct playable text and admission prerequisites. Review records explain completed-action distinctions, consent boundaries, shared editions and sole-rescuer feasibility. The merged selection preserves all nonselected card objects verbatim. These checks do not prove actual fear or discoverability.
 
-Actual fear, discoverability, practical balance, dim-screen optical effects, audibility, native phone behavior and physical network play still require acceptance with participants. The game source, public protocol, state owners and persistence have not changed, so no runtime design document is rewritten for this content-only supplement.
+Actual fear, discoverability, practical balance, dim-screen optical effects, audibility, native phone behavior and physical network play still require acceptance with participants.

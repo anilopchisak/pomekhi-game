@@ -1,7 +1,7 @@
 import { expect, it } from 'vitest';
 import { createDealing } from './dealing.js';
 import { createSearch } from './search.js';
-import { createRoundSync } from './round-sync.js';
+import { createRoundSync, validateRoundSync } from './round-sync.js';
 import type { OfflineAction, OfflineEvent } from '../shared/protocol.js';
 function fixture() {
   let id = 0; const generateId = () => `identifier-${++id}`;
@@ -68,6 +68,33 @@ it('rejects forged retries and independent sequence collisions', () => {
   expect(j.ingest(a, [{ ...original, id: 'different-event' }], () => true)).toBe('INVALID_INPUT');
   expect(j.ingest('stranger', [original], () => true)).toBe('FORBIDDEN');
   expect(j.personal('stranger')).toBeNull();
+});
+
+it('stores only canonical event fields and accepts a replay of an older padded checkpoint', () => {
+  const { journal, event, exos: [actor], generateId } = fixture();
+  const original = event(actor, { kind: 'mission', completed: true });
+  const padded = { ...original, padding: 'x'.repeat(16000), action: { ...original.action, ignored: true } };
+  expect(journal.ingest(actor, [padded], () => true)).toBeUndefined();
+  expect(journal.exportState().entries[0].event).toEqual(original);
+  const older = journal.exportState();
+  older.entries[0].event = padded;
+  const restored = createRoundSync(older, generateId);
+  expect(restored.ingest(actor, [original], () => false)).toBeUndefined();
+  expect(restored.exportState()).toEqual(journal.exportState());
+});
+
+it('keeps a full inbox valid and allows a participant to leave', () => {
+  const { journal, event, exos: [actor], generateId } = fixture();
+  const state = journal.exportState();
+  state.entries = Array.from({ length: 12000 }, () => {
+    const report = event(actor, { kind: 'mission', completed: true }, 'missing-report');
+    return { actor, event: report, receipt: { id: report.id, status: 'review', reason: 'timing' }, approved: false };
+  });
+  const full = createRoundSync(state, generateId);
+  expect(full.legacy(actor, { kind: 'mission', completed: true })).toBe('REQUEST_LIMIT');
+  expect(full.legacy(actor, { kind: 'withdraw' })).toBeUndefined();
+  expect(full.current().personal(actor)).toBeNull();
+  expect(() => validateRoundSync(full.exportState(), state.base.roundId)).not.toThrow();
 });
 
 it('accepts a delayed capture notice after its source withdrew without dropping the group', () => {

@@ -1,7 +1,7 @@
 import { expect, it } from 'vitest';
 import { projectOffline } from '../../src/client/pages/player/model/offline-store.js';
 import { createLobby } from '../../src/server/lobby.js';
-function fixture() {
+function fixture(status) {
   const lobby = createLobby({ organizerCode: 'TEST' });
   lobby.execute('h', 'organizer:authorize', { code: 'TEST' }); lobby.execute('h', 'room:create', {});
   const h = lobby.viewFor('h'); if (h?.kind !== 'organizer' || !h.room) throw new Error('No room');
@@ -10,12 +10,13 @@ function fixture() {
   lobby.execute('h', 'deal:create', { roomId: h.room.id, requestId: 'test-deal-id', dealId: null, dealVersion: 0, possessedCount: 2 });
   const room = lobby.exportState().room;
   lobby.execute('h', 'round:start', { roomId: h.room.id, requestId: 'test-start-id', gameVersion: room.game.version, roundId: null, confirmWarnings: true });
-  const view = lobby.viewFor('p0');
+  const views = Array.from({ length: 4 }, (_, i) => lobby.viewFor(`p${i}`));
+  const view = status ? views.find(item => item.play.status === status) : views[0];
   const event = (action, id) => ({ event: { id, clientId: 'offline-client', sequence: 1, previousId: null, action, roundId: view.room.game.roundId, phase: 'search', paused: false, estimatedServerTime: null }, before: globalThis.structuredClone(view.play) });
   lobby.dispose(); return { view, event };
 }
 it('projects only this player and labels a captured notice without claiming to have received another card', () => {
-  const { view, event } = fixture(), copy = globalThis.structuredClone(view);
+  const { view, event } = fixture('exorcist'), copy = globalThis.structuredClone(view);
   const projected = projectOffline(view, [event({ kind: 'captured', by: 'someone' }, 'captured-event')]);
   expect(projected.play).toMatchObject({ status: 'captured', wasCaptured: true, missionEligible: false, undo: null });
   expect(projected.play.card).toEqual(view.play.card); expect(view).toEqual(copy); expect(projected.room.players).toEqual(view.room.players);
@@ -29,6 +30,18 @@ it('reverses a pending local action and excludes rejected/other-round events', (
   expect(projectOffline(view, [action]).play).toEqual(view.play);
   action.receipt = undefined; action.event.roundId = 'other-round'; expect(projectOffline(view, [action]).play).toEqual(view.play);
 });
+
+it('preserves a confirmed release while a delayed capture notice awaits review', () => {
+  const { view, event } = fixture('exorcist');
+  const capture = event({ kind: 'captured', by: 'someone' }, 'capture-notice');
+  view.play.status = 'released';
+  view.play.wasCaptured = true;
+  view.play.missionEligible = false;
+  for (const receipt of [undefined, { id: capture.event.id, status: 'review', reason: 'timing' }]) {
+    capture.receipt = receipt;
+    expect(projectOffline(view, [capture]).play).toEqual(view.play);
+  }
+});
 it('withdraws only the current player without altering the shared roster or score', () => {
   const { view, event } = fixture(); const projected = projectOffline(view, [event({ kind: 'withdraw' }, 'withdraw-event')]);
   expect(projected.play).toBeNull(); expect(projected.synchronization?.withdrawn).toBe(true); expect(projected.room).toEqual(view.room);
@@ -41,4 +54,13 @@ it('does not restore participation through an achievement undo after withdrawal'
   const undo = event({ kind: 'undo', actionId: mission.event.id }, 'undo-event');
   const projected = projectOffline(view, [mission, withdrawn, undo]);
   expect(projected.play).toBeNull(); expect(projected.synchronization.withdrawn).toBe(true);
+});
+
+it('keeps gameplay intact while an explicit undo request is queued for the organizer', () => {
+  const { view, event } = fixture();
+  const release = event({ kind: 'release' }, 'release-event');
+  const request = event({ kind: 'undo', actionId: release.event.id, requestReview: true }, 'review-request');
+  const projected = projectOffline(view, [release, request]);
+  expect(projected.play.status).toBe('released');
+  expect(projected.synchronization.undoRequests).toEqual([{ id: request.event.id, actionId: release.event.id, status: 'queued' }]);
 });

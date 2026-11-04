@@ -38,18 +38,23 @@ export interface RoundPlan { kind: 'tutorial' | 'regular'; number: number; diffi
 export interface RoundResult extends Omit<RoundPlan, 'infectionEnabled'> {
   infectionEnabled: boolean | null;
   roundId: string; number: number; status: 'provisional' | 'final' | 'aborted';
-  rescuedGroups: number; totalGroups: number; missions: number; totalMissions: number; infectedPlayers: number; activeMs: number;
+  rescuedGroups: number; totalGroups: number; missions: number; totalMissions: number; infectedPlayers: number; activeMs: number; trialBonus?: 0 | 1;
 }
 export interface PersonalPlay {
   roundId: string; version: number; status: 'exorcist' | 'possessed' | 'captured' | 'released';
   card: PersonalCard; cardKey: string; wasCaptured: boolean; missionCompleted: boolean; missionEligible: boolean;
-  undo: { id: string; label: string; available: boolean } | null;
+  undo: { id: string; label: string; available: boolean; canRequestReview?: boolean } | null;
   location?: string | null;
   retained?: boolean;
   targets?: string[];
 }
 interface PlayCommand extends GameCommand { playVersion: number }
-export interface Venue { base: string; zones: string[]; dwelling?: { zone: string; place: string }; storyId?: string; harder?: boolean; order?: string[] }
+export type GameMode = 'first' | 'ordinary';
+export const cardSets = ['indoor', 'outdoor', 'contact', 'harder'] as const;
+export type CardSet = typeof cardSets[number];
+export const venueFeatures = ['space', 'door', 'mirror', 'tree', 'dimLight', 'wall', 'twoZones', 'scary', 'touchSurfaces', 'contact', 'landmarks'] as const;
+export type VenueFeature = typeof venueFeatures[number];
+export interface Venue { mode?: GameMode; bank?: 'local' | 'authored'; horror?: boolean; sets?: CardSet[]; features?: VenueFeature[]; prologueRead?: boolean; base: string; zones: string[]; dwelling?: { zone: string; place: string }; storyId?: string; harder?: boolean; order?: string[] }
 export type PhysicalStatus = 'at_base' | 'in_group';
 export interface Presence { playerId: string; expected: PhysicalStatus; confirmed: boolean }
 export type OfflineAction =
@@ -57,16 +62,36 @@ export type OfflineAction =
   | { kind: 'captured'; by: string }
   | { kind: 'release' }
   | { kind: 'mission'; completed: boolean }
-  | { kind: 'undo'; actionId: string }
+  | { kind: 'undo'; actionId: string; requestReview?: true }
   | { kind: 'withdraw' };
 export interface OfflineEvent {
   id: string; clientId: string; sequence: number; previousId: string | null;
   roundId: string; action: OfflineAction; phase: GamePhase; paused: boolean; estimatedServerTime: number | null;
 }
 export interface EventReceipt { id: string; status: 'accepted' | 'review' | 'rejected'; reason: string | null }
-export interface ReviewEvent extends EventReceipt { actor: string; actorName?: string; targetName?: string; dependsOn?: string[]; action: OfflineAction }
+export interface ReviewPreview { successes: number; remainingSteps: number; changed: EventReceipt[]; applied: boolean }
+export interface ViolationReceipt { id: string; slot: 'A' | 'B'; details: string; status: 'review' | 'applied' | 'rejected' | 'dismissed' | 'reversed' }
+export interface ViolationReview extends ViolationReceipt { reporterId: string }
+export const trialTraits = ['height', 'clothes', 'motion'] as const;
+export type TrialTrait = typeof trialTraits[number];
+export type TrialReviewFact = 'repeat' | TrialTrait;
+export type LateVisitStatus = 'review' | 'accepted' | 'rejected';
+export type TrialValue = string | boolean;
+export interface TrialField { id: string; label: string; type: 'boolean' | 'text' | 'player' | 'zone'; allowed?: boolean[]; choices?: { id: string; label: string }[] }
+export interface PersonalTrial {
+  title: string; instruction: string; fields: TrialField[]; values: Record<string, TrialValue>;
+  lateVisit?: LateVisitStatus; message?: string; submitted: boolean; reporter: 'actor' | 'witness'; canSubmit: boolean;
+}
+export interface TrialReview {
+  lateVisit?: { playerId: string; status: LateVisitStatus };
+  traitComparisons?: { playerId: string; trait: TrialTrait; label: string; original: string; answer: string; equivalent: boolean }[];
+  reports: { playerId: string; accepted: boolean; facts: { label: string; value: TrialValue }[] }[];
+  status: 'waiting' | 'ready' | 'unavailable' | 'conflict'; bonus: 0 | 1;
+}
+export interface MissingLocation { memberId: string; proposed?: string; confirmed?: string }
+export interface ReviewEvent extends EventReceipt { actor: string; actorName?: string; targetName?: string; dependsOn?: string[]; action: OfflineAction; blockers?: string[] }
 export interface RoundSyncSnapshot { waitingPlayerIds: string[]; waitingPlayers?: { id: string; name: string }[]; conflicts: number; closed: boolean; revision: number }
-export interface PersonalSync { roundId: string; receipts: EventReceipt[]; complete: boolean; withdrawn: boolean }
+export interface PersonalSync { roundId: string; receipts: EventReceipt[]; complete: boolean; withdrawn: boolean; undoRequests?: { id: string; actionId: string; status: EventReceipt['status'] | 'queued' }[] }
 export type RitualOutcome = 'playing' | 'won' | 'lost' | 'stopped' | 'all_possessed';
 export interface Prophecy { id: string; title: string; rule: string }
 export interface RitualSnapshot {
@@ -79,7 +104,9 @@ export interface RitualSnapshot {
   preview: { successes: number; positions: [number, number, number, number]; remainingSteps: number } | null;
 }
 export interface GameSnapshot {
+  references?: { id: string; title: string; sections: { title: string; text: string }[] }[];
   firstGame?: true;
+  preparationLocked?: boolean;
   story?: { title: string; prologue: string };
   ritual: RitualSnapshot | null;
   freeplayFrom: number | null;
@@ -109,9 +136,9 @@ export interface GameCue { roomId: string; version: number; phase: GamePhase; ki
 interface GameCommand { roomId: string; requestId: string; gameVersion: number; roundId: string | null }
 
 export type Role = 'possessed' | 'exorcist';
-export type PersonalCard = { id: string; title: string; difficulty: Difficulty; harder?: boolean; offering?: boolean } & (
-  | { role: 'possessed'; behavior: string; clue: string; releaseCondition: string; infectionCondition: string }
-  | { role: 'exorcist'; mission: string }
+export type PersonalCard = { id: string; title: string; difficulty: Difficulty; harder?: boolean; offering?: boolean; sets?: CardSet[]; requirements?: VenueFeature[]; setup?: string } & (
+  | { role: 'possessed'; behavior: string; clue?: string; releaseCondition: string; infectionCondition: string }
+  | { role: 'exorcist'; mission: string; successCondition?: string }
 );
 export interface Assignment {
   id: string;
@@ -133,8 +160,8 @@ export interface PersistenceStatus {
   mode: 'memory' | 'disk'; state: 'ready' | 'load_error' | 'write_error'; recovered: boolean;
 }
 export type LobbyView = { revision: number; persistence?: PersistenceStatus } & (
-  | { kind: 'organizer'; room: RoomSnapshot | null; audioEnabled: boolean; review?: ReviewEvent[]; roles?: Record<string, Role>; presence?: Presence[]; stories?: { id: string; title: string }[] }
-  | { kind: 'player'; room: RoomSnapshot; playerId: string; audioEnabled?: boolean; assignment: Assignment | null; play: PersonalPlay | null; synchronization?: PersonalSync | null; presence?: Presence }
+  | { kind: 'organizer'; room: RoomSnapshot | null; audioEnabled: boolean; review?: ReviewEvent[]; missingLocations?: MissingLocation[]; violations?: ViolationReview[]; trialReview?: TrialReview; roles?: Record<string, Role>; presence?: Presence[]; stories?: { id: string; title: string; prologue: string }[] }
+  | { kind: 'player'; room: RoomSnapshot; playerId: string; audioEnabled?: boolean; assignment: Assignment | null; play: PersonalPlay | null; synchronization?: PersonalSync | null; locationProposal?: string; violations?: ViolationReceipt[]; canReportViolation?: boolean; trial?: PersonalTrial; presence?: Presence }
   | { kind: 'ended'; reason: 'closed' | 'removed' | 'left' }
 );
 
@@ -142,9 +169,9 @@ export type LobbyError = 'CARD_POOL_INSUFFICIENT' | 'STALE_CATALOG' | 'CATALOG_L
   | 'ROOM_NOT_FOUND' | 'ROOM_FULL' | 'NAME_TAKEN' | 'SESSION_EXPIRED'
   | 'INVALID_COMPOSITION' | 'STALE_DEAL' | 'STALE_CARD' | 'REPLACEMENT_PENDING' | 'REQUEST_LIMIT'
   | 'INVALID_PHASE' | 'STALE_GAME' | 'START_WARNING' | 'RESUME_WARNING' | 'SETTINGS_LOCKED'
-  | 'STALE_PLAY' | 'ACTION_UNAVAILABLE' | 'UNDO_DEPENDENCY' | 'RESULTS_FINAL' | 'STORAGE_UNAVAILABLE' | 'SYNC_PENDING' | 'RITUAL_REVIEW_PENDING'
-  | 'PREPARATION_REQUIRED' | 'PRESENCE_REQUIRED';
-export type LobbyReply = { ok: true; view: LobbyView } | { ok: false; error: LobbyError };
+  | 'STALE_PLAY' | 'ACTION_UNAVAILABLE' | 'UNDO_DEPENDENCY' | 'RESULTS_FINAL' | 'STORAGE_UNAVAILABLE' | 'SYNC_PENDING' | 'RITUAL_REVIEW_PENDING' | 'TRIAL_REVIEW_PENDING'
+  | 'TRIAL_POOL_INSUFFICIENT' | 'PREPARATION_REQUIRED' | 'PRESENCE_REQUIRED';
+export type LobbyReply = { ok: true; view: LobbyView; reviewPreview?: ReviewPreview } | { ok: false; error: LobbyError };
 
 export interface LobbyInputs {
   'organizer:authorize': { code: string };
@@ -175,18 +202,24 @@ export interface LobbyInputs {
   'play:infect': PlayCommand & { targetId: string };
   'play:release': PlayCommand;
   'play:mission': PlayCommand & { completed: boolean };
-  'play:undo': PlayCommand & { actionId: string };
+  'play:undo': PlayCommand & { actionId: string; requestReview?: true };
   'results:finalize': GameCommand;
+  'play:trial': GameCommand & { values: Record<string, TrialValue> };
+  'round:trial-review': GameCommand & { playerId: string; accepted: boolean; fact?: TrialReviewFact };
+  'play:violation': GameCommand & { slot: 'A' | 'B'; details: string };
+  'ritual:review': GameCommand & { reportId: string; accept: boolean };
   'ritual:penalty': GameCommand;
   'ritual:undo-penalty': GameCommand;
   'party:freeplay': GameCommand;
   'venue:configure': GameCommand & { venue: Venue };
+  'round:location': GameCommand & { playerId: string; zone: string };
   'play:location': GameCommand & { zone: string };
   'play:presence': GameCommand & { status: PhysicalStatus };
   'round:presence': GameCommand & { playerId: string; status: PhysicalStatus };
   'play:withdraw': PlayCommand;
   'play:sync': { roomId: string; roundId: string; events: OfflineEvent[] };
   'play:complete': { roomId: string; roundId: string; syncRevision: number };
+  'sync:preview': GameCommand & { eventId: string; decision: 'accept' | 'reject'; beforeId?: string };
   'sync:resolve': GameCommand & { eventId: string; decision: 'accept' | 'reject'; beforeId?: string };
   'sync:close': GameCommand & { confirm: true };
   'storage:retry': Record<string, never>;
@@ -199,7 +232,7 @@ export type ClientToServerEvents = {
 } & { 'catalog:command': (input: CatalogInput, acknowledge: (reply: CatalogReply) => void) => void };
 
 export interface CatalogEntry { enabled: boolean; card: PersonalCard }
-export interface CatalogFile { format: 'pomekhi.cards'; version: 1; entries: CatalogEntry[] }
+export interface CatalogFile { format: 'pomekhi.cards'; version: 1 | 2; entries: CatalogEntry[] }
 export type CatalogInput = { action: 'read' } | ({ revision: number; requestId: string } & (
   | { action: 'save'; entry: CatalogEntry }
   | { action: 'import'; file: CatalogFile }

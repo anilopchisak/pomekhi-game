@@ -40,7 +40,7 @@ export function createCatalog() {
       if (!editable) return 'CATALOG_LOCKED';
       if (data.revision !== state.revision) return 'STALE_CATALOG';
       const entries = entry ? [...state.file.entries.filter(e => e.card.id !== entry.card.id), entry] : undefined;
-      const next = action === 'reset' ? standardCatalog().file : file ?? validateCatalogFile({ format: 'pomekhi.cards', version: 1, entries });
+      const next = action === 'reset' ? standardCatalog().file : file ?? validateCatalogFile({ format: 'pomekhi.cards', version: 2, entries });
       state = { revision: state.revision + 1, file: next, requests: [...state.requests, [data.requestId, fingerprint] as [string, string]].slice(-256) };
     } catch { return 'INVALID_INPUT'; }
   }

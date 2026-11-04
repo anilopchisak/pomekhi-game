@@ -2,17 +2,15 @@ import type { ReactNode } from 'react';
 import type { ConnectionState } from '../api/index.js';
 import styles from './LobbyShell.module.css';
 
-export function LobbyShell({ title, connection, error, children, wide = false, firstGame = false, toolbar }: {
-  title: string; connection: ConnectionState; error: string; children: ReactNode; wide?: boolean; firstGame?: boolean; toolbar?: ReactNode;
+export function LobbyShell({ title, connection, error, children, wide = false, toolbar }: {
+  title: string; connection: ConnectionState; error: string; children: ReactNode; wide?: boolean; toolbar?: ReactNode;
 }) {
-  const status = { connecting: 'Настраиваем сигнал…', online: 'Связь с домом установлена', offline: 'Сигнал потерян. Пробуем подключиться снова…' }[connection];
+  const status = { connecting: 'Настраиваем сигнал…', online: 'Связь установлена', offline: 'Сигнал потерян. Пробуем подключиться снова…' }[connection];
   return (
-    <main className={`${styles.screen} ${wide ? styles.wide : ''} ${firstGame ? styles.firstGame : ''}`}>
-      <header>
-        <p className={styles.frequency}>НЕИЗВЕСТНАЯ ЧАСТОТА · 07.11</p>
-        <h1>{firstGame ? 'ОДЕРЖИМЫЕ' : 'ПОМЕХИ'}</h1>
-        <p className={styles.intro}>В этом доме кто-то есть.</p>
-        {toolbar ?? <p role="status" data-connection={connection}>● {status}</p>}
+    <main className={`${styles.screen} ${wide ? styles.wide : ''}`}>
+      <header className={styles.header}>
+        <h1>ОДЕРЖИМЫЕ</h1>
+        {toolbar ?? <span role="status" data-connection={connection}>{status}</span>}
       </header>
       {!toolbar && <h2>{title}</h2>}
       {error && <p role="alert">{error}</p>}

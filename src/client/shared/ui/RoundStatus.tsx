@@ -18,10 +18,10 @@ export function RoundTimer({ game, clockOffset, connection }: {
   return <output role="timer" aria-label="Осталось времени" aria-live="off">{label}</output>;
 }
 
-const endings = { won: 'Победа · дом освобождён', lost: 'Поражение после седьмой сверки', all_possessed: 'Поражение · все одержимы', stopped: 'Партия остановлена', playing: labels.finished };
+const endings = { won: 'Победа · дом освобождён', lost: 'Поражение после 7-го раунда', all_possessed: 'Поражение · все одержимы', stopped: 'Партия остановлена', playing: labels.finished };
 
-export function RoundStatus({ game, clockOffset, connection, role, playStatus, waiting = false, retained = false, showRitual = true, compact = false, timerInHeader = false, cardHidden, children }: {
-  game: GameSnapshot; clockOffset: number | null; connection: ConnectionState; role?: Role; playStatus?: 'exorcist' | 'possessed' | 'captured' | 'released'; waiting?: boolean; retained?: boolean; showRitual?: boolean; compact?: boolean; timerInHeader?: boolean; cardHidden?: boolean; children?: ReactNode;
+export function RoundStatus({ game, clockOffset, connection, role, playStatus, waiting = false, retained = false, showRitual = true, compact = false, timerInHeader = false, cardHidden, cardReady, metadata, estimatedSearchEnded = false, children }: {
+  game: GameSnapshot; clockOffset: number | null; connection: ConnectionState; role?: Role; playStatus?: 'exorcist' | 'possessed' | 'captured' | 'released'; waiting?: boolean; retained?: boolean; showRitual?: boolean; compact?: boolean; timerInHeader?: boolean; cardHidden?: boolean; cardReady?: boolean; metadata?: ReactNode; estimatedSearchEnded?: boolean; children?: ReactNode;
 }) {
   const clock = useRoundClock(game, timerInHeader ? null : clockOffset);
   const remaining = game.firstGame && connection !== 'online' ? null : clock;
@@ -43,13 +43,18 @@ export function RoundStatus({ game, clockOffset, connection, role, playStatus, w
   if (game.firstGame) {
     const inGroup = playStatus === 'captured' || playStatus === 'possessed';
     const isPhone = !!(role || playStatus || waiting);
+    if (game.phase === 'reading' && cardHidden === true) instruction = cardReady
+      ? 'Готовность подтверждена. Дождитесь начала раунда.'
+      : 'Откройте карточку и прочитайте задание. Готовность ещё не подтверждена.';
     if (game.phase === 'reading' && retained) instruction = 'Оставайтесь на месте. У вас та же карточка и группа.';
     if (game.phase === 'placement') instruction = retained ? 'Оставайтесь с группой на прежнем месте.'
       : role === 'possessed' ? 'Займите место в разрешённой локации и погасите свет.'
       : role === 'exorcist' ? 'Оставайтесь на базе до призыва к поиску.' : instruction;
     if (game.phase === 'search') instruction = inGroup ? 'Оставайтесь на месте с погашенным светом и следуйте карточке.'
       : playStatus === 'released' ? 'Включите свет и сразу вернитесь на базу. Дождитесь сверки.'
-      : waiting ? 'Оставайтесь на базе.' : 'Свободные экзорцисты исследуют по одному. Держите приглушённый свет включённым.';
+      : waiting ? 'Оставайтесь на базе.'
+      : estimatedSearchEnded ? 'Расчётное время поиска истекло. Вернитесь на базу и сверьтесь с общим экраном.'
+      : 'Свободные экзорцисты исследуют по одному. Держите приглушённый свет включённым.';
     if (game.phase === 'return' || game.phase === 'between_rounds') instruction = inGroup
       ? 'Оставайтесь в локации с вашей группой. Отчёт можно отправить с места.'
       : isPhone ? (playStatus === 'released' ? 'Оставайтесь на базе.' : 'Свободные возвращаются на базу.')
@@ -60,14 +65,17 @@ export function RoundStatus({ game, clockOffset, connection, role, playStatus, w
   if (game.firstGame) {
     if (game.phase === 'reading' && cardHidden !== undefined)
       title = cardHidden ? 'Чтение · карточка скрыта' : 'Чтение · личная карточка';
+    if (game.phase === 'placement' && cardHidden !== undefined)
+      title = cardHidden ? 'Расстановка · карточка скрыта' : 'Расстановка · карточка открыта';
     if (game.phase === 'search') title = compact ? 'Изгнание' : 'Дом слушает';
     if (game.phase === 'return') title = 'Призыв свободных на базу';
     if (game.phase === 'between_rounds') title = game.results.at(-1)?.status === 'final' ? 'Следующий раунд' : 'Сверка';
     if (game.phase === 'finished' && game.ritual) title = endings[game.ritual.outcome];
   }
-  if (game.paused) title = `Пауза · ${game.firstGame && game.phase === 'search' ? 'Изгнание' : labels[game.phase]}`;
+  if (game.paused && game.firstGame && !metadata && game.pauseReason === 'server_restarted') title = 'Партия восстановлена на паузе';
+  else if (game.paused) title = `Пауза · ${game.firstGame && game.phase === 'search' ? 'Изгнание' : labels[game.phase]}`;
   return <section className={styles.panel} aria-label="Состояние раунда">
-    <p>{game.roundPlan.kind === 'tutorial' ? 'Обучение · перед основной партией' : `Раунд ${game.roundPlan.number} ${game.settings.roundLimit === null ? '· без ограничения' : `из ${game.settings.roundLimit}`}`}{!compact && ` · завершено${game.firstGame ? '' : ' обычных'}: ${game.completedRounds}`}</p>
+    {metadata ?? <p>{game.firstGame && game.phase === 'finished' ? 'Итоги партии' : game.roundPlan.kind === 'tutorial' ? 'Обучение · перед основной партией' : `Раунд ${game.roundPlan.number} ${game.settings.roundLimit === null ? '· без ограничения' : `из ${game.settings.roundLimit}`}`}{!compact && game.phase !== 'finished' && ` · завершено${game.firstGame ? '' : ' обычных'}: ${game.completedRounds}`}</p>}
     {!compact && game.venue && <p>База: {game.venue.base}. Разрешённые зоны: {game.venue.zones.length ? game.venue.zones.join(', ') : 'уточните у организатора'}. Передвигайтесь шагом.</p>}
     {!game.firstGame && <p>Уровень {game.roundPlan.difficulty} · {game.roundPlan.infectionEnabled ? 'заражение включено' : 'без заражения'}</p>}
     {game.roundPlan.kind === 'tutorial' && ['lobby', 'reading'].includes(game.phase) && <aside aria-label="Правила обучения">

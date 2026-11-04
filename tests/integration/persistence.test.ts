@@ -53,7 +53,7 @@ it.skipIf(process.platform === 'win32')('recovers seven real clients after a kil
     for (let n = 1; n <= 7; n++) { const p = await connect(running.port); sockets.push(p); value(await send(p, 'player:join', { roomCode: room.code, name: `Телефон ${n}`, resumeKey: String(n).padStart(64, '0') })); }
     const joined = value(await send(host, 'lobby:sync', {})); if (joined.kind !== 'organizer' || !joined.room) throw new Error('No room');
     value(await send(host, 'venue:configure', { roomId: room.id, requestId: 'durable-venue-request', gameVersion: joined.room.game.version, roundId: null,
-      venue: { base: 'База', zones: ['Дальняя комната'], dwelling: { zone: 'Дальняя комната', place: 'Угол' }, storyId: 'S001', harder: false, order: joined.room.players.map(p => p.id) } }));
+      venue: { base: 'База', zones: ['Дальняя комната'], dwelling: { zone: 'Дальняя комната', place: 'Угол' }, storyId: 'S001', prologueRead: true, harder: false, order: joined.room.players.map(p => p.id) } }));
     const dealIntent = { roomId: room.id, requestId: 'durable-deal-request', dealVersion: room.dealing.version, dealId: null, possessedCount: 3 };
     const dealt = value(await send(host, 'deal:create', dealIntent)); if (dealt.kind !== 'organizer' || !dealt.room) throw new Error('No deal');
     const cards = await Promise.all(sockets.slice(1).map(async p => value(await send(p, 'lobby:sync', {}))));
@@ -79,7 +79,7 @@ it.skipIf(process.platform === 'win32')('recovers seven real clients after a kil
     expect(value(await send(host, 'deal:create', dealIntent))).toMatchObject({ room: { game: { roundId } } });
     expect(await send(host, 'round:start', { ...startIntent, requestId: 'old-unreceived-intent' })).toEqual({ ok: false, error: 'STALE_GAME' });
     expect(cues).toEqual([]);
-    const persisted = await readFile(join(dir, 'data/party-v6.json'), 'utf8'); expect(persisted.includes(running.code)).toBe(false);
+    const persisted = await readFile(join(dir, 'data/party-v7.json'), 'utf8'); expect(persisted.includes(running.code)).toBe(false);
     value(await send(host, 'room:close', { roomId: room.id }));
     running.child.kill('SIGTERM'); await running.exited; sockets.splice(0).forEach(p => p.disconnect());
     running = await processServer(dir); host = await connect(running.port); sockets.push(host);
@@ -106,13 +106,13 @@ it('rejects a competing executable before it can listen or replace the session',
   let first: Awaited<ReturnType<typeof processServer>> | undefined;
   try {
     first = await processServer(dir);
-    const before = await readFile(join(dir, 'data/party-v6.json'), 'utf8');
+    const before = await readFile(join(dir, 'data/party-v7.json'), 'utf8');
     const other = spawn(process.execPath, [fileURLToPath(new URL('../../dist/server/index.js', import.meta.url))], {
       cwd: dir, env: { ...process.env, NODE_ENV: 'production', HOST: '127.0.0.1', PORT: '0' }, stdio: ['ignore', 'ignore', 'pipe', 'ipc'],
     });
     const messages: unknown[] = []; other.on('message', m => messages.push(m)); other.stderr!.resume();
     const [exitCode] = await once(other, 'exit'); expect(exitCode).toBe(1); expect(messages).toEqual([]);
-    expect(await readFile(join(dir, 'data/party-v6.json'), 'utf8')).toBe(before);
+    expect(await readFile(join(dir, 'data/party-v7.json'), 'utf8')).toBe(before);
     expect((await fetch(`http://127.0.0.1:${first.port}/api/health`)).status).toBe(200);
   } finally {
     if (first && first.child.exitCode === null && first.child.signalCode === null) { first.child.kill('SIGTERM'); await first.exited; }
@@ -133,7 +133,7 @@ it('bounds stop during a stalled load and never starts listening when that load 
   await expect(runtime.start()).rejects.toMatchObject({ name: 'AbortError' });
 });
 
-it('reconciles delayed phone reports and restores retained groups with the version six disk store', async () => {
+it('reconciles delayed phone reports and restores retained groups with the current disk store', async () => {
   const dir = await mkdtemp(join(tmpdir(), 'pomekhi-first-game-')), clients: Client[] = [];
   const time = controlledClock();
   const make = () => createServerRuntime({ firstGame: true, config: { host: '127.0.0.1', port: 0 }, organizerCode: 'FIRSTGAME', sessionStore: createFileSessionStore(dir, true), clock: time.clock });
@@ -170,7 +170,7 @@ it('reconciles delayed phone reports and restores retained groups with the versi
       }
     };
     await enter(); const ids = (await current()).players.map(p => p.id);
-    value(await send(host, 'venue:configure', { ...await base(), venue: { base: 'База', zones: ['Кухня'], dwelling: { zone: 'Кухня', place: 'Угол' }, storyId: 'S001', harder: false, order: ids } }));
+    value(await send(host, 'venue:configure', { ...await base(), venue: { base: 'База', zones: ['Кухня'], dwelling: { zone: 'Кухня', place: 'Угол' }, storyId: 'S001', prologueRead: true, harder: false, order: ids } }));
     await deal();
     expect((await roomView()).roles?.[ids[1]]).toBe('possessed');
     expect((await personal(0)).room.dealing.assignments.map(a => a.playerId)).toEqual([ids[0]]);
@@ -181,10 +181,26 @@ it('reconciles delayed phone reports and restores retained groups with the versi
     const play = async (i: number) => ({ ...await base(), playVersion: (await personal(i)).play!.version });
     value(await send(phones[1], 'play:infect', { ...await play(1), targetId: ids[0] }));
     const retained = (await personal(0)).play!.card;
-    value(await send(phones[3], 'play:release', await play(3)));
+    value(await send(phones[3], 'play:infect', { ...await play(3), targetId: ids[4] }));
+    const blocked = (await personal(3)).play!.undo!;
+    value(await send(phones[4], 'play:release', await play(4)));
+    expect((await personal(3)).play?.undo).toMatchObject({ id: blocked.id, canRequestReview: true });
+    const request = { ...await play(3), actionId: blocked.id, requestReview: true as const };
+    value(await send(phones[3], 'play:undo', request));
+    value(await send(phones[3], 'play:undo', request));
+    expect((await personal(4)).play).toMatchObject({ status: 'released', wasCaptured: true });
+    const undoRequest = (await personal(3)).synchronization!.undoRequests![0];
+    expect(undoRequest).toMatchObject({ status: 'review' });
+    expect((await personal(4)).synchronization?.undoRequests).toBeUndefined();
     value(await send(phones[5], 'play:release', await play(5)));
     value(await send(host, 'round:return', await base())); value(await send(host, 'round:return', await base()));
     const roundId = (await current()).game.roundId!;
+    const hostRow = (await roomView()).review!.find(row => row.id === undoRequest.id)!;
+    expect(hostRow.blockers).toHaveLength(1);
+    const preview = await send(host, 'sync:preview', { ...await base(), eventId: undoRequest.id, decision: 'accept' });
+    expect(preview).toMatchObject({ ok: true, reviewPreview: { applied: false, remainingSteps: 29 } });
+    expect(await send(host, 'sync:resolve', { ...await base(), eventId: undoRequest.id, decision: 'accept' }))
+      .toEqual({ ok: false, error: 'UNDO_DEPENDENCY' });
     const late = { id: 'first-game-mission', roundId, clientId: 'first-game-phone', sequence: 1, previousId: null,
       action: { kind: 'mission' as const, completed: true }, phase: 'search' as const, paused: false, estimatedServerTime: null };
     const upload = { roomId, roundId, events: [late] };
@@ -198,6 +214,21 @@ it('reconciles delayed phone reports and restores retained groups with the versi
     runtime = make(); port = (await runtime.start()).port; host = await newClient();
     value(await send(host, 'organizer:authorize', { code: 'FIRSTGAME' })); await enter(true);
     expect((await roomView()).review?.find(e => e.id === late.id)?.status).toBe('rejected');
+    expect((await personal(3)).synchronization?.undoRequests).toEqual([undoRequest]);
+    const duplicate = { id: 'duplicate-undo-request', clientId: 'offline-undo-request', sequence: 1, previousId: null, roundId,
+      action: { kind: 'undo' as const, actionId: blocked.id, requestReview: true as const },
+      phase: 'between_rounds' as const, paused: false, estimatedServerTime: null };
+    value(await send(phones[3], 'play:sync', { roomId, roundId, events: [duplicate] }));
+    expect((await personal(3)).synchronization?.undoRequests).toEqual([undoRequest]);
+    value(await send(host, 'sync:resolve', { ...await base(), eventId: hostRow.blockers![0], decision: 'reject' }));
+    expect(await send(host, 'sync:preview', { ...await base(), eventId: undoRequest.id, decision: 'accept' }))
+      .toMatchObject({ ok: true, reviewPreview: { applied: true } });
+    value(await send(host, 'sync:resolve', { ...await base(), eventId: undoRequest.id, decision: 'accept' }));
+    expect((await personal(3)).synchronization?.undoRequests).toMatchObject([{ id: undoRequest.id, status: 'accepted' }]);
+    expect((await personal(4)).play).toMatchObject({ status: 'exorcist', wasCaptured: false });
+    const correction = { ...late, id: 'late-group-release', clientId: 'late-release-phone', action: { kind: 'release' as const } };
+    value(await send(phones[3], 'play:sync', { roomId, roundId, events: [correction] }));
+    value(await send(host, 'sync:resolve', { ...await base(), eventId: correction.id, decision: 'accept' }));
     for (const [i, id] of ids.entries()) value(await send(phones[i], 'play:presence', { ...await base(), status: (await roomView()).presence!.find(p => p.playerId === id)!.expected }));
     value(await send(host, 'sync:close', { ...await base(), confirm: true }));
     const confirm = await base();
@@ -210,6 +241,104 @@ it('reconciles delayed phone reports and restores retained groups with the versi
     expect((await personal(0)).play).toMatchObject({ retained: true, card: retained });
     value(await send(host, 'round:start', { ...await base(), confirmWarnings: true }));
     expect((await personal(0)).play).toMatchObject({ retained: true, card: retained, location: 'Кухня' });
-    expect(JSON.parse(await readFile(join(dir, 'party-v6.json'), 'utf8')).schemaVersion).toBe(6);
+    expect(JSON.parse(await readFile(join(dir, 'party-v7.json'), 'utf8')).schemaVersion).toBe(7);
+  } finally { clients.forEach(client => client.disconnect()); await runtime.stop(); await rm(dir, { recursive: true, force: true }); }
+});
+
+it.each(['T003', 'T004'])('keeps %s private through a real disk restart and scores it exactly once', async id => {
+  const dir = await mkdtemp(join(tmpdir(), 'pomekhi-ordinary-'));
+  const time = controlledClock();
+  const make = () => createServerRuntime({ firstGame: true, organizerCode: 'ORDINARY', randomIndex: limit => id === 'T004' && limit === 7 ? 1 : 0,
+    config: { host: '127.0.0.1', port: 0 }, sessionStore: createFileSessionStore(dir, true), clock: time.clock });
+  let runtime = make(), port = (await runtime.start()).port, serial = 0;
+  let host: Client | undefined, phones: Client[] = [], roomCode = '';
+  const clients: Client[] = [];
+  const open = async () => { const socket = await connect(port); clients.push(socket); return socket; };
+  const view = async () => {
+    const state = value(await send(host!, 'lobby:sync', {}));
+    if (state.kind !== 'organizer' || !state.room) throw Error('No organizer room');
+    return { ...state, room: state.room };
+  };
+  const base = async () => {
+    const { room } = await view();
+    return { roomId: room.id, roundId: room.game.roundId, gameVersion: room.game.version, requestId: 'ordinary-request-' + ++serial };
+  };
+  const personal = async (i: number) => {
+    const state = value(await send(phones[i], 'lobby:sync', {}));
+    if (state.kind !== 'player') throw Error('No player');
+    return state;
+  };
+  const enter = async (resume: boolean) => {
+    host = await open();
+    value(await send(host!, 'organizer:authorize', { code: 'ORDINARY' }));
+    if (!resume) { value(await send(host!, 'room:create', {})); roomCode = (await view()).room.code; }
+    phones = [];
+    for (let i = 0; i < 5; i++) {
+      const phone = await open(); phones.push(phone);
+      const resumeKey = String(i + 1).padStart(64, '0');
+      value(await send(phone, resume ? 'player:resume' : 'player:join', { roomCode, resumeKey, name: 'Медиум ' + i }));
+    }
+  };
+  try {
+    await enter(false);
+    const { room } = await view(), ids = room.players.map(p => p.id);
+    value(await send(host!, 'venue:configure', { ...await base(), venue: { mode: 'ordinary', base: 'База', zones: ['Кухня'],
+      dwelling: { zone: 'Кухня', place: 'Угол' }, storyId: 'S001', prologueRead: true, harder: false, order: ids } }));
+    const deal = async () => {
+      const { dealing } = (await view()).room;
+      return { roomId: room.id, requestId: 'ordinary-deal-' + ++serial, dealVersion: dealing.version, dealId: dealing.dealId };
+    };
+    value(await send(host!, 'deal:create', { ...await deal(), possessedCount: 0 }));
+    value(await send(host!, 'deal:cancel', await deal()));
+    const { venue } = (await view()).room.game;
+    expect(await send(host!, 'venue:configure', { ...await base(), venue: { ...venue, mode: 'first' } }))
+      .toEqual({ ok: false, error: 'SETTINGS_LOCKED' });
+    expect(await view()).toMatchObject({ persistence: { state: 'ready' }, room: { game: { venue: { mode: 'ordinary' } } } });
+    value(await send(host!, 'deal:create', { ...await deal(), possessedCount: 0 }));
+    const title = id === 'T004' ? 'Принести зов Обители' : 'Мастер не отвечает';
+    const message = id === 'T004' ? 'Верни зов на место.' : 'Обращение принято. Разговор окончен.';
+    expect(JSON.stringify(await view())).not.toContain(title);
+    expect((await personal(1)).assignment?.card).not.toHaveProperty('clue');
+    value(await send(host!, 'round:start', { ...await base(), confirmWarnings: true }));
+    for (let i = 0; i < 45; i++) { time.advance(1000); await view(); }
+    const actor = await personal(0);
+    expect(actor.trial?.title).toBe(title);
+    expect((await personal(1)).trial).toBeUndefined();
+    const report: LobbyInputs['play:trial'] = { ...await base(), values: id === 'T004' ? { visit: true, returned: true } : { did: true } };
+    value(await send(phones[0], 'play:trial', report));
+    value(await send(phones[0], 'play:trial', report));
+    expect((await personal(0)).trial?.message).toBe(message);
+    await runtime.stop(); clients.splice(0).forEach(client => client.disconnect());
+    runtime = make(); port = (await runtime.start()).port; await enter(true);
+    expect((await view()).room.game.paused).toBe(true);
+    expect((await personal(0)).trial?.message).toBe(message);
+    value(await send(host!, 'round:resume', { ...await base(), confirmWarnings: true }));
+    value(await send(host!, 'round:return', await base()));
+    value(await send(host!, 'round:return', await base()));
+    if (id === 'T004') {
+      // The phone can return after losing the connection during the second visit.
+      phones[0].disconnect(); phones[0] = await open();
+      value(await send(phones[0], 'player:resume', { roomCode, resumeKey: '1'.padStart(64, '0') }));
+      const repeat = { ...await base(), values: { repeat: true } };
+      value(await send(phones[0], 'play:trial', repeat));
+      value(await send(phones[0], 'play:trial', repeat));
+      expect((await view()).trialReview).toMatchObject({ lateVisit: { status: 'review' }, bonus: 0 });
+      await runtime.stop(); clients.splice(0).forEach(client => client.disconnect());
+      runtime = make(); port = (await runtime.start()).port; await enter(true);
+      expect((await personal(0)).trial?.lateVisit).toBe('review');
+      value(await send(host!, 'sync:close', { ...await base(), confirm: true }));
+      expect(await send(host!, 'results:finalize', await base())).toEqual({ ok: false, error: 'TRIAL_REVIEW_PENDING' });
+      const decision = { ...await base(), playerId: ids[0], fact: 'repeat' as const, accepted: true };
+      value(await send(host!, 'round:trial-review', decision));
+      value(await send(host!, 'round:trial-review', decision));
+    }
+    expect((await view()).trialReview).toMatchObject({ status: 'ready', bonus: 1 });
+    expect(JSON.stringify((await view()).trialReview)).not.toContain(actor.trial!.instruction);
+    value(await send(host!, 'round:presence', { ...await base(), playerId: ids[0], status: 'at_base' }));
+    value(await send(host!, 'sync:close', { ...await base(), confirm: true }));
+    const finalize = await base();
+    value(await send(host!, 'results:finalize', finalize)); value(await send(host!, 'results:finalize', finalize));
+    expect((await view()).room.game.results.at(-1)).toMatchObject({ status: 'final', trialBonus: 1, missions: 0 });
+    expect((await view()).room.game.ritual?.remainingSteps).toBe(24);
   } finally { clients.forEach(client => client.disconnect()); await runtime.stop(); await rm(dir, { recursive: true, force: true }); }
 });

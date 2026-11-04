@@ -1,3 +1,24 @@
-:root { color-scheme: dark; font-family: ui-monospace, "Cascadia Code", monospace; color: #dde0ca; background: #111310; font-synthesis: none; }
+@import './fonts/fonts.css';
+
+:root {
+  color-scheme: dark;
+  --font-text: Inter, system-ui, sans-serif;
+  --font-numeric: 'IBM Plex Mono', ui-monospace, monospace;
+  --background: #0d0b12;
+  --panel: #17131f;
+  --surface: #211b2d;
+  --text: #f1edf7;
+  --muted: #b7afc5;
+  --accent: #b9a1e8;
+  --border: #89779b;
+  --line: #5f4f6c;
+  --gold: #d1b783;
+  --danger: #efbcae;
+  font-family: var(--font-text);
+  color: var(--text);
+  background: var(--background);
+  font-synthesis: none;
+}
 * { box-sizing: border-box; }
 body { margin: 0; min-width: 320px; }
+[role=timer], code { font-family: var(--font-numeric); font-variant-numeric: tabular-nums; }

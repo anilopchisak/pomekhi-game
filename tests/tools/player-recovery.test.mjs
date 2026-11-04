@@ -174,7 +174,7 @@ it('uploads a retained phone release and acknowledges checking without a new car
       ...session, name: `Медиум ${i}`, resumeKey: (i + 10).toString(16).repeat(64),
     });
     const order = host().room.players.map(p => p.id);
-    game('venue:configure', { venue: { base: 'База', zones: ['Кухня'], dwelling: { zone: 'Кухня', place: 'Угол' }, storyId: 'S001', harder: false, order } });
+    game('venue:configure', { venue: { base: 'База', zones: ['Кухня'], dwelling: { zone: 'Кухня', place: 'Угол' }, storyId: 'S001', prologueRead: true, harder: false, order } });
     deal();
     game('round:start', { confirmWarnings: true });
     time.advance(45000);
@@ -224,7 +224,9 @@ it.each(['TIMEOUT', 'STORAGE_UNAVAILABLE'])('retains the authorized phone screen
   expect(container.textContent).toContain('Ира, оставайтесь на связи');
   expect(container.querySelector('form')).toBeNull();
   expect(readPlayerSession()).toEqual(identity);
-  await act(async () => socket.reconnect());
+  const retry = [...container.querySelectorAll('button')].find(button => button.textContent === 'Повторить вход');
+  expect(retry).toBeDefined();
+  await act(async () => retry.click());
   expect(container.textContent).toContain('Ира, оставайтесь на связи');
   expect(lobby.viewFor('host').room.players).toHaveLength(1);
 });

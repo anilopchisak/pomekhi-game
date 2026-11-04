@@ -1,11 +1,12 @@
 import { useEffect, useRef, useState } from 'react';
+import { cardSets } from '../../../../shared/protocol.js';
 import type { CatalogEntry, CatalogFile, CatalogInput, CatalogReply, CatalogSnapshot, Difficulty, Role } from '../../../../shared/protocol.js';
 import { validateCatalogFile } from '../../../../shared/catalog.js';
 import { describeError } from '../../../shared/api/index.js';
 
 function download(file: CatalogFile) {
   const url = URL.createObjectURL(new Blob([JSON.stringify(file)], { type: 'application/json' }));
-  const link = document.createElement('a'); link.href = url; link.download = 'pomekhi-cards.json'; link.click(); URL.revokeObjectURL(url);
+  const link = document.createElement('a'); link.href = url; link.download = 'oderzhimye-cards.json'; link.click(); URL.revokeObjectURL(url);
 }
 function identifier() { return [...crypto.getRandomValues(new Uint8Array(16))].map(n => n.toString(16).padStart(2, '0')).join(''); }
 function empty(role: Role = 'possessed', id = `custom-${identifier()}`): CatalogEntry {
@@ -63,8 +64,9 @@ export function CatalogEditor({ request, disabled, editable, generation }: {
       <label>Роль<select disabled={locked} value={draft.card.role} onChange={e => { const next = empty(e.target.value as Role, draft.card.id); next.enabled = draft.enabled; next.card.title = draft.card.title; next.card.difficulty = draft.card.difficulty; setDraft(next); }}><option value="possessed">Одержимый</option><option value="exorcist">Экзорцист</option></select></label>
       <label>Сложность<select disabled={locked} value={draft.card.difficulty} onChange={e => setDraft({ ...draft, card: { ...draft.card, difficulty: Number(e.target.value) as Difficulty } })}>{[1, 2, 3].map(n => <option key={n}>{n}</option>)}</select></label>
       <label>Название<input required maxLength={120} disabled={locked} value={draft.card.title} onChange={e => setDraft({ ...draft, card: { ...draft.card, title: e.target.value } })} /></label>
-      {(draft.card.role === 'possessed' ? [['behavior', 'Поведение'], ['clue', 'Подсказка'], ['releaseCondition', 'Условие освобождения'], ['infectionCondition', 'Условие заражения']] : [['mission', 'Дополнительная миссия']]).map(([key, label]) => <label key={key}>{label}<textarea required maxLength={2000} disabled={locked} value={(draft.card as unknown as Record<string, string>)[key]} onChange={e => setDraft({ ...draft, card: { ...draft.card, [key]: e.target.value } })} /></label>)}
-      <label><input type="checkbox" disabled={locked} checked={draft.card.harder ?? false} onChange={e => setDraft({ ...draft, card: { ...draft.card, harder: e.target.checked } })} /> Только с набором «Сложнее»</label>
+      {(draft.card.role === 'possessed' ? [['behavior', 'Поведение'], ['clue', 'Подсказка'], ['releaseCondition', 'Условие освобождения'], ['infectionCondition', 'Условие заражения']] : [['mission', 'Дополнительная миссия']]).map(([key, label]) => <label key={key}>{label}<textarea required={key !== 'clue'} maxLength={2000} disabled={locked} value={(draft.card as unknown as Record<string, string>)[key] ?? ''} onChange={e => setDraft({ ...draft, card: { ...draft.card, [key]: e.target.value } })} /></label>)}
+      <label><input type="checkbox" disabled={locked} checked={draft.card.harder === true || draft.card.sets?.includes('harder') === true} onChange={e => setDraft({ ...draft, card: { ...draft.card, harder: e.target.checked, sets: draft.card.sets?.filter(set => set !== 'harder') } })} /> Только с набором «Сложнее»</label>
+      {cardSets.filter(set => set !== 'harder').map(set => <label key={set}><input type="checkbox" disabled={locked} checked={draft.card.sets?.includes(set) ?? false} onChange={e => setDraft({ ...draft, card: { ...draft.card, sets: [...(draft.card.sets ?? []).filter(value => value !== set), ...(e.target.checked ? [set] : [])] } })} /> {{ indoor: 'В помещении', outdoor: 'На улице', contact: 'Физический контакт' }[set]}</label>)}
       <label><input type="checkbox" disabled={locked} checked={draft.enabled} onChange={e => setDraft({ ...draft, enabled: e.target.checked })} /> Использовать карточку</label>
       <button disabled={locked}>Сохранить карточку</button><button type="button" onClick={() => setDraft(undefined)}>Скрыть карточку</button>
     </form>}
@@ -82,7 +84,7 @@ export function CatalogEditor({ request, disabled, editable, generation }: {
         const file = e.target.files?.[0]; setPreview(undefined);
         if (!file) return;
         try { if (file.size > 1024 * 1024) throw Error(); const parsed = validateCatalogFile(JSON.parse(await file.text())); setPreview(parsed); setMessage('Проверьте сравнение перед заменой банка.'); }
-        catch { setMessage('Файл не подошёл. Нужен JSON Pomekhi: до 500 карточек, 512 КиБ данных, непустые поля и уникальные ID.'); }
+        catch { setMessage('Файл не подошёл. Нужен JSON из редактора «Одержимых»: до 500 карточек, 512 КиБ данных, непустые поля и уникальные ID.'); }
         e.target.value = '';
       }} /></label>
       {preview && <aside aria-label="Сравнение импорта"><p>Добавлено: {added}. Изменено: {changed}. Удалено: {removed}. В новом банке: {preview.entries.length}.</p><button disabled={blocked} onClick={() => download(catalog.file)}>Скачать текущий банк перед заменой</button><button disabled={locked} onClick={() => { if (window.confirm('Полностью заменить банк показанным импортом? Выданные карточки не изменятся.')) mutate('import'); }}>Подтвердить замену банка</button><button onClick={() => setPreview(undefined)}>Отменить импорт</button></aside>}

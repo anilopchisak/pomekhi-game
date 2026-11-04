@@ -1,6 +1,6 @@
 # Target game rules
 
-Accepted direction: reproduce the rules of Oderzhimye, replacing the human Great Master with the computer. The organizer remains a playing medium. [Current implementation](current-implementation.md) describes the shipped first-game variant and the remaining differences. Technical [design documents](../design/README.md) describe that implementation until their mechanisms are changed.
+Accepted direction: reproduce the rules of Oderzhimye, replacing the human Great Master with the computer. The organizer remains a playing medium. [Current implementation](current-implementation.md) describes the implemented modes and the remaining differences. Technical [design documents](../design/README.md) describe that implementation until their mechanisms are changed.
 
 The [player rulebook in Russian](../../output/player-rules/RULES-RU.md) explains these target rules in plain language. It is a target rulebook, not an instruction manual for the current build. For gameplay explanations, player documentation and rule changes, agents follow the [game rules workflow](../agent/game-rules.md) to select and verify the applicable ruleset.
 
@@ -135,7 +135,7 @@ The computer provides card-specific explanations for ordinary interpretation que
 
 A phone screen substitutes for a physical card; a private near-black view can substitute for concealing it during possession. Temporary access to a card or action must not change role or score. Browsers cannot guarantee an extinguished backlight, background sound delivery or physical location, so accessible presentation and participant confirmation are required.
 
-For a prop-free Dwelling offering, the medium must actually reach the agreed empty place and perform the card's stated gesture or phrase. They retain their phone and leave no object. The future application records an explicit report; until that mechanism exists, editorial walkthroughs use an honest report at checking. A remote report alone does not establish arrival. Do not introduce camera, location or proximity claims, additional card draws, points or rewards as substitutes. A trial formerly requiring the Dwelling to be carried is individually adapted as an on-site call, an explicitly permitted early return with a remembered fictional address, and a return visit. Its physical actions need reports; the computer does not hear or observe them.
+For a prop-free Dwelling offering, the medium must actually reach the agreed empty place and perform the card's stated gesture or phrase. They retain their phone and leave no object. The application records an explicit participant report; the report is a physical claim, not verification by the computer. A remote report alone does not establish arrival. Do not introduce camera, location or proximity claims, additional card draws, points or rewards as substitutes. A trial formerly requiring the Dwelling to be carried is individually adapted as an on-site call, an explicitly permitted early return with a remembered fictional address, and a return visit. Its physical actions need reports; the computer does not hear or observe them.
 
 ## First game and permitted subsets
 
@@ -167,6 +167,6 @@ Returner-only dealing and once-only credit across rounds are explicit digital re
 
 ## Implementation gaps and acceptance
 
-The executable implements persistent possession, returner-only dealing, the original candle budget and the prop-free Dwelling for the first-game variant. The authored card bank is an adaptation. Active Master trials and full original-deck fidelity remain future work. Voice and recorded music remain unimplemented presentation work.
+The executable implements First Game and Ordinary with persistent possession, returner-only dealing, the original candle budget and the prop-free Dwelling. New rooms default to the authored set, with optional horror replacements. Both modes using the authored set draw from its 10 ordinary prophecies and final door. Ordinary also uses the 11 authored trials. The trial branch is frozen at entry to checking. Unavailable targets and insufficient evidence earn no bonus and cause no redraw; tied largest piles or a largest pile A close a penalty report without movement. These are explicit digital adaptation rules; full original-deck fidelity remains future work. Voice and recorded music remain unimplemented presentation work.
 
 Future alignment must verify persistent groups across multiple checks; a sole returning rescuer; total capture with and without an already freed medium; once-only late rescue credit; invalid mission credit after capture; original candle setup plus trial outcomes; first-game suppression; retained private state through restart; and delayed-event reconciliation without forcing captive return. Validate actual movement, lighting, audibility and phone interruption on real devices separately from software tests.

@@ -1,4 +1,5 @@
 import type { LobbyError, Prophecy, RitualOutcome, RitualSnapshot, RoundResult } from '../shared/protocol.js';
+import { authoredProphecies } from './authored-content.js';
 import { finalProphecy, prophecies } from './prophecies.js';
 
 type Positions = [number, number, number, number];
@@ -19,10 +20,11 @@ function advance(positions: Positions, successes: number) {
   }
 }
 const remaining = (p: Positions) => 3 * p[0] + 2 * p[1] + p[2];
-export function newRitual(players: number, rounds: number, randomIndex: (limit: number) => number, generateId: () => string, firstGame = false) {
-  const bank = [...prophecies];
+export function newRitual(players: number, rounds: number, randomIndex: (limit: number) => number, generateId: () => string, firstGame = false, useAuthoredBank = false) {
+  const publicCard = ({ id, title, rule }: Prophecy) => ({ id, title, rule });
+  const bank = useAuthoredBank ? authoredProphecies.filter(card => !card.final).map(publicCard) : [...prophecies];
   const take = () => structuredClone(bank.splice(randomIndex(bank.length), 1)[0]);
-  return createRitual({ players, roundLimit: rounds, cards: [take(), take(), structuredClone(finalProphecy)], events: [], ...(firstGame ? { firstGame: true } : {}) }, generateId);
+  return createRitual({ players, roundLimit: rounds, cards: [take(), take(), useAuthoredBank ? publicCard(authoredProphecies.find(card => card.final)!) : structuredClone(finalProphecy)], events: [], ...(firstGame ? { firstGame: true } : {}) }, generateId);
 }
 
 /** The ritual consumes sealed outcomes. Game remains the sole owner of lifecycle phases. */
@@ -63,19 +65,20 @@ export function createRitual(saved: SavedRitual, generateId: () => string) {
     }
   }
   rebuild();
+  const successes = (row: RoundResult) => row.rescuedGroups + row.missions + (row.trialBonus ?? 0);
   function commit(row: RoundResult): LobbyError | undefined {
     if (row.kind === 'tutorial' || row.status === 'aborted') return;
     if (row.status !== 'final') return 'INVALID_INPUT';
     const old = state.events.find(e => e.kind === 'round' && e.id === row.roundId);
-    if (old) return old.kind === 'round' && old.number === row.number && old.successes === row.rescuedGroups + row.missions ? undefined : 'INVALID_INPUT';
+    if (old) return old.kind === 'round' && old.number === row.number && old.successes === successes(row) ? undefined : 'INVALID_INPUT';
     if (outcome !== 'playing') return 'RESULTS_FINAL';
-    if (row.number !== state.events.filter(e => e.kind === 'round').length + 1 || row.number > state.roundLimit || !Number.isInteger(row.rescuedGroups + row.missions) || row.rescuedGroups + row.missions < 0 || row.rescuedGroups + row.missions > 12) return 'INVALID_INPUT';
-    state.events.push({ kind: 'round', id: row.roundId, number: row.number, successes: row.rescuedGroups + row.missions }); rebuild();
+    if (row.number !== state.events.filter(e => e.kind === 'round').length + 1 || row.number > state.roundLimit || !Number.isInteger(successes(row)) || successes(row) < 0 || successes(row) > (row.trialBonus ? 13 : 12)) return 'INVALID_INPUT';
+    state.events.push({ kind: 'round', id: row.roundId, number: row.number, successes: successes(row) }); rebuild();
   }
   function snapshot(row?: RoundResult): RitualSnapshot {
     const next = [...positions] as Positions;
     const preview = outcome === 'playing' && row?.kind === 'regular' && row.status === 'provisional';
-    if (preview) advance(next, row.rescuedGroups + row.missions);
+    if (preview) advance(next, successes(row));
     const last = state.events.at(-1);
     const penaltyAvailable = outcome === 'playing' && revealed[0];
     const penaltyPreview = penaltyAvailable ? penaltyMove() : null;
@@ -84,20 +87,20 @@ export function createRitual(saved: SavedRitual, generateId: () => string) {
       canPenalize: penaltyPreview !== null,
       ...(state.firstGame ? { penaltyDisputed: penaltyAvailable && !penaltyPreview, penaltyPreview } : {}),
       canUndoPenalty: outcome === 'playing' && last?.kind === 'penalty' && !last.undone,
-      preview: preview ? { successes: row.rescuedGroups + row.missions, positions: next, remainingSteps: remaining(next) } : null };
+      preview: preview ? { successes: successes(row), positions: next, remainingSteps: remaining(next) } : null };
   }
-  function penalty(): LobbyError | undefined {
+  function penalty(id?: string): LobbyError | undefined {
     if (snapshot().penaltyDisputed) { state.events.push({ kind: 'dismissed_penalty' }); return; }
     if (!snapshot().canPenalize) return 'ACTION_UNAVAILABLE';
-    state.events.push({ kind: 'penalty', id: generateId(), undone: false }); rebuild();
+    state.events.push({ kind: 'penalty', id: id ?? generateId(), undone: false }); rebuild();
   }
   function undoPenalty(): LobbyError | undefined {
     if (!snapshot().canUndoPenalty) return 'ACTION_UNAVAILABLE';
     const last = state.events.at(-1)!; if (last.kind === 'penalty') last.undone = true; rebuild();
   }
-  return { snapshot, commit, penalty, undoPenalty,
+  return { snapshot, commit, penalty, undoPenalty, lastPenaltyId: () => { const last = state.events.at(-1); return last?.kind === 'penalty' && !last.undone ? last.id : undefined; },
     lock: () => { if (outcome === 'playing' && state.events.at(-1)?.kind === 'penalty') state.events.push({ kind: 'lock' }); },
-    stop: (reason: 'stop' | 'all_possessed' = 'stop') => { if (outcome === 'playing' || reason === 'all_possessed' && outcome === 'lost') { state.events.push({ kind: reason }); rebuild(); } },
+    stop: (reason: 'stop' | 'all_possessed' = 'stop') => { if (outcome === 'playing' || reason === 'all_possessed' && (outcome === 'lost' || outcome === 'won')) { state.events.push({ kind: reason }); rebuild(); } },
     exportState: (): SavedRitual => structuredClone(state) };
 }
 
@@ -114,14 +117,14 @@ export function validateRitual(value: unknown): asserts value is SavedRitual {
   const replay = createRitual({ ...s, events: [] }, () => nextId);
   const ids = new Set<string>();
   for (const e of s.events) {
-    check(e && (replay.snapshot().outcome === 'playing' || s.firstGame && e.kind === 'all_possessed' && replay.snapshot().outcome === 'lost'));
+    check(e && (replay.snapshot().outcome === 'playing' || s.firstGame && e.kind === 'all_possessed' && ['lost', 'won'].includes(replay.snapshot().outcome)));
     if (e.kind === 'round' || e.kind === 'penalty') {
       check(typeof e.id === 'string' && e.id.length > 0 && e.id.length <= 256 && !ids.has(e.id)); ids.add(e.id); nextId = e.id;
     }
     const before = replay.exportState().events.length;
     if (e.kind === 'round') {
-      check(Number.isInteger(e.number) && e.number === ++number && e.number <= s.roundLimit && Number.isInteger(e.successes) && e.successes >= 0 && e.successes <= 12);
-      check(replay.commit({ roundId: e.id, number: e.number, kind: 'regular', status: 'final', rescuedGroups: e.successes, missions: 0 } as RoundResult) === undefined);
+      check(Number.isInteger(e.number) && e.number === ++number && e.number <= s.roundLimit && Number.isInteger(e.successes) && e.successes >= 0 && e.successes <= (s.firstGame ? 13 : 12));
+      check(replay.commit({ roundId: e.id, number: e.number, kind: 'regular', status: 'final', rescuedGroups: Math.min(12, e.successes), missions: 0, trialBonus: e.successes === 13 ? 1 : undefined } as RoundResult) === undefined);
     } else if (e.kind === 'penalty') {
       check(typeof e.undone === 'boolean' && replay.snapshot().canPenalize && replay.penalty() === undefined);
       if (e.undone) check(replay.undoPenalty() === undefined);

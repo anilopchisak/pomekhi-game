@@ -1,4 +1,4 @@
-import { useCallback, useEffect, useRef, useState } from 'react';
+import { useCallback, useEffect, useMemo, useRef, useState } from 'react';
 import type { LobbyCommand, LobbyInputs, LobbyReply, LobbyError, OfflineAction } from '../../../../shared/protocol.js';
 import { appendOffline, projectOffline, purgeOffline, updateOffline } from './offline-store.js';
 import type { OfflineRecord, PlayerView } from './offline-store.js';
@@ -76,9 +76,28 @@ export function useOfflinePlayer(scope: string | null, live: PlayerView | undefi
     })().catch(() => setError('Не удалось синхронизировать журнал. Записи остаются на телефоне.')).finally(() => { syncing.current = false; if (!mounted.current) return; retry.current = window.setTimeout(() => { if (mounted.current && currentScope.current === activeScope) setRecord(v => v ? { ...v } : v); }, retryDelay); });
 
   }, [scope, available, online, authorized, generation, live, pending.length, record, request, accept]);
-  const recoveredOffset = record?.view && record.cachedAt ? record.view.room.game.serverNow + Math.max(0, Date.now() - record.cachedAt) - performance.now() : null;
+  const cachedServerTime = record?.view?.room.game.serverNow;
+  const cachedAt = record?.cachedAt;
+  const recoveredOffset = useMemo(() => cachedServerTime === undefined || cachedAt === undefined ? null :
+    cachedServerTime + Math.max(0, Date.now() - cachedAt) - performance.now(), [cachedServerTime, cachedAt]);
   const effectiveOffset = clockOffset ?? recoveredOffset;
+  const game = base?.room.game;
+  const deadline = game?.firstGame && game.phase === 'search' && !game.paused && !(online && authorized) &&
+    game.deadline !== null && effectiveOffset !== null ? game.deadline - effectiveOffset : null;
+  const [elapsedDeadline, setElapsedDeadline] = useState<number | null>(null);
+  const estimatedSearchEnded = deadline !== null && (deadline === elapsedDeadline || performance.now() >= deadline);
+  useEffect(() => {
+    if (deadline === null) return;
+    const remaining = deadline - performance.now();
+    if (remaining <= 0) {
+      setElapsedDeadline(deadline);
+      return;
+    }
+    const timer = window.setTimeout(() => setElapsedDeadline(deadline), remaining);
+    return () => window.clearTimeout(timer);
+  }, [deadline]);
   const queue = useCallback(async (action: OfflineAction) => {
+    if (base?.room.game.firstGame && base.room.game.paused) return;
     if (!scope || !base?.room.game.roundId || !available) { setError('Офлайн-хранилище недоступно. Действие не записано.'); return; }
     try { accept(await appendOffline(scope, base.room.game.roundId, action, base, effectiveOffset === null ? null : performance.now() + effectiveOffset)); channel.current?.postMessage(scope); setError(''); }
     catch { setError('Не удалось записать действие. Оно не отправлено; вернитесь на базу для проверки.'); }
@@ -89,7 +108,7 @@ export function useOfflinePlayer(scope: string | null, live: PlayerView | undefi
     setRecord(value => value?.scope === clearedScope ? undefined : value);
   }, []);
   const view = base && record ? projectOffline(base, record.events) : base;
-  const pendingCapture = record?.events.some(e => e.event.roundId === view?.room.game.roundId && e.event.action.kind === 'captured' && (!e.receipt || e.receipt.status === 'review')) && live?.play?.status !== 'captured';
-  return { view, clockOffset: effectiveOffset, queue, clear, available, error, pending: pending.length, conflicts: conflicts.length, pendingCapture,
+  const pendingCapture = base?.play?.status === 'exorcist' && view?.play?.status === 'captured';
+  return { view, clockOffset: effectiveOffset, estimatedSearchEnded, queue, clear, available, error, pending: pending.length, conflicts: conflicts.length, pendingCapture,
     rejected: record?.events.filter(e => e.receipt?.status === 'rejected').map(e => e.receipt!) ?? [] };
 }

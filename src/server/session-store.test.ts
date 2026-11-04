@@ -7,6 +7,7 @@ import { createFileSessionStore } from './session-store.js';
 import { validateSession } from './session-format.js';
 import { createLobby } from './lobby.js';
 import { createSession } from './session.js';
+import { controlledClock } from '../../tests/helpers/game-clock.js';
 
 const empty = () => ({ schemaVersion: 5 as const, lobby: { catalog: standardCatalog(), revision: 0, usedCodes: [], room: null } });
 it('atomically replaces the last checkpoint and ignores unfinished temporary files', async () => {
@@ -86,7 +87,7 @@ it('keeps the old room file, preserves catalog edits and revises only an unchang
     await writeFile(legacyFile, legacyBytes);
     await store.acquire();
     const recovered = (await store.load())!;
-    expect(recovered).toMatchObject({ schemaVersion: 6, lobby: { room: null } });
+    expect(recovered).toMatchObject({ schemaVersion: 7, lobby: { room: null } });
     expect(recovered.lobby.catalog!.file.entries.find(e => e.card.id === 'e11')?.card).toMatchObject({ mission: expect.stringContaining('До призыва') });
     expect(recovered.lobby.catalog!.file.entries.find(e => e.card.id === 'e12')?.card).toMatchObject({ mission: edited.mission });
     await store.write(recovered);
@@ -105,7 +106,7 @@ it('allows retrying a failed legacy read without first committing the default ba
     expect(await session.execute('h', 'organizer:authorize', { code: 'ORGANIZER' })).toMatchObject({
       ok: true, view: { persistence: { state: 'load_error' } },
     });
-    expect(await readdir(dir)).not.toContain('party-v6.json');
+    expect(await readdir(dir)).not.toContain('party-v7.json');
 
     await rm(legacyFile, { recursive: true });
     const saved = empty();
@@ -115,6 +116,48 @@ it('allows retrying a failed legacy read without first committing the default ba
     expect(await session.catalogExecute('h', { action: 'read' })).toMatchObject({
       ok: true, catalog: { file: saved.lobby.catalog.file },
     });
-    expect(await readdir(dir)).toContain('party-v6.json');
+    expect(await readdir(dir)).toContain('party-v7.json');
   } finally { await session.close(); await rm(dir, { recursive: true, force: true }); }
+});
+
+it('opens a v6 room at the same paused deadline without re-dealing or rewriting the v6 file', async () => {
+  const dir = await mkdtemp(join(tmpdir(), 'pomekhi-v6-party-'));
+  const file = join(dir, 'party-v6.json'), next = createFileSessionStore(dir, true);
+  const time = controlledClock(), make = () => createLobby({ firstGame: true, organizerCode: 'ORGANIZER', clock: time.clock });
+  const lobby = make(), recovered = make();
+  try {
+    const host = () => {
+      const view = lobby.viewFor('host');
+      if (view?.kind !== 'organizer' || !view.room) throw Error('No room');
+      return view.room;
+    };
+    expect(lobby.execute('host', 'organizer:authorize', { code: 'ORGANIZER' }).ok).toBe(true);
+    expect(lobby.execute('host', 'room:create', {}).ok).toBe(true);
+    for (let i = 0; i < 5; i++) expect(lobby.execute('phone-' + i, 'player:join', {
+      roomCode: host().code, name: 'Игрок ' + i, resumeKey: String(i).repeat(64),
+    }).ok).toBe(true);
+    const order = host().players.map(player => player.id);
+    const game = () => ({ roomId: host().id, roundId: host().game.roundId, gameVersion: host().game.version });
+    expect(lobby.execute('host', 'venue:configure', { ...game(), requestId: 'prepare-v6', venue: { base: 'База',
+      zones: ['Кухня'], dwelling: { zone: 'Кухня', place: 'Угол' }, storyId: 'S001', prologueRead: true, harder: false, order } }).ok).toBe(true);
+    expect(lobby.execute('host', 'deal:create', { roomId: host().id, dealId: null, dealVersion: host().dealing.version,
+      requestId: 'deal-room-v6', possessedCount: 0 }).ok).toBe(true);
+    expect(lobby.execute('host', 'round:start', { ...game(), requestId: 'start-room-v6', confirmWarnings: true }).ok).toBe(true);
+    time.advance(147000);
+    const v6 = lobby.exportState();
+    const venue = v6.room!.game.venue!;
+    delete venue.mode; delete venue.bank; delete venue.sets; delete venue.features; delete venue.prologueRead;
+    delete v6.room!.game.firstGame!.locations; delete v6.room!.game.firstGame!.violations;
+    const original = JSON.stringify({ schemaVersion: 6, lobby: v6 });
+    await writeFile(file, original);
+    await next.acquire();
+    const restored = await next.load();
+    expect(restored).toMatchObject({ schemaVersion: 7, lobby: { room: { code: host().code } } });
+    recovered.restore(restored!.lobby);
+    expect(recovered.exportState().room?.game).toMatchObject({ phase: 'search', remainingMs: 138000, paused: true });
+    expect(recovered.exportState().room?.game.dealing.assignments).toEqual(v6.room?.game.dealing.assignments);
+    expect(recovered.exportState().room?.game.venue?.mode).toBeUndefined();
+    await next.write(restored!);
+    expect(await readFile(file, 'utf8')).toBe(original);
+  } finally { recovered.dispose(); lobby.dispose(); await next.close(); await rm(dir, { recursive: true, force: true }); }
 });

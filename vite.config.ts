@@ -14,7 +14,7 @@ export default defineConfig(({ mode }) => {
     plugins: [react(), {
       name: 'pomekhi-offline-shell', apply: 'build',
       generateBundle(_options, bundle) {
-        const assets = Object.keys(bundle).filter(name => name.endsWith('.js') || name.endsWith('.css'));
+        const assets = Object.keys(bundle).filter(name => /\.(?:js|css|woff2)$/.test(name));
         const cache = 'pomekhi-shell-' + createHash('sha256').update(JSON.stringify(assets)).digest('hex').slice(0, 16);
         this.emitFile({ type: 'asset', fileName: 'sw.js', source: `
 const CACHE = ${JSON.stringify(cache)};

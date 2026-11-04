@@ -1,8 +1,8 @@
 # Domain glossary
 
-Pomekhi targets the rules of Oderzhimye with a computer replacing the Great Master. All humans, including the organizer, play mediums. The interface language is Russian; code identifiers and agent documents use English. [Target rules](docs/product/README.md) own game behavior; [current implementation](docs/product/current-implementation.md) records differences that this glossary does not claim are implemented.
+Oderzhimye implements the game with a computer replacing the Great Master. All humans, including the organizer, play mediums. The interface language is Russian; code identifiers and agent documents use English. [Target rules](docs/product/README.md) own game behavior; [current implementation](docs/product/current-implementation.md) records differences that this glossary does not claim are implemented.
 
-The approved target interface brand is **Oderzhimye**. Pomekhi remains the repository/runtime identifier and the name of the preserved legacy design. The first-game screens use Oderzhimye; the runtime identifier and application entry points still use Pomekhi.
+The interface brand is **Oderzhimye** in both modes, including the browser title and application entry screens. Pomekhi identifies the repository, runtime compatibility keys and preserved legacy design.
 
 ## Game terms
 

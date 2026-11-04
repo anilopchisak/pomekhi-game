@@ -1,18 +1,22 @@
 .dialog {
-  box-sizing: border-box;
-  width: min(41rem, calc(100% - 2rem));
-  max-height: calc(100dvh - 2rem);
-  padding: clamp(1rem, 4vw, 2rem);
+  width: min(660px, calc(100% - 32px));
+  max-height: calc(100dvh - 32px);
+  padding: clamp(16px, 3vw, 29px);
   overflow: auto;
-  color: #f1ebf8;
-  background: #191522;
-  border: 1px solid #857395;
-  border-radius: .8rem;
+  color: var(--text);
+  background: var(--panel);
+  border: 1px solid var(--line);
+  border-radius: 12px;
   overscroll-behavior: contain;
+  scroll-padding: 8px;
 }
 .dialog::backdrop { background: rgb(12 9 18 / 80%); }
-.dialog h2 { margin: 0 0 1rem; font-size: clamp(1.25rem, 4vw, 1.9rem); }
-.dialog > p { color: #d2c6dc; }
-.actions { display: grid; gap: .5rem; margin-top: 1.2rem; }
-.actions button { width: 100%; margin: 0; }
-.actions button:first-child, .close { background: #282033; color: #f1ebf8; }
+.dialog.dialog h2 { margin: 0 0 16px; font-size: clamp(22px, 4vw, 30px); font-weight: 700; line-height: 1.25; }
+.dialog > p { color: var(--muted); margin: 0 0 12px; }
+.dialog > .eyebrow { margin: 0 0 16px; color: var(--accent); font-size: 13px; text-transform: uppercase; }
+.actions, .dialog [data-dialog-actions] { display: grid; gap: 8px; margin-top: 14px; }
+.dialog :is(.actions, [data-dialog-actions]) > button { width: 100%; margin: 0; }
+.dialog > .close { width: 100%; margin: 12px 0 0; }
+.dialog [data-dialog-panel] { border: 1px solid var(--line); border-radius: 12px; background: var(--surface); padding: 12px; margin-block: 12px; color: var(--muted); font-size: 14px; }
+.dialog [data-dialog-panel] strong { display: block; color: var(--accent); font-weight: 500; }
+.dialog [data-dialog-panel] p { margin: 4px 0 0; }

@@ -9,8 +9,8 @@ const steps = (positions: RitualView['positions']) => 3 * positions[0] + 2 * pos
 function candleFrames(before: RitualView, target: RitualView) {
   const positions = [...before.positions] as RitualView['positions'];
   let cards = before.cards;
-  const frames: { view: RitualView; delay: number }[] = [];
-  const push = (delay: number) => frames.push({ view: { positions: [...positions], cards }, delay });
+  const frames: { view: RitualView; delay: number; extinguished?: number }[] = [];
+  const push = (delay: number, extinguished?: number) => frames.push({ view: { positions: [...positions], cards }, delay, extinguished });
   const reveal = () => {
     target.cards.forEach((card, i) => {
       if (card.revealed && !cards[i]?.revealed && positions.slice(0, i + 1).every(count => count === 0)) {
@@ -23,7 +23,7 @@ function candleFrames(before: RitualView, target: RitualView) {
     const from = positions.findIndex((count, index) => index < 3 && count > 0);
     if (from < 0) break;
     positions[from]--; positions[from + 1]++;
-    push(450);
+    push(450, positions[from] === 0 ? from : undefined);
     reveal();
   }
   if (positions.some((count, i) => count !== target.positions[i])) {
@@ -42,6 +42,7 @@ export function RitualBoard({ game, online = true, animate = false }: { game: Ga
   const previous = useRef<RitualView | null>(null);
   const wasLive = useRef(false);
   const canAnimate = Boolean(animate && game.firstGame && online && !game.paused && ['reading', 'between_rounds', 'finished'].includes(game.phase));
+  const [smoke, setSmoke] = useState<{ key: string; slot: number; frame: number }>();
   const [playback, setPlayback] = useState<{ key: string; view: RitualView }>();
   const key = ritual ? JSON.stringify({ positions: ritual.positions, cards: ritual.cards }) : '';
   useEffect(() => {
@@ -51,11 +52,12 @@ export function RitualBoard({ game, online = true, animate = false }: { game: Ga
     const animateTransition = canAnimate && wasLive.current;
     wasLive.current = canAnimate;
     setPlayback(undefined);
+    setSmoke(undefined);
     if (!animateTransition || !before || !target || JSON.stringify(before) === key) return;
     const motion = window.matchMedia?.('(prefers-reduced-motion: reduce)');
     const frames = motion?.matches ? [] : candleFrames(before, target);
     if (!frames.length) return;
-    let timer: number | undefined;
+    let timer: number | undefined, smokeTimer: number | undefined;
     let index = 0;
     setPlayback({ key, view: before });
     function playNext() {
@@ -63,15 +65,25 @@ export function RitualBoard({ game, online = true, animate = false }: { game: Ga
       if (!frame) { setPlayback(undefined); return; }
       timer = window.setTimeout(() => {
         setPlayback({ key, view: frame.view });
+        if (frame.extinguished !== undefined) {
+          window.clearTimeout(smokeTimer);
+          setSmoke({ key, slot: frame.extinguished, frame: index });
+          smokeTimer = window.setTimeout(() => setSmoke(undefined), 300);
+        }
         if (frame.delay === 500) timer = window.setTimeout(playNext, 500);
         else playNext();
       }, frame.delay === 500 ? 0 : frame.delay);
     }
-    const stop = () => { window.clearTimeout(timer); setPlayback(undefined); };
+    const stop = () => {
+      window.clearTimeout(timer);
+      window.clearTimeout(smokeTimer);
+      setPlayback(undefined);
+      setSmoke(undefined);
+    };
     cancelPlayback.current = stop;
     motion?.addEventListener?.('change', stop);
     playNext();
-    return () => { window.clearTimeout(timer); motion?.removeEventListener?.('change', stop); };
+    return () => { window.clearTimeout(timer); window.clearTimeout(smokeTimer); motion?.removeEventListener?.('change', stop); };
   }, [key, canAnimate]);
   if (!ritual) return game.settings.ritualEnabled ? <section aria-label="Общий ритуал"><h3>Общий ритуал</h3>
     <p>Свечи появятся при первом старте. Освобождение группы и зачтённая миссия продвигают свечу на шаг.</p>
@@ -93,27 +105,32 @@ export function RitualBoard({ game, online = true, animate = false }: { game: Ga
   }
   const moving = canAnimate && playback?.key === key;
   const visible = moving ? playback.view : ritual;
+  const opened = visible.cards.filter(card => card.revealed);
   const captions = ['Первое прорицание', 'Второе прорицание', 'Последняя дверь'];
   return <section className={styles.board} data-first-game="true" aria-label="Общий ритуал">
     <h3 ref={heading} tabIndex={-1}>Общий ритуал</h3>
-    <p className={styles.round}>Раунд {game.roundNumber} / {ritual.roundLimit}</p>
-    <p>Осталось шагов <strong className={styles.steps}>{steps(visible.positions)}</strong></p>
+    <p className={styles.round}>{game.roundNumber} / {ritual.roundLimit} раундов</p>
+    <p className={styles.stepsLabel}>Осталось шагов <strong className={styles.steps}>{steps(visible.positions)}</strong></p>
     {moving && <button onClick={() => { cancelPlayback.current?.(); heading.current?.focus(); }}>Пропустить движение свечей</button>}
-    <ol className={styles.stages}>{visible.cards.map((item, i) => <li key={item.slot}>
+    <ol className={styles.stages}>{visible.cards.map((item, i) => <li key={item.slot} data-revealed={item.revealed}>
       <span className={styles.candle} data-empty={visible.positions[i] === 0} aria-hidden="true" />
+      {canAnimate && smoke?.key === key && smoke.slot === i && <span key={smoke.frame} className={styles.smoke} data-candle-smoke="" aria-hidden="true" />}
       <strong>{visible.positions[i]}</strong>
       {item.revealed
-        ? <DialogButton key={item.card.id} title={item.card.title} content={<p>{item.card.rule}</p>}>{item.card.title}</DialogButton>
+        ? <><DialogButton data-secondary key={item.card.id} title={item.card.title} content={<p>{item.card.rule}</p>}>{item.card.title}</DialogButton><small>Открыто</small></>
         : <><span className={styles.caption}>{captions[i]}</span><small>Закрыто</small></>}
     </li>)}</ol>
-    <p>Свечей вышло: {visible.positions[3]}.</p>
+    <p>Прорицания → дверь → выход</p>
+    <p>Освобождение · миссия{game.venue.mode === 'ordinary' ? ' · испытание' : ''}<br />Один успех = один шаг.</p>
     {ritual.preview && <aside className={styles.preview} role="status">
       <strong>Предварительный итог</strong>
       <p>{ritual.preview.successes} успехов · после подтверждения останется {ritual.preview.remainingSteps} шагов.</p>
     </aside>}
-    <DialogButton title="Как работает ритуал" content={<>
+    <DialogButton data-secondary title={opened.length ? 'Открытые прорицания' : 'Как работает ритуал'} content={<>
+      {opened.map(item => item.revealed && <section key={item.slot}><h3>{item.card.title}</h3><p>{item.card.rule}</p></section>)}
       <p>Освобождение группы и зачтённая миссия продвигают свечу на один шаг: А → Б → В → выход.</p>
       <p>Открытые правила действуют на базе. Просьбы о помощи, вопросы о правилах и технические сообщения не штрафуются.</p>
-    </>}>Как работает ритуал</DialogButton>
+    </>}>{opened.length ? 'Открытые прорицания' : 'Как работает ритуал'}</DialogButton>
+    {opened.length > 0 && <p>Открытое прорицание можно посмотреть нажатием.</p>}
   </section>;
 }

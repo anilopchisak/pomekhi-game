@@ -29,7 +29,7 @@ export function createSession(options: LobbyOptions & { store?: SessionStore }) 
     return () => { cancelled = true; cancel(); };
   } } });
   lobby.subscribe(value => { dirty = true; if (value) cue = value; });
-  const saved = (): SavedSession => ({ schemaVersion: options.firstGame ? 6 : 5, lobby: lobby.exportState() });
+  const saved = (): SavedSession => ({ schemaVersion: options.firstGame ? 7 : 5, lobby: lobby.exportState() });
   const viewFor = (connection: string): LobbyView | undefined => {
     const view = visible.get(connection); return view ? structuredClone(view) : undefined;
   };
@@ -126,7 +126,7 @@ export function createSession(options: LobbyOptions & { store?: SessionStore }) 
       }
       const result = await transaction(() => lobby.execute(connection, command, input));
       if (!result.durable) return { ok: false, error: 'STORAGE_UNAVAILABLE' };
-      return result.value.ok ? { ok: true, view: viewFor(connection)! } : result.value;
+      return result.value.ok ? { ...result.value, view: viewFor(connection)! } : result.value;
     });
   }
   function catalogExecute(connection: string, input: unknown): Promise<CatalogReply> {

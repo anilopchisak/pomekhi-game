@@ -1,6 +1,6 @@
 # Living design documents
 
-The executable follows the [first-game design](first-game.md) and the [current implementation](../product/current-implementation.md). The [target rules](../product/README.md) also specify the future ordinary mode with active trials. Mechanism documents below retain details for foundations shared with compatibility tests; first-game lifecycle differences are owned by the first-game design.
+The executable follows the [first-game design](first-game.md) and the [current implementation](../product/current-implementation.md). The [target rules](../product/README.md) also explain the original rules and the remaining source limits. Mechanism documents below retain details for foundations shared with compatibility tests; first-game lifecycle differences are owned by the first-game design.
 
 Add documents only for mechanisms whose ownership, state, lifecycle, concurrency, failure or recovery needs explanation. `catalog.json` maps source changes to candidate documents; `docs-impact` is advisory and cannot decide semantic impact.
 

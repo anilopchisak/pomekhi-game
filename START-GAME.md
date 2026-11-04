@@ -1,4 +1,4 @@
-# Start Pomekhi on another computer
+# Start Oderzhimye on another computer
 
 Install the environment and build the game once. After that, open the launcher for your connection mode.
 

@@ -38,7 +38,7 @@ describe('built client and actual HTTP / Socket.IO server', () => {
     const response = await fetch(origin);
     const html = await response.text();
     expect(response.status).toBe(200);
-    expect(html).toContain('<title>Помехи</title>');
+    expect(html).toContain('<title>Одержимые</title>');
     const asset = html.match(/src="([^"]+\.js)"/)?.[1];
     expect(asset).toBeDefined();
     const script = await fetch(new URL(asset!, origin));

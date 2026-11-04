@@ -17,6 +17,7 @@ export interface AppServerOptions {
   organizerCode?: string;
   clock?: GameClock;
   firstGame?: boolean;
+  randomIndex?: (limit: number) => number;
   scareRandomIndex?: (limit: number) => number;
   sessionStore?: SessionStore;
 }
@@ -33,7 +34,7 @@ export function createAppServer(options: AppServerOptions = {}) {
   const health = buildHealthResponse();
   const app = createHttpApp({ health, clientDirectory: options.clientDirectory, reportError: options.reportError });
   const server = createServer(app);
-  const lobby = createSession({ organizerCode: options.organizerCode ?? generateOrganizerCode(), clock: options.clock, firstGame: options.firstGame, store: options.sessionStore });
+  const lobby = createSession({ organizerCode: options.organizerCode ?? generateOrganizerCode(), clock: options.clock, randomIndex: options.randomIndex, firstGame: options.firstGame, store: options.sessionStore });
   const io = createSocketServer(server, health, lobby, options.clock, options.scareRandomIndex);
   const connections = new Set<Socket>();
   server.on('connection', socket => {

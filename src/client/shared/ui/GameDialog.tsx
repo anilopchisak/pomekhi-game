@@ -2,8 +2,9 @@ import { useEffect, useId, useRef, useState } from 'react';
 import type { ButtonHTMLAttributes, ReactNode, RefObject } from 'react';
 import styles from './GameDialog.module.css';
 
-export function GameDialog({ title, children, onClose, returnFocus, fallbackFocus, open = true }: {
+export function GameDialog({ title, eyebrow, children, onClose, returnFocus, fallbackFocus, open = true }: {
   title: string;
+  eyebrow?: string;
   children: ReactNode;
   onClose: () => void;
   returnFocus?: HTMLElement | null;
@@ -18,7 +19,7 @@ export function GameDialog({ title, children, onClose, returnFocus, fallbackFocu
     const opener = returnFocus ?? (document.activeElement instanceof HTMLElement ? document.activeElement : null);
     if (typeof dialog.showModal === 'function') dialog.showModal();
     else dialog.setAttribute('open', '');
-    dialog.querySelector<HTMLElement>('[data-dialog-focus]')?.focus();
+    (dialog.querySelector<HTMLElement>('[data-dialog-focus]') ?? dialog.querySelector('h2'))?.focus();
     return () => {
       if (typeof dialog.close === 'function') dialog.close();
       else dialog.removeAttribute('open');
@@ -33,7 +34,8 @@ export function GameDialog({ title, children, onClose, returnFocus, fallbackFocu
     onKeyDown={event => {
       if (event.key === 'Escape') { event.preventDefault(); event.stopPropagation(); onClose(); }
     }}>
-    <h2 id={heading}>{title}</h2>
+    {eyebrow && <p className={styles.eyebrow}>{eyebrow}</p>}
+    <h2 id={heading} tabIndex={-1}>{title}</h2>
     {children}
   </dialog>;
 }
@@ -48,14 +50,15 @@ export function DialogButton({ title, children, content, keepMounted = false, ..
   return <>
     <button {...button} type="button" ref={opener} onClick={() => setOpen(true)}>{children}</button>
     {(open || keepMounted) && <GameDialog title={title} onClose={() => setOpen(false)} returnFocus={open ? opener.current : null} open={open}>
-      <button className={styles.close} type="button" data-dialog-focus onClick={() => setOpen(false)}>Закрыть</button>
       {content}
+      <button data-secondary className={styles.close} type="button" onClick={() => setOpen(false)}>Закрыть</button>
     </GameDialog>}
   </>;
 }
 
 interface ConfirmButtonProps extends Omit<ButtonHTMLAttributes<HTMLButtonElement>, 'onClick'> {
   title: string;
+  eyebrow?: string;
   description?: ReactNode;
   confirm: string;
   cancel?: string;
@@ -65,7 +68,7 @@ interface ConfirmButtonProps extends Omit<ButtonHTMLAttributes<HTMLButtonElement
 }
 
 export function ConfirmButton(props: ConfirmButtonProps) {
-  const { title, description, confirm, cancel = 'Отмена', onConfirm, native = false, fallbackFocus, children, ...button } = props;
+  const { title, eyebrow, description, confirm, cancel = 'Отмена', onConfirm, native = false, fallbackFocus, children, ...button } = props;
   const [open, setOpen] = useState(false);
   const opener = useRef<HTMLButtonElement>(null);
   return <>
@@ -73,10 +76,10 @@ export function ConfirmButton(props: ConfirmButtonProps) {
       if (!native) setOpen(true);
       else if (window.confirm(typeof description === 'string' ? `${title} ${description}` : title)) onConfirm();
     }}>{children}</button>
-    {open && <GameDialog title={title} onClose={() => setOpen(false)} returnFocus={opener.current} fallbackFocus={fallbackFocus}>
+    {open && <GameDialog title={title} eyebrow={eyebrow} onClose={() => setOpen(false)} returnFocus={opener.current} fallbackFocus={fallbackFocus}>
       {typeof description === 'string' ? <p>{description}</p> : description}
       <div className={styles.actions}>
-        <button type="button" data-dialog-focus onClick={() => setOpen(false)}>{cancel}</button>
+        <button data-secondary type="button" data-dialog-focus onClick={() => setOpen(false)}>{cancel}</button>
         <button type="button" disabled={button.disabled} onClick={() => { setOpen(false); onConfirm(); }}>{confirm}</button>
       </div>
     </GameDialog>}

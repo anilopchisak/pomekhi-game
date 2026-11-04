@@ -1,6 +1,6 @@
 # Pomekhi editorial card set
 
-This package contains 147 fully authored Russian cards without helper text: 75 possessed missions, 42 exorcist missions, 11 computer-Master trials, 10 ordinary prophecies plus one final door, six opening stories and two references. It is content for review and future integration, not an installed game update.
+This package contains 147 fully authored Russian cards without helper text: 75 possessed missions, 42 exorcist missions, 11 computer-Master trials, 10 ordinary prophecies plus one final door, six opening stories and two references. The game uses a server-only projection of this package as its default authored bank. The editorial files remain the source for review and revision.
 
 Open [index.html](index.html) locally. It works offline without a server, remote assets or an account. Search by title, action or ID, filter a deck or an optional subset, and use the outcome toggle to conceal or show scoring conditions. Source records and all 45 ordinary-prophecy pairs are included below the cards. Printing uses the current card filter; outcomes remain printed even if concealed on screen.
 
@@ -26,7 +26,7 @@ Each revision distinguishes an entity intention, an observable human performance
 | [prophecy-pairs.json](prophecy-pairs.json) | All 45 ordinary pairs, each with five executable-model witness scenarios |
 | [validation.json](validation.json) | Actual content-validation result and hashes of the authored inputs |
 | [build.py](build.py) | Standard-library-only validation and offline catalog generator |
-| [INTEGRATION.md](INTEGRATION.md) | Separate future integration proposal; no implementation is included |
+| [INTEGRATION.md](INTEGRATION.md) | Runtime adoption, selection and verification boundaries |
 | [verification report](../../artifacts/prop-free-20261103/verification.md) | Current domestic-revision checks, gate results and physical-play limits |
 
 Edit the authored JSON inputs, then run this command from the project root:
@@ -65,6 +65,6 @@ Every ordinary-prophecy pair has witnesses for ordinary speech, answering, respo
 
 Live discoverability without extra assistance, fear response, practical success rates, the seven-round candle budget, lighting, audio, physical phone behavior and networking remain unverified. The original candle-penalty tie cases and trial branch timing still need a source ruling before runtime alignment. The pack states its walkthrough convention openly; it does not silently settle those questions for the application.
 
-## No runtime design change
+## Runtime projection
 
-No source bank, protocol, validator, editor, game phase, save, catalog revision or issued assignment is changed. The existing design documents remain descriptions of the implemented application. This is why no mechanism-design document is rewritten for this content-only delivery. Preserve the user's existing documentation, START-GAME.md and design output separately.
+The server keeps authored missions, variants, prophecies, trial instructions and references in [authored-content.ts](../../src/server/authored-content.ts), and the stories in [first-game-content.ts](../../src/server/first-game-content.ts). When a playable text changes, update the corresponding runtime projection. [Content parity tests](../../src/server/authored-content.test.ts) check all cards against both editorial sources. Builders regenerate the editorial artifacts independently of the app.

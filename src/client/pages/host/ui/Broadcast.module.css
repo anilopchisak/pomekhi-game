@@ -1,68 +1,63 @@
 .frame { position: relative; isolation: isolate; }
-.frame[data-effects=true]::after { content: ''; position: fixed; inset: 0; pointer-events: none; z-index: 5; background: repeating-linear-gradient(transparent 0 3px, #0002 3px 4px); box-shadow: inset 0 0 10vw #0009; }
-.frame[data-display=true] header { margin-bottom: .5rem; padding-bottom: .5rem; }
-.frame[data-display=true] header h1 { font-size: 1.6rem; margin: 0; }
-.frame[data-display=true] header p:first-child, .frame[data-display=true] header p:nth-child(3) { display: none; }
+.frame[data-effects=true]::after { content: ''; position: fixed; inset: 0; pointer-events: none; z-index: 5; background: repeating-linear-gradient(transparent 0 3px, #0001 3px 4px); }
+@media (prefers-reduced-motion: reduce) { .frame[data-effects=true]::after { display: none; } }
 .display { width: min(100%, 120rem); margin: auto; padding: clamp(.5rem, 2vw, 2rem); }
-.display > section { margin: 1rem 0; display: flex; flex-direction: column; }
-.display > section > p:first-child { order: -4; }
-.display > section > [role=status] { order: -3; }
-.display > section > [role=timer] { order: -2; }
-.display [role=timer] { font-size: clamp(4rem, 14vw, 14rem); text-align: center; line-height: 1.1; font-variant-numeric: tabular-nums; }
-.display h3 { font-size: clamp(1.3rem, 3vw, 3rem); }
-.display p { font-size: clamp(1rem, 1.8vw, 1.6rem); line-height: 1.5; }
-.banner { border-block: 1px solid #78826d; padding: 1rem; letter-spacing: .1em; color: #d9e2c4; }
-@media (prefers-reduced-motion: no-preference) { .frame[data-effects=true] .banner { animation: tune .65s ease-out; } }
-@keyframes tune { from { opacity: .4; transform: translateX(2px); } to { opacity: 1; transform: none; } }
-@media (prefers-reduced-motion: reduce) { .frame[data-effects=true]::after { background: none; } }
+.display [role=timer] { font-size: clamp(4rem, 14vw, 14rem); text-align: center; line-height: 1.1; }
+.banner { border-block: 1px solid var(--line); padding: 16px; letter-spacing: .1em; color: var(--muted); }
 
-.ritualRoom { display: grid; grid-template-columns: minmax(0, 1fr); gap: 1rem; align-items: start; }
-.mainScene { min-width: 0; }
-.ritualRoom .mainScene [role=timer] { font-size: clamp(2.5rem, 6vw, 4rem); color: #d8c6f8; }
-.saveNote { margin: .4rem 0; color: #c4b8d0; font-size: .9rem; }
-.prologue { white-space: pre-line; max-width: 62ch; }
-@media (min-width: 64rem) {
-  .ritualRoom { grid-template-columns: minmax(12rem, .85fr) minmax(0, 2fr) minmax(15rem, 1fr); }
-}
-
-.frame[data-first-game=true] > main { padding: clamp(1rem, 2vw, 1.5rem); }
-.frame[data-first-game=true]::after { background: repeating-linear-gradient(transparent 0 3px, #0001 3px 4px); }
-.frame[data-first-game=true] > main > header { gap: .5rem 1rem; align-items: center; min-height: 3.5rem; }
-.frame[data-first-game=true] header h1 { font-size: clamp(1.15rem, 2vw, 1.4rem); }
-.frame[data-first-game=true] header code { font-size: 1rem; }
-.frame[data-first-game=true] header button { margin: 0; }
-.roomIdentity, .tools { display: flex; align-items: center; flex-wrap: wrap; gap: .5rem; font-size: .875rem; }
+.frame[data-first-game=true] > main { padding: 28px 24px 24px; }
+.frame[data-first-game=true] > main > header { gap: 12px; margin-bottom: 20px; }
+.frame[data-first-game=true] header h1 { min-width: min(100%, 208px); }
+.roomIdentity, .tools { display: flex; align-items: center; flex-wrap: wrap; gap: 12px; font-size: 13px; }
 .tools { margin-inline-start: auto; }
-.tools output { padding: .55rem .85rem; border: 1px solid #857395; border-radius: .55rem; font-size: 1.45rem; color: #f2eafa; font-variant-numeric: tabular-nums; }
-.frame[data-first-game=true] .tools button, .frame[data-first-game=true] .roomIdentity button { background: #211b2c; color: #f1ebf8; }
+.frame[data-first-game=true] header :is(.roomIdentity, .tools) > button { margin: 0; min-width: 128px; }
+.frame[data-first-game=true] header .tools > button { min-width: 140px; }
+.frame[data-first-game=true] header .tools > button:last-of-type { min-width: 144px; }
+.roomIdentity code { font: inherit; }
+.clock { display: flex; justify-content: space-between; align-items: center; gap: 12px; min-width: 216px; min-height: 48px; padding-inline: 12px; border: 1px solid var(--border); border-radius: 8px; background: var(--surface); color: var(--muted); }
+.clock output { font-size: 24px; font-weight: 600; }
+.ritualRoom { display: grid; grid-template-columns: minmax(0, 1fr); gap: 16px; }
 .ritualRoom > section, .ritualRoom .mainScene > section { margin: 0; }
-.ritualRoom .mainScene { display: flex; flex-direction: column; min-height: 0; padding: clamp(1rem, 2vw, 2rem); border: 1px solid #756486; border-radius: .7rem; background: #191522; }
+.ritualRoom .mainScene { display: flex; flex-direction: column; gap: 12px; min-width: 0; min-height: 0; padding: clamp(16px, 2.4vw, 32px); border: 1px solid var(--border); border-radius: 12px; background: var(--panel); }
 .ritualRoom .mainScene > section:first-child { border: 0; padding: 0; background: transparent; }
-.ritualRoom .mainScene > section:first-child h3 { margin: .35rem 0; font-size: clamp(1.7rem, 3.3vw, 3rem); }
-.ritualRoom .mainScene p { margin: .5rem 0; }
-.ritualRoom .mainScene > section:first-child > p:first-child { color: #c3aee6; font-size: .82rem; }
-.phaseMark { display: grid; place-items: center; position: relative; width: clamp(4rem, 14vh, 8rem); aspect-ratio: 1; margin: clamp(.5rem, 3vh, 1.5rem) auto; color: #d8b875; font-size: 2rem; border: 1px solid #8e79a0; border-radius: 50%; }
+.ritualRoom .mainScene > section:first-child h3 { margin: 16px 0; font-size: clamp(22px, 2.35vw, 32px); font-weight: 700; line-height: 1.25; }
+.ritualRoom .mainScene p { margin: 8px 0; }
+.ritualRoom .mainScene > section:first-child > p { color: var(--muted); }
+.ritualRoom .mainScene > section:first-child > p:first-child { width: fit-content; margin: 0; padding: 4px; border-radius: 8px; background: var(--surface); color: var(--accent); font-size: 13px; text-transform: uppercase; }
+.saveNote { color: var(--muted); font-size: 14px; }
+.prologue { white-space: pre-line; max-width: 62ch; }
+.phaseMark { display: block; position: relative; width: clamp(80px, 18vh, 136px); aspect-ratio: 1; margin: clamp(12px, 3vh, 28px) auto; border: 1px solid var(--accent); border-radius: 50%; }
+.phaseMark::before { content: ''; position: absolute; bottom: 6%; left: 42%; width: 16%; height: 46%; border-radius: 3px; background: var(--gold); }
+.phaseMark::after { content: ''; position: absolute; bottom: 55%; left: 43%; width: 14%; height: 32%; border-radius: 80% 20% 70% 65%; transform: rotate(12deg); background: radial-gradient(ellipse at 55% 75%, var(--text) 5%, var(--gold) 46%); box-shadow: 0 0 0 18px rgb(213 185 129 / 7%); }
 .roster { display: flex; flex-direction: column; min-height: 0; }
-.roster h3 { margin: 0 0 .65rem; }
+.roster h3 { display: flex; align-items: baseline; justify-content: space-between; gap: 12px; margin: 0 0 16px; font-size: 22px; }
+.roster h3 span { color: var(--accent); font-family: var(--font-numeric); font-size: 16px; }
 .roster ol { list-style: none; padding: 0; margin: 0; overflow: auto; overscroll-behavior: contain; }
-.roster ol:focus-visible, .sceneWork:focus-visible { outline: 2px solid #cdb4ed; outline-offset: 2px; }
-.roster ol li { display: grid; grid-template-columns: 1.6rem minmax(0, 1fr) minmax(0, .65fr); gap: .3rem; padding: .34rem 0; border-color: #3c3149; }
+.roster ol:focus-visible, .sceneWork:focus-visible { outline: 2px solid var(--accent); outline-offset: 2px; }
+.roster ol li { display: grid; grid-template-columns: 24px minmax(0, 1fr) minmax(0, .66fr); align-items: center; gap: 8px; min-height: 44px; padding: 4px 0; border: 0; }
 .roster li > :first-child { min-width: 0; }
-.roster small { display: block; line-height: 1.2; }
-.roster strong { display: block; font-size: .9rem; line-height: 1.25; }
-.seat { color: #c3aee6; font: .8rem ui-monospace, monospace; }
-.playerState { text-align: end; color: #c3aee6; }
-.sceneWork { min-height: 0; overflow: auto; overscroll-behavior: contain; }
-.sceneWork > section { margin: .6rem 0; padding: .8rem; }
+.roster small { display: block; line-height: 1.35; }
+.roster strong { display: block; overflow: hidden; white-space: nowrap; text-overflow: ellipsis; font-size: 14px; font-weight: 500; line-height: 1.3; }
+.roster > p { margin: 4px 0 0; color: var(--muted); font-size: 13px; }
+.seat { padding: 4px 0; text-align: center; border-radius: 8px; background: var(--surface); color: var(--muted); font: 13px var(--font-numeric); }
+.playerState small { color: var(--accent); }
+.sceneWork { min-height: 0; padding: 2px; overflow: auto; overscroll-behavior: contain; }
+.sceneWork > section { margin: 8px 0; padding: 12px; }
+.sceneWork [aria-label="Подготовка партии"] label > small { display: block; margin: 4px 0 0 28px; }
+.sceneWork [data-preparation-submit] { position: sticky; inset-block-end: 0; width: 100%; }
 .primary { margin-top: auto; }
-.primary [aria-label="Управление раундом"] { display: flex; flex-wrap: wrap; gap: .45rem; padding-top: .65rem; }
+.primary [aria-label="Управление раундом"] { display: flex; flex-wrap: wrap; gap: 8px; }
 .primary [aria-label="Управление раундом"] > button { flex: 1 1 auto; margin: 0; }
+.primary [aria-label="Управление раундом"] > button[data-danger] { flex-grow: 0; }
 .primary [aria-label="Управление раундом"] > p { width: 100%; }
 @media (min-width: 64rem) {
-  .ritualRoom { grid-template-columns: minmax(13rem, 1.05fr) minmax(0, 2.1fr) minmax(14.5rem, .86fr); height: calc(100dvh - 8.5rem); min-height: 30rem; align-items: stretch; }
+  .ritualRoom { grid-template-columns: minmax(0, 1.23fr) minmax(0, 2.42fr) minmax(248px, 1fr); height: calc(100dvh - 120px); min-height: 480px; }
   .ritualRoom > section:last-child { min-height: 0; overflow: auto; }
   .ritualRoom .prologue { max-height: 13dvh; overflow: auto; }
 }
-
-.phaseMark::before { content: ''; position: absolute; bottom: 24%; width: 18%; height: 38%; border-radius: .2rem; background: linear-gradient(90deg, #96753c, #e1c589 58%, #be9c58); }
-.phaseMark::after { content: ''; position: absolute; bottom: 63%; width: 13%; height: 17%; border-radius: 65% 35% 60% 40%; transform: rotate(18deg); background: #f4d79b; box-shadow: 0 0 1rem #d8a54e; }
+@media (max-width: 63.99rem) {
+  .frame[data-first-game=true] > main { padding: 16px; }
+  .tools { margin-inline-start: 0; }
+  .ritualRoom .mainScene { order: -1; }
+  .roster ol { max-height: 24rem; }
+}

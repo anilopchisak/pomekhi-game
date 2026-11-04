@@ -21,7 +21,7 @@ it('ships 90 original cards across three levels with complete fields', () => {
     counts.forEach((count, index) => expect(CARD_BANK.filter(card => card.role === role && card.difficulty === index + 1)).toHaveLength(count));
   for (const card of CARD_BANK) {
     expect([1, 2, 3]).toContain(card.difficulty);
-    const fields = card.role === 'possessed' ? [card.behavior, card.clue, card.releaseCondition] : [card.mission];
+    const fields = card.role === 'possessed' ? [card.behavior, card.clue ?? "", card.releaseCondition] : [card.mission];
     for (const field of fields) expect(field.trim().length).toBeGreaterThan(10);
     expect(card).not.toHaveProperty('infectionTrigger');
   }

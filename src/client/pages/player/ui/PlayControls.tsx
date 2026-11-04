@@ -3,10 +3,11 @@ import type { LobbyCommand, LobbyInputs, LobbyView, OfflineAction } from '../../
 import { gameCommand } from '../../../shared/api/index.js';
 import { ConfirmButton } from '../../../shared/ui/index.js';
 
-export function PlayControls({ view, disabled, run, queue, online = true }: {
+export function PlayControls({ view, disabled, run, queue, online = true, estimatedSearchEnded = false }: {
   view: Extract<LobbyView, { kind: 'player' }>; disabled: boolean;
   queue?: (action: OfflineAction) => Promise<void>;
   online?: boolean;
+  estimatedSearchEnded?: boolean;
   run: <C extends LobbyCommand>(command: C, input: LobbyInputs[C]) => Promise<void>;
 }) {
   const selectRef = useRef<HTMLSelectElement>(null);
@@ -17,7 +18,7 @@ export function PlayControls({ view, disabled, run, queue, online = true }: {
   const target = selection?.round === play.roundId && selection.role === play.status ? selection.id : '';
   const base = { ...gameCommand(room), playVersion: play.version };
   const mutable = !game.lastRoundAborted && !game.results.some(result => result.roundId === play.roundId && result.status !== 'provisional');
-  const searching = game.phase === 'search' && !game.paused && mutable;
+  const searching = game.phase === 'search' && !game.paused && !estimatedSearchEnded && mutable;
   const possessed = play.status === 'possessed' || play.status === 'captured';
   const offering = game.firstGame && play.card.offering;
   const missionAllowed = mutable && !game.paused && ['search', 'return', 'between_rounds', 'finished'].includes(game.phase);
@@ -26,7 +27,13 @@ export function PlayControls({ view, disabled, run, queue, online = true }: {
   const name = eligible.find(p => p.id === target)?.name;
   const unavailable = Boolean(target && !name);
   const native = !game.firstGame;
-  if (game.firstGame && game.phase === 'finished') return null;
+  const undoRequests = view.synchronization?.undoRequests ?? [];
+  const waitingUndo = undoRequests.some(row => row.actionId === play.undo?.id && (row.status === 'queued' || row.status === 'review'));
+  const undoHistory = undoRequests.length > 0 ? <ul aria-label="Запросы на разбор">{undoRequests.map(row => <li key={row.id}>
+      {{ queued: 'Запрос сохранён на телефоне и ждёт отправки.', review: 'Запрос ждёт решения организатора.',
+        accepted: 'Отмена подтверждена.', rejected: 'Запрос на отмену отклонён.' }[row.status]}
+    </li>)}</ul> : null;
+  if (game.firstGame && game.phase === 'finished') return undoHistory;
 
   function choose(id: string) { setSelection({ id, round: play!.roundId, role: play!.status }); }
   const targetSelect = (label: string) => <label>{label}
@@ -75,12 +82,18 @@ export function PlayControls({ view, disabled, run, queue, online = true }: {
     {play.undo && <>
       <p>Последнее действие: {play.undo.label}.</p>
       <ConfirmButton native={native} title={`Отменить: ${play.undo.label}?`} description="Завершённый поиск не возобновится."
-        confirm="Отменить действие" disabled={disabled || !mutable || !play.undo.available}
+        confirm="Отменить действие" disabled={disabled || !mutable || !play.undo.available || waitingUndo || game.firstGame && game.paused}
         onConfirm={() => void (queue ? queue({ kind: 'undo', actionId: play.undo!.id }) : run('play:undo', { ...base, actionId: play.undo!.id }))}>
         Отменить моё последнее действие
       </ConfirmButton>
-      {!play.undo.available && mutable && <p>Отмена недоступна: есть зависимые события или результат зафиксирован.</p>}
+      {!play.undo.available && mutable && <p>Отмену блокируют связанные записи.</p>}
+      {game.firstGame && play.undo.canRequestReview && mutable && !game.synchronization?.closed && !waitingUndo &&
+        <ConfirmButton title="Запросить разбор отмены?" description="Организатор проверит связанные записи на сверке. До решения действие остаётся в силе."
+          confirm="Отправить запрос" disabled={disabled || game.paused}
+          onConfirm={() => void (queue ? queue({ kind: 'undo', actionId: play.undo!.id, requestReview: true }) :
+            run('play:undo', { ...base, actionId: play.undo!.id, requestReview: true }))}>Запросить разбор</ConfirmButton>}
     </>}
+    {undoHistory}
     {!mutable && <p>Результат закрыт для изменений.</p>}
   </section>;
 }
