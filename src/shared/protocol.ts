@@ -56,7 +56,7 @@ export const cardSets = ['indoor', 'outdoor', 'contact', 'harder'] as const;
 export type CardSet = typeof cardSets[number];
 export const venueFeatures = ['space', 'door', 'mirror', 'tree', 'dimLight', 'wall', 'twoZones', 'scary', 'touchSurfaces', 'contact', 'landmarks'] as const;
 export type VenueFeature = typeof venueFeatures[number];
-export interface Venue { mode?: GameMode; bank?: 'local' | 'authored'; horror?: boolean; sets?: CardSet[]; features?: VenueFeature[]; prologueRead?: boolean; base: string; zones: string[]; dwelling?: { zone: string; place: string }; storyId?: string; harder?: boolean; order?: string[] }
+export interface Venue { mode?: GameMode; bank?: 'local' | 'authored'; horror?: boolean; comedy?: boolean; sets?: CardSet[]; features?: VenueFeature[]; prologueRead?: boolean; base: string; zones: string[]; dwelling?: { zone: string; place: string }; storyId?: string; harder?: boolean; order?: string[] }
 export type PhysicalStatus = 'at_base' | 'in_group';
 export interface Presence {
   playerId: string; expected: PhysicalStatus; confirmed: boolean;

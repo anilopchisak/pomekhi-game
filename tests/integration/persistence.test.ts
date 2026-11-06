@@ -136,7 +136,8 @@ it('bounds stop during a stalled load and never starts listening when that load 
 it('reconciles delayed phone reports and restores retained groups with the current disk store', async () => {
   const dir = await mkdtemp(join(tmpdir(), 'pomekhi-first-game-')), clients: Client[] = [];
   const time = controlledClock();
-  const make = () => createServerRuntime({ firstGame: true, config: { host: '127.0.0.1', port: 0 }, organizerCode: 'FIRSTGAME', randomIndex: () => 0, sessionStore: createFileSessionStore(dir, true), clock: time.clock });
+  const make = () => createServerRuntime({ firstGame: true, config: { host: '127.0.0.1', port: 0 }, organizerCode: 'FIRSTGAME',
+    randomIndex: limit => limit > 11 ? limit - 1 : 0, sessionStore: createFileSessionStore(dir, true), clock: time.clock });
   let runtime = make(), sequence = 0;
   let port = (await runtime.start()).port;
   const newClient = async () => { const client = await connect(port); clients.push(client); return client; };
@@ -170,9 +171,12 @@ it('reconciles delayed phone reports and restores retained groups with the curre
       }
     };
     await enter(); const ids = (await current()).players.map(p => p.id);
-    value(await send(host, 'venue:configure', { ...await base(), venue: { base: 'База', zones: ['Кухня'], dwelling: { zone: 'Кухня', place: 'Угол' }, storyId: 'S001', prologueRead: true, harder: false, order: ids } }));
+    value(await send(host, 'venue:configure', { ...await base(), venue: { base: 'База', zones: ['Кухня'], dwelling: { zone: 'Кухня', place: 'Угол' }, comedy: true } }));
     await deal();
     expect((await roomView()).roles?.[ids[1]]).toBe('possessed');
+    expect((await personal(0)).assignment?.card).toMatchObject({ id: 'CE016', offering: true });
+    expect((await personal(1)).assignment?.card).toMatchObject({ id: 'CP024' });
+    expect(JSON.stringify(await roomView())).not.toContain('Дух застрял на репетиции выхода');
     expect((await personal(0)).room.dealing.assignments.map(a => a.playerId)).toEqual([ids[0]]);
     value(await send(host, 'round:start', { ...await base(), confirmWarnings: true }));
     value(await send(phones[1], 'play:location', { ...await base(), zone: 'Кухня' }));
@@ -218,6 +222,8 @@ it('reconciles delayed phone reports and restores retained groups with the curre
     await runtime.stop(); clients.splice(0).forEach(client => client.disconnect());
     runtime = make(); port = (await runtime.start()).port; host = await newClient();
     value(await send(host, 'organizer:authorize', { code: 'FIRSTGAME' })); await enter(true);
+    expect((await current()).game.venue.comedy).toBe(true);
+    expect((await personal(0)).play?.card).toEqual(retained);
     expect((await roomView()).review?.find(e => e.id === late.id)?.status).toBe('rejected');
     expect((await personal(3)).synchronization?.undoRequests).toEqual([undoRequest]);
     const duplicate = { id: 'duplicate-undo-request', clientId: 'offline-undo-request', sequence: 1, previousId: null, roundId,

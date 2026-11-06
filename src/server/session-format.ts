@@ -144,6 +144,7 @@ export function validateSession(value: unknown): SavedSession {
     requireValue(venue.mode === undefined || venue.mode === 'first' || saved.schemaVersion === 7 && venue.mode === 'ordinary');
     requireValue(venue.bank === undefined || venue.bank === 'local' || venue.bank === 'authored');
     requireValue(venue.horror === undefined || typeof venue.horror === 'boolean');
+    requireValue(venue.comedy === undefined || typeof venue.comedy === 'boolean');
     if (venue.sets !== undefined) requireValue(strings(venue.sets, cardSets.length).every(set => (cardSets as readonly string[]).includes(set)));
     if (venue.features !== undefined) requireValue(strings(venue.features, venueFeatures.length).every(feature => (venueFeatures as readonly string[]).includes(feature)));
     requireValue(venue.prologueRead === undefined || typeof venue.prologueRead === 'boolean');

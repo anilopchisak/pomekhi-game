@@ -348,25 +348,32 @@ it('keeps confirmed total possession terminal if an ordinary trial would exhaust
   expect(() => validateRitual(ritual.exportState())).not.toThrow();
 });
 
-it.each([{ sets: [] }, { sets: ['contact'] }, { sets: ['indoor', 'harder'] }])('draws only eligible base missions for $sets', ({ sets }) => {
+it.each<{ sets: string[]; comedy?: boolean }>([
+  { sets: [], comedy: undefined },
+  { sets: ['contact'], comedy: false },
+  { sets: ['indoor', 'harder'], comedy: true },
+])('draws eligible missions for $sets with comedy $comedy', ({ sets, comedy }) => {
   const time = controlledClock();
   let sequence = 0;
   const make = () => createGame({ firstGame: true, generateId: () => 'authored-' + ++sequence, randomIndex: () => 0, clock: time.clock, onChange() {} });
   const game = make();
   const ids = ['p0', 'p1', 'p2', 'p3', 'p4'];
   expect(game.configureVenue({ base: 'База', zones: ['Кухня'], dwelling: { zone: 'Кухня', place: 'Угол' },
-    order: ids, sets, horror: true, features: ['space', 'mirror'] })).toBeUndefined();
+    order: ids, sets, comedy, horror: true, features: ['space', 'mirror'] })).toBeUndefined();
   const seen = new Map<string, PersonalCard>();
   // Canceled previews still consume cards. Walk through the pool via normal deals.
-  for (let attempt = 0; attempt < 40; attempt++) {
+  for (let attempt = 0; attempt < 55; attempt++) {
     expect(game.deal(ids, 0, false)).toBeUndefined();
     for (const id of ids) {
       const card = game.personal(id)!.card;
       expect(seen.get(card.id) ?? card).toEqual(card);
       seen.set(card.id, card);
     }
-    if (attempt < 39) expect(game.cancelDeal()).toBeUndefined();
+    if (attempt < 54) expect(game.cancelDeal()).toBeUndefined();
   }
+  const extra = [...seen.values()].filter(card => /^C[PE]/.test(card.id));
+  expect(extra.filter(card => card.role === 'possessed')).toHaveLength(comedy ? 24 : 0);
+  expect(extra.filter(card => card.role === 'exorcist')).toHaveLength(comedy ? 16 : 0);
   expect(seen.get('P001')).toMatchObject({ title: 'Колыбельная пустой комнаты' });
   expect(seen.get('P007')?.title).toBe(sets.includes('harder') ? 'Запись из соседней жизни' : undefined);
   expect(seen.has('P003')).toBe(sets.includes('contact'));
@@ -376,6 +383,7 @@ it.each([{ sets: [] }, { sets: ['contact'] }, { sets: ['indoor', 'harder'] }])('
   restored.restore(game.exportState());
   expect(restored.publicState().venue).toMatchObject({ bank: 'authored', mode: 'ordinary' });
   expect(restored.publicState().venue.horror).toBeUndefined();
+  expect(restored.publicState().venue.comedy).toBe(comedy ? true : undefined);
   expect(ids.map(id => restored.personal(id))).toEqual(ids.map(id => game.personal(id)));
   expect(restored.start(ids.map(id => ({ id, online: true })), true)).toBeUndefined();
   expect(restored.exportState().ritual?.cards.map(card => card.id)).toEqual(['R001', 'R002', 'R011']);

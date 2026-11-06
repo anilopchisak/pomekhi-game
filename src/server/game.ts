@@ -12,6 +12,7 @@ import { CARD_BANK } from './cards.js';
 import { eligibleTrials, selectTrials, beginTrial, personalTrial, submitTrial, trialBonus, trialReview, reviewTrialEvidence } from './trials.js';
 import type { SavedTrials } from './trials.js';
 import { authoredMissions, authoredReferences } from './authored-content.js';
+import { comedyMissions } from './comedy-missions.js';
 import { dwellingMissions, stories } from './first-game-content.js';
 import type { MissingLocation, OfflineEvent, PhysicalStatus, ReviewPreview, TrialReviewFact, Venue, ViolationReview } from '../shared/protocol.js';
 import type { SavedSearch, RetainedGroup } from './search.js';
@@ -87,7 +88,9 @@ export function createGame({ generateId, randomIndex, clock = defaultClock, onCh
       const eligible = (card: PersonalCard) => (!card.harder || venue.harder) &&
         (card.sets ?? []).every(set => venue.sets?.includes(set) || set === 'harder' && venue.harder) &&
         (card.requirements ?? []).every(feature => feature === 'twoZones' ? venue.zones.length >= 2 : feature === 'contact' ? venue.sets?.includes('contact') : venue.features?.includes(feature));
-      return (usesAuthoredBank() ? authoredMissions : [...getCards(), ...dwellingMissions]).filter(eligible);
+      if (!usesAuthoredBank()) return [...getCards(), ...dwellingMissions].filter(eligible);
+      const bank = venue.comedy ? [...authoredMissions, ...comedyMissions] : authoredMissions;
+      return bank.filter(eligible);
     },
   } : undefined });
   let settings: GameSettings = { ritualEnabled: true, roundLimit: DEFAULT_ROUND_LIMIT, placementSeconds: 45, searchSeconds: firstGame ? 240 : 180, returnSeconds: 45, ...(firstGame ? { offlineWaitSeconds: 90 } : {}), tutorialEnabled: !firstGame, initialDifficulty: firstGame ? 3 : 1, maximumDifficulty: 3, infectionMode: 'on' };
@@ -620,10 +623,12 @@ export function createGame({ generateId, randomIndex, clock = defaultClock, onCh
       if (phase !== 'lobby') return 'SETTINGS_LOCKED';
       if (!v.dwelling || !valid(v.dwelling.place) || !names.slice(1).includes(v.dwelling.zone)) return 'INVALID_INPUT';
       const sets = v.sets === undefined ? (v.harder === true ? ['harder' as const] : []) : v.sets;
-      if (!Array.isArray(sets) || !sets.every(set => cardSets.includes(set)) || new Set(sets).size !== sets.length) return 'INVALID_INPUT';
+      if (!Array.isArray(sets) || !sets.every(set => cardSets.includes(set)) || new Set(sets).size !== sets.length ||
+        v.comedy !== undefined && typeof v.comedy !== 'boolean') return 'INVALID_INPUT';
       initializeStory();
       venue = { base: names[0], zones: names.slice(1), dwelling: { zone: v.dwelling.zone, place: v.dwelling.place.trim() },
-        storyId: venue.storyId, harder: sets.includes('harder'), mode: 'ordinary', bank: 'authored', sets: [...sets] };
+        storyId: venue.storyId, harder: sets.includes('harder'), mode: 'ordinary', bank: 'authored', sets: [...sets],
+        ...(v.comedy ? { comedy: true } : {}) };
     } else venue = { base: names[0], zones: names.slice(1) };
     bump();
   }

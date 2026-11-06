@@ -18,7 +18,7 @@ The original candle formula is N+1 / 2 / 3. Each confirmed rescue of an original
 
 ## Authored cards
 
-The authored bank contains 75 possessed missions, 42 exorcist missions, 11 trials, 10 ordinary prophecies, the final door, six stories and two references. The organizer can enable indoor, outdoor, contact and harder missions independently. New parties filter out cards requiring a separate venue confirmation. The server still checks whether two locations are available and whether the contact category is enabled. Actual contact requires agreement from the participants. Phones show the private behavior, capture and release instructions or the personal mission and completion criterion. Archived horror variants and the standalone editable bank remain separate from the new-party draw.
+The authored bank contains 75 possessed missions, 42 exorcist missions, 11 trials, 10 ordinary prophecies, the final door, six stories and two references. The organizer can enable indoor, outdoor, contact and harder missions independently. The optional comedy setting adds 24 possessed and 16 exorcist missions to the authored draw alongside the base missions. New parties filter out cards requiring a separate venue confirmation. The server still checks whether two locations are available and whether the contact category is enabled. Actual contact requires agreement from the participants. Phones show the private behavior, capture and release instructions or the personal mission and completion criterion. Archived horror variants and the standalone editable bank remain separate from the new-party draw.
 
 ## Ordinary trials
 

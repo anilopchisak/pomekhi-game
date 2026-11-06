@@ -2,7 +2,9 @@
 
 This package contains 147 fully authored Russian cards without helper text: 75 possessed missions, 42 exorcist missions, 11 computer-Master trials, 10 ordinary prophecies plus one final door, six opening stories and two references. The game uses a server-only projection of this package as its default authored bank. The editorial files remain the source for review and revision.
 
-Open [index.html](index.html) locally. It works offline without a server, remote assets or an account. Search by title, action or ID, filter a deck or an optional subset, and use the outcome toggle to conceal or show scoring conditions. Source records and all 45 ordinary-prophecy pairs are included below the cards. Printing uses the current card filter; outcomes remain printed even if concealed on screen.
+Open [all.html](all.html) locally to browse the 147 cards in the current authored bank, 38 horror variants and 40 comedy missions. The [comedy deck](all.html#comedy) has 24 possessed and 16 exorcist missions. The organizer can add them to the draw in the party settings. The [server source](../../src/server/comedy-cards.ts) feeds both the game and this catalog. Search by title, action or ID and filter by deck or optional subset. The standalone file works offline. The [editorial catalog](index.html) also includes source records and all 45 ordinary-prophecy pairs.
+
+To rebuild just the standalone file, run `python3 output/cards/build.py --all` from the project root.
 
 ## Domestic-horror revision
 

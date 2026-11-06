@@ -42,6 +42,7 @@ function PartyForm({ room, disabled, run, error, retry, close }: SetupProps & { 
   const [zone, setZone] = useState(venue.dwelling?.zone ?? '');
   const [place, setPlace] = useState(venue.dwelling?.place ?? '');
   const [sets, setSets] = useState(venue.sets ?? (venue.harder ? ['harder' as const] : []));
+  const [comedy, setComedy] = useState(venue.comedy ?? false);
   const [validation, setValidation] = useState('');
   const zoneList = zones.split('\n').map(value => value.trim()).filter(Boolean);
   const setLabels = { indoor: 'В помещении', outdoor: 'На улице', contact: 'С физическим контактом', harder: 'Сложнее' };
@@ -59,7 +60,7 @@ function PartyForm({ room, disabled, run, error, retry, close }: SetupProps & { 
       return;
     }
     setValidation('');
-    void run('venue:configure', { ...gameCommand(room), venue: { base, zones: zoneList, dwelling: { zone, place }, sets } }, close);
+    void run('venue:configure', { ...gameCommand(room), venue: { base, zones: zoneList, dwelling: { zone, place }, sets, comedy } }, close);
   }}>
     {locked && <p>Настройки зафиксированы первой раздачей.</p>}
     <fieldset disabled={locked || disabled} className={styles.partyFields}>
@@ -81,6 +82,7 @@ function PartyForm({ room, disabled, run, error, retry, close }: SetupProps & { 
         {cardSets.map(set => <label key={set}>
           <input type="checkbox" checked={sets.includes(set)} onChange={event => setSets(event.target.checked ? [...sets, set] : sets.filter(item => item !== set))} /> {setLabels[set]}
         </label>)}
+        <label><input type="checkbox" checked={comedy} onChange={event => setComedy(event.target.checked)} /> Добавить смешные карты</label>
         <p>Для любого прикосновения сначала получите согласие участника.</p>
       </fieldset>
     </fieldset>

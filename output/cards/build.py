@@ -1,5 +1,6 @@
 # coding: utf-8
 """Validate the authored editorial inputs and rebuild the offline review catalog."""
+import argparse
 import csv
 import hashlib
 import itertools
@@ -265,7 +266,7 @@ def paragraph(label, text, cls=''):
         '<p>' + escape(p) + '</p>' for p in text.split('\n\n')) + '</div>'
 
 
-def card_html(c):
+def card_html(c, *, editorial=True, collection=None):
     labels = c['sets'] or ['ordinary']
     badges = ''.join('<span class="tag">' + escape(SET_LABELS.get(s, 'Обычная')) + '</span>' for s in labels)
     content = ''
@@ -298,16 +299,24 @@ def card_html(c):
             content += paragraph(section['title'], section['text'])
     if c['requirements']:
         content += '<div class="requirements"><h4>До включения в колоду</h4><ul>' + ''.join('<li>' + escape(x) + '</li>' for x in c['requirements']) + '</ul></div>'
-    provenance = c['provenance']
-    provenance_label = 'Авторская карта' if provenance['classification'] == 'new' else 'Адаптация / переработка'
-    refs = ', '.join(provenance['sources']) or 'new authored content'
-    content += '<details class="editorial"><summary>' + provenance_label + ' · источники и изменения</summary><p lang="en">' + escape(refs) + '</p><p lang="en">' + escape(provenance['adaptation']) + '</p></details>'
-    inspiration = ', '.join('<a href="#fiction-' + key + '">' + escape(FICTION_BY_ID[key]['titleRu']) + '</a>' for key in provenance['inspirations'])
-    if inspiration:
-        content += '<p class="private">Художественные мотивы: ' + inspiration + '</p>'
-    searchable = {key: value for key, value in c.items() if key != 'provenance'}
+    if editorial:
+        provenance = c['provenance']
+        provenance_label = 'Авторская карта' if provenance['classification'] == 'new' else 'Адаптация / переработка'
+        refs = ', '.join(provenance['sources']) or 'new authored content'
+        content += '<details class="editorial"><summary>' + provenance_label + ' · источники и изменения</summary><p lang="en">' + escape(refs) + '</p><p lang="en">' + escape(provenance['adaptation']) + '</p></details>'
+        inspiration = ', '.join('<a href="#fiction-' + key + '">' + escape(FICTION_BY_ID[key]['titleRu']) + '</a>' for key in provenance['inspirations'])
+        if inspiration:
+            content += '<p class="private">Художественные мотивы: ' + inspiration + '</p>'
+    base_id = c.get('baseCard')
+    edition = f' data-collection="{collection}"' if collection else ''
+    if base_id:
+        badges += '<span class="tag">Страшный вариант</span>'
+        content = '<p class="private">Вместо <a href="#' + escape(base_id) + '">' + escape(base_id + ' · ' + BY_ID[base_id]['title']) + '</a></p>' + content
+    if collection == 'comedy':
+        badges += '<span class="tag comedy-tag">Смешная колода</span>'
+    searchable = {key: value for key, value in c.items() if key not in ('provenance', 'fearMechanism')}
     text = ' '.join(strings(searchable)).casefold().replace('ё', 'е')
-    return f'<article class="card" id="{c["id"]}" data-type="{kind}" data-sets="{" ".join(c["sets"])}" data-search="{escape(text, quote=True)}">' + \
+    return f'<article class="card" id="{c["id"]}" data-type="{kind}" data-sets="{" ".join(c["sets"])}" data-search="{escape(text, quote=True)}"{edition}>' + \
         f'<header><span class="card-id">{c["id"]}</span><span class="family">{escape(FAMILY_LABELS[c["family"]])}</span><h3>{escape(c["title"])}</h3><div class="tags">{badges}</div></header>' + content + '</article>'
 
 
@@ -323,6 +332,7 @@ main{max-width:1224px;padding:26px 22px 64px;margin:auto}.intro{max-width:940px;
 @media(max-width:760px){.filters{grid-template-columns:1fr 1fr}.filters label:nth-child(3){grid-column:1/-1}.filters button{grid-column:1/-1}.grid{grid-template-columns:1fr}.hero{padding-top:30px;padding-bottom:28px}.toolbar{position:relative}.card{padding:18px;scroll-margin-top:20px}.card h3{font-size:25px}.family{float:none;display:block;margin-top:4px}main{padding-inline:14px}}
 @media print{body{background:white;font-size:11px}.hero{background:white;color:#111;padding:0 0 14px;border-color:#111}.hero p{color:#333}.hero-links,.toolbar,.intro,.supplement,.editorial,.footer,.empty{display:none!important}.hero h1{font-size:30px}.hero .eyebrow{color:#333}main{padding:14px 0}.grid{display:block}.card{break-inside:avoid;page-break-inside:avoid;box-shadow:none;margin:0 0 14px;padding:14px}.card[hidden]{display:none}.card h3{font-size:20px}.field p{font-size:11px;line-height:1.45}.field{margin:10px 0}.prologue p{font-size:13px}.tag{font-size:9px}.conditions-hidden .outcome{display:block}}
 .outcomes .capture{border-left-color:#a25b4e}.outcomes .release{border-left-color:#61825d}
+.comedy-tag{background:#f7edcb;border-color:#d8c68c;color:#554518}
 """
 
 SCRIPT = """
@@ -333,12 +343,13 @@ function filter() {
   let shown = 0;
   for (const c of cards) {
     const tags = c.dataset.sets.split(' ').filter(Boolean);
-    const fits = (!type.value || c.dataset.type === type.value) &&
-      (!subset.value || (subset.value === 'ordinary' ? !tags.length : tags.includes(subset.value))) &&
+    const matchesSubset = !subset.value || (subset.value === 'ordinary' && !tags.length) ||
+      c.dataset.collection === subset.value || tags.includes(subset.value);
+    const fits = (!type.value || c.dataset.type === type.value) && matchesSubset &&
       (!q || c.dataset.search.includes(q));
     c.hidden = !fits; shown += Number(fits);
   }
-  document.querySelector('#count').textContent = `Показано ${shown} из 147 карт`;
+  document.querySelector('#count').textContent = `Показано ${shown} из ${cards.length} карт`;
   document.querySelector('#empty').hidden = shown !== 0;
 }
 for (const el of [type, subset]) el.addEventListener('change', filter);
@@ -350,19 +361,69 @@ document.querySelector('#visibility').addEventListener('click', function () {
 });
 function followHash() {
   const id = decodeURIComponent(location.hash.slice(1));
+  if (id === 'comedy' && subset.querySelector('option[value="comedy"]')) {
+    type.value = ''; subset.value = 'comedy'; search.value = ''; filter();
+    subset.scrollIntoView();
+    return;
+  }
   const card = cards.find(c => c.id === id);
   if (!card) return;
   type.value = ''; subset.value = ''; search.value = ''; filter();
   card.scrollIntoView();
 }
 window.addEventListener('hashchange', followHash);
+document.querySelector('a[href="#comedy"]')?.addEventListener('click', () => {
+  if (location.hash === '#comedy') followHash();
+});
 filter(); if (location.hash) followHash();
 """
 
 
-def build_html(pair_review):
-    options = ''.join(f'<option value="{kind}">{label} · {EXPECTED[kind]}</option>' for kind, label in TYPE_LABELS.items())
+def toolbar(cards, *, collections=False):
+    counts = Counter(card['type'] for card in cards)
+    options = ''.join(f'<option value="{kind}">{label} · {counts[kind]}</option>' for kind, label in TYPE_LABELS.items())
     subsets = ''.join(f'<option value="{key}">{label}</option>' for key, label in SET_LABELS.items())
+    if collections:
+        subsets += '<option value="horror">Страшные варианты</option><option value="comedy">Смешная колода</option>'
+    total = len(cards)
+    return f'''<section class="toolbar" aria-label="Фильтры каталога"><div class="filters">
+<label for="type">Колода<select id="type"><option value="">Все {total} карт</option>{options}</select></label>
+<label for="subset">Набор<select id="subset"><option value="">Все наборы</option><option value="ordinary">Без дополнительных отметок</option>{subsets}</select></label>
+<label for="search">Поиск<input id="search" type="search" placeholder="Название, действие или ID" autocomplete="off"></label>
+<button id="visibility" type="button" aria-pressed="false">Скрыть условия</button></div>
+<p class="status" id="count" role="status" aria-live="polite">Показано {total} из {total} карт</p></section>'''
+
+
+def build_all_html():
+    variants = json.loads((HERE / 'horror' / 'cards.json').read_text())['cards']
+    comedy_source = HERE.parents[1] / 'src' / 'server' / 'comedy-cards.ts'
+    comedy_by_role = json.loads(comedy_source.read_text().strip().removeprefix('export default ').removesuffix(';'))
+    comedy = [dict(card, type=role) for role, missions in comedy_by_role.items() for card in missions]
+    cards = CARDS + variants + comedy
+    assert len(CARDS) == 147 and len(variants) == 38
+    assert len({card['id'] for card in cards}) == len(cards)
+    assert all(BY_ID[card['baseCard']]['type'] == card['type'] for card in variants)
+    assert Counter(card['type'] for card in comedy) == {'possessed': 24, 'exorcist': 16}
+    rendered = (
+        ''.join(card_html(card, editorial=False) for card in CARDS)
+        + ''.join(card_html(card, editorial=False, collection='horror') for card in variants)
+        + ''.join(card_html(card, editorial=False, collection='comedy') for card in comedy)
+    )
+    return f'''<!doctype html>
+<html lang="ru"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1">
+<title>Одержимые — все карты</title><style>{STYLE}</style></head>
+<body><header class="hero"><div class="eyebrow">ОДЕРЖИМЫЕ / КАТАЛОГ</div>
+<h1>Все карты игры</h1>
+<p>{len(CARDS)} карт из текущего авторского банка, {len(variants)} страшных вариантов и {len(comedy)} смешных карт. Смешные карты можно добавить к основному банку в настройках партии. Страшные варианты доступны для просмотра.</p>
+<nav class="hero-links" aria-label="Подборки"><a href="#comedy">Смешная колода</a></nav>
+</header><main>
+{toolbar(cards, collections=True)}
+<div class="grid">{rendered}</div>
+<p class="empty" id="empty" hidden>По этим условиям карт нет. Измените поиск или набор.</p>
+</main><script>{SCRIPT}</script></body></html>'''
+
+
+def build_html(pair_review):
     rules = ''.join('<p>' + escape(text) + '</p>' for text in PACK['playerRules'].values())
     rows = ''
     for row in AUDIT['entries']:
@@ -395,15 +456,10 @@ def build_html(pair_review):
 <body><header class="hero"><div class="eyebrow">ПОМЕХИ / АВТОРСКАЯ КОЛОДА / 03.11.2026</div>
 <h1>Кто-то остался<br>по ту сторону света.</h1>
 <p>147 карт: одержимые, миссии экзорцистов, испытания Мастера, прорицания, истории и памятки. Здесь открыт полный текст для авторского просмотра. Этот каталог нельзя показывать игрокам на общем экране во время партии.</p>
-<nav class="hero-links" aria-label="Материалы набора"><a href="cards.json" download>Полный JSON</a><a href="#domestic-review">Что изменено в 185 картах</a><a href="#fiction-review">12 произведений</a><a href="horror/index.html">Страшные варианты</a><a href="#source-review">{len(AUDIT['entries'])} исходных записей</a><a href="#pair-review">45 пар прорицаний</a></nav></header>
+<nav class="hero-links" aria-label="Материалы набора"><a href="all.html">Все карты на одной странице</a><a href="cards.json" download>Полный JSON</a><a href="#domestic-review">Что изменено в 185 картах</a><a href="#fiction-review">12 произведений</a><a href="horror/index.html">Страшные варианты</a><a href="#source-review">{len(AUDIT['entries'])} исходных записей</a><a href="#pair-review">45 пар прорицаний</a></nav></header>
 <main><div class="intro"><p class="notice">Авторская адаптация оригинальных правил «Одержимых» с компьютерным Мастером. Набор подготовлен отдельно от приложения: текущий импорт игры его не поддерживает. Проверка текстов выполнена; живой игровой тест ещё не проводился.</p>
 <details><summary>Как читать набор и выбирать дополнительные карты</summary><p>Обычные карты не имеют дополнительных отметок. Карты помещения и улицы выбирают по месту игры, физический контакт — по согласию группы, повышенную сложность — по желанию. Совместные отметки действуют одновременно. Все необходимые условия места и реквизит указаны на карточках.</p>{rules}</details></div>
-<section class="toolbar" aria-label="Фильтры каталога"><div class="filters">
-<label for="type">Колода<select id="type"><option value="">Все 147 карт</option>{options}</select></label>
-<label for="subset">Набор<select id="subset"><option value="">Все наборы</option><option value="ordinary">Только обычные</option>{subsets}</select></label>
-<label for="search">Поиск<input id="search" type="search" placeholder="Название, действие или ID" autocomplete="off"></label>
-<button id="visibility" type="button" aria-pressed="false">Скрыть условия</button></div>
-<p class="status" id="count" role="status" aria-live="polite">Показано 147 из 147 карт</p></section>
+{toolbar(CARDS)}
 <div class="grid">{''.join(card_html(c) for c in CARDS)}</div><p class="empty" id="empty" hidden>По этим условиям карт нет. Измените поиск или набор.</p>
 <section class="supplement" id="domestic-review"><h2>Домашний хоррор: решения по всем картам</h2><p>Первая домашняя редакция: у одержимых 31 сохранённая основа, 18 адаптаций и 26 замен; у экзорцистов — 20, 14 и 8; у страшных вариантов — 27, 9 и 2. Последующая правка убирает весь реквизит: в таблице она отмечена отдельно. Ангел видит себя в уже имеющемся зеркале дома. Вступления свободно сочетаются с колодой. Широкую таблицу можно прокручивать в сторону.</p><p><a href="revision-audit.json">Полный реестр JSON</a> · <a href="revision-audit.csv" download>Таблица CSV</a> · <a href="research.md">Исследование</a></p><div class="scroll" tabindex="0" role="region" aria-label="Решения по 185 картам"><table><thead><tr><th>Карта</th><th>Название</th><th>Решение</th><th>Entity intention</th><th>Why the actions fit</th></tr></thead><tbody>{revision_rows}</tbody></table></div></section>
 <section class="supplement" id="fiction-review"><h2>Произведения и художественные мотивы</h2><p>Литературные тексты, материалы изданий фильмов и авторские свидетельства использованы как источники мотивов. Условия заражения и освобождения написаны для нашей игры. Это не восстановленные коммерческие карточки и не утверждения о настоящих духах.</p>{fiction_rows}</section>
@@ -432,6 +488,7 @@ def main():
         for row in REVISION['primary'] + REVISION['variants']:
             writer.writerow({key: '; '.join(row[key]) if key == 'inspirations' else row.get(key, '') for key in fields})
     (HERE / 'index.html').write_text(build_html(pair_review))
+    (HERE / 'all.html').write_text(build_all_html())
     summary = dict(status='pass', cardCount=147, counts=EXPECTED,
         sourceEntryCount=len(AUDIT['entries']), pairCount=45, witnessCount=225,
         perPossessedFamily=dict(Counter(c['family'] for c in CARDS if c['type'] == 'possessed')),
@@ -460,4 +517,9 @@ def main():
 
 
 if __name__ == '__main__':
-    main()
+    parser = argparse.ArgumentParser(description=__doc__)
+    parser.add_argument('--all', action='store_true', help='Build only the standalone catalog.')
+    if parser.parse_args().all:
+        (HERE / 'all.html').write_text(build_all_html())
+    else:
+        main()
