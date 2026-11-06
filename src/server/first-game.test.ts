@@ -44,14 +44,76 @@ function fixture(count: number, getCards?: () => readonly PersonalCard[], online
   return { game, time, make, ids, deal, start, check, settle };
 }
 
-it.each([[5, 6, 25], [7, 8, 31], [12, 13, 46]])('deals in table order for %i and starts the original candle budget', (count, candles, steps) => {
+it.each([[5, 2, 12], [7, 4, 18], [12, 10, 36]])('deals in table order for %i and starts the Ordinary candle budget', (count, candles, steps) => {
   const { game, ids, start, time } = fixture(count);
   expect(ids.map(id => game.personal(id)?.card.role)).toEqual(ids.map((_, i) => i % 2 ? 'possessed' : 'exorcist'));
   start();
-  expect(game.publicState()).toMatchObject({ phase: 'search', remainingMs: 240000, ritual: { positions: [candles, 2, 3, 0], remainingSteps: steps } });
+  expect(game.publicState()).toMatchObject({ phase: 'search', remainingMs: 240000, ritual: { positions: [candles, 2, 2, 0], remainingSteps: steps } });
   time.advance(102000);
   expect(game.pause()).toBeUndefined();
   expect(game.publicState().remainingMs).toBe(138000);
+});
+
+it.each([5, 6, 7, 8, 9, 10, 11, 12])('opens the door for %i without missions after two failed rescues', count => {
+  const { game, ids, start, check, settle, deal } = fixture(count);
+  for (let round = 1; round <= 7; round++) {
+    if (round > 1) deal();
+    const exorcists = ids.filter(id => game.personal(id)?.card.role === 'exorcist');
+    const missed = round === 2 || round === 4 ? ids.find(id => game.personal(id)?.card.role === 'possessed') : undefined;
+    const rescuer = exorcists.at(-1)!;
+    start();
+    if (missed) expect(game.playAction(missed, 'infect', exorcists[0])).toBeUndefined();
+    for (const [group] of game.personalPlay(rescuer)!.releaseGroups!) {
+      if (group !== missed) expect(game.playAction(rescuer, 'release', undefined, undefined, undefined, [group])).toBeUndefined();
+    }
+    check(); settle();
+    expect(game.publicState().results.at(-1)).toMatchObject({ rescuedGroups: Math.floor(count / 2) - Number(Boolean(missed)), missions: 0 });
+  }
+  expect(game.publicState()).toMatchObject({ phase: 'finished', completedRounds: 7,
+    ritual: { outcome: 'won', remainingSteps: 0, cards: [{ revealed: true }, { revealed: true }, { revealed: true }] } });
+});
+
+it('keeps the original search deadline after the last group is released through the inbox', () => {
+  const { game, start, time } = fixture(5);
+  start();
+  const { roundId, deadline } = game.publicState();
+  expect(game.playAction('p0', 'release', undefined, undefined, undefined, ['p1'])).toBeUndefined();
+  time.advance(1000);
+  expect(game.syncEvents('p2', roundId!, [{
+    id: 'last-release', clientId: 'offline-phone', sequence: 1, previousId: null, roundId: roundId!,
+    phase: 'search', paused: false, estimatedServerTime: null, action: { kind: 'release', targetIds: ['p3'] },
+  }])).toBeUndefined();
+  expect(game.personalPlay('p3')?.status).toBe('released');
+  expect(game.publicState()).toMatchObject({ phase: 'search', deadline, remainingMs: 239000 });
+  expect(game.playAction('p4', 'mission', undefined, true)).toBeUndefined();
+  time.advance(238999);
+  expect(game.publicState().phase).toBe('search');
+  time.advance(1);
+  expect(game.publicState().phase).toBe('return');
+  expect(game.beginReturn()).toBeUndefined();
+  expect(game.publicState().results.at(-1)).toMatchObject({ rescuedGroups: 2, missions: 1 });
+});
+
+it.each([false, true])('recalls after the last active group leaves after an earlier rescue (paused: %s)', paused => {
+  const { game, start } = fixture(5);
+  start();
+  expect(game.playAction('p0', 'release', undefined, undefined, undefined, ['p1'])).toBeUndefined();
+  if (paused) expect(game.pause()).toBeUndefined();
+  game.remove('p3');
+  if (paused) {
+    expect(game.publicState()).toMatchObject({ phase: 'search', paused: true });
+    expect(game.resume(true)).toBeUndefined();
+  }
+  expect(game.publicState().phase).toBe('return');
+});
+
+it('keeps search running when the last active group is released after an earlier departure', () => {
+  const { game, start } = fixture(5);
+  start();
+  const { deadline } = game.publicState();
+  game.remove('p3');
+  expect(game.playAction('p0', 'release', undefined, undefined, undefined, ['p1'])).toBeUndefined();
+  expect(game.publicState()).toMatchObject({ phase: 'search', deadline });
 });
 
 it('does not unlock preparation when the first deal is canceled', () => {
@@ -210,8 +272,8 @@ it.each(['return', 'between_rounds'] as const)('applies online missions and revi
   expect(game.personalPlay('p2')?.missionCompleted).toBe(true);
   if (phase === 'return') check();
   expect(game.review().filter(row => row.status === 'review').map(row => row.actor)).toEqual(['p0']);
-  expect(game.reviewPreview('mission-report', 'accept')).toMatchObject({ successes: 2, remainingSteps: 23, applied: true });
-  expect(game.reviewPreview('mission-report', 'reject')).toMatchObject({ successes: 1, remainingSteps: 24, applied: true });
+  expect(game.reviewPreview('mission-report', 'accept')).toMatchObject({ successes: 2, remainingSteps: 10, applied: true });
+  expect(game.reviewPreview('mission-report', 'reject')).toMatchObject({ successes: 1, remainingSteps: 11, applied: true });
   expect(game.resolveSync('mission-report', 'accept')).toBeUndefined();
   expect(game.personalPlay('p0')?.missionCompleted).toBe(true);
   expect(game.personalPlay('p2')?.missionCompleted).toBe(true);
@@ -325,7 +387,7 @@ it('reviews a prophecy report only once and leaves the revealed condition open',
   check(); settle(); deal(); start();
   expect(game.playAction('p0', 'mission', undefined, true)).toBeUndefined();
   check(); settle();
-  expect(game.publicState().ritual).toMatchObject({ positions: [0, 15, 3, 0], cards: [{ revealed: true }, { revealed: false }, { revealed: false }] });
+  expect(game.publicState().ritual).toMatchObject({ positions: [0, 9, 5, 0], cards: [{ revealed: true }, { revealed: false }, { revealed: false }] });
   deal();
   expect(game.reportViolation('p0', 'A', 'Нарушение', 'during-reading')).toBeUndefined();
   expect(game.reviewViolation('during-reading', false)).toBeUndefined();
@@ -339,11 +401,11 @@ it('reviews a prophecy report only once and leaves the revealed condition open',
   expect(game.finalize()).toBe('RITUAL_REVIEW_PENDING');
   expect(game.reviewViolation('reported-violation', true)).toBeUndefined();
   expect(game.reviewViolation('reported-violation', true)).toBeUndefined();
-  expect(game.publicState().ritual).toMatchObject({ positions: [1, 14, 3, 0], cards: [{ revealed: true }, { revealed: false }, { revealed: false }] });
+  expect(game.publicState().ritual).toMatchObject({ positions: [1, 8, 5, 0], cards: [{ revealed: true }, { revealed: false }, { revealed: false }] });
   expect(game.violations().at(-1)).toMatchObject({ status: 'applied' });
   expect(game.ritualAction('undoPenalty')).toBeUndefined();
   expect(game.violations().at(-1)).toMatchObject({ status: 'reversed' });
-  expect(game.publicState().ritual?.positions.slice(0, 3)).toEqual([0, 15, 3]);
+  expect(game.publicState().ritual?.positions.slice(0, 3)).toEqual([0, 9, 5]);
 });
 
 
@@ -457,22 +519,29 @@ it('applies saved timer durations and redraws roles within the balanced roster',
   game.dispose();
 });
 
-it('replaces a room once, leaving the previous players and invitations closed', () => {
-  let serial = 0;
-  const codes = ['ROOM22', 'ROOM33'];
-  const lobby = createLobby({ organizerCode: 'ORGANIZER', firstGame: true, generateRoomCode: () => codes[serial++] });
+it('starts a new party in the same room without revoking participants or redrawing on retry', () => {
+  const lobby = createLobby({ organizerCode: 'ORGANIZER', firstGame: true, generateRoomCode: () => 'ROOM22', randomIndex: () => 0 });
   try {
     expect(lobby.execute('host', 'organizer:authorize', { code: 'ORGANIZER' }).ok).toBe(true);
     expect(lobby.execute('host', 'room:create', {}).ok).toBe(true);
-    const roomId = lobby.exportState().room!.id;
+    const before = lobby.exportState().room!;
     const resumeKey = 'f'.repeat(64);
-    expect(lobby.execute('phone', 'player:join', { name: 'Медиум', roomCode: codes[0], resumeKey }).ok).toBe(true);
-    expect(lobby.execute('host', 'room:restart', { roomId }).ok).toBe(true);
-    expect(lobby.viewFor('phone')).toMatchObject({ kind: 'ended', reason: 'closed' });
-    expect(lobby.execute('host', 'room:restart', { roomId })).toMatchObject({ ok: false, error: 'ROOM_NOT_FOUND' });
-    expect(lobby.exportState()).toMatchObject({ usedCodes: codes, room: { code: codes[1], players: [],
-      game: { settings: { placementSeconds: 45, searchSeconds: 240 }, firstGame: { story: { title: expect.any(String) } } } } });
-    expect(lobby.execute('phone', 'player:resume', { roomCode: codes[0], resumeKey })).toMatchObject({ ok: false, error: 'SESSION_EXPIRED' });
+    expect(lobby.execute('phone', 'player:join', { name: 'Медиум', roomCode: before.code, resumeKey }).ok).toBe(true);
+    const player = lobby.viewFor('phone');
+    const command = { roomId: before.id, roundId: null, gameVersion: before.game.version, requestId: 'restart-first' };
+    expect(lobby.execute('phone', 'room:restart', command)).toEqual({ ok: false, error: 'FORBIDDEN' });
+    expect(lobby.execute('host', 'room:restart', command).ok).toBe(true);
+    const after = lobby.exportState().room!;
+    expect(after).toMatchObject({ id: before.id, code: before.code, partyId: expect.any(String),
+      game: { phase: 'lobby', settings: before.game.settings, version: before.game.version + 1,
+        dealing: { version: before.game.dealing.version + 1 } } });
+    expect(after.game.venue?.storyId).not.toBe(before.game.venue?.storyId);
+    expect(lobby.viewFor('phone')).toMatchObject({ kind: 'player', room: { id: before.id, partyId: after.partyId }, assignment: null, play: null });
+    expect(lobby.execute('host', 'room:restart', command).ok).toBe(true);
+    expect(lobby.exportState().room).toEqual(after);
+    expect(lobby.execute('host', 'room:restart', { ...command, requestId: 'restart-stale' })).toEqual({ ok: false, error: 'STALE_GAME' });
+    const resumed = lobby.execute('other-tab', 'player:resume', { roomCode: before.code, resumeKey });
+    expect(resumed).toMatchObject({ ok: true, view: { kind: 'player', playerId: player?.kind === 'player' ? player.playerId : undefined } });
   } finally { lobby.dispose(); }
 });
 

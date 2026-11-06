@@ -36,7 +36,7 @@ For each current-behavior claim, inspect the relevant path and an appropriate ex
 
 ## Keep the known differences explicit
 
-The executable follows the [first-game design](../design/first-game.md), including persistent possession, returner-only deals, solo exploration and the original candle formula. Older configurable behavior remains in compatibility fixtures. Exact original card content and unresolved source rulings remain outside the first-game variant.
+The executable follows the [first-game design](../design/first-game.md), including persistent possession, returner-only deals and solo exploration. New Ordinary rituals use the automatic or manual door threshold from party preparation. The original candle formula applies to First Game and already initialized legacy rituals. Older configurable behavior remains in compatibility fixtures. Exact original card content and unresolved source rulings remain outside the first-game variant.
 
 Keep one success per original possessed assignment, no extra rescue credit for captives, and no exorcist mission credit after capture even if later released. Preserve private projections, honest physical reports, causal correction and durable recovery.
 

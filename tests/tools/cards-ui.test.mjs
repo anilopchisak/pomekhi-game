@@ -159,6 +159,38 @@ function gameBase() {
   return { roomId: room.id, gameVersion: room.game.version, roundId: room.game.roundId, requestId: `round-request-${++sequence}` };
 }
 
+it('saves a manual door target and resets it to the roster-based calculation', async () => {
+  lobby.dispose();
+  lobby = createLobby({ firstGame: true, organizerCode: 'HOST', generateRoomCode: () => 'ABCDEF', clock: clock.clock });
+  lobby.subscribe(publish);
+  value(lobby.execute('host', 'organizer:authorize', { code: 'HOST' }));
+  const { code } = value(lobby.execute('host', 'room:create', {})).room;
+  for (let i = 0; i < 7; i++) {
+    value(lobby.execute(`phone-${i}`, 'player:join', { roomCode: code, name: `Player ${i}`, resumeKey: String(i).repeat(64) }));
+  }
+  value(lobby.execute('host', 'venue:configure', { ...gameBase(), venue: { base: 'База', zones: ['Кухня'] } }));
+  globalThis.sessionStorage.setItem('pomekhi.organizer', 'HOST');
+  io.mockReturnValue(socket('panel'));
+  await act(async () => root.render(createElement(HostPage)));
+  await click('Настройки партии');
+  const field = () => container.querySelector('dialog[open] input[type="number"]');
+  expect(field().labels[0].textContent).toBe('Порог открытия двери в шагах');
+  expect(container.textContent).toContain('Авто · при текущем составе 18 шагов.');
+  await act(async () => {
+    Object.getOwnPropertyDescriptor(globalThis.HTMLInputElement.prototype, 'value').set.call(field(), '17');
+    field().dispatchEvent(new globalThis.Event('input', { bubbles: true }));
+  });
+  await click('Сохранить');
+  expect(lobby.viewFor('host').room.game.venue.ritualTarget).toBe(17);
+  await click('Настройки партии');
+  expect(field().value).toBe('17');
+  await click('Сбросить на авто');
+  expect(field().value).toBe('');
+  expect(container.textContent).toContain('Авто · при текущем составе 18 шагов.');
+  await click('Сохранить');
+  expect(lobby.viewFor('host').room.game.venue.ritualTarget).toBeUndefined();
+});
+
 it('closes the roster shuffle confirmation so the organizer can retry a lost acknowledgement', async () => {
   lobby.dispose();
   lobby = createLobby({ firstGame: true, organizerCode: 'HOST', generateRoomCode: () => 'ABCDEF', clock: clock.clock });

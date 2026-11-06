@@ -38,6 +38,10 @@ The organizer pastes a public HTTPS origin into the panel; credentials, paths, q
 
 The per-room game also supplies [PersonalPlay](search-actions.md): only the authorized participant receives its effective group card, capture/release state, mission eligibility and last undo identity. Reconnect restores that state without repeating physical actions. Public snapshots contain aggregate outcomes only after return finishes. Player play commands share the existing per-principal journal and validate round/game/play versions; result finalization requires organizer authorization.
 
+## New party in the same room
+
+The organizer can reset play from any phase. The room keeps its code, invitation, membership, connections, and revoked resume keys. The lobby replaces the game with an unlocked preparation state and publishes a new party ID. Closing a room still ends its memberships and invalidates its invitation.
+
 ## Verification
 
 [Lobby rule tests](../../src/server/lobby.test.ts) cover authorization, normalization and capacity, idempotent joins, multiple tabs, revocation, stale room actions, isolated instances and credential-free detached projections. [Transport tests](../../tests/integration/lobby.test.ts) exercise independent real clients, seven participants, recovery, privacy, removal and replacement server state. [Recovery form tests](../../tests/tools/player-recovery.test.mjs) use React, DOM emulation, the real connection hook and lobby with controlled packet delivery to verify retained identity on uncertain responses, new organizer-code entry after restart and a fresh player join after offline removal without reloading. URL validation has focused tests. Browser evidence is recorded under ignored artifacts/lobby; native phones, QR camera scanning, Windows and mobile-carrier access require their actual environments.

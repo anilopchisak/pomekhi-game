@@ -1,4 +1,5 @@
 import type { LobbyError, Prophecy, RitualOutcome, RitualSnapshot, RoundResult } from '../shared/protocol.js';
+import { automaticRitualTarget, validManualRitualTarget } from '../shared/ritual-target.js';
 import { authoredProphecies } from './authored-content.js';
 import { shortAnswer } from './short-cards.js';
 import { finalProphecy, prophecies } from './prophecies.js';
@@ -10,6 +11,7 @@ type RitualEvent = { kind: 'round'; id: string; number: number; successes: numbe
   | { kind: 'penalty'; id: string; undone: boolean } | { kind: 'lock' } | { kind: 'stop' } | { kind: 'all_possessed' | 'no_return' } | { kind: 'dismissed_penalty' };
 export interface SavedRitual {
   players: number; roundLimit: number; cards: [Prophecy, Prophecy, Prophecy]; events: RitualEvent[]; firstGame?: true;
+  budget?: 'six-rescue-rounds' | number;
   legacyCredits?: string[];
 }
 export function ritualSetup(players: number, rounds: number) {
@@ -26,7 +28,7 @@ function advance(positions: Positions, successes: number) {
   }
 }
 const remaining = (p: Positions) => 3 * p[0] + 2 * p[1] + p[2];
-export function newRitual(players: number, rounds: number, randomIndex: (limit: number) => number, generateId: () => string, firstGame = false, useAuthoredBank = false, deckHistory?: DeckHistory) {
+export function newRitual(players: number, rounds: number, randomIndex: (limit: number) => number, generateId: () => string, firstGame = false, useAuthoredBank = false, deckHistory?: DeckHistory, budget?: SavedRitual['budget']) {
   const publicCard = ({ id, title }: Prophecy) => ({ id, title, rule: shortAnswer(id) });
   const bank = useAuthoredBank ? authoredProphecies.filter(card => !card.final).map(publicCard) : [...prophecies];
   const take = () => {
@@ -34,7 +36,8 @@ export function newRitual(players: number, rounds: number, randomIndex: (limit: 
     bank.splice(bank.indexOf(card), 1);
     return structuredClone(card);
   };
-  return createRitual({ players, roundLimit: rounds, cards: [take(), take(), useAuthoredBank ? publicCard(authoredProphecies.find(card => card.final)!) : structuredClone(finalProphecy)], events: [], ...(firstGame ? { firstGame: true } : {}) }, generateId);
+  return createRitual({ players, roundLimit: rounds, cards: [take(), take(), useAuthoredBank ? publicCard(authoredProphecies.find(card => card.final)!) : structuredClone(finalProphecy)],
+    events: [], ...(firstGame ? { firstGame: true } : {}), ...(budget ? { budget } : {}) }, generateId);
 }
 
 /** The ritual consumes sealed outcomes. Game remains the sole owner of lifecycle phases. */
@@ -43,7 +46,13 @@ export function createRitual(saved: SavedRitual, generateId: () => string) {
 }
 function buildRitual(saved: SavedRitual, generateId: () => string) {
   const state = structuredClone(saved);
-  const initial: Positions = [state.players + 1, 2, 3, 0];
+  const target = state.budget === 'six-rescue-rounds' ? automaticRitualTarget(state.players) : state.budget;
+  let initial: Positions = [state.players + 1, 2, 3, 0];
+  if (target !== undefined) {
+    const b = target >= 8 ? 2 : 1;
+    const a = Math.max(1, Math.floor((target - 2 * b - 2) / 3));
+    initial = [a, b, target - 3 * a - 2 * b, 0];
+  }
   const setup = state.firstGame ? { positions: initial, target: remaining(initial) } : ritualSetup(state.players, state.roundLimit);
   let positions: Positions, revealed: boolean[], outcome: RitualOutcome;
   function penaltyIndex() {
@@ -131,6 +140,8 @@ export function validateRitual(value: unknown): asserts value is SavedRitual {
   check(Array.isArray(s.events) && s.events.length <= 10000);
   let nextId = '';
   check(s.firstGame === undefined || s.firstGame === true && s.players >= 5 && s.roundLimit === 7);
+  check(s.budget === undefined || s.firstGame && s.legacyCredits === undefined &&
+    (s.budget === 'six-rescue-rounds' || validManualRitualTarget(s.budget)));
   check(s.legacyCredits === undefined || s.firstGame && Array.isArray(s.legacyCredits) && s.legacyCredits.length <= s.roundLimit &&
     new Set(s.legacyCredits).size === s.legacyCredits.length && s.legacyCredits.every(id => typeof id === 'string'));
   const credits = new Set(s.legacyCredits);

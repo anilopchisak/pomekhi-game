@@ -195,6 +195,7 @@ it('opens a v6 room at the same paused deadline without re-dealing or rewriting 
     const v6 = lobby.exportState();
     const venue = v6.room!.game.venue!;
     delete venue.mode; delete venue.bank; delete venue.sets; delete venue.features; delete venue.prologueRead;
+    delete v6.room!.game.ritual!.budget;
     delete v6.room!.game.firstGame!.locations; delete v6.room!.game.firstGame!.violations;
     const original = JSON.stringify({ schemaVersion: 6, lobby: v6 });
     await writeFile(file, original);

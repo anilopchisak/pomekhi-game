@@ -1,6 +1,7 @@
 import { useEffect, useId, useRef, useState } from 'react';
 import type { ReactNode } from 'react';
 import { cardSets } from '../../../../shared/protocol.js';
+import { automaticRitualTarget, MAX_RITUAL_TARGET, MIN_RITUAL_TARGET, validManualRitualTarget } from '../../../../shared/ritual-target.js';
 import type { LobbyCommand, LobbyInputs, RoomSnapshot } from '../../../../shared/protocol.js';
 import { ConfirmButton, GameDialog } from '../../../shared/ui/index.js';
 import { gameCommand } from '../../../shared/api/index.js';
@@ -40,7 +41,10 @@ function PartyForm({ room, disabled, run, error, retry, close }: SetupProps & { 
   const [zones, setZones] = useState(venue.zones.join('\n'));
   const [sets, setSets] = useState(venue.sets ?? (venue.harder ? ['harder' as const] : []));
   const [comedy, setComedy] = useState(venue.comedy ?? false);
+  const [ritualTarget, setRitualTarget] = useState(venue.ritualTarget?.toString() ?? '');
   const [validation, setValidation] = useState('');
+  const targetId = useId();
+  const automatic = room.players.length >= 5 ? automaticRitualTarget(room.players.length) : null;
   const zoneList = zones.split('\n').map(value => value.trim()).filter(Boolean);
   const setLabels = { indoor: 'Для помещения', outdoor: 'Для улицы', contact: 'С физическим контактом', harder: 'Повышенная сложность' };
   return <form onSubmit={event => {
@@ -52,8 +56,13 @@ function PartyForm({ room, disabled, run, error, retry, close }: SetupProps & { 
       setValidation('Укажите базу и от 1 до 12 локаций. Названия должны различаться и быть не длиннее 64 символов.');
       return;
     }
+    const target = ritualTarget === '' ? null : Number(ritualTarget);
+    if (target !== null && !validManualRitualTarget(target)) {
+      setValidation(`Введите целое число от ${MIN_RITUAL_TARGET} до ${MAX_RITUAL_TARGET}.`);
+      return;
+    }
     setValidation('');
-    void run('venue:configure', { ...gameCommand(room), venue: { base, zones: zoneList, sets, comedy } }, close);
+    void run('venue:configure', { ...gameCommand(room), venue: { base, zones: zoneList, sets, comedy, ritualTarget: target } }, close);
   }}>
     {locked && <p>Настройки зафиксированы первой раздачей.</p>}
     <fieldset disabled={locked || disabled} className={styles.partyFields}>
@@ -63,6 +72,18 @@ function PartyForm({ room, disabled, run, error, retry, close }: SetupProps & { 
       <PlaceField label="Разрешённые локации" help="Места, где можно играть и искать одержимых. Напишите каждое название с новой строки.">
         {(id, helpId) => <textarea id={id} aria-describedby={helpId} required value={zones} onChange={event => setZones(event.target.value)} />}
       </PlaceField>
+      {venue.mode === 'ordinary' && <fieldset>
+        <legend>Последняя дверь</legend>
+        {room.game.ritual ? <p>Порог на старте — {room.game.ritual.target} шагов.</p> : <>
+          <label htmlFor={targetId}>Порог открытия двери в шагах</label>
+          <input id={targetId} type="number" min={MIN_RITUAL_TARGET} max={MAX_RITUAL_TARGET} step={1}
+            aria-describedby={`${targetId}-hint`} value={ritualTarget} onChange={event => setRitualTarget(event.target.value)} />
+          <p id={`${targetId}-hint`} aria-live="polite">{ritualTarget === ''
+            ? automatic === null ? 'Авто · порог появится, когда соберутся хотя бы 5 игроков.' : `Авто · при текущем составе ${automatic} шагов.`
+            : `Ручной порог · от ${MIN_RITUAL_TARGET} до ${MAX_RITUAL_TARGET} шагов.`}</p>
+          <button type="button" data-secondary onClick={() => { setRitualTarget(''); setValidation(''); }}>Сбросить на авто</button>
+        </>}
+      </fieldset>}
       <fieldset><legend>Допустимые задания</legend>
         <p>Основные задания входят в раздачу, если подходят для ваших локаций.</p>
         {cardSets.map(set => <label key={set}>

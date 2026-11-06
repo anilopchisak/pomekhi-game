@@ -62,7 +62,7 @@ it('retains denominators, cards and outcomes after departure, and preserves a gr
   play.act(a, 'release');
   expect(play.result(1, 'provisional', 0)).toMatchObject({ rescuedGroups: 1, totalGroups: 3, totalMissions: 4, missions: 1 });
 });
-it('ends search when no targets or no exorcists remain; projections are detached', () => {
+it('ends search when all group members leave or no exorcists remain; projections are detached', () => {
   const { play, roots, exorcists } = setup(); expect(play.canSearch()).toBe(true);
   const view = play.personal(roots[0])!; view.card.title = 'mutated'; expect(play.personal(roots[0])!.card.title).not.toBe('mutated');
   for (const id of exorcists) play.act(roots[0], 'infect', id);

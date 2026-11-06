@@ -161,7 +161,7 @@ export function HostPage({ display = false, editor = false }: { display?: boolea
     setBusy(false);
     if (!result.ok) {
       setError(command === 'venue:configure' && result.error === 'INVALID_INPUT'
-        ? 'Проверьте названия локаций и список участников.' : describeError(result.error));
+        ? 'Проверьте базу, названия локаций и порог открытия двери.' : describeError(result.error));
       setPending(result.error === 'TIMEOUT' || result.error === 'CONNECTION_LOST' ? { command, input } : null);
     } else {
       setPending(null);
@@ -197,9 +197,9 @@ export function HostPage({ display = false, editor = false }: { display?: boolea
         <ConfirmButton data-danger disabled={disabled} native={!room.game.firstGame} title="Закрыть комнату?"
           description="Все участники выйдут. Прежнее приглашение перестанет действовать." confirm="Закрыть комнату"
           onConfirm={() => void run('room:close', { roomId: room.id })}>Закрыть комнату</ConfirmButton>
-          {room.game.firstGame && <ConfirmButton data-danger disabled={disabled} title="Начать новую партию?"
-            description="Текущая партия завершится, и откроется пустая комната с новым кодом." confirm="Создать новую комнату"
-            onConfirm={() => void run('room:restart', { roomId: room.id })}>Новая партия</ConfirmButton>}
+          {room.game.firstGame && <ConfirmButton key={room.partyId ?? room.id} data-danger disabled={disabled} title="Начать новую партию?"
+            description="Прогресс сбросится. Комната, участники и настройки сохранятся." confirm="Начать новую партию"
+            onConfirm={() => void run('room:restart', gameCommand(room))}>Новая партия</ConfirmButton>}
         </>}
         {waitForTunnel && !publicAddress && <p role="status">Ждём адрес Tuna. Ссылка и QR появятся автоматически.</p>}
         {invitationError && <p role="alert">{invitationError}</p>}
@@ -213,7 +213,7 @@ export function HostPage({ display = false, editor = false }: { display?: boolea
       {room.game.firstGame && <PhaseSignals key={room.id} cue={cue} enabled={view.audioEnabled}
         online={connection === 'online' && restored && (!persistence || persistence.state === 'ready')} clockOffset={clockOffset}
         claim={async enabled => (await request('organizer:audio', { enabled })).ok} />}
-      {room.game.firstGame && !display && <TimerSettings key={`${room.id}:${room.game.settings.placementSeconds}:${room.game.settings.searchSeconds}:${room.game.settings.offlineWaitSeconds ?? 90}`} room={room} disabled={disabled} error={error} run={run} />}
+      {room.game.firstGame && !display && <TimerSettings key={`${room.partyId ?? room.id}:${room.game.settings.placementSeconds}:${room.game.settings.searchSeconds}:${room.game.settings.offlineWaitSeconds ?? 90}`} room={room} disabled={disabled} error={error} run={run} />}
       {!room.game.firstGame && <SoundControls game={room.game} online={connection === 'online' && restored && persistence?.state !== 'write_error' && persistence?.state !== 'load_error'} enabled={view.audioEnabled} disabled={disabled} cue={cue} prepareRef={prepareSound} gameVersion={room.game.version} clockOffset={clockOffset} claim={async enabled => {
         const result = await request('organizer:audio', { enabled });
         if (!result.ok) setError(describeError(result.error));
@@ -247,8 +247,8 @@ export function HostPage({ display = false, editor = false }: { display?: boolea
   const cleanReview = room?.game.phase === 'between_rounds' && room.game.results.at(-1)?.status === 'provisional' && !waitingForSync;
   const nextRound = firstGame && room?.game.phase === 'between_rounds' && room.game.results.at(-1)?.status === 'final';
   const pendingViolation = view?.kind === 'organizer' && view.violations?.some(report => report.status === 'review');
-  const roundControls = room && <FirstGameControls key={room.id} room={room} disabled={disabled} run={run}
-    newParty={() => void run('room:restart', { roomId: room.id })} />;
+  const roundControls = room && <FirstGameControls key={room.partyId ?? room.id} room={room} disabled={disabled} run={run}
+    newParty={() => void run('room:restart', gameCommand(room))} />;
   const work = room && view?.kind === 'organizer' && <>
       {room.game.firstGame && (checkingPresence || room.game.phase === 'finished' && Boolean(view.presence?.length)) && <section aria-labelledby="base-returns-heading">
         <h3 id="base-returns-heading">Вернувшиеся на базу</h3>
@@ -329,7 +329,7 @@ export function HostPage({ display = false, editor = false }: { display?: boolea
       <DialogButton data-secondary title="Сюжет" content={room.game.story ? <>
         <h3>{room.game.story.title}</h3><p className={broadcast.prologue}>{room.game.story.prologue}</p>
       </> : <p>Сюжет пока недоступен. Проверьте, что сервер запущен из актуальной сборки.</p>}>Сюжет</DialogButton>
-      {!display && <PartySettings key={room.id} room={room} disabled={disabled} run={run} error={error}
+      {!display && <PartySettings key={room.partyId ?? room.id} room={room} disabled={disabled} run={run} error={error}
         retry={pending?.command === 'venue:configure' && <button type="button" data-secondary disabled={disabled}
           onClick={() => void run(pending.command, pending.input)}>Повторить сохранение</button>} />}
       <DialogButton data-secondary title="Настройки" keepMounted content={<>

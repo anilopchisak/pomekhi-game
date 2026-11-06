@@ -1,4 +1,5 @@
 import { cardSets, venueFeatures } from '../shared/protocol.js';
+import { validManualRitualTarget } from '../shared/ritual-target.js';
 import { standardCatalog, validateSavedCatalog } from './catalog.js';
 import type { Assignment } from '../shared/protocol.js';
 import type { SavedLobby } from './lobby.js';
@@ -103,6 +104,7 @@ function migrateParty(input: Record<string, unknown>) {
   if (lobby.deckHistory !== undefined) delete object(lobby.deckHistory).trials;
   if (lobby.room === null) return saved;
   const game = object(object(lobby.room).game), state = object(game.firstGame), venue = object(game.venue);
+  requireValue(venue.ritualTarget === undefined);
   delete state.trials;
   const credits: string[] = [];
   for (const value of array(game.results)) {
@@ -116,7 +118,7 @@ function migrateParty(input: Record<string, unknown>) {
   }
   if (game.ritual !== null) {
     const ritual = object(game.ritual);
-    requireValue(ritual.legacyCredits === undefined);
+    requireValue(ritual.legacyCredits === undefined && ritual.budget === undefined);
     if (credits.length) ritual.legacyCredits = credits;
   }
   return saved;
@@ -155,7 +157,7 @@ export function validateSession(value: unknown): SavedSession {
   }
   const codes = strings(lobby.usedCodes); requireValue(codes.every(v => /^[A-Z2-9]{6}$/.test(v)));
   if (lobby.room === null) return saved as unknown as SavedSession;
-  const room = object(lobby.room); requireValue(text(room.id, 256) && codes.includes(room.code as string));
+  const room = object(lobby.room); requireValue(text(room.id, 256) && codes.includes(room.code as string) && (room.partyId === undefined || text(room.partyId, 256)));
   const players = array(room.players, 12).map(v => object(v));
   requireValue(players.every(p => text(p.id, 256) && text(p.name, 256) && [...p.name].length <= 24 && !/\p{Cc}/u.test(p.name) && /^[a-f0-9]{64}$/.test(p.key as string)));
   requireValue(players.every(p => p.name === (p.name as string).normalize('NFKC').trim().replace(/\s+/gu, ' ')));
@@ -169,6 +171,7 @@ export function validateSession(value: unknown): SavedSession {
   const game = object(room.game);
   if (game.playerNames !== undefined) for (const [, name] of pairs(game.playerNames, 12)) requireValue(text(name, 256));
   const venue = object(game.venue); requireValue(text(venue.base, 64));
+  requireValue(venue.ritualTarget === undefined || firstGame && venue.mode === 'ordinary' && validManualRitualTarget(venue.ritualTarget));
   requireValue(array(venue.zones, 12).every(z => text(z, 64)));
   requireValue(new Set([venue.base, ...venue.zones as string[]].map(v => (v as string).trim().toLocaleLowerCase('ru'))).size === (venue.zones as string[]).length + 1);
   const zones = venue.zones as string[];
@@ -320,6 +323,8 @@ export function validateSession(value: unknown): SavedSession {
     validateRitual(game.ritual);
     const ritual = game.ritual;
     requireValue(Boolean(ritual.firstGame) === firstGame);
+    requireValue(ritual.budget === undefined ? venue.ritualTarget === undefined :
+      venue.mode === 'ordinary' && ritual.budget === (venue.ritualTarget ?? 'six-rescue-rounds'));
     const projection = createRitual(ritual, () => 'validation').snapshot();
     requireValue(ritual.roundLimit === game.progressionRounds);
     const expected = results.slice(0, game.freeplayFrom === null ? results.length : game.freeplayFrom as number).filter(r => r.kind === 'regular' && r.status === 'final');

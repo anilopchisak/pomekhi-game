@@ -16,7 +16,7 @@ The [round inbox](../../src/server/round-sync.ts) replays accepted events and re
 
 The Mission Completed checkbox opens a confirmation for setting or clearing the mark. Confirming uses the existing mission command when connected or the local journal when disconnected. The projected completion flag controls the checkmark. The release dialog also offers dependency-aware undo of the latest mission report.
 
-Preparation leads to reading, timed placement, timed exorcism, untimed recall, untimed checking, and the next deal or a terminal outcome. A player action cannot advance a timer; timer callbacks and organizer commands share the session queue. Early recall and a normal deadline recall share the free-only return path. Stop closes the pending result without scoring it and recalls everyone.
+Preparation leads to reading, timed placement, timed exorcism, untimed recall, untimed checking, and the next deal or a terminal outcome. Releasing the last group preserves the exorcism deadline so free exorcists can finish their missions. Timer callbacks and organizer commands share the session queue. Early recall and a normal deadline recall share the free-only return path. Stop closes the pending result without scoring it and recalls everyone.
 
 The session publishes a live recall cue with the committed game version after reconciling player presence. The cue keeps the transition timestamp for client freshness checks.
 
@@ -28,7 +28,9 @@ Review dialogs request a versioned server projection of either decision by repla
 
 ## Preparation and violation reports
 
-The game chooses a random story once at room creation and saves its identity and text in the existing checkpoint. The room projection carries the selected story. Saving the venue records the base, one or more permitted locations, and the selected categories. Preparation locks after the first deal, including if cancellation returns the room to the lobby.
+The game chooses a random story for each new party, including the first party when a room opens. It saves the story identity and text in the existing checkpoint. The room projection carries the selected story. Saving the venue records the base, one or more permitted locations, and the selected categories. Preparation locks after the first deal, including if cancellation returns the room to the lobby.
+
+Ordinary saves an optional manual door threshold with party preparation. The organizer submits a whole number from 6 to 84 steps, or null to reset to automatic. Omission preserves the selection for older callers. The automatic preview uses the current roster. At the first start the ritual locks the initial player count and chooses the manual threshold or six times the number of initial possessed groups. For G initial groups the automatic piles are 2G−2, two and two. For a manual threshold the ritual keeps every pile positive and chooses piles whose weighted sum is the requested threshold. A rescue or eligible personal mission contributes one step. Later roster changes leave the budget fixed.
 
 The [deck history](../../src/server/deck-history.ts) records issued IDs outside the active room. Stories, the two ordinary prophecy slots, and mission pools by role and bank draw randomly from eligible IDs unseen in the current cycle. When the eligible set is exhausted, its cycle restarts and avoids the last draw if another option exists. IDs excluded by venue settings or the current deal keep their history. Assignments and retained groups still exclude duplicate cards in a deal, and prophecy selections exclude duplicates within their own batch. The final door is fixed. Drawing a card consumes it when the story, assignment or ritual is committed.
 
@@ -49,5 +51,7 @@ Phone violation reports carry the revealed prophecy slot and the player's accoun
 ## Storage and checks
 
 The [disk store](../../src/server/session-store.ts) writes schema 8 to data/party-v8.json using the same single-writer lock and atomic commit. Without a v8 file it loads v7 or v6 and preserves the source file. The migration strips retired data from unsealed rounds. Recorded historical ritual movements and terminal outcomes are preserved. A locked v6 room keeps First Game rules. Only the catalog is imported from older saves. An I/O error reading the legacy file opens organizer recovery without writing a default bank. Retry imports the legacy catalog after access is restored. The [validator](../../src/server/session-format.ts) validates and replays the game and inbox before a checkpoint is accepted. Restore keeps a timed phase paused with its saved remainder, and preserves untimed recall and checking.
+
+An Ordinary ritual checkpoint records the budget as a manual step count or the six-rescue-rounds rule. Replay derives the original piles from this value and the saved initial player count. Existing checkpoints without a budget retain the original N+1/2/3 setup, including settled outcomes and historical trial credits. The saved preparation selection must agree with an initialized Ordinary ritual's budget.
 
 [Game tests](../../src/server/first-game.test.ts) cover balanced deals, carryover, sole return, loss, scoring, penalties and Pixso candle histories. [Transport and recovery tests](../../tests/integration/persistence.test.ts) use independent real clients and files for delayed review, identity recovery, and repeat finalization. Physical play, live network reachability, audibility, and real mobile devices require the separate [device checks](../testing/device-acceptance.md).

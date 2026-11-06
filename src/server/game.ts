@@ -1,4 +1,5 @@
 import { cardSets, DEFAULT_ROUND_LIMIT } from '../shared/protocol.js';
+import { validManualRitualTarget } from '../shared/ritual-target.js';
 import { createRitual, newRitual } from './ritual.js';
 import type { SavedRitual } from './ritual.js';
 import { performance } from 'node:perf_hooks';
@@ -73,9 +74,10 @@ export function planRound(settings: GameSettings, completedRounds: number, tutor
 }
 
 /** Owns the party lifecycle; membership, authorization and publication belong to lobby. */
-export function createGame({ generateId, randomIndex, clock = defaultClock, onChange, onlinePlayers, getCards = () => CARD_BANK, firstGame = false, deckHistory }: {
+export function createGame({ generateId, randomIndex, clock = defaultClock, onChange, onlinePlayers, getCards = () => CARD_BANK, firstGame = false, deckHistory, previousParty }: {
   generateId: () => string; randomIndex: (limit: number) => number; clock?: GameClock; onChange: () => void; onlinePlayers?: () => ReadonlySet<string>; getCards?: () => readonly PersonalCard[]; firstGame?: boolean;
   deckHistory?: DeckHistory;
+  previousParty?: Pick<GameSnapshot, 'settings' | 'venue' | 'version'> & { dealVersion: number };
 }) {
   let locked = false;
   let retained: RetainedGroup[] = [];
@@ -88,7 +90,7 @@ export function createGame({ generateId, randomIndex, clock = defaultClock, onCh
   const locations = new Map<string, { proposed?: string; confirmed?: string }>();
   const presence = new Map<string, PhysicalStatus>();
   const usesAuthoredBank = () => firstGame && (venue.mode === 'ordinary' || venue.bank === 'authored');
-  const dealing = createDealing({ generateId, randomIndex, getCards, ordered: firstGame ? {
+  const dealing = createDealing({ generateId, randomIndex, getCards, initialVersion: previousParty && previousParty.dealVersion + 1, ordered: firstGame ? {
     minimum: () => started ? 1 : FIRST_DEAL_MINIMUM,
     reserved: () => retained.map(g => g.assignment.card.id),
     deckHistory,
@@ -105,10 +107,17 @@ export function createGame({ generateId, randomIndex, clock = defaultClock, onCh
     },
   } : undefined });
   let settings: GameSettings = { ritualEnabled: true, roundLimit: DEFAULT_ROUND_LIMIT, placementSeconds: 45, searchSeconds: firstGame ? 240 : 180, returnSeconds: 45, ...(firstGame ? { offlineWaitSeconds: 90 } : {}), tutorialEnabled: !firstGame, initialDifficulty: firstGame ? 3 : 1, maximumDifficulty: 3, infectionMode: 'on' };
+  if (previousParty) settings = { ...previousParty.settings };
   let playerNames = new Map<string, string>();
   let venue: Venue = { base: 'База', zones: [], ...(firstGame ? {
     mode: 'ordinary', bank: 'authored', sets: cardSets.filter(set => set !== 'outdoor'), harder: true, comedy: true,
   } : {}) };
+  if (previousParty) {
+    const { base, zones, sets, harder, comedy, ritualTarget } = previousParty.venue;
+    venue = { ...venue, base, zones: [...zones], ...(firstGame ? {
+      sets: sets ? [...sets] : harder ? ['harder'] : [], harder, comedy, ritualTarget,
+    } : {}) };
+  }
   function initializeStory() {
     if (!firstGame || selectedStory) return;
     const { id, title } = drawFromDeck(stories, randomIndex, 'stories', deckHistory);
@@ -118,16 +127,19 @@ export function createGame({ generateId, randomIndex, clock = defaultClock, onCh
   let roundSync: ReturnType<typeof createRoundSync> | undefined;
   let phase: GamePhase = 'lobby';
   let waitingPhase: 'lobby' | 'between_rounds' = 'lobby';
-  let version = 0;
+  let version = previousParty ? previousParty.version + 1 : 0;
   let roundId: string | null = null;
   let completedRounds = 0;
   let tutorialCompleted = false;
-  let progressionRounds = DEFAULT_ROUND_LIMIT;
+  let progressionRounds = settings.roundLimit ?? DEFAULT_ROUND_LIMIT;
   let ritual: ReturnType<typeof createRitual> | undefined;
   let freeplayFrom: number | null = null;
   const ritualActive = () => settings.ritualEnabled && settings.roundLimit !== null && freeplayFrom === null;
   const reviewPending = () => ritualActive() && results.at(-1)?.status === 'provisional';
-  function ensureRitual(players: number) { if (ritualActive()) ritual ??= newRitual(players, settings.roundLimit!, randomIndex, generateId, firstGame, usesAuthoredBank(), deckHistory); }
+  function ensureRitual(players: number) {
+    if (ritualActive()) ritual ??= newRitual(players, settings.roundLimit!, randomIndex, generateId, firstGame, usesAuthoredBank(), deckHistory,
+      firstGame && venue.mode === 'ordinary' ? venue.ritualTarget ?? 'six-rescue-rounds' : undefined);
+  }
   let roundPlan: RoundPlan | null = null;
   const nextPlan = () => planRound(settings, completedRounds, tutorialCompleted, progressionRounds);
   let started = false;
@@ -605,10 +617,12 @@ export function createGame({ generateId, randomIndex, clock = defaultClock, onCh
         : v.sets;
       if (!Array.isArray(sets) || !sets.every(set => cardSets.includes(set)) || new Set(sets).size !== sets.length ||
         v.comedy !== undefined && typeof v.comedy !== 'boolean') return 'INVALID_INPUT';
+      if (v.ritualTarget != null && !validManualRitualTarget(v.ritualTarget)) return 'INVALID_INPUT';
+      const ritualTarget = v.ritualTarget === undefined ? venue.ritualTarget : v.ritualTarget;
       initializeStory();
       venue = { base: names[0], zones: names.slice(1),
         storyId: venue.storyId, harder: sets.includes('harder'), mode: 'ordinary', bank: 'authored', sets: [...sets],
-        ...((v.comedy ?? venue.comedy) ? { comedy: true } : {}) };
+        ...((v.comedy ?? venue.comedy) ? { comedy: true } : {}), ...(ritualTarget == null ? {} : { ritualTarget }) };
     } else venue = { base: names[0], zones: names.slice(1) };
     bump();
   }

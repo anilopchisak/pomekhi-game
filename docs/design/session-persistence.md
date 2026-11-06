@@ -30,6 +30,8 @@ Restoration advances projection/game/deal versions; inbox receipts and action ID
 
 Successful request IDs survive restart. Retry lookup still precedes stale-version checks and returns the current authorized view. An unsent old intent instead fails its version check. Room closure writes room:null and retains used codes, preventing resurrection of the closed party.
 
+Starting a new party commits the fresh game, party ID and draw history with the existing room and membership. Saves without a party ID use the room ID until the first reset. Game and deal versions advance and the new party starts with an empty command history apart from the reset request. Repeating that request returns the current view. If the write fails before the checkpoint changes, recovery restores the previous party and its memberships, with an active round paused.
+
 ## Failure and recovery controls
 
 A write failure withholds successful acknowledgement and publication. The coordinator reads back the primary file because rename may have committed before a later sync error. Otherwise it restores the last known committed checkpoint, reconciles live connections and freezes active play with storage_error. No new gameplay is permitted until recovery succeeds. The failure notification contains a generic public status, never filesystem contents or credentials.

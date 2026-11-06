@@ -263,7 +263,7 @@ export function PlayerPage() {
     {offline.error && <p role="alert">{offline.error}</p>}
     {connection !== 'online' && (firstGame
       ? <div className={styles.offline} role="status">
-        <span>{missionNeedsRefresh ? 'Нет связи с ноутбуком.' : offline.available ? 'Карточка доступна. Отметки сохраняются на телефоне.' : 'Карточка доступна в этой вкладке.'}</span>
+        <span>{!assignment || missionNeedsRefresh ? 'Нет связи с ноутбуком.' : offline.available ? 'Карточка доступна. Отметки сохраняются на телефоне.' : 'Карточка доступна в этой вкладке.'}</span>
         <button onClick={reconnect}>Подключиться снова</button>
       </div>
       : <section><p role="alert">{missionNeedsRefresh ? 'Нет связи с ноутбуком.' : playerView ? offline.available ? 'Нет связи. Карточка доступна; новые отметки сохраняются на телефоне. Состояние остальных участников не подтверждено.' : 'Нет связи. Последний экран сохранён во вкладке, но записать новые действия без хранилища нельзя.' : 'Нет связи. Для первого входа подключитесь к ноутбуку или интернету.'}</p><button onClick={reconnect}>Подключиться снова</button></section>)}

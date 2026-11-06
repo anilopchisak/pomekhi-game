@@ -209,7 +209,7 @@ it('reconciles delayed phone reports and restores retained groups with the curre
     const hostRow = (await roomView()).review!.find(row => row.id === undoRequest.id)!;
     expect(hostRow.blockers).toHaveLength(1);
     const preview = await send(host, 'sync:preview', { ...await base(), eventId: undoRequest.id, decision: 'accept' });
-    expect(preview).toMatchObject({ ok: true, reviewPreview: { applied: false, remainingSteps: 29 } });
+    expect(preview).toMatchObject({ ok: true, reviewPreview: { applied: false, remainingSteps: 16 } });
     expect(await send(host, 'sync:resolve', { ...await base(), eventId: undoRequest.id, decision: 'accept' }))
       .toEqual({ ok: false, error: 'UNDO_DEPENDENCY' });
     const late = { id: 'first-game-mission', roundId, clientId: 'first-game-phone', sequence: 1, previousId: null,
@@ -218,12 +218,13 @@ it('reconciles delayed phone reports and restores retained groups with the curre
     value(await send(phones[2], 'play:sync', upload));
     expect((await roomView()).review?.find(e => e.id === late.id)?.status).toBe('review');
     value(await send(host, 'sync:resolve', { ...await base(), eventId: late.id, decision: 'accept' }));
-    expect((await current()).game.ritual?.preview?.remainingSteps).toBe(28);
+    expect((await current()).game.ritual?.preview?.remainingSteps).toBe(15);
     value(await send(host, 'sync:resolve', { ...await base(), eventId: late.id, decision: 'reject' }));
-    expect((await current()).game.ritual?.preview?.remainingSteps).toBe(29);
+    expect((await current()).game.ritual?.preview?.remainingSteps).toBe(16);
     await runtime.stop(); clients.splice(0).forEach(client => client.disconnect());
     runtime = make(); port = (await runtime.start()).port; host = await newClient();
     value(await send(host, 'organizer:authorize', { code: 'FIRSTGAME' })); await enter(true);
+    expect((await current()).game.ritual).toMatchObject({ target: 18, remainingSteps: 18, preview: { remainingSteps: 16 } });
     expect((await current()).game.venue.comedy).toBe(true);
     expect((await personal(0)).play?.card).toEqual(retained);
     expect((await roomView()).review?.find(e => e.id === late.id)?.status).toBe('rejected');
@@ -246,7 +247,7 @@ it('reconciles delayed phone reports and restores retained groups with the curre
     value(await send(host, 'sync:close', { ...await base(), confirm: true }));
     const confirm = await base();
     value(await send(host, 'results:finalize', confirm)); value(await send(host, 'results:finalize', confirm));
-    expect((await current()).game.ritual?.remainingSteps).toBe(29);
+    expect((await current()).game.ritual?.remainingSteps).toBe(16);
     expect((await personal(0)).play).toMatchObject({ status: 'captured', location: 'Кухня', card: retained });
     await deal();
     expect((await current()).dealing.assignments).toHaveLength(5);

@@ -29,6 +29,8 @@ export function createSearch(roundId: string, initial: ReadonlyMap<string, Assig
   const events: Event[] = [];
   let states = new Map<string, State>();
   let released = new Set<string>();
+  // Once no active group remains, only a release leaves time for missions.
+  let lastGroupExitWasRelease = false;
   let version = 0, finalized = false;
 
   function rebuild() {
@@ -38,10 +40,14 @@ export function createSearch(roundId: string, initial: ReadonlyMap<string, Assig
         released: false, left: false, captured: unassigned.includes(id) || !!carried && carried.origin !== id, unknownGroup: unassigned.includes(id), mission: false, cardKey: carried?.id ?? a.id }];
     }));
     released = new Set();
+    lastGroupExitWasRelease = false;
     for (const event of events) {
       if (event.undone) continue;
       const action = event.action, player = states.get(action.actor)!;
-      if (action.kind === 'depart') player.left = true;
+      if (action.kind === 'depart') {
+        if (player.group && !player.released) lastGroupExitWasRelease = false;
+        player.left = true;
+      }
       else if (action.kind === 'mission') player.mission = action.completed;
       else if (action.kind === 'infect') {
         const target = states.get(action.target)!;
@@ -53,7 +59,10 @@ export function createSearch(roundId: string, initial: ReadonlyMap<string, Assig
       } else {
         const freed = [...event.touches].filter(key => key.startsWith('g:')).map(key => key.slice(2));
         for (const group of freed) released.add(group);
-        for (const state of states.values()) if (state.group && freed.includes(state.group)) state.released = true;
+        for (const state of states.values()) if (state.group && freed.includes(state.group)) {
+          if (!state.left && !state.released) lastGroupExitWasRelease = true;
+          state.released = true;
+        }
       }
     }
   }
@@ -187,7 +196,8 @@ export function createSearch(roundId: string, initial: ReadonlyMap<string, Assig
   }
   function canSearch() {
     const live = [...states.values()].filter(s => !s.left);
-    return live.some(s => !s.group && !s.unknownGroup && !s.released) && live.some(s => s.group && !s.released);
+    return live.some(s => !s.group && !s.unknownGroup && !s.released) &&
+      live.some(s => s.group && (!s.released || lastGroupExitWasRelease));
   }
   function result(number: number, status: RoundResult['status'], activeMs: number): Omit<RoundResult, 'kind' | 'difficulty' | 'infectionEnabled'> {
     return { roundId, number, status, activeMs, rescuedGroups: released.size, totalGroups: groups.size,

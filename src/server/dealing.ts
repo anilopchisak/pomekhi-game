@@ -3,15 +3,15 @@ import { CARD_BANK } from './cards.js';
 import { drawFromDeck } from './deck-history.js';
 import type { DeckHistory } from './deck-history.js';
 
-interface Options { generateId: () => string; randomIndex: (limit: number) => number; getCards?: () => readonly PersonalCard[]; ordered?: {
+interface Options { generateId: () => string; randomIndex: (limit: number) => number; getCards?: () => readonly PersonalCard[]; initialVersion?: number; ordered?: {
   pool: () => readonly PersonalCard[]; reserved: () => string[]; minimum: () => number;
   deckHistory?: DeckHistory; bank: () => 'authored' | 'catalog';
 } }
 export type DeckUsage = [string, string[]][];
 export interface SavedDealing { usage?: DeckUsage; difficulty: Difficulty; version: number; dealId: string | null; initialPossessedCount: number | null; assignments: [string, Assignment][] }
-export function createDealing({ generateId, randomIndex, getCards = () => CARD_BANK, ordered }: Options) {
+export function createDealing({ generateId, randomIndex, getCards = () => CARD_BANK, ordered, initialVersion = 0 }: Options) {
   let difficulty: Difficulty = 1;
-  let version = 0;
+  let version = initialVersion;
   let dealId: string | null = null;
   let initialPossessedCount: number | null = null;
   let assignments = new Map<string, Assignment>();

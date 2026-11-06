@@ -3,6 +3,7 @@ import { act, createElement } from 'react';
 import { createRoot } from 'react-dom/client';
 import { afterEach, beforeEach, describe, expect, it, vi } from 'vitest';
 import { PlayerPage } from '../../src/client/pages/player/index.js';
+import { useOfflinePlayer } from '../../src/client/pages/player/model/useOfflinePlayer.js';
 import { HostPage } from '../../src/client/pages/host/index.js';
 import { readPlayerSession, savePlayerSession } from '../../src/client/pages/player/session.js';
 import { createLobby } from '../../src/server/lobby.js';
@@ -157,6 +158,40 @@ it('shows the join form after offline removal and rejoins with a new credential 
   expect(lobby.viewFor('host').room.players).toHaveLength(1);
   expect(offlineRecords.size).toBe(1);
   expect([...offlineRecords.values()][0].view.playerId).toBe(lobby.viewFor('host').room.players[0].id);
+});
+
+it('refreshes the party screen in a disconnected tab when another tab caches the reset', async () => {
+  const channels = new Set();
+  vi.stubGlobal('BroadcastChannel', class {
+    constructor() { channels.add(this); }
+    postMessage(data) { for (const peer of channels) if (peer !== this) peer.onmessage({ data }); }
+    close() { channels.delete(this); }
+  });
+  const lobby = createLobby({ organizerCode: 'HOST', generateRoomCode: () => 'ABCDEF' });
+  const session = { roomCode: 'ABCDEF', name: 'Ира', resumeKey: 'a'.repeat(64) };
+  const scope = `${session.roomCode}:${session.resumeKey}`;
+  lobby.execute('host', 'organizer:authorize', { code: 'HOST' });
+  lobby.execute('host', 'room:create', {});
+  const oldView = lobby.execute('phone', 'player:join', session).view;
+  const request = vi.fn();
+  function Tab({ live, online }) {
+    const { view } = useOfflinePlayer(scope, live, online, online, 1, request, null);
+    return createElement('output', null, view.room.partyId);
+  }
+  const renderTabs = live => root.render(createElement('div', null,
+    createElement(Tab, { live: oldView, online: false }),
+    createElement(Tab, { live, online: true })));
+  const parties = () => [...container.querySelectorAll('output')].map(node => node.textContent);
+  try {
+    await act(async () => renderTabs(oldView));
+    expect(parties()).toEqual([oldView.room.partyId, oldView.room.partyId]);
+    expect(lobby.execute('host', 'room:restart', gameCommand(oldView.room)).ok).toBe(true);
+    const newView = lobby.viewFor('phone');
+    await act(async () => renderTabs(newView));
+    expect(parties()).toEqual([newView.room.partyId, newView.room.partyId]);
+  } finally {
+    lobby.dispose();
+  }
 });
 
 it('rejects a retained phone self-release and acknowledges checking without a new card', async () => {

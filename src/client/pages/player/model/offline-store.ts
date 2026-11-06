@@ -1,7 +1,7 @@
 import type { EventReceipt, LobbyView, OfflineEvent, PersonalPlay } from '../../../../shared/protocol.js';
 import { isRetiredMission } from '../../../../shared/retired-mission.js';
 export type PlayerView = Extract<LobbyView, { kind: 'player' }>;
-export interface LocalEvent { event: OfflineEvent; receipt?: EventReceipt; before: PersonalPlay | null }
+export interface LocalEvent { event: OfflineEvent; receipt?: EventReceipt; receiptRevision?: number; before: PersonalPlay | null }
 export interface OfflineRecord { scope: string; cachedAt: number; view: PlayerView | null; clientId: string; sequence: number; events: LocalEvent[] }
 const randomId = () => [...crypto.getRandomValues(new Uint8Array(16))].map(v => v.toString(16).padStart(2, '0')).join('');
 let database: Promise<IDBDatabase> | undefined;
@@ -42,9 +42,33 @@ export async function updateOffline(scope: string, mutate: (record: OfflineRecor
     transaction.onabort = () => reject(transaction.error ?? new Error('Offline write was cancelled.'));
   });
 }
+export function partyOf(view: PlayerView) { return view.room.partyId ?? view.room.id; }
+
+export function cachePlayerView(record: OfflineRecord, view: PlayerView) {
+  const stale = record.view?.room.id === view.room.id && record.view.revision > view.revision;
+  const partyChanged = !!record.view && partyOf(record.view) !== partyOf(view);
+  if (stale && partyChanged) return false;
+  if (!stale) {
+    if (partyChanged) record.events = [];
+    record.view = structuredClone(view);
+    record.cachedAt = Date.now();
+  }
+  const receipts = view.synchronization?.receipts ?? [];
+  for (const entry of record.events) {
+    const receipt = receipts.find(row => row.id === entry.event.id);
+    if (receipt && (!stale || !entry.receipt || entry.receiptRevision !== undefined && entry.receiptRevision < view.revision)) {
+      entry.receipt = receipt;
+      entry.receiptRevision = view.revision;
+    }
+    if (entry.event.roundId !== record.view?.room.game.roundId) entry.before = null;
+  }
+  return partyChanged;
+}
+
 export async function appendOffline(scope: string, roundId: string, action: OfflineEvent['action'], view: PlayerView, estimatedServerTime: number | null) {
   if (action.kind === 'mission' && isRetiredMission(view.play?.card)) throw Error('The mission must be refreshed before reporting.');
   return updateOffline(scope, record => {
+    if (record.view && partyOf(record.view) !== partyOf(view)) throw Error('The party has changed.');
     if (record.events.length >= 12000) throw new Error('Offline journal is full.');
     if (action.kind === 'undo' && action.requestReview && record.events.some(row => row.event.roundId === roundId &&
       row.event.action.kind === 'undo' && row.event.action.requestReview && row.event.action.actionId === action.actionId &&

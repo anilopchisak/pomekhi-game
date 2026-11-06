@@ -48,7 +48,7 @@ async function fixture(tutorialEnabled = false, firstGame = false) {
   async function restart() {
     const roomCode = room().code;
     await session.close();
-    session = createSession({ organizerCode: 'NEWCODEABCDE', store: disk.store, clock: time.clock });
+    session = createSession({ organizerCode: 'NEWCODEABCDE', store: disk.store, clock: time.clock, firstGame });
     await session.initialize();
     expect(await send('host', 'organizer:authorize', { code })).toEqual({ ok: false, error: 'INVALID_ORGANIZER_CODE' });
     value(await send('host', 'organizer:authorize', { code: 'NEWCODEABCDE' }));
@@ -65,7 +65,7 @@ async function fixture(tutorialEnabled = false, firstGame = false) {
     subscribe: session.subscribe, disconnect: (id: string) => session.disconnect(id), close: () => session.close() };
 }
 
-it.each(['organizer', 'last release', 'deadline'])('publishes a playable recall cue after %s', async trigger => {
+it.each(['organizer recall', 'deadline after last release', 'deadline with groups still active'])('publishes a playable recall cue after %s', async trigger => {
   const f = await fixture(false, true);
   try {
     await f.deal();
@@ -76,22 +76,45 @@ it.each(['organizer', 'last release', 'deadline'])('publishes a playable recall 
     const cues: GameCue[] = [];
     f.subscribe(cue => { if (cue) cues.push(cue); });
 
-    if (trigger === 'organizer') {
+    if (trigger === 'organizer recall') {
       const command = f.gameCommand();
       value(await f.send('host', 'round:return', command));
       value(await f.send('host', 'round:return', command));
-    } else if (trigger === 'last release') {
-      const players = f.phones.map(connection => ({ connection, view: f.view(connection) }));
-      const actor = players.find(({ view }) => view?.kind === 'player' && view.play?.status === 'exorcist')!.connection;
-      const targetIds = players.flatMap(({ view }) => view?.kind === 'player' && view.play?.status === 'possessed' ? [view.playerId] : []);
-      value(await f.send(actor, 'play:release', { ...f.playCommand(actor), targetIds }));
     } else {
+      if (trigger === 'deadline after last release') {
+        const players = f.phones.map(connection => ({ connection, view: f.view(connection) }));
+        const actor = players.find(({ view }) => view?.kind === 'player' && view.play?.status === 'exorcist')!.connection;
+        const targetIds = players.flatMap(({ view }) => view?.kind === 'player' && view.play?.status === 'possessed' ? [view.playerId] : []);
+        value(await f.send(actor, 'play:release', { ...f.playCommand(actor), targetIds }));
+        expect(f.room().game.phase).toBe('search');
+        expect(cues).toEqual([]);
+      }
       await f.advance(f.room().game.remainingMs!);
     }
 
     const { id, game } = f.room();
     expect(game.phase).toBe('return');
     expect(cues).toEqual([{ roomId: id, version: game.version, kind: 'phase', phase: 'return', serverNow: f.time.clock.now() }]);
+  } finally { await f.close(); }
+});
+
+it('validates, locks and restores a manually configured ritual target', async () => {
+  const f = await fixture(false, true);
+  const configure = (ritualTarget: number | null) => f.send('host', 'venue:configure', {
+    ...f.gameCommand(), venue: { base: 'База', zones: ['Кухня'], ritualTarget },
+  });
+  try {
+    for (const invalid of [5, 85, 17.5]) expect(await configure(invalid)).toEqual({ ok: false, error: 'INVALID_INPUT' });
+    value(await configure(17));
+    value(await configure(null));
+    expect(f.room().game.venue.ritualTarget).toBeUndefined();
+    value(await configure(17));
+    await f.deal();
+    expect(await configure(null)).toEqual({ ok: false, error: 'INVALID_PHASE' });
+    await f.start();
+    expect(f.room().game.ritual).toMatchObject({ target: 17, remainingSteps: 17, positions: [3, 2, 4, 0] });
+    await f.restart();
+    expect(f.room().game).toMatchObject({ paused: true, venue: { ritualTarget: 17 }, ritual: { target: 17, remainingSteps: 17, positions: [3, 2, 4, 0] } });
   } finally { await f.close(); }
 });
 
@@ -242,6 +265,60 @@ it('persists revocation and room closure instead of resurrecting a closed game',
   } finally { await f.close(); }
 });
 
+it.each(['search', 'finished'] as const)('resets a %s party and restores the same membership from disk', async phase => {
+  const f = await fixture(false, true);
+  try {
+    const venue = { base: 'Подвал', zones: ['Кухня', 'Зал'], sets: ['indoor', 'contact'], comedy: true, ritualTarget: 24 } as const;
+    value(await f.send('host', 'venue:configure', { ...f.gameCommand(), venue: { ...venue, zones: [...venue.zones], sets: [...venue.sets] } }));
+    await f.deal();
+    await f.start();
+    await f.advance(1000);
+    if (phase === 'finished') value(await f.send('host', 'party:finish', f.gameCommand()));
+    const before = f.room();
+    const oldGame = f.gameCommand(), oldDeal = f.dealCommand();
+    const oldPhone = f.view('p7');
+    await f.disconnect('p7');
+    expect(before.game.phase).toBe(phase);
+    const reset = f.gameCommand();
+    value(await f.send('host', 'room:restart', reset));
+    const after = f.room();
+    expect(after).toMatchObject({ id: before.id, code: before.code, partyId: expect.any(String), dealing: { assignments: [], dealId: null },
+      game: { phase: 'lobby', preparationLocked: false, started: false, completedRounds: 0, deadline: null, results: [],
+        synchronization: null, ritual: null, settings: before.game.settings, venue } });
+    expect(after.players).toEqual(before.players.map(p => ({ ...p, online: p.id !== (oldPhone?.kind === 'player' && oldPhone.playerId) })));
+    expect(f.view('p1')).toMatchObject({ kind: 'player', assignment: null, play: null, synchronization: null });
+    expect(await f.send('host', 'round:start', { ...oldGame, confirmWarnings: true })).toEqual({ ok: false, error: 'STALE_GAME' });
+    expect(await f.send('host', 'deal:create', { ...oldDeal, possessedCount: 3 })).toEqual({ ok: false, error: 'STALE_DEAL' });
+    expect(await f.send('p1', 'play:sync', { roomId: before.id, roundId: before.game.roundId!, events: [] })).toEqual({ ok: false, error: 'STALE_GAME' });
+    await f.advance(5000);
+    expect(f.room().game.phase).toBe('lobby');
+    await f.restart();
+    value(await f.send('host', 'room:restart', reset));
+    expect(f.room()).toMatchObject({ partyId: after.partyId, game: { phase: 'lobby', venue: after.game.venue } });
+    expect(f.view('p7')).toMatchObject({ kind: 'player', playerId: oldPhone?.kind === 'player' ? oldPhone.playerId : undefined, assignment: null });
+    value(await f.send('host', 'venue:configure', { ...f.gameCommand(), venue: { base: 'Штаб', zones: ['Зал'], sets: ['contact'] } }));
+    value(await f.send('host', 'game:configure', { ...f.gameCommand(), settings: { ...after.game.settings, searchSeconds: 95 } }));
+    await f.deal();
+    expect(f.room().game).toMatchObject({ phase: 'reading', roundNumber: 1, settings: { searchSeconds: 95 }, venue: { base: 'Штаб', zones: ['Зал'] } });
+    expect(f.room().dealing.assignments).toHaveLength(7);
+  } finally { await f.close(); }
+});
+
+it('keeps the previous party and its memberships when the new party cannot be saved', async () => {
+  const f = await fixture(false, true);
+  try {
+    await f.deal();
+    await f.start();
+    const before = f.room(), disk = f.disk.read();
+    f.disk.fail();
+    expect(await f.send('host', 'room:restart', f.gameCommand())).toEqual({ ok: false, error: 'STORAGE_UNAVAILABLE' });
+    expect(f.disk.read()).toEqual(disk);
+    expect(f.room()).toMatchObject({ id: before.id, partyId: before.partyId, players: before.players,
+      game: { phase: 'placement', paused: true, roundId: before.game.roundId, venue: before.game.venue } });
+    expect(f.view('p1')).toMatchObject({ kind: 'player', assignment: expect.any(Object) });
+  } finally { await f.close(); }
+});
+
 it('cycles every authored deck across new parties and preserves its progress on disk', async () => {
   const disk = memoryDisk(), time = controlledClock();
   const make = () => createSession({ organizerCode: code, store: disk.store, clock: time.clock, firstGame: true, randomIndex: () => 0 });
@@ -264,7 +341,7 @@ it('cycles every authored deck across new parties and preserves its progress on 
     await authorize();
     for (let party = 0; party <= stories.length; party++) {
       value(await session.execute('host', party === 0 || party === 3 ? 'room:create' : 'room:restart',
-        party === 0 || party === 3 ? {} : { roomId: room().id }));
+        party === 0 || party === 3 ? {} : gameCommand()));
       storyIds.push(room().game.venue.storyId!);
       for (let n = 1; n <= 5; n++) value(await session.execute(`p${n}`, 'player:join', {
         roomCode: room().code, name: `Игрок ${n}`, resumeKey: key(n),
@@ -384,6 +461,7 @@ it.each(['provisional', 'final'] as const)('migrates a v7 %s round without expos
     const actor = exorcists[0].connection;
     value(await f.send(actor, 'play:release', { ...f.playCommand(actor), targetIds: possessed.map(row => row.id) }));
     value(await f.send('host', 'round:return', f.gameCommand()));
+    value(await f.send('host', 'round:return', f.gameCommand()));
     await f.settle();
     if (status === 'final') value(await f.send('host', 'results:finalize', f.gameCommand()));
     const { lobby } = f.disk.read();
@@ -393,6 +471,7 @@ it.each(['provisional', 'final'] as const)('migrates a v7 %s round without expos
     Reflect.set(lobby.deckHistory!, 'trials', ['T004']);
     Reflect.set(round, 'trialBonus', 1);
     const ritual = game.ritual!;
+    delete ritual.budget;
     if (status === 'final') {
       const last = ritual.events.at(-1);
       if (last?.kind !== 'round') throw Error('Missing committed round');
@@ -412,7 +491,7 @@ it.each(['provisional', 'final'] as const)('migrates a v7 %s round without expos
       return view.room;
     };
     expect(host().game).toMatchObject({ phase: 'between_rounds', ritual: {
-      positions: expected.positions, cards: expected.cards, outcome: expected.outcome,
+      target: 31, positions: expected.positions, cards: expected.cards, outcome: expected.outcome,
       preview: status === 'provisional' ? { successes: 7 } : null,
     } });
     expect(host().game.results.at(-1)).not.toHaveProperty('trialBonus');

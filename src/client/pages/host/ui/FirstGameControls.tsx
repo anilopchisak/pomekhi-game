@@ -24,8 +24,8 @@ export function FirstGameControls({ room, disabled, run, newParty }: {
     </div>;
   }
   if (game.phase === 'finished') return <div aria-label="Управление раундом"><ConfirmButton title="Начать новую партию?"
-    description="Текущая комната закроется. Откроется пустая комната с новым приглашением."
-    confirm="Создать новую комнату" onConfirm={newParty} disabled={disabled}>Новая партия</ConfirmButton></div>;
+    description="Прогресс сбросится. Комната, участники и настройки сохранятся."
+    confirm="Начать новую партию" onConfirm={newParty} disabled={disabled}>Новая партия</ConfirmButton></div>;
 
   return <div aria-label="Управление раундом">
     {game.phase === 'reading' && <ReadingControls room={room} disabled={disabled} run={run} />}

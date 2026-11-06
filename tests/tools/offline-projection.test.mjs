@@ -1,5 +1,5 @@
 import { expect, it } from 'vitest';
-import { appendOffline, projectOffline, stripRetiredViewFields } from '../../src/client/pages/player/model/offline-store.js';
+import { appendOffline, cachePlayerView, projectOffline, stripRetiredViewFields } from '../../src/client/pages/player/model/offline-store.js';
 import { createLobby } from '../../src/server/lobby.js';
 function fixture(status) {
   const lobby = createLobby({ organizerCode: 'TEST' });
@@ -144,4 +144,40 @@ it('keeps the accepted release row when the live snapshot arrives before the jou
   view.play.undo = { id: 'later-action', label: 'Отметка миссии', available: true };
 
   expect(projectOffline(view, [release]).play).toEqual(view.play);
+});
+
+
+it('clears the previous party journal on a later round and ignores its delayed acknowledgement', () => {
+  const { view, event } = fixture('exorcist');
+  const record = { view, events: [event({ kind: 'mission', completed: true }, 'old-mission')] };
+  const next = globalThis.structuredClone(view);
+  next.revision++;
+  next.room.partyId = 'new-party';
+  next.room.game.roundId = 'new-round';
+  next.assignment = null;
+  next.play = null;
+  cachePlayerView(record, next);
+  expect(record).toMatchObject({ view: next, events: [] });
+
+  cachePlayerView(record, view);
+  expect(record).toMatchObject({ view: next, events: [] });
+});
+
+it('keeps a delayed receipt from the previous round without replacing the newer view', () => {
+  const { view, event } = fixture('exorcist');
+  const mission = event({ kind: 'mission', completed: true }, 'old-mission');
+  const record = { view, events: [mission] };
+  const next = globalThis.structuredClone(view);
+  next.revision += 2;
+  next.room.game.roundId = 'new-round';
+  next.synchronization = { ...next.synchronization, roundId: 'new-round', receipts: [] };
+  cachePlayerView(record, next);
+
+  const receipt = { id: mission.event.id, status: 'accepted', reason: null };
+  cachePlayerView(record, { ...view, revision: view.revision + 1, synchronization: { ...view.synchronization, receipts: [receipt] } });
+  expect(record).toMatchObject({ view: next, events: [{ receipt, before: null }] });
+
+  const older = { ...receipt, status: 'review' };
+  cachePlayerView(record, { ...view, synchronization: { ...view.synchronization, receipts: [older] } });
+  expect(record.events[0].receipt).toEqual(receipt);
 });

@@ -54,6 +54,28 @@ async function setup(tutorialEnabled = false) {
 }
 async function start(host: Client) { return value(await send(host, 'round:start', { ...base(await current(host)), confirmWarnings: true })); }
 
+it('publishes a new party to the same sockets and invitation during an active round', async () => {
+  const { host, phones, sessions } = await setup();
+  const before = roomOf(await start(host));
+  const offline = phones.at(-1)!;
+  const player = value(await send(offline, 'lobby:sync', {}));
+  offline.disconnect();
+  const updates = phones.slice(0, -1).map(phone => state(phone, snapshot => snapshot.partyId !== before.partyId));
+  const reset = base(before);
+  const after = roomOf(value(await send(host, 'room:restart', reset)));
+  expect(after).toMatchObject({ id: before.id, code: before.code, game: { phase: 'lobby', settings: before.game.settings } });
+  expect(after.partyId).not.toBe(before.partyId);
+  for (const update of await Promise.all(updates)) {
+    expect(update).toMatchObject({ id: before.id, partyId: after.partyId, dealing: { assignments: [] } });
+  }
+  const reconnected = await connect();
+  expect(value(await send(reconnected, 'player:resume', sessions.at(-1)!))).toMatchObject({
+    kind: 'player', playerId: player.kind === 'player' ? player.playerId : undefined, assignment: null, play: null,
+    room: { id: before.id, partyId: after.partyId },
+  });
+  expect(roomOf(value(await send(host, 'room:restart', reset))).partyId).toBe(after.partyId);
+});
+
 it.each([
   ['possessed', 'leave'], ['possessed', 'remove'], ['exorcist', 'leave'], ['exorcist', 'remove'],
 ] as const)('publishes return after the last %s departs through %s', async (role, method) => {
@@ -206,9 +228,11 @@ it('runs chained infections, group rescue, late missions and final results witho
   expect(JSON.stringify(shared)).not.toMatch(/"(captured|missionCompleted|rescuedGroups|infectionCondition|cardKey)"/);
   value(await action(exorcists[1].socket, 'play:release'));
   value(await action(roots[1].socket, 'play:release')); value(await action(roots[2].socket, 'play:release'));
+  expect((await current(host)).game).toMatchObject({ phase: 'search', remainingMs: 3000, results: [] });
+  timer.advance(3000);
   expect((await current(host)).game).toMatchObject({ phase: 'return', results: [] });
   timer.advance(2000);
-  expect((await current(host)).game.results[0]).toMatchObject({ status: 'provisional', rescuedGroups: 3, totalGroups: 3, missions: 0, totalMissions: 4, infectedPlayers: 2, activeMs: 4000 });
+  expect((await current(host)).game.results[0]).toMatchObject({ status: 'provisional', rescuedGroups: 3, totalGroups: 3, missions: 0, totalMissions: 4, infectedPlayers: 2, activeMs: 7000 });
   value(await action(exorcists[2].socket, 'play:mission', { completed: true }));
   const released = value(await send(roots[2].socket, 'lobby:sync', {})); if (released.kind !== 'player') throw new Error('Missing release');
   value(await action(roots[2].socket, 'play:undo', { actionId: released.play!.undo!.id }));

@@ -16,6 +16,7 @@ export interface ServerToClientEvents {
 
 export interface RoomSnapshot {
   id: string;
+  partyId?: string;
   code: string;
   version: number;
   capacity: number;
@@ -58,7 +59,7 @@ export const cardSets = ['indoor', 'outdoor', 'contact', 'harder'] as const;
 export type CardSet = typeof cardSets[number];
 export const venueFeatures = ['space', 'door', 'mirror', 'tree', 'dimLight', 'wall', 'twoZones', 'scary', 'touchSurfaces', 'contact', 'landmarks'] as const;
 export type VenueFeature = typeof venueFeatures[number];
-export interface Venue { mode?: GameMode; bank?: 'local' | 'authored'; comedy?: boolean; sets?: CardSet[]; prologueRead?: boolean; base: string; zones: string[]; storyId?: string; harder?: boolean; order?: string[] }
+export interface Venue { mode?: GameMode; bank?: 'local' | 'authored'; comedy?: boolean; sets?: CardSet[]; ritualTarget?: number | null; prologueRead?: boolean; base: string; zones: string[]; storyId?: string; harder?: boolean; order?: string[] }
 export type PhysicalStatus = 'at_base' | 'in_group';
 export interface Presence {
   playerId: string; expected: PhysicalStatus; confirmed: boolean;
@@ -174,7 +175,7 @@ export interface LobbyInputs {
   'player:audio': { roomId: string; enabled: boolean };
   'lobby:sync': Record<string, never>;
   'room:create': Record<string, never>;
-  'room:restart': { roomId: string };
+  'room:restart': GameCommand;
   'room:close': { roomId: string };
   'player:join': { roomCode: string; name: string; resumeKey: string };
   'player:resume': { roomCode: string; resumeKey: string };

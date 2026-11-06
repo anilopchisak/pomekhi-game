@@ -61,6 +61,11 @@ export function useLobbyConnection() {
   }, []);
   const accept = useCallback((next: LobbyView, sampledAt?: number) => {
     if (latestView.current && next.revision < latestView.current.revision) return;
+    const previous = latestView.current;
+    if (previous && previous.kind !== 'ended' && previous.room && next.kind !== 'ended' && next.room &&
+        (previous.room.partyId ?? previous.room.id) !== (next.room.partyId ?? next.room.id)) {
+      setCue(undefined); setScare(undefined);
+    }
     latestView.current = next; setView(next); setRestored(true);
     if (next.kind !== 'ended' && next.room && (sampledAt !== undefined || offsetRef.current === null)) {
       const offset = next.room.game.serverNow - (sampledAt ?? performance.now());
