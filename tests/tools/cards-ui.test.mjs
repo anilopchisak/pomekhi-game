@@ -194,6 +194,87 @@ it('closes the roster shuffle confirmation so the organizer can retry a lost ack
   expect(container.querySelector('[role="alert"]')).toBeNull();
 });
 
+it('lets the possessed change location inside the open card during placement', async () => {
+  lobby.dispose();
+  lobby = createLobby({ firstGame: true, organizerCode: 'HOST', generateRoomCode: () => 'ABCDEF', randomIndex: () => 0, clock: clock.clock });
+  lobby.subscribe(publish);
+  value(lobby.execute('host', 'organizer:authorize', { code: 'HOST' }));
+  const { code } = value(lobby.execute('host', 'room:create', {})).room;
+  const phones = Array.from({ length: 5 }, (_, i) => ({
+    id: `location-phone-${i}`, session: { roomCode: code, name: `Player ${i}`, resumeKey: String(i).repeat(64), pending: false },
+  }));
+  for (const { id, session } of phones) value(lobby.execute(id, 'player:join', session));
+  value(lobby.execute('host', 'venue:configure', { ...gameBase(), venue: { base: 'База', zones: ['Кухня', 'Коридор'] } }));
+  value(lobby.execute('host', 'deal:create', { ...base(), possessedCount: 2 }));
+  const possessed = phones.find(({ id }) => lobby.viewFor(id).assignment?.card.role === 'possessed');
+  savePlayerSession(possessed.session);
+  io.mockReturnValue(socket('phone'));
+  await act(async () => root.render(createElement(PlayerPage)));
+  await act(async () => value(lobby.execute('host', 'round:start', { ...gameBase(), confirmWarnings: true })));
+
+  expect(container.querySelector('select')).toBeNull();
+  await click('Открыть карточку');
+  const card = container.querySelector('[data-personal-card]');
+  const select = card.querySelector('select');
+  expect(select.labels[0].textContent).toContain('Ваша локация');
+  for (const zone of ['Кухня', 'Коридор']) {
+    await act(async () => {
+      select.value = zone;
+      select.dispatchEvent(new globalThis.Event('change', { bubbles: true }));
+    });
+    expect(lobby.viewFor('phone').play.location).toBe(zone);
+    expect(select.value).toBe(zone);
+  }
+
+  await act(async () => clock.advance(45000));
+  expect(card.querySelector('select')).toBeNull();
+  expect(card.textContent).toContain('Коридор');
+  expect(container.querySelector('[aria-label="Игровые действия"]').textContent).not.toContain('Коридор');
+  await click('Скрыть карточку');
+  expect(card.textContent).not.toContain('Коридор');
+});
+
+it('shows base returns during recall and checking, then offers a new deal and history', async () => {
+  lobby.dispose();
+  lobby = createLobby({ firstGame: true, organizerCode: 'HOST', generateRoomCode: () => 'ABCDEF', randomIndex: () => 0, clock: clock.clock });
+  lobby.subscribe(publish);
+  value(lobby.execute('host', 'organizer:authorize', { code: 'HOST' }));
+  const { code } = value(lobby.execute('host', 'room:create', {})).room;
+  const phones = Array.from({ length: 5 }, (_, i) => `phone-${i}`);
+  for (const [i, id] of phones.entries()) {
+    value(lobby.execute(id, 'player:join', { roomCode: code, name: `Player ${i}`, resumeKey: String(i).repeat(64) }));
+  }
+  value(lobby.execute('host', 'venue:configure', { ...gameBase(), venue: { base: 'База', zones: ['Кухня'] } }));
+  value(lobby.execute('host', 'deal:create', { ...base(), possessedCount: 2 }));
+  value(lobby.execute('host', 'round:start', { ...gameBase(), confirmWarnings: true }));
+  clock.advance(45000);
+  value(lobby.execute('host', 'round:return', gameBase()));
+
+  globalThis.sessionStorage.setItem('pomekhi.organizer', 'HOST');
+  io.mockReturnValue(socket('panel'));
+  await act(async () => root.render(createElement(HostPage)));
+  expect(container.textContent).toContain('Вернувшиеся на базу');
+  await click('Открыть сверку');
+  expect(container.textContent).toContain('Вернувшиеся на базу');
+
+  const { id, game } = lobby.viewFor('host').room;
+  await act(async () => {
+    lobby.reconcileRecall();
+    for (const phone of phones) value(lobby.execute(phone, 'play:complete', {
+      roomId: id, roundId: game.roundId, syncRevision: game.synchronization.revision,
+    }));
+    value(lobby.execute('host', 'results:finalize', gameBase()));
+  });
+  const heading = container.querySelector('[data-scene-heading]');
+  const scene = heading.closest('[data-phase]');
+  expect(heading.textContent).toBe('Следующий раунд');
+  expect(scene.querySelector('#base-returns-heading')).toBeNull();
+  expect([...scene.querySelectorAll('button')].map(button => button.textContent)).toEqual(['Начать новую раздачу']);
+  expect(scene.querySelector('details > summary').textContent).toBe('История партии');
+  await click('Начать новую раздачу');
+  expect(lobby.viewFor('host').room.game.phase).toBe('reading');
+});
+
 it('lets the organizer reverse an accepted correction after all journals are confirmed', async () => {
   lobby.dispose();
   lobby = createLobby({ firstGame: true, organizerCode: 'HOST', generateRoomCode: () => 'ABCDEF', randomIndex: () => 0, clock: clock.clock });
@@ -307,17 +388,34 @@ it('shows a group as one release choice and keeps the exorcist’s corrections i
   expect(lobby.viewFor('host').room).not.toHaveProperty('releaseGroups');
   expect(container.textContent).not.toMatch(/Отменить моё последнее действие|Последнее действие:|Ждут отправки:/);
 
-  await act(async () => value(lobby.execute('phone', 'play:mission', {
-    ...gameBase(), playVersion: lobby.viewFor('phone').play.version, completed: true,
-  })));
-  expect(button('Отменить освобождение').disabled).toBe(true);
   await act(async () => dialog.querySelector('[aria-label="Закрыть окно"]').click());
-  await click('Миссии');
+  const missionCheckbox = [...container.querySelectorAll('input[type="checkbox"]')].find(input => input.closest('label')?.textContent === 'Миссия выполнена');
+  expect(missionCheckbox.checked).toBe(false);
+  await act(async () => missionCheckbox.click());
+  const missionDialog = container.querySelector('dialog[open]');
+  expect(missionDialog.querySelector('h2').textContent).toBe('Подтвердить выполнение миссии?');
+  expect(missionDialog.textContent).not.toContain(lobby.viewFor('phone').play.card.mission);
+  expect(missionCheckbox.checked).toBe(false);
+  expect(lobby.viewFor('phone').play.missionCompleted).toBe(false);
+  await click('Отмена');
+  expect(container.querySelector('dialog[open]')).toBeNull();
+  expect(globalThis.document.activeElement).toBe(missionCheckbox);
+  expect(lobby.viewFor('phone').play.missionCompleted).toBe(false);
+  await act(async () => missionCheckbox.click());
+  await click('Подтвердить выполнение');
+  expect(container.querySelector('dialog[open]')).toBeNull();
+  expect(missionCheckbox.checked).toBe(true);
+  expect(lobby.viewFor('phone').play.missionCompleted).toBe(true);
+  await act(async () => missionCheckbox.click());
+  expect(container.querySelector('dialog[open] h2').textContent).toBe('Снять отметку выполнения миссии?');
+  expect(missionCheckbox.checked).toBe(true);
+  await click('Отмена');
+  await click('Освободить');
+  expect(button('Отменить освобождение').disabled).toBe(true);
   await click('Отменить последнюю отметку миссии');
   await click('Отменить отметку');
   expect(lobby.viewFor('phone').play.missionCompleted).toBe(false);
-  await act(async () => container.querySelector('dialog[open] [aria-label="Закрыть окно"]').click());
-  await click('Освободить');
+  expect(missionCheckbox.checked).toBe(false);
   expect(button('Отменить освобождение').disabled).toBe(false);
   await click('Отменить освобождение');
   const confirm = [...container.querySelectorAll('dialog[open]')].at(-1);

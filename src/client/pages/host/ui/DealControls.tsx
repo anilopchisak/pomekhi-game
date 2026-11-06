@@ -13,19 +13,26 @@ export function DealControls({ room, disabled, run }: {
   const reading = room.game.phase === 'reading';
   const readyCount = room.dealing.assignments.filter(item => item.ready).length;
   if (!['lobby', 'reading', 'between_rounds'].includes(room.game.phase)) return null;
-  if (room.game.firstGame) return <section aria-label="Раздача">
-    <h3>{reading ? 'Чтение карточек' : room.game.started ? 'Новая раздача — только свободным' : 'Подготовка раздачи'}</h3>
-    {reading ? <p role="status">Прочитали: {readyCount} / {room.dealing.assignments.length}. Чтение без таймера.</p>
-      : <p>Роли распределяются случайно. Группы в локациях сохраняют свои карточки.</p>}
-    {reading ? <>
+  if (room.game.firstGame) {
+    if (reading) return <section aria-label="Раздача">
+      <h3>Чтение карточек</h3>
+      <p role="status">Прочитали: {readyCount} / {room.dealing.assignments.length}. Чтение без таймера.</p>
       <ConfirmButton title="Перевыдать карточки?" description="Новые карточки получат участники текущей раздачи."
         confirm="Перевыдать карточки" disabled={disabled}
         onConfirm={() => void run('deal:shuffle', { ...dealCommand(room), possessedCount: count })}>Перевыдать карточки</ConfirmButton>
-    </> : <button disabled={disabled || !room.game.started && room.players.length < 5 || !room.game.venue.zones.length}
+    </section>;
+    const nextRound = room.game.phase === 'between_rounds' && room.game.results.at(-1)?.status === 'final';
+    const deal = <button disabled={disabled || !room.game.started && room.players.length < 5 || !room.game.venue.zones.length}
       onClick={() => void run('deal:create', { ...dealCommand(room), possessedCount: count })}>
-      {room.game.started ? 'Раздать свободным' : 'Раздать карточки'}
-    </button>}
-  </section>;
+      {nextRound ? 'Начать новую раздачу' : room.game.started ? 'Раздать свободным' : 'Раздать карточки'}
+    </button>;
+    if (nextRound) return deal;
+    return <section aria-label="Раздача">
+      <h3>{room.game.started ? 'Новая раздача — только свободным' : 'Подготовка раздачи'}</h3>
+      <p>Роли распределяются случайно. Группы в локациях сохраняют свои карточки.</p>
+      {deal}
+    </section>;
+  }
   return <section>
     <h3>{reading ? 'Чтение карточек' : 'Подготовка раздачи'}</h3>
     <label>Одержимых при новой общей раздаче

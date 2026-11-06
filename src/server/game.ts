@@ -106,7 +106,9 @@ export function createGame({ generateId, randomIndex, clock = defaultClock, onCh
   } : undefined });
   let settings: GameSettings = { ritualEnabled: true, roundLimit: DEFAULT_ROUND_LIMIT, placementSeconds: 45, searchSeconds: firstGame ? 240 : 180, returnSeconds: 45, ...(firstGame ? { offlineWaitSeconds: 90 } : {}), tutorialEnabled: !firstGame, initialDifficulty: firstGame ? 3 : 1, maximumDifficulty: 3, infectionMode: 'on' };
   let playerNames = new Map<string, string>();
-  let venue: Venue = { base: 'База', zones: [], ...(firstGame ? { mode: 'ordinary', bank: 'authored' } : {}) };
+  let venue: Venue = { base: 'База', zones: [], ...(firstGame ? {
+    mode: 'ordinary', bank: 'authored', sets: cardSets.filter(set => set !== 'outdoor'), harder: true, comedy: true,
+  } : {}) };
   function initializeStory() {
     if (!firstGame || selectedStory) return;
     const { id, title } = drawFromDeck(stories, randomIndex, 'stories', deckHistory);
@@ -540,7 +542,7 @@ export function createGame({ generateId, randomIndex, clock = defaultClock, onCh
       if (e.paused) return false;
       if (phase === 'search') return e.phase === 'search';
       return false;
-    });
+    }, firstGame);
     search = roundSync!.current();
     activePlayerIds = activePlayerIds.filter(id => search!.personal(id) !== null);
     if (!error && roundSync!.publicState().revision !== beforeRevision) { bump(); updateResult(); finishSearchIfNeeded(); }
@@ -598,13 +600,15 @@ export function createGame({ generateId, randomIndex, clock = defaultClock, onCh
     if (firstGame) {
       if (phase !== 'lobby') return 'SETTINGS_LOCKED';
       if (names.length < 2) return 'INVALID_INPUT';
-      const sets = v.sets === undefined ? (v.harder === true ? ['harder' as const] : []) : v.sets;
+      const sets = v.sets === undefined
+        ? (v.harder === undefined ? venue.sets ?? [] : v.harder ? ['harder' as const] : [])
+        : v.sets;
       if (!Array.isArray(sets) || !sets.every(set => cardSets.includes(set)) || new Set(sets).size !== sets.length ||
         v.comedy !== undefined && typeof v.comedy !== 'boolean') return 'INVALID_INPUT';
       initializeStory();
       venue = { base: names[0], zones: names.slice(1),
         storyId: venue.storyId, harder: sets.includes('harder'), mode: 'ordinary', bank: 'authored', sets: [...sets],
-        ...(v.comedy ? { comedy: true } : {}) };
+        ...((v.comedy ?? venue.comedy) ? { comedy: true } : {}) };
     } else venue = { base: names[0], zones: names.slice(1) };
     bump();
   }

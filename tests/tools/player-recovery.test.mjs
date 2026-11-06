@@ -159,7 +159,7 @@ it('shows the join form after offline removal and rejoins with a new credential 
   expect([...offlineRecords.values()][0].view.playerId).toBe(lobby.viewFor('host').room.players[0].id);
 });
 
-it('uploads a retained phone release and acknowledges checking without a new card', async () => {
+it('rejects a retained phone self-release and acknowledges checking without a new card', async () => {
   const time = controlledClock();
   const lobby = createLobby({ organizerCode: 'HOST', generateRoomCode: () => 'ABCDEF', randomIndex: () => 0, clock: time.clock, firstGame: true });
   const host = () => lobby.viewFor('host');
@@ -197,7 +197,10 @@ it('uploads a retained phone release and acknowledges checking without a new car
     savePlayerSession(session);
     const socket = recoveryTransport(() => lobby);
     await act(async () => root.render(createElement(PlayerPage)));
-    await vi.waitFor(() => expect(lobby.viewFor('phone-0')?.play?.status).toBe('released'));
+    await vi.waitFor(() => expect(lobby.viewFor('phone-0')?.synchronization?.receipts).toContainEqual({
+      id: event.id, status: 'rejected', reason: 'release_targets_required',
+    }));
+    expect(lobby.viewFor('phone-0').play.status).toBe('possessed');
 
     await act(async () => {
       game('round:return');
@@ -205,7 +208,7 @@ it('uploads a retained phone release and acknowledges checking without a new car
       socket.publish();
     });
     await vi.waitFor(() => expect(lobby.viewFor('phone-0').synchronization.complete).toBe(true));
-    expect(host().room.game.results.at(-1).rescuedGroups).toBe(1);
+    expect(host().room.game.results.at(-1).rescuedGroups).toBe(0);
   } finally {
     lobby.dispose();
   }

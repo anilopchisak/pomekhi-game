@@ -239,8 +239,8 @@ it('reconciles delayed phone reports and restores retained groups with the curre
     value(await send(host, 'sync:resolve', { ...await base(), eventId: undoRequest.id, decision: 'accept' }));
     expect((await personal(3)).synchronization?.undoRequests).toMatchObject([{ id: undoRequest.id, status: 'accepted' }]);
     expect((await personal(4)).play).toMatchObject({ status: 'exorcist', wasCaptured: false });
-    const correction = { ...late, id: 'late-group-release', clientId: 'late-release-phone', action: { kind: 'release' as const } };
-    value(await send(phones[3], 'play:sync', { roomId, roundId, events: [correction] }));
+    const correction = { ...late, id: 'late-group-release', clientId: 'late-release-phone', action: { kind: 'release' as const, targetIds: [ids[3]] } };
+    value(await send(phones[4], 'play:sync', { roomId, roundId, events: [correction] }));
     value(await send(host, 'sync:resolve', { ...await base(), eventId: correction.id, decision: 'accept' }));
     for (const [i, id] of ids.entries()) value(await send(phones[i], 'play:presence', { ...await base(), status: (await roomView()).presence!.find(p => p.playerId === id)!.expected }));
     value(await send(host, 'sync:close', { ...await base(), confirm: true }));

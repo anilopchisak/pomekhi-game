@@ -6,7 +6,7 @@ Read the documents whose trigger applies. Keep implemented behavior separate fro
 | --- | --- |
 | Runtime, installation, dependency, build, launcher or Tuna tunnel | [Stack](docs/agent/stack.md), [project README](README.md) |
 | Module placement, transport, public interface or state owner | [Architecture](docs/agent/architecture.md) |
-| Gameplay question, player instructions or rule change | [Game rules workflow](docs/agent/game-rules.md) |
+| Gameplay question, player instructions, card authoring or rule change | [Game rules workflow](docs/agent/game-rules.md) |
 | Current-build phase, role, difficulty or scoring | [Current implementation](docs/product/current-implementation.md), then the owning source identified by the workflow |
 | Target game rule or original-game adaptation | [Target rules](docs/product/README.md), [glossary](CONTEXT.md) |
 | Shared protocol or behavior across laptop and phones | [Consumers](docs/agent/ownership.md) |

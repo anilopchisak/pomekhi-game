@@ -95,7 +95,7 @@ export function createRoundSync(saved: SavedRoundSync, generateId: () => string)
     if (state.sealed) search.seal();
   }
   rebuild();
-  function ingest(actor: string, events: OfflineEvent[], timing: (event: OfflineEvent) => boolean | 'paused'): LobbyError | undefined {
+  function ingest(actor: string, events: OfflineEvent[], timing: (event: OfflineEvent) => boolean | 'paused', requireReleaseTargets = false): LobbyError | undefined {
     if (!state.players.includes(actor)) return 'FORBIDDEN';
     const incoming = new Map<string, OfflineEvent>();
     let newEvents = 0;
@@ -127,14 +127,15 @@ export function createRoundSync(saved: SavedRoundSync, generateId: () => string)
       const when = timing(event);
       const request = event.action.kind === 'undo' && event.action.requestReview ? event.action : null;
       let reason: string | null = when ? null : 'timing';
-      if (state.closed) reason = 'results_closed';
+      if (requireReleaseTargets && event.action.kind === 'release' && !event.action.targetIds) reason = 'release_targets_required';
+      else if (state.closed) reason = 'results_closed';
       else if (when === 'paused') reason = 'paused';
       else if (request) {
         if (!ownedUndoTarget(actor, request.actionId)) reason = 'ACTION_UNAVAILABLE';
         else reason = pendingUndo(actor, request.actionId) ? 'already_requested' : 'undo_requested';
       }
       else if (event.action.kind === 'undo' && pendingUndo(actor, event.action.actionId)) reason = 'already_requested';
-      const rejected = reason !== null && ['results_closed', 'paused', 'ACTION_UNAVAILABLE', 'already_requested'].includes(reason);
+      const rejected = reason !== null && ['release_targets_required', 'results_closed', 'paused', 'ACTION_UNAVAILABLE', 'already_requested'].includes(reason);
       state.entries.push({ actor, event, approved: false,
         receipt: { id: event.id, status: rejected ? 'rejected' : 'review', reason } });
       if (!state.closed) state.completed = [];
@@ -165,7 +166,7 @@ export function createRoundSync(saved: SavedRoundSync, generateId: () => string)
     if (state.closed || state.sealed) return 'RESULTS_FINAL';
     const index = state.entries.findIndex(e => e.event.id === id); if (index < 0) return 'INVALID_INPUT';
     const entry = state.entries[index];
-    if (entry.receipt.reason === 'paused') return 'ACTION_UNAVAILABLE';
+    if (entry.receipt.reason === 'paused' || entry.receipt.reason === 'release_targets_required') return 'ACTION_UNAVAILABLE';
     const request = entry.event.action.kind === 'undo' && entry.event.action.requestReview ? entry.event.action : null;
     if (request && entry.receipt.status !== 'review') return 'ACTION_UNAVAILABLE';
     let rollback: SavedRoundSync | undefined;

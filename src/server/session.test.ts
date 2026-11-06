@@ -3,7 +3,7 @@ import { createSession } from './session.js';
 import type { SessionStore } from './session-store.js';
 import type { SavedSession } from './session-format.js';
 import { validateSession } from './session-format.js';
-import type { LobbyReply, LobbyCommand, LobbyInputs } from '../shared/protocol.js';
+import type { GameCue, LobbyReply, LobbyCommand, LobbyInputs } from '../shared/protocol.js';
 import { controlledClock } from '../../tests/helpers/game-clock.js';
 import { stories } from './first-game-content.js';
 import { authoredProphecies } from './authored-content.js';
@@ -62,8 +62,38 @@ async function fixture(tutorialEnabled = false, firstGame = false) {
   const start = async () => value(await send('host', 'round:start', { ...gameCommand(), confirmWarnings: true }));
   const advance = async (ms: number) => { while (ms > 0) { const step = Math.min(ms, 1000); time.advance(step); value(await send('host', 'lobby:sync', {})); ms -= step; } };
   return { disk, time, room, send, gameCommand, dealCommand, playCommand, phones, deal, settle, start, advance, restart, view: (id: string) => session.viewFor(id),
-    disconnect: (id: string) => session.disconnect(id), close: () => session.close() };
+    subscribe: session.subscribe, disconnect: (id: string) => session.disconnect(id), close: () => session.close() };
 }
+
+it.each(['organizer', 'last release', 'deadline'])('publishes a playable recall cue after %s', async trigger => {
+  const f = await fixture(false, true);
+  try {
+    await f.deal();
+    await f.start();
+    await f.advance(1000);
+    expect(f.room().game.phase).toBe('search');
+    value(await f.send('host', 'organizer:audio', { enabled: true }));
+    const cues: GameCue[] = [];
+    f.subscribe(cue => { if (cue) cues.push(cue); });
+
+    if (trigger === 'organizer') {
+      const command = f.gameCommand();
+      value(await f.send('host', 'round:return', command));
+      value(await f.send('host', 'round:return', command));
+    } else if (trigger === 'last release') {
+      const players = f.phones.map(connection => ({ connection, view: f.view(connection) }));
+      const actor = players.find(({ view }) => view?.kind === 'player' && view.play?.status === 'exorcist')!.connection;
+      const targetIds = players.flatMap(({ view }) => view?.kind === 'player' && view.play?.status === 'possessed' ? [view.playerId] : []);
+      value(await f.send(actor, 'play:release', { ...f.playCommand(actor), targetIds }));
+    } else {
+      await f.advance(f.room().game.remainingMs!);
+    }
+
+    const { id, game } = f.room();
+    expect(game.phase).toBe('return');
+    expect(cues).toEqual([{ roomId: id, version: game.version, kind: 'phase', phase: 'return', serverNow: f.time.clock.now() }]);
+  } finally { await f.close(); }
+});
 
 it('restores full cards, readiness, pending requests and journal retries without using the bank', async () => {
   const f = await fixture();

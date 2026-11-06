@@ -42,7 +42,11 @@ export function createSession(options: LobbyOptions & { store?: SessionStore }) 
   }
   function publish() {
     refreshViews();
-    const pending = cue; dirty = false; cue = undefined;
+    const room = committed?.lobby.room;
+    // Recall reconciliation can advance the version before the transition is published.
+    const pending = cue && room?.id === cue.roomId && room.game.phase === cue.phase
+      ? { ...cue, version: room.game.version } : undefined;
+    dirty = false; cue = undefined;
     for (const listener of listeners) listener(pending);
   }
   async function write() {

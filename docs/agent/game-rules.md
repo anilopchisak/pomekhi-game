@@ -27,7 +27,7 @@ Follow the [local graph workflow](graphify.md) before tracing behavior. Read the
 | Role assignment, admission and replacement | [dealing.ts](../../src/server/dealing.ts), especially publicState and deal |
 | Capture, group release, mission eligibility and results | [search.ts](../../src/server/search.ts) |
 | Candles, penalties, revealed rules and terminal outcome | [ritual.ts](../../src/server/ritual.ts), [prophecies.ts](../../src/server/prophecies.ts) |
-| Actual issued tasks and catalog settings | [cards.ts](../../src/server/cards.ts), [catalog.ts](../../src/server/catalog.ts) and the authorized local catalog when relevant |
+| Actual issued tasks and catalog settings | [Authored bank](../../src/server/authored-content.ts), [short copy](../../src/server/short-card-copy.ts), and the [editable catalog](../../src/server/catalog.ts) for legacy rooms |
 | Phone instructions and actions | [RoundStatus.tsx](../../src/client/shared/ui/RoundStatus.tsx), [PlayControls.tsx](../../src/client/pages/player/ui/PlayControls.tsx) |
 | Published command and view shapes | [protocol.ts](../../src/shared/protocol.ts) |
 | Delayed reports and persisted recovery | [round-sync.ts](../../src/server/round-sync.ts), [session-format.ts](../../src/server/session-format.ts), [owning designs](../design/README.md) |
@@ -49,6 +49,14 @@ For an authorized implementation, identify the rule being implemented, its owner
 When adapting the Master, follow the [target rules](../product/README.md#computer-great-master) and use participant reports for physical facts. Card text, penalty ties and other [unresolved original interpretations](../product/README.md#remaining-source-interpretation-work) remain open until supported by an original ruling or a user decision.
 
 Horror tiers, new mission systems, branching story arcs and extra rituals from the earlier audit remain proposals. Include them only when the user adds them to the requested scope.
+
+## Author cards
+
+1. Put player-facing Russian text in [short-card-copy.ts](../../src/server/short-card-copy.ts) under the stable card ID. Put the situation, capture and release answers in that order for possessed missions. Put the mission answer under the ID for exorcist missions. Put essential location or safety instructions in the separate setup map.
+2. Use a short question and one plain Russian sentence per answer. The possessed situation says who the character is, what happened and what they want. The capture answer names the exact action that lets the possessed player mark infection. The release answer states what the exorcist must do. Exorcist cards show a separate role objective and a personal task with one clear, observable finish. Preserve required consent, timing and witness conditions. Use existing spaces, voice and body movements without props or hints.
+3. Register new base IDs and metadata in the [authored bank](../../src/server/authored-content.ts) and its [editorial registry](../../output/cards/cards.json). Register comedy missions in [comedy-cards.ts](../../src/server/comedy-cards.ts). Register new story metadata in [first-game-content.ts](../../src/server/first-game-content.ts). Keep subset and venue eligibility in the bank metadata. Keep private copy on the server, and preserve issued card snapshots and organizer-edited catalog entries.
+4. Explain infection in one sentence in the [in-game guide](../../src/client/shared/ui/HowToPlay.tsx) and the HTML catalog: the infected player stays with the possessed group, plays the same situation and sees the infected status on their phone. The possessed card tells the player to turn off their light after taking their place.
+5. Run `python3 output/cards/build.py` to regenerate both HTML catalogs. Check that every card ID resolves, each displayed answer is a single sentence and the runtime uses the same short copy. Run the authored-content and dealing tests before the full gate.
 
 ## Verify and deliver
 

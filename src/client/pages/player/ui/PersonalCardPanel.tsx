@@ -1,12 +1,13 @@
 import styles from './PlayerScene.module.css';
-import { useState } from 'react';
+import { useState, type ReactNode } from 'react';
 import type { Assignment } from '../../../../shared/protocol.js';
 
 type CardAction = (action: 'card:ready' | 'card:request', flag: boolean) => Promise<void>;
 
-export function PersonalCardPanel({ assignment, disabled, readOnly = false, infectionEnabled = false, tutorial = false, firstGame = false, disclosure, act }: {
+export function PersonalCardPanel({ assignment, disabled, readOnly = false, infectionEnabled = false, tutorial = false, firstGame = false, disclosure, location, act }: {
   assignment: Assignment; disabled: boolean; readOnly?: boolean; infectionEnabled?: boolean; tutorial?: boolean; firstGame?: boolean;
   disclosure?: { revealedCard: string | null; setRevealedCard: (id: string | null) => void };
+  location?: ReactNode;
   act: CardAction;
 }) {
   const [revealed, setRevealed] = useState<string | null>(null);
@@ -35,7 +36,8 @@ export function PersonalCardPanel({ assignment, disabled, readOnly = false, infe
     </div>}
     {open && <div>
       <h4>{card.title}</h4>
-      {card.setup && <p><strong>{card.brief ? 'Где играть?' : 'Условия места и подготовки:'}</strong> {card.setup}</p>}
+      {location}
+      {card.setup && <p><strong>{card.brief ? 'Что нужно для задания?' : 'Условия места и подготовки:'}</strong> {card.setup}</p>}
       {!firstGame && <p>Сложность карточки: {card.difficulty}</p>}
       {tutorial && <p>{card.role === 'possessed'
         ? 'Обучение: изображайте поведение и помогайте подсказкой. Когда условие выполнено, нажмите «Нас освободили» и возвращайтесь на базу.'

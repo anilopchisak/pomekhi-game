@@ -70,6 +70,31 @@ it('rejects forged retries and independent sequence collisions', () => {
   expect(j.personal('stranger')).toBeNull();
 });
 
+it('replays stored unselected releases while rejecting new ones without blocking later reports', () => {
+  const { journal, event, roots: [historical, actor], exos: [target], generateId } = fixture();
+  const oldRelease = event(historical, { kind: 'release' });
+  expect(journal.ingest(historical, [oldRelease], () => true)).toBeUndefined();
+  const checkpoint = journal.exportState();
+  validateRoundSync(checkpoint, 'round-id');
+  const restored = createRoundSync(checkpoint, generateId);
+  expect(restored.ingest(historical, [oldRelease], () => false, true)).toBeUndefined();
+  expect(restored.exportState()).toEqual(checkpoint);
+  expect(restored.current().personal(historical)?.status).toBe('released');
+
+  const newRelease = event(actor, { kind: 'release' });
+  const infection = event(actor, { kind: 'infect', targetId: target }, newRelease.id);
+  expect(restored.ingest(actor, [newRelease, infection], () => true, true)).toBeUndefined();
+  expect(restored.personal(actor)?.receipts).toEqual([
+    { id: newRelease.id, status: 'rejected', reason: 'release_targets_required' },
+    { id: infection.id, status: 'accepted', reason: null },
+  ]);
+  expect(restored.resolve(newRelease.id, 'reject')).toBe('ACTION_UNAVAILABLE');
+  expect(restored.resolve(newRelease.id, 'accept')).toBe('ACTION_UNAVAILABLE');
+  expect(restored.current().personal(actor)?.status).toBe('possessed');
+  expect(restored.current().personal(target)?.status).toBe('captured');
+  expect(restored.current().result(1, 'provisional', 0).rescuedGroups).toBe(1);
+});
+
 it('stores only canonical event fields and accepts a replay of an older padded checkpoint', () => {
   const { journal, event, exos: [actor], generateId } = fixture();
   const original = event(actor, { kind: 'mission', completed: true });

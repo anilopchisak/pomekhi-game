@@ -14,7 +14,6 @@ export function FirstGameControls({ room, disabled, run, newParty }: {
   const provisional = game.results.at(-1)?.status === 'provisional';
   const waiting = sync && !sync.closed && (sync.conflicts > 0 || sync.waitingPlayerIds.length > 0);
   const ritual = game.ritual;
-  const penalty = ritual?.penaltyPreview;
   if (game.phase === 'lobby') {
     const count = Math.min(3, Math.floor(room.players.length / 2));
     return <div className={styles.sceneActions}>
@@ -49,16 +48,6 @@ export function FirstGameControls({ room, disabled, run, newParty }: {
       confirm="Подтвердить итог" disabled={disabled || Boolean(waiting)}
       onConfirm={() => void run('results:finalize', gameCommand(room))}>Подтвердить итоги раунда</ConfirmButton>}
     {ritual?.outcome === 'playing' && ['reading', 'between_rounds'].includes(game.phase) && <>
-      {penalty && <ConfirmButton eyebrow="Ритуал · сверка нарушения" title="Подтвердить шаг назад?" confirm="Подтвердить штраф" cancel="Отклонить нарушение"
-        description={<>
-          <p>Сверьте факт нарушения и исключения. Свеча вернётся на один шаг из стопки «{['А', 'Б', 'В', 'Вышедшие свечи'][penalty.source]}».</p>
-          <div data-dialog-panel>
-            <strong>{ritual.positions.slice(0, 3).join(' / ')} → {penalty.positions.slice(0, 3).join(' / ')}</strong>
-            <p>Останется шагов: {penalty.remainingSteps}. Открытые прорицания сохранятся.</p>
-          </div>
-          <div data-dialog-panel><strong>Одно нарушение · одно начисление</strong>
-            <p>Просьбы о помощи и технические сообщения не штрафуются.</p></div>
-        </>} disabled={disabled} onConfirm={() => void run('ritual:penalty', gameCommand(room))}>Нарушение прорицания</ConfirmButton>}
       {ritual.penaltyDisputed && <ConfirmButton title="Закрыть спорный отчёт без штрафа?"
         description="Для текущих стопок правило не даёт однозначного шага. Свечи и открытые прорицания сохранятся."
         confirm="Закрыть без штрафа" disabled={disabled}
@@ -68,6 +57,22 @@ export function FirstGameControls({ room, disabled, run, newParty }: {
         onConfirm={() => void run('ritual:undo-penalty', gameCommand(room))}>Отменить последний штраф</ConfirmButton>}
     </>}
   </div>;
+}
+
+export function ViolationPenaltyButton({ room, disabled, run }: Pick<Parameters<typeof FirstGameControls>[0], 'room' | 'disabled' | 'run'>) {
+  const { ritual, phase } = room.game;
+  const penalty = ritual?.penaltyPreview;
+  if (!penalty || ritual.outcome !== 'playing' || (phase !== 'reading' && phase !== 'between_rounds')) return null;
+  return <ConfirmButton eyebrow="Ритуал · сверка нарушения" title="Подтвердить шаг назад?" confirm="Подтвердить штраф" cancel="Отклонить нарушение"
+    description={<>
+      <p>Сверьте факт нарушения и исключения. Свеча вернётся на один шаг из стопки «{['А', 'Б', 'В', 'Вышедшие свечи'][penalty.source]}».</p>
+      <div data-dialog-panel>
+        <strong>{ritual.positions.slice(0, 3).join(' / ')} → {penalty.positions.slice(0, 3).join(' / ')}</strong>
+        <p>Останется шагов: {penalty.remainingSteps}. Открытые прорицания сохранятся.</p>
+      </div>
+      <div data-dialog-panel><strong>Одно нарушение · одно начисление</strong>
+        <p>Просьбы о помощи и технические сообщения не штрафуются.</p></div>
+    </>} disabled={disabled} onConfirm={() => void run('ritual:penalty', gameCommand(room))}>Нарушение прорицания</ConfirmButton>;
 }
 
 function ReadingControls({ room, disabled, run }: Pick<Parameters<typeof FirstGameControls>[0], 'room' | 'disabled' | 'run'>) {
@@ -85,6 +90,10 @@ function ReadingControls({ room, disabled, run }: Pick<Parameters<typeof FirstGa
       confirm="Начать раунд" onConfirm={() => void run('round:start', { ...gameCommand(room), confirmWarnings: true })}>
       Начать без полной готовности
     </ConfirmButton>}
-    {!compositionValid && <p>С этим составом начать раунд нельзя. Остановить партию можно в настройках партии.</p>}
+    {!compositionValid && <p>С этим составом начать раунд нельзя.</p>}
+    {!room.game.started && room.players.length < 5 && <ConfirmButton data-secondary
+      title="Отменить первую раздачу?" description="Комната и её код сохранятся. Пригласите замену, чтобы снова собрать пять участников."
+      confirm="Отменить раздачу" disabled={disabled}
+      onConfirm={() => void run('deal:cancel', dealCommand(room))}>Отменить раздачу</ConfirmButton>}
   </div>;
 }

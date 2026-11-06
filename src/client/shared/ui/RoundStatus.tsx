@@ -46,7 +46,7 @@ export function RoundStatus({ game, clockOffset, connection, role, playStatus, w
     if (game.phase === 'reading' && cardHidden !== undefined) instruction = '';
     if (game.phase === 'reading' && retained) instruction = 'Оставайтесь на месте. У вас та же карточка и группа.';
     if (game.phase === 'placement') instruction = retained ? 'Оставайтесь с группой на прежнем месте.'
-      : role === 'possessed' ? 'Займите место в разрешённой локации и погасите свет.'
+      : role === 'possessed' ? 'Займите место, отметьте локацию в карточке и погасите свет.'
       : role === 'exorcist' ? 'Оставайтесь на базе до призыва к поиску.' : instruction;
     if (game.phase === 'search') instruction = inGroup ? 'Оставайтесь на месте с погашенным светом и следуйте карточке.'
       : playStatus === 'released' ? 'Включите свет и сразу вернитесь на базу. Дождитесь сверки.'

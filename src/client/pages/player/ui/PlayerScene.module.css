@@ -15,6 +15,7 @@ main:has(> header > .toolbar) dialog {
   height: calc(100dvh - 32px);
   scrollbar-gutter: stable;
 }
+main:has(> header > .toolbar) dialog:has([data-mission-confirmation]) { height: fit-content; }
 main:has(> header > .toolbar) dialog :is(h2, h3, h4, summary) { color: var(--accent); }
 .phaseMeta { display: flex; align-items: center; justify-content: space-between; gap: 8px; min-height: 28px; }
 .phaseMeta:empty { display: none; }
@@ -73,7 +74,7 @@ main:has(> .scene[data-card-layout=true]) > :not(.scene) { flex: none; }
 .roleActions > button[data-role-action=missions] { background: #233a65; color: #edf4ff; border-color: #5c78ac; }
 .roleActions > button[data-role-action=release] { background: var(--gold); color: var(--background); border-color: var(--gold); }
 .cardActions > button, .cardActions .readingActions > button, .cardActions .roleActions > button { width: 100%; margin: 0; padding-inline: 8px; }
-.readingActions label.readyToggle {
+.readingActions label.readyToggle, .roleActions label.missionToggle {
   display: flex;
   align-items: center;
   justify-content: center;
@@ -85,7 +86,9 @@ main:has(> .scene[data-card-layout=true]) > :not(.scene) { flex: none; }
   background: var(--surface);
   cursor: pointer;
 }
-.readingActions label.readyToggle:has(input:checked) { background: #9ccbb0; color: var(--background); border-color: #9ccbb0; }
-.readingActions label.readyToggle:has(input:disabled) { opacity: .5; cursor: default; }
+.roleActions label.missionToggle { padding-block: 6px; background: #233a65; color: #edf4ff; border-color: #5c78ac; }
+.missionToggle input[type=checkbox] { flex: none; accent-color: #315c46; }
+.readingActions label.readyToggle:has(input:checked), .roleActions label.missionToggle:has(input:checked) { background: #9ccbb0; color: var(--background); border-color: #9ccbb0; }
+.readingActions label.readyToggle:has(input:disabled), .roleActions label.missionToggle:has(input:disabled) { opacity: .5; cursor: default; }
 .readyToggle input { accent-color: #315c46; }
 .readingActions button[data-replacement-requested=true] { background: var(--gold); color: var(--background); border-color: var(--gold); }

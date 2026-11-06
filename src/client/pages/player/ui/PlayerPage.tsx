@@ -147,19 +147,7 @@ export function PlayerPage() {
       {privateFeedback('play:violation')}
       <ul>{playerView.violations?.map(report => <li key={report.id}>{report.details} · {{ review: 'Ждёт сверки', applied: 'Штраф применён', rejected: 'Отклонено', dismissed: 'Закрыто без движения', reversed: 'Штраф отменён' }[report.status]}</li>)}</ul>
     </>}>Доклады о прорицаниях</DialogButton>;
-  const actions = playerView && <>    {playerView.room.game.firstGame && playerView.room.game.phase === 'placement' && !playerView.room.game.paused && playerView.play?.status === 'possessed' && !playerView.play.retained &&
-      <section><label>Ваша локация<select value={playerView.play.location ?? ''} disabled={busy || liveConnection !== 'online'} onChange={event => {
-        if (event.target.value) void cardAction('play:location', { ...gameCommand(playerView.room), zone: event.target.value });
-      }}><option value="">Выберите место</option>{playerView.room.game.venue.zones.map(zone => <option key={zone}>{zone}</option>)}</select></label></section>}
-    {playerView.room.game.firstGame && ['return', 'between_rounds'].includes(playerView.room.game.phase) &&
-      !playerView.room.game.results.some(row => row.roundId === playerView.room.game.roundId && row.status === 'final') &&
-      playerView.play && ['possessed', 'captured'].includes(playerView.play.status) && !playerView.play.unknownGroup && !playerView.play.location &&
-      <label>Сообщить пропущенную локацию
-        <select value={playerView.locationProposal ?? ''} disabled={busy || liveConnection !== 'online'} onChange={event => {
-          if (event.target.value) void cardAction('play:location', { ...gameCommand(playerView.room), zone: event.target.value });
-        }}><option value="">Выберите место</option>{playerView.room.game.venue.zones.map(zone => <option key={zone}>{zone}</option>)}</select>
-        {playerView.locationProposal && <small>Ждёт подтверждения на ноутбуке.</small>}
-      </label>}
+  const actions = playerView && <>
     {playerView.play && (!playerView.room.game.firstGame || ['search', 'return', 'between_rounds'].includes(playerView.room.game.phase)) && !playerView.synchronization?.withdrawn && <PlayControls key={playerView.play.roundId} view={playerView} roleControlsTarget={roleControlsTarget} pendingReports={offline.pending > 0}
       feedback={<>{error && <p role="alert">{error}</p>}{offline.error && <p role="alert">{offline.error}</p>}
         {pending && !isPrivateForm(pending.command) && <button type="button" disabled={busy || liveConnection !== 'online'}
@@ -175,6 +163,28 @@ export function PlayerPage() {
   const cardReadOnly = playerView?.room.game.phase !== 'reading' || !playerView.assignment;
   const cardActionsDisabled = busy || liveConnection !== 'online';
   const cardLayout = Boolean(firstGame && cardVisible && playerView?.room.game.phase !== 'finished');
+  const game = playerView?.room.game;
+  const play = playerView?.play;
+  const groupPlay = firstGame && play && (play.status === 'possessed' || play.status === 'captured') && !play.unknownGroup ? play : null;
+  const placementLocation = game?.phase === 'placement' && groupPlay?.status === 'possessed' && !groupPlay.retained;
+  const missingLocation = game && groupPlay && !groupPlay.location &&
+    ['return', 'between_rounds'].includes(game.phase) &&
+    !game.results.some(row => row.roundId === game.roundId && row.status === 'final');
+  const location = playerView && game && groupPlay && (
+    placementLocation || missingLocation
+      ? <label>{missingLocation ? 'Сообщить пропущенную локацию' : 'Ваша локация'}
+        <select value={(missingLocation ? playerView.locationProposal : groupPlay.location) ?? ''}
+          disabled={cardActionsDisabled || Boolean(placementLocation && game.paused)} onChange={event => {
+            const zone = event.currentTarget.value;
+            if (zone) void cardAction('play:location', { ...gameCommand(playerView.room), zone });
+          }}>
+          <option value="" disabled>Выберите место</option>
+          {game.venue.zones.map(zone => <option key={zone}>{zone}</option>)}
+        </select>
+        {missingLocation && playerView.locationProposal && <small>Ждёт подтверждения на ноутбуке.</small>}
+      </label>
+      : groupPlay.location ? <p><strong>Ваша локация</strong> {groupPlay.location}</p> : null
+  );
   async function actOnCard(action: 'card:ready' | 'card:request', flag: boolean) {
     if (!playerView?.assignment) return;
     const base = { ...dealCommand(playerView.room), assignmentId: playerView.assignment.id };
@@ -185,7 +195,8 @@ export function PlayerPage() {
     {cardVisible && <PersonalCardPanel disclosure={firstGame ? { revealedCard, setRevealedCard } : undefined}
       firstGame={firstGame} tutorial={playerView.room.game.roundPlan.kind === 'tutorial'}
       infectionEnabled={playerView.room.game.roundPlan.infectionEnabled} assignment={assignment}
-      disabled={cardActionsDisabled} readOnly={cardReadOnly} act={actOnCard} />}
+      disabled={cardActionsDisabled} readOnly={cardReadOnly} location={location} act={actOnCard} />}
+    {!cardVisible && (placementLocation || missingLocation) && location}
   </>;
   const roster = playerView && (<section>
       <h3>{playerView.room.players.find(player => player.id === playerView.playerId)?.name}, оставайтесь на связи</h3>

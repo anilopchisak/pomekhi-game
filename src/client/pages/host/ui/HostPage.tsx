@@ -10,7 +10,7 @@ import type { LobbyInputs, LobbyCommand, RoomSnapshot } from '../../../../shared
 import { DealControls } from './DealControls.js';
 import { RecoveryControls } from './RecoveryControls.js';
 import { PartySettings } from './FirstGameSetup.js';
-import { FirstGameControls } from './FirstGameControls.js';
+import { FirstGameControls, ViolationPenaltyButton } from './FirstGameControls.js';
 import { GameControls } from './GameControls.js';
 import { SoundControls } from './SoundControls.js';
 
@@ -220,6 +220,13 @@ export function HostPage({ display = false, editor = false }: { display?: boolea
         if (result.ok && display && enabled) window.scrollTo(0, 0);
         return result.ok;
       }} />}</>;
+  function removeOfflinePlayer(roomId: string, player: RoomSnapshot['players'][number], className?: string) {
+    if (display || player.online) return null;
+    return <ConfirmButton data-danger className={className} title={`Удалить участника «${player.name}»?`}
+      aria-label={`Удалить участника ${player.name}`} description="Место освободится. Прежний вход участника перестанет действовать."
+      confirm="Удалить участника" disabled={disabled}
+      onConfirm={() => void run('player:remove', { roomId, playerId: player.id })}>Удалить участника</ConfirmButton>;
+  }
   const roster = room && (<section>
         <h3>Участники: {room.players.length} / {room.capacity}</h3>
         <p>Организатор тоже входит с телефона. Этот экран не занимает место.</p>
@@ -232,14 +239,19 @@ export function HostPage({ display = false, editor = false }: { display?: boolea
             })} aria-label={`Заменить карточку ${player.name}`}>Заменить карточку</button>}
           </span>)}
           {!room.dealing.assignments.some(item => item.playerId === player.id) && <small>Ждёт следующей раздачи</small>}
+          {removeOfflinePlayer(room.id, player)}
         </li>)}</ul> : <p>Пока здесь тихо. Ждём первого участника.</p>}
 
       </section>);
   const checkingPresence = room?.game.phase === 'return' || room?.game.phase === 'between_rounds' && room.game.results.at(-1)?.status === 'provisional';
   const cleanReview = room?.game.phase === 'between_rounds' && room.game.results.at(-1)?.status === 'provisional' && !waitingForSync;
+  const nextRound = firstGame && room?.game.phase === 'between_rounds' && room.game.results.at(-1)?.status === 'final';
+  const pendingViolation = view?.kind === 'organizer' && view.violations?.some(report => report.status === 'review');
+  const roundControls = room && <FirstGameControls key={room.id} room={room} disabled={disabled} run={run}
+    newParty={() => void run('room:restart', { roomId: room.id })} />;
   const work = room && view?.kind === 'organizer' && <>
-      {room.game.firstGame && (checkingPresence || ['between_rounds', 'finished'].includes(room.game.phase) && Boolean(view.presence?.length)) && <section aria-label="Физический статус">
-        <h3>Кто где после призыва</h3>
+      {room.game.firstGame && (checkingPresence || room.game.phase === 'finished' && Boolean(view.presence?.length)) && <section aria-labelledby="base-returns-heading">
+        <h3 id="base-returns-heading">Вернувшиеся на базу</h3>
         {!cleanReview && room.game.offlineWait && <p role="status">{room.game.offlineWait.awaitingReview
           ? 'Время истекло. Сначала разберите спорные отметки о возвращении.'
           : room.game.offlineWait.deadline <= room.game.serverNow ? 'Время ожидания истекло. Сверка остаётся открытой.'
@@ -301,7 +313,7 @@ export function HostPage({ display = false, editor = false }: { display?: boolea
         })}</ul>
       </section>}
       <RecoveryControls request={request} missingLocations={view.missingLocations} room={room} review={view.review ?? []} disabled={disabled} run={run} />
-      {(!room.game.firstGame || room.game.phase === 'between_rounds' && !cleanReview) &&
+      {(!room.game.firstGame || room.game.phase === 'between_rounds' && !cleanReview && !nextRound) &&
         <DealControls room={room} disabled={disabled || Boolean(waitingForSync) || room.game.settings.ritualEnabled && room.game.results.at(-1)?.status === 'provisional'} run={run} />}</>;
   const toolbar = firstGame && room ? <>
     <div className={broadcast.roomIdentity}>
@@ -402,6 +414,7 @@ export function HostPage({ display = false, editor = false }: { display?: boolea
                 : physical.expected === 'at_base' ? 'Ожидается на базе' : 'Ожидается в группе'
                 : 'Статус неизвестен'}</small>}
               {!checking && room.game.phase !== 'reading' && role && <small>В игре</small>}
+              {removeOfflinePlayer(room.id, player, broadcast.removePlayer)}
             </div>
           </li>;
         })}</ol>
@@ -429,17 +442,21 @@ export function HostPage({ display = false, editor = false }: { display?: boolea
         {firstGame && ['placement', 'search'].includes(room.game.phase) && <span className={broadcast.phaseMark} aria-hidden="true" />}
       </RoundStatus>}
       {firstGame && (['return', 'between_rounds'].includes(room.game.phase) || room.game.phase === 'reading' &&
-        !display && Boolean(view.violations?.length)) && <div className={broadcast.sceneWork} tabIndex={0} aria-label="Сверка и история">
-        {!display && work}
+        !display && Boolean(view.violations?.length)) && <div className={broadcast.sceneWork} tabIndex={0} aria-label={nextRound ? 'История партии' : 'Сверка и история'}>
+        {!display && !nextRound && work}
         {room.game.results.length > 0 && room.game.phase === 'between_rounds' && !cleanReview &&
-          <details><summary>История партии</summary><ResultsSummary results={room.game.results} firstGame /></details>}
+          <details>
+            <summary>История партии{nextRound && !display && pendingViolation && ' · есть доклад на сверку'}</summary>
+            <ResultsSummary results={room.game.results} firstGame />
+            {nextRound && !display && <>{work}{roundControls}</>}
+          </details>}
       </div>}
       {firstGame && !display && <footer className={broadcast.primary}>
-        <FirstGameControls key={room.id} room={room} disabled={disabled} run={run}
-          newParty={() => void run('room:restart', { roomId: room.id })} />
+        {nextRound ? <DealControls room={room} disabled={disabled || Boolean(waitingForSync) || Boolean(pendingViolation)} run={run} /> : roundControls}
       </footer>}
       </div>
-      {room.game.firstGame && <RitualBoard game={room.game} online={connection === 'online' && restored} animate />}
+      {room.game.firstGame && <RitualBoard game={room.game} online={connection === 'online' && restored} animate
+        footer={!display && <ViolationPenaltyButton key={room.id} room={room} disabled={disabled} run={run} />} />}
       </div>
       {!firstGame && <>
         {!display && <>

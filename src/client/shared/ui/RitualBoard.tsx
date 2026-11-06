@@ -1,4 +1,5 @@
 import { useEffect, useRef, useState } from 'react';
+import type { ReactNode } from 'react';
 import type { GameSnapshot, RitualSnapshot } from '../../../shared/protocol.js';
 import { DialogButton } from './GameDialog.js';
 import styles from './RitualBoard.module.css';
@@ -34,7 +35,9 @@ function candleFrames(before: RitualView, target: RitualView) {
   return frames;
 }
 
-export function RitualBoard({ game, online = true, animate = false }: { game: GameSnapshot; online?: boolean; animate?: boolean }) {
+export function RitualBoard({ game, online = true, animate = false, footer }: {
+  game: GameSnapshot; online?: boolean; animate?: boolean; footer?: ReactNode;
+}) {
   const { ritual } = game;
   const last = game.results.at(-1);
   const heading = useRef<HTMLHeadingElement>(null);
@@ -132,5 +135,6 @@ export function RitualBoard({ game, online = true, animate = false }: { game: Ga
       <p>Открытые правила действуют на базе. Просьбы о помощи, вопросы о правилах и технические сообщения не штрафуются.</p>
     </>}>{opened.length ? 'Открытые прорицания' : 'Как работает ритуал'}</DialogButton>
     {opened.length > 0 && <p>Открытое прорицание можно посмотреть нажатием.</p>}
+    {footer}
   </section>;
 }

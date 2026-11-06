@@ -256,31 +256,11 @@ def paragraph(label, text, cls=''):
         '<p>' + escape(p) + '</p>' for p in text.split('\n\n')) + '</div>'
 
 
-def card_html(c, *, editorial=True, collection=None, answers=None):
+def card_html(c, answers, *, editorial=True, collection=None):
     labels = c['sets'] or ['ordinary']
     badges = ''.join('<span class="tag">' + escape(SET_LABELS.get(s, 'Обычная')) + '</span>' for s in labels)
-    content = ''
     kind = c['type']
-    if answers is not None:
-        content = ''.join(paragraph(question, answer, style) for question, answer, style in answers)
-    elif kind == 'possessed':
-        content += paragraph('Поведение', c['behavior'])
-        content += '<div class="outcomes">'
-        content += paragraph('Заражение', c['infectionCondition'], 'capture outcome')
-        content += paragraph('Освобождение', c['releaseCondition'], 'release outcome') + '</div>'
-    elif kind == 'exorcist':
-        content += paragraph('Миссия', c['mission'])
-        content += paragraph('Условие выполнения', c['successCondition'], 'release outcome')
-    elif kind == 'prophecy':
-        content += paragraph('Финал' if c['final'] else 'Условие у ритуального стола', c['rule'])
-        content += paragraph('Когда действует', c['trigger'])
-    elif kind == 'story':
-        content += paragraph('Прочитать перед первым экзорцизмом', c['prologue'], 'prologue')
-    else:
-        for section in c['sections']:
-            content += paragraph(section['title'], section['text'])
-    if c['requirements']:
-        content += '<div class="requirements"><h4>До включения в колоду</h4><ul>' + ''.join('<li>' + escape(x) + '</li>' for x in c['requirements']) + '</ul></div>'
+    content = ''.join(paragraph(question, answer, style) for question, answer, style in answers)
     if editorial:
         provenance = c['provenance']
         provenance_label = 'Авторская карта' if provenance['classification'] == 'new' else 'Адаптация / переработка'
@@ -292,8 +272,7 @@ def card_html(c, *, editorial=True, collection=None, answers=None):
     edition = f' data-collection="{collection}"' if collection else ''
     if collection == 'comedy':
         badges += '<span class="tag comedy-tag">Смешная колода</span>'
-    searchable = {key: value for key, value in c.items() if key not in ('provenance', 'fearMechanism')}
-    search_text = strings(searchable) if answers is None else [c['id'], c['title'], *(answer for _, answer, _ in answers)]
+    search_text = [c['id'], c['title'], *(answer for _, answer, _ in answers)]
     text = ' '.join(search_text).casefold().replace('ё', 'е')
     return f'<article class="card" id="{c["id"]}" data-type="{kind}" data-sets="{" ".join(c["sets"])}" data-search="{escape(text, quote=True)}"{edition}>' + \
         f'<header><span class="card-id">{c["id"]}</span><span class="family">{escape(FAMILY_LABELS[c["family"]])}</span><h3>{escape(c["title"])}</h3><div class="tags">{badges}</div></header>' + content + '</article>'
@@ -375,8 +354,8 @@ def toolbar(cards, *, collections=False):
 
 def quick_answers(cards):
     source = HERE.parents[1] / 'src' / 'server' / 'short-card-copy.ts'
-    copy = json.loads(source.read_text().strip().removeprefix('export default ').removesuffix(';'))['answers']
-    assert set(copy) == {card['id'] for card in cards}
+    copy = json.loads(source.read_text().strip().removeprefix('export default ').removesuffix(';'))
+    assert {card['id'] for card in cards} <= copy['answers'].keys()
     questions = {
         'possessed': [('Кто вы и чего хотите?', ''), ('Как заразить экзорциста?', 'capture outcome'),
                       ('Как экзорцисту освободить одержимого?', 'release outcome')],
@@ -392,16 +371,22 @@ def quick_answers(cards):
         prompts = questions[kind]
         if card.get('final'):
             prompts = [('Как заканчивается ритуал?', '')]
-        assert len(copy[id]) == len(prompts), id
+        fields = copy['answers'][id]
+        assert len(fields) == len(prompts), id
         answers = []
         for index, (question, style) in enumerate(prompts):
-            text = copy[id][index]
-            assert text and not text.endswith('.'), id
+            text = fields[index]
+            assert 0 < len(text.split()) <= 28 and not re.search(r'\.(?:\s|$)', text), (id, text)
             answers.append((question, text + '.', style))
         if kind == 'possessed':
             answers.insert(1, ('Что сделать, заняв своё место?', 'Войдя в игровую локацию и заняв выбранное место, выключите свой источник освещения.', ''))
         if kind == 'exorcist':
             answers.append(('Как освободить одержимого?', 'Поймите, чего добивается одержимый, выполните условие его карты и подтвердите освобождение на телефоне.', ''))
+        setup = copy['setup'].get(id)
+        assert bool(setup) == bool(card['requirements']), id
+        if setup:
+            assert 0 < len(setup.split()) <= 28 and not re.search(r'\.(?:\s|$)', setup), (id, setup)
+            answers.append(('Что нужно для задания?', setup + '.', ''))
         result[id] = answers
     return result
 
@@ -416,8 +401,8 @@ def build_all_html():
     assert Counter(card['type'] for card in comedy) == {'possessed': 24, 'exorcist': 16}
     answers = quick_answers(cards)
     rendered = (
-        ''.join(card_html(card, editorial=False, answers=answers[card['id']]) for card in CARDS)
-        + ''.join(card_html(card, editorial=False, collection='comedy', answers=answers[card['id']]) for card in comedy)
+        ''.join(card_html(card, answers[card['id']], editorial=False) for card in CARDS)
+        + ''.join(card_html(card, answers[card['id']], editorial=False, collection='comedy') for card in comedy)
     )
     return f'''<!doctype html>
 <html lang="ru"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1">
@@ -442,6 +427,7 @@ def build_all_html():
 
 
 def build_html(pair_review):
+    answers = quick_answers(CARDS)
     rules = ''.join('<p>' + escape(text) + '</p>' for text in PACK['playerRules'].values())
     rows = ''
     for row in AUDIT['entries']:
@@ -473,12 +459,13 @@ def build_html(pair_review):
 <title>Помехи — 136 карт</title><style>{STYLE}</style></head>
 <body><header class="hero"><div class="eyebrow">ПОМЕХИ / АВТОРСКАЯ КОЛОДА / 03.11.2026</div>
 <h1>Кто-то остался<br>по ту сторону света.</h1>
-<p>136 карт: одержимые, миссии экзорцистов, прорицания, истории и памятки. Здесь открыт полный текст для авторского просмотра. Этот каталог нельзя показывать игрокам на общем экране во время партии.</p>
+<p>136 карт: одержимые, миссии экзорцистов, прорицания, истории и памятки. Здесь открыт игровой текст карт для авторского просмотра. Во время партии игроки читают свои карты на телефонах.</p>
 <nav class="hero-links" aria-label="Материалы набора"><a href="all.html">Все карты на одной странице</a><a href="cards.json" download>Полный JSON</a><a href="#domestic-review">Что изменено в 136 картах</a><a href="#fiction-review">12 произведений</a><a href="#source-review">{len(AUDIT['entries'])} исходных записей</a><a href="#pair-review">45 пар прорицаний</a></nav></header>
-<main><div class="intro"><p class="notice">Авторская адаптация оригинальных правил «Одержимых» с компьютерным Мастером. Набор подготовлен отдельно от приложения: текущий импорт игры его не поддерживает. Проверка текстов выполнена; живой игровой тест ещё не проводился.</p>
+<main><div class="intro"><p class="notice">Авторская адаптация оригинальных правил «Одержимых» с компьютерным Мастером. Короткие ответы совпадают с текстом в игре. Ниже собраны источники и история изменений.</p>
+<h2>Как понять, что человек заражён?</h2><p>Заражённый остаётся с группой одержимого и играет ту же ситуацию, а на своём телефоне видит «Вы заражены».</p>
 <details><summary>Как читать набор и выбирать дополнительные карты</summary><p>Обычные карты не имеют дополнительных отметок. Карты помещения и улицы выбирают по месту игры, физический контакт — по согласию группы, повышенную сложность — по желанию. Совместные отметки действуют одновременно. Все необходимые условия места и реквизит указаны на карточках.</p>{rules}</details></div>
 {toolbar(CARDS)}
-<div class="grid">{''.join(card_html(c) for c in CARDS)}</div><p class="empty" id="empty" hidden>По этим условиям карт нет. Измените поиск или набор.</p>
+<div class="grid">{''.join(card_html(c, answers[c['id']]) for c in CARDS)}</div><p class="empty" id="empty" hidden>По этим условиям карт нет. Измените поиск или набор.</p>
 <section class="supplement" id="domestic-review"><h2>Домашний хоррор: решения по всем картам</h2><p>Первая домашняя редакция: у одержимых 31 сохранённая основа, 18 адаптаций и 26 замен; у экзорцистов — 20, 14 и 8. Последующая правка убирает весь реквизит: в таблице она отмечена отдельно. Ангел видит себя в уже имеющемся зеркале дома. Вступления свободно сочетаются с колодой. Широкую таблицу можно прокручивать в сторону.</p><p><a href="revision-audit.json">Полный реестр JSON</a> · <a href="revision-audit.csv" download>Таблица CSV</a> · <a href="research.md">Исследование</a></p><div class="scroll" tabindex="0" role="region" aria-label="Решения по 136 картам"><table><thead><tr><th>Карта</th><th>Название</th><th>Решение</th><th>Entity intention</th><th>Why the actions fit</th></tr></thead><tbody>{revision_rows}</tbody></table></div></section>
 <section class="supplement" id="fiction-review"><h2>Произведения и художественные мотивы</h2><p>Литературные тексты, материалы изданий фильмов и авторские свидетельства использованы как источники мотивов. Условия заражения и освобождения написаны для нашей игры. Это не восстановленные коммерческие карточки и не утверждения о настоящих духах.</p>{fiction_rows}</section>
 <section class="supplement" id="source-review"><h2>Что изменено в исходных картах</h2><p>136 карт авторского PDF, 90 действующих личных карт, 7 действующих прорицаний, 19 оригинальных примеров ; явных запросов пользователя: {AUDIT['coverage']['userRequests']}. Упоминания реквизита в исторических источниках не являются требованиями текущих карточек. «Заменить» связывает исходную запись с заменой. Пояснения для последующего внедрения оставлены на английском.</p>

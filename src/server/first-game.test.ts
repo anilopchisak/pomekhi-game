@@ -283,7 +283,9 @@ it('keeps the chosen story when settings are saved before players join and the r
     const { id, title } = stories.at(-1)!;
     const story = { title, prologue: shortAnswer(id) };
     expect(initial.game.story).toEqual(story);
-    expect(initial.game.venue).toMatchObject({ storyId: id, mode: 'ordinary', bank: 'authored' });
+    expect(initial.game.venue).toMatchObject({
+      storyId: id, mode: 'ordinary', bank: 'authored', harder: true, sets: ['indoor', 'contact', 'harder'], comedy: true,
+    });
     expect(lobby.execute('host', 'room:create', {}).ok).toBe(true);
     const venue = { base: 'База', zones: ['Кухня'] };
     for (const [i, place] of ['Угол', 'У стены'].entries()) expect(lobby.execute('host', 'venue:configure', {
@@ -291,7 +293,7 @@ it('keeps the chosen story when settings are saved before players join and the r
       venue: { ...venue, dwelling: { zone: 'Кухня', place }, storyId: 'S001', mode: 'first', bank: 'local', horror: true, features: ['mirror'] },
     }).ok).toBe(true);
     expect(roomOf(lobby).game.venue).toEqual({ ...venue,
-      storyId: id, mode: 'ordinary', bank: 'authored', harder: false, sets: [] });
+      storyId: id, mode: 'ordinary', bank: 'authored', harder: true, sets: ['indoor', 'contact', 'harder'], comedy: true });
     for (let i = 0; i < 5; i++) expect(lobby.execute('phone-' + i, 'player:join', {
       roomCode: initial.code, name: 'Медиум ' + i, resumeKey: String(i).repeat(64),
     }).ok).toBe(true);
@@ -386,8 +388,8 @@ it.each<{ sets: string[]; comedy?: boolean; twoZones?: boolean }>([
     if (attempt < 54) expect(game.cancelDeal()).toBeUndefined();
   }
   const extra = [...seen.values()].filter(card => /^C[PE]/.test(card.id));
-  expect(extra.filter(card => card.role === 'possessed')).toHaveLength(comedy ? 24 : 0);
-  expect(extra.filter(card => card.role === 'exorcist')).toHaveLength(comedy ? 16 : 0);
+  expect(extra.filter(card => card.role === 'possessed')).toHaveLength(comedy !== false ? 24 : 0);
+  expect(extra.filter(card => card.role === 'exorcist')).toHaveLength(comedy !== false ? 16 : 0);
   expect(seen.get('P001')).toMatchObject({ title: 'Колыбельная пустой комнаты', behavior: shortAnswer('P001'), brief: true });
   expect(seen.get('P007')?.title).toBe(sets.includes('harder') ? 'Запись из соседней жизни' : undefined);
   expect(seen.has('P003')).toBe(sets.includes('contact'));
@@ -401,7 +403,7 @@ it.each<{ sets: string[]; comedy?: boolean; twoZones?: boolean }>([
   restored.restore(saved);
   expect(restored.publicState().venue).toMatchObject({ bank: 'authored', mode: 'ordinary' });
   expect(restored.publicState().venue).not.toHaveProperty('features');
-  expect(restored.publicState().venue.comedy).toBe(comedy ? true : undefined);
+  expect(restored.publicState().venue.comedy).toBe(comedy === false ? undefined : true);
   expect(ids.map(id => restored.personal(id))).toEqual(ids.map(id => game.personal(id)));
   expect(restored.start(ids.map(id => ({ id, online: true })), true)).toBeUndefined();
   expect(restored.exportState().ritual?.cards.map(card => card.id)).toEqual(['R001', 'R002', 'R011']);

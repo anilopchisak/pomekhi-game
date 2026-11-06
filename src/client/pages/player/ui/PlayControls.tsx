@@ -5,7 +5,32 @@ import styles from './PlayerScene.module.css';
 import type { LobbyCommand, LobbyInputs, LobbyView, OfflineAction } from '../../../../shared/protocol.js';
 import { isRetiredMission } from '../../../../shared/retired-mission.js';
 import { gameCommand } from '../../../shared/api/index.js';
-import { ConfirmButton, DialogButton } from '../../../shared/ui/index.js';
+import { ConfirmButton, DialogButton, GameDialog } from '../../../shared/ui/index.js';
+
+function MissionCheckbox({ completed, disabled, report }: {
+  completed: boolean; disabled: boolean; report: (completed: boolean) => Promise<void>;
+}) {
+  const checkbox = useRef<HTMLInputElement>(null);
+  const [requested, setRequested] = useState<boolean | null>(null);
+  const close = () => setRequested(null);
+  return <>
+    <label className={styles.missionToggle}>
+      <input ref={checkbox} type="checkbox" checked={completed} disabled={disabled}
+        onChange={event => setRequested(event.currentTarget.checked)} />
+      Миссия выполнена
+    </label>
+    {requested !== null && <GameDialog title={requested ? 'Подтвердить выполнение миссии?' : 'Снять отметку выполнения миссии?'}
+      onClose={close} returnFocus={checkbox.current}>
+      <div data-dialog-actions data-mission-confirmation>
+        <button type="button" data-secondary data-dialog-focus onClick={close}>Отмена</button>
+        <button type="button" disabled={disabled || requested === completed} onClick={() => {
+          close();
+          void report(requested);
+        }}>{requested ? 'Подтвердить выполнение' : 'Снять отметку'}</button>
+      </div>
+    </GameDialog>}
+  </>;
+}
 
 export function PlayControls({ view, disabled, run, queue, online = true, estimatedSearchEnded = false, feedback, pendingReports = false, roleControlsTarget }: {
   view: Extract<LobbyView, { kind: 'player' }>; disabled: boolean;
@@ -56,11 +81,14 @@ export function PlayControls({ view, disabled, run, queue, online = true, estima
   const selectedGroup = releaseOptions.find(group => JSON.stringify(group) === releaseSelection);
   const memberNames = (ids: string[]) => ids.map(id => room.players.find(player => player.id === id)?.name ?? 'Участник').join(', ');
   const missionEligible = play.missionEligible && !isRetiredMission(play.card);
+  function reportMission(completed: boolean) {
+    return !online && queue ? queue({ kind: 'mission', completed }) : run('play:mission', { ...base, completed });
+  }
   const mission = missionEligible && <ConfirmButton native={native}
       title={play.missionCompleted ? 'Снять отметку выполнения миссии?' : 'Подтвердить выполнение миссии?'}
       description={play.missionCompleted ? undefined : 'Миссия должна быть выполнена до призыва на базу.'}
       confirm={play.missionCompleted ? 'Снять отметку' : 'Подтвердить миссию'} disabled={disabled || !missionAllowed}
-      onConfirm={() => void (!online && queue ? queue({ kind: 'mission', completed: !play.missionCompleted }) : run('play:mission', { ...base, completed: !play.missionCompleted }))}>
+      onConfirm={() => void reportMission(!play.missionCompleted)}>
       {play.missionCompleted ? 'Снять отметку миссии' : 'Миссия выполнена'}
     </ConfirmButton>;
 
@@ -69,6 +97,9 @@ export function PlayControls({ view, disabled, run, queue, online = true, estima
       run('play:undo', { ...base, actionId, ...(requestReview ? { requestReview } : {}) });
   }
 
+  const undoMission = missionUndo && <ConfirmButton data-secondary title="Отменить последнюю отметку миссии?"
+    confirm="Отменить отметку" disabled={disabled || !mutable || game.paused || !missionUndo.available || waitingUndo}
+    onConfirm={() => void undoAction(missionUndo.id)}>Отменить последнюю отметку миссии</ConfirmButton>;
   const roleControls = game.firstGame && <div className={styles.roleActions}>
       {(possessed || Boolean(play.infections?.length)) && game.roundPlan.infectionEnabled && <DialogButton data-role-action="infect" title="Заражение"
         disabled={!searching && !play.infections?.length}
@@ -99,20 +130,14 @@ export function PlayControls({ view, disabled, run, queue, online = true, estima
           </>}
           {feedback}
         </>}>Заразить</DialogButton>}
-      {(missionEligible || missionUndo) && <DialogButton data-role-action="missions" title="Миссии" content={<>
-        {missionEligible && play.card.role === 'exorcist' && <section aria-label="Личная миссия">
-          <h3>{play.card.brief ? 'Как выполнить личную миссию?' : 'Личная миссия'}</h3>
-          <p>{play.card.mission}</p>
-          {!play.card.brief && play.card.successCondition && <p><strong>Условие зачёта:</strong> {play.card.successCondition}</p>}
-          {mission}
-        </section>}
-        {missionUndo && <ConfirmButton data-secondary title="Отменить последнюю отметку миссии?"
-          confirm="Отменить отметку" disabled={disabled || !mutable || game.paused || !missionUndo.available || waitingUndo}
-          onConfirm={() => void undoAction(missionUndo.id)}>Отменить последнюю отметку миссии</ConfirmButton>}
-        {feedback}
-      </>}>Миссии</DialogButton>}
+      {missionEligible
+        ? <MissionCheckbox key={play.cardKey} completed={play.missionCompleted} disabled={disabled || !missionAllowed} report={reportMission} />
+        : missionUndo && <DialogButton data-role-action="missions" title="Отметка миссии" content={<>
+          {undoMission}
+          {feedback}
+        </>}>Отметка миссии</DialogButton>}
       {(play.status === 'exorcist' || Boolean(play.releases?.length)) && <DialogButton data-role-action="release" title="Освобождение"
-        disabled={!searching && !play.releases?.length}
+        disabled={!searching && !play.releases?.length && !(missionEligible && missionUndo)}
         content={<>
           <h3>Кого вы освободили</h3>
           {play.releases?.length ? <ul>{play.releases.map(release => {
@@ -148,6 +173,7 @@ export function PlayControls({ view, disabled, run, queue, online = true, estima
             }}>Подтвердить освобождение</button>
             {undoHistory}
           </>}
+          {missionEligible && undoMission}
           {pendingReports && <p role="status">На телефоне есть записи, которые ждут отправки.</p>}
           {feedback}
         </>}>Освободить</DialogButton>}
@@ -161,7 +187,6 @@ export function PlayControls({ view, disabled, run, queue, online = true, estima
     {game.firstGame && searching && unavailable && <p role="status">Этот участник уже недоступен. Выберите имя из обновлённого списка.</p>}
     {game.firstGame && searching && !online && <p>Список сохранён при последней связи. Отметка дождётся проверки.</p>}
     {(possessed || game.firstGame && Boolean(play.infections?.length)) && <>
-      {game.firstGame && play.location && <p>Ваша локация: {play.location}.</p>}
       {!game.firstGame && <ConfirmButton native={native} title="Условие освобождения выполнено?"
         description="Вся ваша группа освободится и вернётся на базу."
         confirm="Подтвердить освобождение" disabled={disabled || !searching}

@@ -1,7 +1,7 @@
 import { useEffect, useRef, useState } from 'react';
 import { cardSets } from '../../../../shared/protocol.js';
 import type { CatalogEntry, CatalogFile, CatalogInput, CatalogReply, CatalogSnapshot, Difficulty, Role } from '../../../../shared/protocol.js';
-import { validateCatalogFile } from '../../../../shared/catalog.js';
+import { validateCatalogFile, validateEntry } from '../../../../shared/catalog.js';
 import { describeError } from '../../../shared/api/index.js';
 
 function download(file: CatalogFile) {
@@ -46,10 +46,10 @@ export function CatalogEditor({ request, disabled, editable, generation }: {
   }
   const rows = catalog?.file.entries ?? [];
   const visible = rows.filter(e => (role === 'all' || e.card.role === role) && (level === 'all' || e.card.difficulty === Number(level)) && (active === 'all' || e.enabled === (active === 'on')));
-  const oldIds = new Map(rows.map(e => [e.card.id, e]));
+  const oldIds = new Map(preview ? rows.map(e => [e.card.id, JSON.stringify(validateEntry(e))]) : []);
   const newIds = new Set(preview?.entries.map(e => e.card.id));
   const added = preview?.entries.filter(e => !oldIds.has(e.card.id)).length ?? 0;
-  const changed = preview?.entries.filter(e => oldIds.has(e.card.id) && JSON.stringify(oldIds.get(e.card.id)) !== JSON.stringify(e)).length ?? 0;
+  const changed = preview?.entries.filter(e => oldIds.has(e.card.id) && oldIds.get(e.card.id) !== JSON.stringify(e)).length ?? 0;
   const removed = rows.filter(e => !newIds.has(e.card.id)).length;
   return <section aria-label="Редактор банка">
     <h3>Банк секретных заданий</h3>
