@@ -36,7 +36,7 @@ For each current-behavior claim, inspect the relevant path and an appropriate ex
 
 ## Keep the known differences explicit
 
-The executable follows the [first-game design](../design/first-game.md), including persistent possession, returner-only deals, solo exploration and the original candle formula. Older configurable behavior remains in compatibility fixtures. Ordinary-mode Master trials, exact original card content and unresolved source rulings remain outside the first-game variant.
+The executable follows the [first-game design](../design/first-game.md), including persistent possession, returner-only deals, solo exploration and the original candle formula. Older configurable behavior remains in compatibility fixtures. Exact original card content and unresolved source rulings remain outside the first-game variant.
 
 Keep one success per original possessed assignment, no extra rescue credit for captives, and no exorcist mission credit after capture even if later released. Preserve private projections, honest physical reports, causal correction and durable recovery.
 
@@ -46,7 +46,7 @@ For documentation-only work, update the requested explanations and their routing
 
 For an authorized implementation, identify the rule being implemented, its owner and affected consumers before editing. Carry a lifecycle change through results, phone instructions, offline reconciliation and saved-state handling as applicable. Update the owning design when that behavior changes. Product wording alone cannot migrate a save or provide a new command.
 
-When adapting the Master, preserve the accepted trial properties and source limits in the [target rules](../product/README.md#computer-great-master). Use participant reports for physical facts. Document actor-dependent trial substitutions individually. Card text, penalty ties and other [unresolved original interpretations](../product/README.md#remaining-source-interpretation-work) remain open until supported by an original ruling or a user decision.
+When adapting the Master, follow the [target rules](../product/README.md#computer-great-master) and use participant reports for physical facts. Card text, penalty ties and other [unresolved original interpretations](../product/README.md#remaining-source-interpretation-work) remain open until supported by an original ruling or a user decision.
 
 Horror tiers, new mission systems, branching story arcs and extra rituals from the earlier audit remain proposals. Include them only when the user adds them to the requested scope.
 

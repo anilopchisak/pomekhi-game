@@ -1190,13 +1190,13 @@
       "previousTitle": "Голос, который идёт за тобой",
       "decision": "retain_core",
       "entityIntent": "Maintain one’s own voice through the household.",
-      "causalLink": "The on-site offering is made at an agreed empty place, without a vessel, marker or physical deposit.",
+      "causalLink": "A player sees or hears the required scene during the search.",
       "inspirations": [
         "others"
       ],
       "playableChanged": true,
       "acceptance": "editorially_reviewed_not_playtested",
-      "currentDecision": "adapt_no_props"
+      "currentDecision": "adapt_observable_scene"
     },
     {
       "id": "E002",
@@ -1205,12 +1205,13 @@
       "previousTitle": "Обет молчания",
       "decision": "retain_core",
       "entityIntent": "Pass through the house without lending it ordinary speech.",
-      "causalLink": "Silence is maintained through the search; technical and consent speech remains available.",
+      "causalLink": "A player sees or hears the required scene during the search.",
       "inspirations": [
         "others"
       ],
-      "playableChanged": false,
-      "acceptance": "editorially_reviewed_not_playtested"
+      "playableChanged": true,
+      "acceptance": "editorially_reviewed_not_playtested",
+      "currentDecision": "adapt_observable_scene"
     },
     {
       "id": "E003",
@@ -1219,13 +1220,14 @@
       "previousTitle": "Вопрос вместо ответа",
       "decision": "replace",
       "entityIntent": "Investigate an apparent unseen respondent.",
-      "causalLink": "The completed action identifies who actually answered rather than requiring question-only speech or a real supernatural response.",
+      "causalLink": "A player sees or hears the required scene during the search.",
       "inspirations": [
         "empty-house",
         "others"
       ],
       "playableChanged": true,
-      "acceptance": "editorially_reviewed_not_playtested"
+      "acceptance": "editorially_reviewed_not_playtested",
+      "currentDecision": "adapt_observable_scene"
     },
     {
       "id": "E004",
@@ -1248,13 +1250,14 @@
       "previousTitle": "Рифма на пороге",
       "decision": "replace",
       "entityIntent": "Withdraw imagined household access.",
-      "causalLink": "A complete protective act replaces rhyme composition. It does not automatically rescue an unrelated possessed group.",
+      "causalLink": "A player sees or hears the required scene during the search.",
       "inspirations": [
         "monkeys-paw",
         "vourdalak"
       ],
       "playableChanged": true,
-      "acceptance": "editorially_reviewed_not_playtested"
+      "acceptance": "editorially_reviewed_not_playtested",
+      "currentDecision": "adapt_observable_scene"
     },
     {
       "id": "E006",
@@ -1291,12 +1294,13 @@
       "previousTitle": "Смотрящий вверх",
       "decision": "adapt",
       "entityIntent": "Investigate an implied observer above the household.",
-      "causalLink": "A real observation anchors the feared gaze instead of inventing evidence.",
+      "causalLink": "A player sees or hears the required scene during the search.",
       "inspirations": [
         "turn-screw"
       ],
       "playableChanged": true,
-      "acceptance": "editorially_reviewed_not_playtested"
+      "acceptance": "editorially_reviewed_not_playtested",
+      "currentDecision": "adapt_observable_scene"
     },
     {
       "id": "E009",
@@ -1305,12 +1309,13 @@
       "previousTitle": "Знак перед входом",
       "decision": "retain_core",
       "entityIntent": "Acknowledge a threshold before crossing it.",
-      "causalLink": "A repeated entrance gesture has a physical trigger and does not block navigation.",
+      "causalLink": "A player sees or hears the required scene during the search.",
       "inspirations": [
         "monkeys-paw"
       ],
-      "playableChanged": false,
-      "acceptance": "editorially_reviewed_not_playtested"
+      "playableChanged": true,
+      "acceptance": "editorially_reviewed_not_playtested",
+      "currentDecision": "adapt_observable_scene"
     },
     {
       "id": "E010",
@@ -1334,13 +1339,13 @@
       "previousTitle": "Три поверхности",
       "decision": "adapt",
       "entityIntent": "Keep contact with the ordinary physical home.",
-      "causalLink": "Use naturally available building or ground surfaces only, without laid-out textures.",
+      "causalLink": "A player sees or hears the required scene during the search.",
       "inspirations": [
         "others"
       ],
       "playableChanged": true,
       "acceptance": "editorially_reviewed_not_playtested",
-      "currentDecision": "adapt_no_props"
+      "currentDecision": "adapt_observable_scene"
     },
     {
       "id": "E012",
@@ -1349,12 +1354,13 @@
       "previousTitle": "Минута без маяка",
       "decision": "retain_core",
       "entityIntent": "Test a short absence of the observing light.",
-      "causalLink": "The stationary screen-cover interval is completed and then light restored; nobody approaches during it.",
+      "causalLink": "A player sees or hears the required scene during the search.",
       "inspirations": [
         "others"
       ],
-      "playableChanged": false,
-      "acceptance": "editorially_reviewed_not_playtested"
+      "playableChanged": true,
+      "acceptance": "editorially_reviewed_not_playtested",
+      "currentDecision": "adapt_observable_scene"
     },
     {
       "id": "E013",
@@ -1363,90 +1369,90 @@
       "previousTitle": "Две метки возвращения",
       "decision": "replace",
       "entityIntent": "Check an apparently empty place from two real viewpoints.",
-      "causalLink": "Inspect one empty place from two viewpoints, using no object.",
+      "causalLink": "A player sees or hears the required scene during the search.",
       "inspirations": [
         "beckoning"
       ],
       "playableChanged": true,
       "acceptance": "editorially_reviewed_not_playtested",
-      "currentDecision": "adapt_no_props"
+      "currentDecision": "adapt_observable_scene"
     },
     {
       "id": "E014",
       "type": "exorcist",
-      "title": "Тихое подношение",
+      "title": "Немой швейцар",
       "previousTitle": "Тихое подношение",
       "decision": "retain_core",
       "entityIntent": "Offer presence without answering the dwelling.",
-      "causalLink": "The on-site offering is made at an agreed empty place, without a vessel, marker or physical deposit.",
+      "causalLink": "A player sees or hears the required scene during the search.",
       "inspirations": [
         "others"
       ],
       "playableChanged": true,
       "acceptance": "editorially_reviewed_not_playtested",
-      "currentDecision": "adapt_no_props"
+      "currentDecision": "adapt_observable_scene"
     },
     {
       "id": "E015",
       "type": "exorcist",
-      "title": "Неназванный адресат",
+      "title": "Зов несуществующего жильца",
       "previousTitle": "Неназванный адресат",
       "decision": "retain_core",
       "entityIntent": "Keep a fictional addressee until reaching its place.",
-      "causalLink": "The on-site offering is made at an agreed empty place, without a vessel, marker or physical deposit.",
+      "causalLink": "A player sees or hears the required scene during the search.",
       "inspirations": [
         "old-nurse"
       ],
       "playableChanged": true,
       "acceptance": "editorially_reviewed_not_playtested",
-      "currentDecision": "adapt_no_props"
+      "currentDecision": "adapt_observable_scene"
     },
     {
       "id": "E016",
       "type": "exorcist",
-      "title": "Свой знак у Обители",
+      "title": "Запоздалый салют",
       "previousTitle": "Подпись движением",
       "decision": "adapt",
       "entityIntent": "Present oneself to the household presence without leaving an object.",
-      "causalLink": "The on-site offering is made at an agreed empty place, without a vessel, marker or physical deposit.",
+      "causalLink": "A player sees or hears the required scene during the search.",
       "inspirations": [
         "others",
         "beckoning"
       ],
       "playableChanged": true,
       "acceptance": "editorially_reviewed_not_playtested",
-      "currentDecision": "adapt_no_props"
+      "currentDecision": "adapt_observable_scene"
     },
     {
       "id": "E017",
       "type": "exorcist",
-      "title": "Пустые руки для Обители",
+      "title": "Невидимая ноша",
       "previousTitle": "Посыльный с открытой ладонью",
       "decision": "adapt",
       "entityIntent": "Reach the presence without accepting an unknown object.",
-      "causalLink": "The on-site offering is made at an agreed empty place, without a vessel, marker or physical deposit.",
+      "causalLink": "A player sees or hears the required scene during the search.",
       "inspirations": [
         "monkeys-paw",
         "beckoning"
       ],
       "playableChanged": true,
       "acceptance": "editorially_reviewed_not_playtested",
-      "currentDecision": "adapt_no_props"
+      "currentDecision": "adapt_observable_scene"
     },
     {
       "id": "E018",
       "type": "exorcist",
-      "title": "Место Обители не занимают",
+      "title": "Пропустите жильца",
       "previousTitle": "Обитель не открывают",
       "decision": "retain_core",
       "entityIntent": "Leave the dwelling as it was found.",
-      "causalLink": "The on-site offering is made at an agreed empty place, without a vessel, marker or physical deposit.",
+      "causalLink": "A player sees or hears the required scene during the search.",
       "inspirations": [
         "beckoning"
       ],
       "playableChanged": true,
       "acceptance": "editorially_reviewed_not_playtested",
-      "currentDecision": "adapt_no_props"
+      "currentDecision": "adapt_observable_scene"
     },
     {
       "id": "E019",
@@ -1466,17 +1472,17 @@
     {
       "id": "E020",
       "type": "exorcist",
-      "title": "Как выглядит место Обители",
+      "title": "Две улики невидимки",
       "previousTitle": "Перепись тихого дома",
       "decision": "adapt",
       "entityIntent": "Distinguish the real dwelling from an imagined change.",
-      "causalLink": "Observe the already agreed Dwelling place and its natural features, not a container.",
+      "causalLink": "A player sees or hears the required scene during the search.",
       "inspirations": [
         "others"
       ],
       "playableChanged": true,
       "acceptance": "editorially_reviewed_not_playtested",
-      "currentDecision": "adapt_no_props"
+      "currentDecision": "adapt_observable_scene"
     },
     {
       "id": "E021",
@@ -1485,12 +1491,13 @@
       "previousTitle": "Слушающий пустоту",
       "decision": "retain_core",
       "entityIntent": "Listen before inventing an explanation for a sound.",
-      "causalLink": "A bounded stationary listen reports real sound or honest silence.",
+      "causalLink": "A player sees or hears the required scene during the search.",
       "inspirations": [
         "uninvited"
       ],
-      "playableChanged": false,
-      "acceptance": "editorially_reviewed_not_playtested"
+      "playableChanged": true,
+      "acceptance": "editorially_reviewed_not_playtested",
+      "currentDecision": "adapt_observable_scene"
     },
     {
       "id": "E022",
@@ -1529,12 +1536,13 @@
       "previousTitle": "Поза свидетеля",
       "decision": "retain_core",
       "entityIntent": "Carry a witnessed bodily image away from its actor.",
-      "causalLink": "One observed pose is reproduced after withdrawing, rather than performing a whole possessed mission.",
+      "causalLink": "A player sees or hears the required scene during the search.",
       "inspirations": [
         "jolly-corner"
       ],
-      "playableChanged": false,
-      "acceptance": "editorially_reviewed_not_playtested"
+      "playableChanged": true,
+      "acceptance": "editorially_reviewed_not_playtested",
+      "currentDecision": "adapt_observable_scene"
     },
     {
       "id": "E025",
@@ -1543,12 +1551,13 @@
       "previousTitle": "Два состояния",
       "decision": "retain_core",
       "entityIntent": "Witness the difference after a presence releases its hold.",
-      "causalLink": "Actual before/after observation supplies evidence without delaying a freed person.",
+      "causalLink": "A player sees or hears the required scene during the search.",
       "inspirations": [
         "turn-screw"
       ],
-      "playableChanged": false,
-      "acceptance": "editorially_reviewed_not_playtested"
+      "playableChanged": true,
+      "acceptance": "editorially_reviewed_not_playtested",
+      "currentDecision": "adapt_observable_scene"
     },
     {
       "id": "E026",
@@ -1585,14 +1594,14 @@
       "previousTitle": "Комната за спиной",
       "decision": "adapt",
       "entityIntent": "Keep a stable memory of a room while not looking.",
-      "causalLink": "Recall three existing spatial landmarks rather than objects or prepared markers.",
+      "causalLink": "A player sees or hears the required scene during the search.",
       "inspirations": [
         "others",
         "jolly-corner"
       ],
       "playableChanged": true,
       "acceptance": "editorially_reviewed_not_playtested",
-      "currentDecision": "adapt_no_props"
+      "currentDecision": "adapt_observable_scene"
     },
     {
       "id": "E029",
@@ -1601,12 +1610,13 @@
       "previousTitle": "Фраза для пустого места",
       "decision": "retain_core",
       "entityIntent": "Address an absent resident and end the exchange.",
-      "causalLink": "Introduction, pause and goodbye complete an act without requiring a paranormal reply.",
+      "causalLink": "A player sees or hears the required scene during the search.",
       "inspirations": [
         "beckoning"
       ],
-      "playableChanged": false,
-      "acceptance": "editorially_reviewed_not_playtested"
+      "playableChanged": true,
+      "acceptance": "editorially_reviewed_not_playtested",
+      "currentDecision": "adapt_observable_scene"
     },
     {
       "id": "E030",
@@ -1629,13 +1639,14 @@
       "previousTitle": "Разомкнуть знак",
       "decision": "replace",
       "entityIntent": "Keep a person’s voice distinguishable from an imitation.",
-      "causalLink": "The task completes a source/echo/present episode, not an abstract transported finger ring. No exact words or reversed order are tested.",
+      "causalLink": "A player sees or hears the required scene during the search.",
       "inspirations": [
         "empty-house",
         "old-nurse"
       ],
       "playableChanged": true,
-      "acceptance": "editorially_reviewed_not_playtested"
+      "acceptance": "editorially_reviewed_not_playtested",
+      "currentDecision": "adapt_observable_scene"
     },
     {
       "id": "E032",
@@ -1644,12 +1655,13 @@
       "previousTitle": "Два настоящих звука",
       "decision": "retain_core",
       "entityIntent": "Remember where ordinary sound came from.",
-      "causalLink": "Two actually heard sounds are reproduced, not invented as proof of a presence.",
+      "causalLink": "A player sees or hears the required scene during the search.",
       "inspirations": [
         "empty-house"
       ],
-      "playableChanged": false,
-      "acceptance": "editorially_reviewed_not_playtested"
+      "playableChanged": true,
+      "acceptance": "editorially_reviewed_not_playtested",
+      "currentDecision": "adapt_observable_scene"
     },
     {
       "id": "E033",
@@ -1658,12 +1670,13 @@
       "previousTitle": "Два свёртка тишины",
       "decision": "replace",
       "entityIntent": "Notice and interrupt a borrowed domestic routine.",
-      "causalLink": "This ends a self-authored habitual act; the cloth rolling exercise is removed. It is not a route or object-fold task.",
+      "causalLink": "A player sees or hears the required scene during the search.",
       "inspirations": [
         "beckoning"
       ],
       "playableChanged": true,
-      "acceptance": "editorially_reviewed_not_playtested"
+      "acceptance": "editorially_reviewed_not_playtested",
+      "currentDecision": "adapt_observable_scene"
     },
     {
       "id": "E034",
@@ -1701,13 +1714,14 @@
       "previousTitle": "Собственная тень",
       "decision": "adapt",
       "entityIntent": "Check whether a disturbing shape follows a real source.",
-      "causalLink": "An honest light-hand-shadow sequence replaces a claim that a ghost was detected.",
+      "causalLink": "A player sees or hears the required scene during the search.",
       "inspirations": [
         "innocents",
         "others"
       ],
       "playableChanged": true,
-      "acceptance": "editorially_reviewed_not_playtested"
+      "acceptance": "editorially_reviewed_not_playtested",
+      "currentDecision": "adapt_observable_scene"
     },
     {
       "id": "E037",
@@ -1716,14 +1730,14 @@
       "previousTitle": "Смена руки на границе",
       "decision": "replace",
       "entityIntent": "Keep the hand and voice recognizable after an uncanny encounter.",
-      "causalLink": "Later user instruction removes all material task props; the action uses the player’s body and phone only.",
+      "causalLink": "A player sees or hears the required scene during the search.",
       "inspirations": [
         "beckoning",
         "monkeys-paw"
       ],
       "playableChanged": true,
       "acceptance": "editorially_reviewed_not_playtested",
-      "currentDecision": "adapt_no_props"
+      "currentDecision": "adapt_observable_scene"
     },
     {
       "id": "E038",
@@ -1732,12 +1746,13 @@
       "previousTitle": "Пустая ладонь",
       "decision": "adapt",
       "entityIntent": "End an imagined bodily trace after passing through the home.",
-      "causalLink": "Two independent visits end in a completed self-directed shoulder-sweeping gesture. No cloth, pocket, inventory or actual mark is needed.",
+      "causalLink": "A player sees or hears the required scene during the search.",
       "inspirations": [
         "beckoning"
       ],
       "playableChanged": true,
-      "acceptance": "editorially_reviewed_not_playtested"
+      "acceptance": "editorially_reviewed_not_playtested",
+      "currentDecision": "adapt_observable_scene"
     },
     {
       "id": "E039",
@@ -1746,13 +1761,13 @@
       "previousTitle": "Проверка реальности",
       "decision": "retain_core",
       "entityIntent": "Name the present room instead of an imagined threat.",
-      "causalLink": "Ground attention in five real spatial details, not a collection of objects.",
+      "causalLink": "A player sees or hears the required scene during the search.",
       "inspirations": [
         "others"
       ],
       "playableChanged": true,
       "acceptance": "editorially_reviewed_not_playtested",
-      "currentDecision": "adapt_no_props"
+      "currentDecision": "adapt_observable_scene"
     },
     {
       "id": "E040",
@@ -1761,12 +1776,13 @@
       "previousTitle": "Ночной дозор",
       "decision": "retain_core",
       "entityIntent": "Keep a usable return route through the home.",
-      "causalLink": "Two real entrance landmarks are inspected on independent visits.",
+      "causalLink": "A player sees or hears the required scene during the search.",
       "inspirations": [
         "empty-house"
       ],
-      "playableChanged": false,
-      "acceptance": "editorially_reviewed_not_playtested"
+      "playableChanged": true,
+      "acceptance": "editorially_reviewed_not_playtested",
+      "currentDecision": "adapt_observable_scene"
     },
     {
       "id": "E041",
@@ -1795,164 +1811,6 @@
         "old-nurse"
       ],
       "playableChanged": true,
-      "acceptance": "editorially_reviewed_not_playtested"
-    },
-    {
-      "id": "T001",
-      "type": "trial",
-      "title": "Посланник света",
-      "previousTitle": "Посланник света",
-      "decision": "adapt",
-      "entityIntent": "Let a messenger distinguish a visible person from a claimed presence.",
-      "causalLink": "Private instructions, two distinct scoring branches and explicit human evidence are preserved; no computer perception is assumed.",
-      "inspirations": [
-        "turn-screw"
-      ],
-      "playableChanged": false,
-      "acceptance": "editorially_reviewed_not_playtested"
-    },
-    {
-      "id": "T002",
-      "type": "trial",
-      "title": "Тот, кто заставляет вздрогнуть",
-      "previousTitle": "Тот, кто заставляет вздрогнуть",
-      "decision": "adapt",
-      "entityIntent": "Stage an unfamiliar household persona for two witnesses.",
-      "causalLink": "Private instructions, two distinct scoring branches and explicit human evidence are preserved; no computer perception is assumed.",
-      "inspirations": [
-        "turn-screw",
-        "jolly-corner"
-      ],
-      "playableChanged": true,
-      "acceptance": "editorially_reviewed_not_playtested"
-    },
-    {
-      "id": "T003",
-      "type": "trial",
-      "title": "Мастер не отвечает",
-      "previousTitle": "Мастер не отвечает",
-      "decision": "adapt",
-      "entityIntent": "Keep a promised in-fiction silence towards the unseen administrator.",
-      "causalLink": "Private instructions, two distinct scoring branches and explicit human evidence are preserved; no computer perception is assumed.",
-      "inspirations": [
-        "others"
-      ],
-      "playableChanged": false,
-      "acceptance": "editorially_reviewed_not_playtested"
-    },
-    {
-      "id": "T004",
-      "type": "trial",
-      "title": "Принести зов Обители",
-      "previousTitle": "Обитель не должна остаться здесь",
-      "decision": "adapt",
-      "entityIntent": "Bring an imagined call from the dwelling place and return it without an object.",
-      "causalLink": "The user removes the physical Dwelling. The original delivery/return structure is adapted as an on-site call, early return with a remembered fictional name, and a second visit; inverted late scoring and the one-off early-return exception remain.",
-      "inspirations": [
-        "beckoning"
-      ],
-      "playableChanged": true,
-      "acceptance": "editorially_reviewed_not_playtested",
-      "currentDecision": "adapt_no_props"
-    },
-    {
-      "id": "T005",
-      "type": "trial",
-      "title": "Ответ пустой комнате",
-      "previousTitle": "Ответ пустой комнате",
-      "decision": "adapt",
-      "entityIntent": "Seek an actual respondent in apparently empty rooms.",
-      "causalLink": "Private instructions, two distinct scoring branches and explicit human evidence are preserved; no computer perception is assumed.",
-      "inspirations": [
-        "empty-house"
-      ],
-      "playableChanged": false,
-      "acceptance": "editorially_reviewed_not_playtested"
-    },
-    {
-      "id": "T006",
-      "type": "trial",
-      "title": "Жест чужого жильца",
-      "previousTitle": "Проверка тишины",
-      "decision": "adapt",
-      "entityIntent": "Let an unexplained household gesture interrupt another routine.",
-      "causalLink": "Private instructions, two distinct scoring branches and explicit human evidence are preserved; no computer perception is assumed.",
-      "inspirations": [
-        "others"
-      ],
-      "playableChanged": true,
-      "acceptance": "editorially_reviewed_not_playtested"
-    },
-    {
-      "id": "T007",
-      "type": "trial",
-      "title": "Пустое место у плеча",
-      "previousTitle": "Мешочек, который не открыли",
-      "decision": "adapt",
-      "entityIntent": "See whether another participant follows a gaze to an absent companion.",
-      "causalLink": "A voluntary gaze response replaces acceptance of a bundle. Both private branches use explicit human reports, with no object or inferred observation.",
-      "inspirations": [
-        "turn-screw",
-        "others"
-      ],
-      "playableChanged": true,
-      "acceptance": "editorially_reviewed_not_playtested",
-      "currentDecision": "adapt_no_props"
-    },
-    {
-      "id": "T008",
-      "type": "trial",
-      "title": "Чужое имя в ответ",
-      "previousTitle": "Чужое имя в ответ",
-      "decision": "adapt",
-      "entityIntent": "See whether a visitor remembers and independently uses a fictional identity.",
-      "causalLink": "Private instructions, two distinct scoring branches and explicit human evidence are preserved; no computer perception is assumed.",
-      "inspirations": [
-        "jolly-corner"
-      ],
-      "playableChanged": false,
-      "acceptance": "editorially_reviewed_not_playtested"
-    },
-    {
-      "id": "T009",
-      "type": "trial",
-      "title": "Знак, который вернулся",
-      "previousTitle": "Знак, который вернулся",
-      "decision": "adapt",
-      "entityIntent": "Let a recognizable gesture return before it is shown again.",
-      "causalLink": "Private instructions, two distinct scoring branches and explicit human evidence are preserved; no computer perception is assumed.",
-      "inspirations": [
-        "vourdalak"
-      ],
-      "playableChanged": false,
-      "acceptance": "editorially_reviewed_not_playtested"
-    },
-    {
-      "id": "T010",
-      "type": "trial",
-      "title": "Два свидетеля одной тени",
-      "previousTitle": "Два свидетеля одной тени",
-      "decision": "adapt",
-      "entityIntent": "Compare independent witnesses’ memory of a described presence.",
-      "causalLink": "Private instructions, two distinct scoring branches and explicit human evidence are preserved; no computer perception is assumed.",
-      "inspirations": [
-        "turn-screw"
-      ],
-      "playableChanged": false,
-      "acceptance": "editorially_reviewed_not_playtested"
-    },
-    {
-      "id": "T011",
-      "type": "trial",
-      "title": "До последнего слова",
-      "previousTitle": "До последнего слова",
-      "decision": "adapt",
-      "entityIntent": "Let observation precede a release attempt rather than immediate imitation.",
-      "causalLink": "Private instructions, two distinct scoring branches and explicit human evidence are preserved; no computer perception is assumed.",
-      "inspirations": [
-        "empty-house"
-      ],
-      "playableChanged": false,
       "acceptance": "editorially_reviewed_not_playtested"
     },
     {
@@ -3219,7 +3077,7 @@
         "mission",
         "successCondition"
       ],
-      "sha256": "0e8e732b949ab9c12f76d2a5dc04b1da6db9af4a9ad5db332627d68cc085ece4",
+      "sha256": "2c436cc26df25409e81129324f3f61c220221be582df73b890681bc863db47a0",
       "amendmentHistory": [
         {
           "request": "user:no-task-props",
@@ -3229,6 +3087,15 @@
             "successCondition"
           ],
           "reason": "Later user instruction replaces material requirements with body/voice/space; existing house mirror self-view is explicitly retained for the angel."
+        },
+        {
+          "request": "user:observable-exorcist-missions",
+          "previousSha256": "0e8e732b949ab9c12f76d2a5dc04b1da6db9af4a9ad5db332627d68cc085ece4",
+          "fields": [
+            "mission",
+            "successCondition"
+          ],
+          "reason": "The user requested observable scenes and removed the Dwelling from play."
         }
       ]
     },
@@ -3239,7 +3106,18 @@
         "mission",
         "successCondition"
       ],
-      "sha256": "2cb90531ddda1eeffeb29f67daf52388da442aaa79f863962c7674511e85fae6"
+      "sha256": "dcd4a4a8d7d2b670a48316f9d0e01ddad3eb59d884a55d65414191c48091c4cd",
+      "amendmentHistory": [
+        {
+          "request": "user:observable-exorcist-missions",
+          "previousSha256": "2cb90531ddda1eeffeb29f67daf52388da442aaa79f863962c7674511e85fae6",
+          "fields": [
+            "mission",
+            "successCondition"
+          ],
+          "reason": "The user requested observable scenes and removed the Dwelling from play."
+        }
+      ]
     },
     {
       "id": "E004",
@@ -3266,7 +3144,18 @@
         "mission",
         "successCondition"
       ],
-      "sha256": "b0140d4556e9bca4da7049285dc780450be8b492cea97cab2a1d5b8fcdbcca7d"
+      "sha256": "356699516d29ea6cbc6a4a917098c78495c010bb13c40531243409a6bb632cf1",
+      "amendmentHistory": [
+        {
+          "request": "user:observable-exorcist-missions",
+          "previousSha256": "b0140d4556e9bca4da7049285dc780450be8b492cea97cab2a1d5b8fcdbcca7d",
+          "fields": [
+            "mission",
+            "successCondition"
+          ],
+          "reason": "The user requested observable scenes and removed the Dwelling from play."
+        }
+      ]
     },
     {
       "id": "E012",
@@ -3275,7 +3164,18 @@
         "mission",
         "successCondition"
       ],
-      "sha256": "40bae8acde44a8763e0f4b13d104dcd6b95ea6afc39d5cb60ac928ed64c895ae"
+      "sha256": "43d8a25a4c88315fc6b5206280075c62ddff4646d8c239c44be3c69150f9d020",
+      "amendmentHistory": [
+        {
+          "request": "user:observable-exorcist-missions",
+          "previousSha256": "40bae8acde44a8763e0f4b13d104dcd6b95ea6afc39d5cb60ac928ed64c895ae",
+          "fields": [
+            "mission",
+            "successCondition"
+          ],
+          "reason": "The user requested observable scenes and removed the Dwelling from play."
+        }
+      ]
     },
     {
       "id": "E014",
@@ -3284,7 +3184,7 @@
         "mission",
         "successCondition"
       ],
-      "sha256": "2c60d33977f68203bb76358a8c7767224cb6b27f6d3feb56c4df4741311ffe5a",
+      "sha256": "57abf22697e7194fe5ed19796851c747a72cf89e8fbdb25799ebcc5a2fd973bf",
       "amendmentHistory": [
         {
           "request": "user:no-task-props",
@@ -3294,6 +3194,15 @@
             "successCondition"
           ],
           "reason": "Later user instruction replaces material requirements with body/voice/space; existing house mirror self-view is explicitly retained for the angel."
+        },
+        {
+          "request": "user:observable-exorcist-missions",
+          "previousSha256": "2c60d33977f68203bb76358a8c7767224cb6b27f6d3feb56c4df4741311ffe5a",
+          "fields": [
+            "mission",
+            "successCondition"
+          ],
+          "reason": "The user requested observable scenes and removed the Dwelling from play."
         }
       ]
     },
@@ -3304,7 +3213,7 @@
         "mission",
         "successCondition"
       ],
-      "sha256": "2a267f1e97816eda98746ba7d70441aa1e570f939f54268a486ce56a4568b13e",
+      "sha256": "660e89862bc6ba7d6d7b420f87a8c681285ca447f79305ac184d0d5b47e12f9f",
       "amendmentHistory": [
         {
           "request": "user:no-task-props",
@@ -3314,6 +3223,15 @@
             "successCondition"
           ],
           "reason": "Later user instruction replaces material requirements with body/voice/space; existing house mirror self-view is explicitly retained for the angel."
+        },
+        {
+          "request": "user:observable-exorcist-missions",
+          "previousSha256": "2a267f1e97816eda98746ba7d70441aa1e570f939f54268a486ce56a4568b13e",
+          "fields": [
+            "mission",
+            "successCondition"
+          ],
+          "reason": "The user requested observable scenes and removed the Dwelling from play."
         }
       ]
     },
@@ -3324,7 +3242,7 @@
         "mission",
         "successCondition"
       ],
-      "sha256": "f418697f723e102ff059b37d5441de3030839b88499fbe6a1962ffcc4a8a25d6",
+      "sha256": "d5f0c208ee59c1327b7a42aebf928eea2ef53a5fc1b5af509087765ccccf0fd8",
       "amendmentHistory": [
         {
           "request": "user:no-task-props",
@@ -3334,6 +3252,15 @@
             "successCondition"
           ],
           "reason": "Later user instruction replaces material requirements with body/voice/space; existing house mirror self-view is explicitly retained for the angel."
+        },
+        {
+          "request": "user:observable-exorcist-missions",
+          "previousSha256": "f418697f723e102ff059b37d5441de3030839b88499fbe6a1962ffcc4a8a25d6",
+          "fields": [
+            "mission",
+            "successCondition"
+          ],
+          "reason": "The user requested observable scenes and removed the Dwelling from play."
         }
       ]
     },
@@ -3344,7 +3271,18 @@
         "mission",
         "successCondition"
       ],
-      "sha256": "2d7748bb52978e9d73dfd8395f6c7a00cf24b159885407455e194a0b909138a4"
+      "sha256": "6e613bebd8849e3a7e8691fbdb32b2f9b820b14aec43ffa63c5c1d941ebe7ee3",
+      "amendmentHistory": [
+        {
+          "request": "user:observable-exorcist-missions",
+          "previousSha256": "2d7748bb52978e9d73dfd8395f6c7a00cf24b159885407455e194a0b909138a4",
+          "fields": [
+            "mission",
+            "successCondition"
+          ],
+          "reason": "The user requested observable scenes and removed the Dwelling from play."
+        }
+      ]
     },
     {
       "id": "E024",
@@ -3353,7 +3291,18 @@
         "mission",
         "successCondition"
       ],
-      "sha256": "736707dd331f23b40e78cf7d56b425fb84d99813ffdd37757bc8fa458c0243ee"
+      "sha256": "6565c7b3f934da7cf68bc597c9fd114966b97ef0f7876eabd61245d44b9a8369",
+      "amendmentHistory": [
+        {
+          "request": "user:observable-exorcist-missions",
+          "previousSha256": "736707dd331f23b40e78cf7d56b425fb84d99813ffdd37757bc8fa458c0243ee",
+          "fields": [
+            "mission",
+            "successCondition"
+          ],
+          "reason": "The user requested observable scenes and removed the Dwelling from play."
+        }
+      ]
     },
     {
       "id": "E025",
@@ -3362,7 +3311,18 @@
         "mission",
         "successCondition"
       ],
-      "sha256": "906ce7253bea780c408e02b0a4806e39f45f4aa59a0b1122f781464eff9b76bd"
+      "sha256": "123ba54d22127aa6242f36827cd57a46ca618d70faa5fe1fbd5d6ca882a3fd58",
+      "amendmentHistory": [
+        {
+          "request": "user:observable-exorcist-missions",
+          "previousSha256": "906ce7253bea780c408e02b0a4806e39f45f4aa59a0b1122f781464eff9b76bd",
+          "fields": [
+            "mission",
+            "successCondition"
+          ],
+          "reason": "The user requested observable scenes and removed the Dwelling from play."
+        }
+      ]
     },
     {
       "id": "E026",
@@ -3389,7 +3349,18 @@
         "mission",
         "successCondition"
       ],
-      "sha256": "97ef9f400947808eb50768a4212c1089fc62dc4b2dbe8d527fd7d8180d5d627d"
+      "sha256": "0f038ffd0a141097b2c60c3b1b0195f1ebe43585380dd4605dd9e3082909c34f",
+      "amendmentHistory": [
+        {
+          "request": "user:observable-exorcist-missions",
+          "previousSha256": "97ef9f400947808eb50768a4212c1089fc62dc4b2dbe8d527fd7d8180d5d627d",
+          "fields": [
+            "mission",
+            "successCondition"
+          ],
+          "reason": "The user requested observable scenes and removed the Dwelling from play."
+        }
+      ]
     },
     {
       "id": "E030",
@@ -3407,7 +3378,18 @@
         "mission",
         "successCondition"
       ],
-      "sha256": "7cc126a07f3856854133ab39cc70cde488d11a6c79eb593458835a457a88cf58"
+      "sha256": "e57b9aba463dd24020903dbd1b31142835f38b368f50c8f86d0bb887fd39105b",
+      "amendmentHistory": [
+        {
+          "request": "user:observable-exorcist-missions",
+          "previousSha256": "7cc126a07f3856854133ab39cc70cde488d11a6c79eb593458835a457a88cf58",
+          "fields": [
+            "mission",
+            "successCondition"
+          ],
+          "reason": "The user requested observable scenes and removed the Dwelling from play."
+        }
+      ]
     },
     {
       "id": "E039",
@@ -3416,7 +3398,7 @@
         "mission",
         "successCondition"
       ],
-      "sha256": "6b88a6e0ccb2a12feb49a2f63fdf59a7f532105d9e408e6c4516744e8bf34c0a",
+      "sha256": "d58efd6fb0335158e0bf92764cd9b1288a5a4dce9e16da3a39fa15010296ab73",
       "amendmentHistory": [
         {
           "request": "user:no-task-props",
@@ -3426,6 +3408,15 @@
             "successCondition"
           ],
           "reason": "Later user instruction replaces material requirements with body/voice/space; existing house mirror self-view is explicitly retained for the angel."
+        },
+        {
+          "request": "user:observable-exorcist-missions",
+          "previousSha256": "6b88a6e0ccb2a12feb49a2f63fdf59a7f532105d9e408e6c4516744e8bf34c0a",
+          "fields": [
+            "mission",
+            "successCondition"
+          ],
+          "reason": "The user requested observable scenes and removed the Dwelling from play."
         }
       ]
     },
@@ -3436,7 +3427,18 @@
         "mission",
         "successCondition"
       ],
-      "sha256": "1000dbe3b37f04cd5f59d1e082c9bdca966377128deaca015a444adfd2b11356"
+      "sha256": "0e0cf391df15c1fcf758b8a75f0c4c45ee3fdf2787464563c42e32608d562d31",
+      "amendmentHistory": [
+        {
+          "request": "user:observable-exorcist-missions",
+          "previousSha256": "1000dbe3b37f04cd5f59d1e082c9bdca966377128deaca015a444adfd2b11356",
+          "fields": [
+            "mission",
+            "successCondition"
+          ],
+          "reason": "The user requested observable scenes and removed the Dwelling from play."
+        }
+      ]
     },
     {
       "id": "E041",
@@ -3446,154 +3448,6 @@
         "successCondition"
       ],
       "sha256": "a629ecf392fb333ee05a637e4b8e80503e3dd4dcf8e3e9e6b2bacfcbebf1407d"
-    },
-    {
-      "id": "T001",
-      "collection": "primary",
-      "fields": [
-        "branches",
-        "hiddenObjective",
-        "evidence"
-      ],
-      "sha256": "307b8dbd5674c147acc5998406463a73751170c397db5001eba023ff06bb48d7",
-      "amendmentHistory": [
-        {
-          "request": "revision:56aa1e7",
-          "previousSha256": "2882043e3b6154d9baf366b96fbb26ad91cae9675c578289efb4e3a0af4c9725",
-          "fields": [
-            "branches",
-            "hiddenObjective",
-            "evidence"
-          ],
-          "reason": "The player-facing wording uses infection terminology while keeping the same conditions."
-        }
-      ]
-    },
-    {
-      "id": "T002",
-      "collection": "primary",
-      "fields": [
-        "branches",
-        "hiddenObjective",
-        "evidence"
-      ],
-      "sha256": "c546d730842464f19af0bd321e54ee538379d783e66abd6bc9817993af90d50f"
-    },
-    {
-      "id": "T003",
-      "collection": "primary",
-      "fields": [
-        "branches",
-        "hiddenObjective",
-        "evidence"
-      ],
-      "sha256": "8e0f71199e734f923535e83106c1f8291879a8c4f562b01a60256208b95febe6",
-      "amendmentHistory": [
-        {
-          "request": "revision:56aa1e7",
-          "previousSha256": "7bb0ad944dda4c9a6197048a4b46dc4a07d5fbb87d810c614f772a6b1a8e021d",
-          "fields": [
-            "branches",
-            "hiddenObjective",
-            "evidence"
-          ],
-          "reason": "The player-facing wording uses infection terminology while keeping the same conditions."
-        }
-      ]
-    },
-    {
-      "id": "T004",
-      "collection": "primary",
-      "fields": [
-        "branches",
-        "hiddenObjective",
-        "evidence"
-      ],
-      "sha256": "8992e79bc2c4c3e200ee530fd94b2c1d2155d0d7e2d446597e6fcf05c7a25138",
-      "amendmentHistory": [
-        {
-          "request": "user:no-task-props",
-          "previousSha256": "e48a2c08512d60c31f6f8391bd9f839280bf70bc63e6f2fa1c0def7753ba62a9",
-          "fields": [
-            "branches",
-            "hiddenObjective",
-            "evidence"
-          ],
-          "reason": "Later user instruction replaces material requirements with body/voice/space; existing house mirror self-view is explicitly retained for the angel."
-        },
-        {
-          "request": "revision:56aa1e7",
-          "previousSha256": "3018664438f41c86937f87f41e5db600e562c1683a89be99bbb889fbd3c8b6bf",
-          "fields": [
-            "branches",
-            "hiddenObjective",
-            "evidence"
-          ],
-          "reason": "The player-facing wording uses infection terminology while keeping the same conditions."
-        }
-      ]
-    },
-    {
-      "id": "T005",
-      "collection": "primary",
-      "fields": [
-        "branches",
-        "hiddenObjective",
-        "evidence"
-      ],
-      "sha256": "f8e5849106cdd57a258cb4b1d277d261faac49d51f308c1483380c19f8e998ac"
-    },
-    {
-      "id": "T008",
-      "collection": "primary",
-      "fields": [
-        "branches",
-        "hiddenObjective",
-        "evidence"
-      ],
-      "sha256": "14b3116c828a795e13c4f17d1633eea48df0c6f48a63f9ba1c34ee79ec1847a4"
-    },
-    {
-      "id": "T009",
-      "collection": "primary",
-      "fields": [
-        "branches",
-        "hiddenObjective",
-        "evidence"
-      ],
-      "sha256": "723279c4a6bab75def8b2b591e2cb042923a86fbf04c3e6108fd1e1378cd9493"
-    },
-    {
-      "id": "T010",
-      "collection": "primary",
-      "fields": [
-        "branches",
-        "hiddenObjective",
-        "evidence"
-      ],
-      "sha256": "dc11a260d7d99a71b8edcb825790886b25a673244231fe53e9ae649622f96657"
-    },
-    {
-      "id": "T011",
-      "collection": "primary",
-      "fields": [
-        "branches",
-        "hiddenObjective",
-        "evidence"
-      ],
-      "sha256": "0b2e2771baf17b9458c8e016c8000a3616facd54aee28c8305705dde32c3e9a6",
-      "amendmentHistory": [
-        {
-          "request": "revision:56aa1e7",
-          "previousSha256": "e50831a2e9f6a89aa37bcbaaff4630f814cbe55b95e1425bb5558c08c1d756d9",
-          "fields": [
-            "branches",
-            "hiddenObjective",
-            "evidence"
-          ],
-          "reason": "The player-facing wording uses infection terminology while keeping the same conditions."
-        }
-      ]
     },
     {
       "id": "R001",
@@ -4123,7 +3977,6 @@
         "P023",
         "P026",
         "P059",
-        "T007",
         "M001"
       ],
       "variantIds": [
@@ -4170,8 +4023,6 @@
         "P059",
         "P068",
         "P069",
-        "T004",
-        "T007",
         "P067",
         "E037"
       ],

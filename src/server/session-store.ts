@@ -1,6 +1,7 @@
 import { mkdir, open, readdir, unlink, rename, copyFile } from 'node:fs/promises';
 import { join, resolve } from 'node:path';
 import { createHash, randomUUID } from 'node:crypto';
+import { catalogByteLength, MAX_CATALOG_BYTES } from '../shared/catalog.js';
 import { standardCatalog, validateSavedCatalog } from './catalog.js';
 import { validateSession } from './session-format.js';
 import type { SavedSession } from './session-format.js';
@@ -28,17 +29,19 @@ const priorMissionDigests: Record<string, string> = {
 function firstGameCatalog(value: unknown) {
   const catalog = validateSavedCatalog(value);
   const current = new Map(standardCatalog().file.entries.map(({ card }) => [card.id, card]));
-  for (const { card } of catalog.file.entries) {
-    const revised = current.get(card.id);
-    if (card.role === 'exorcist' && revised?.role === 'exorcist' &&
-      priorMissionDigests[card.id] === createHash('sha256').update(card.mission).digest('hex')) card.mission = revised.mission;
-  }
-  return catalog;
+  const entries = catalog.file.entries.map(entry => {
+    const { card } = entry, revised = current.get(card.id);
+    return card.role === 'exorcist' && revised?.role === 'exorcist' &&
+      priorMissionDigests[card.id] === createHash('sha256').update(card.mission).digest('hex')
+      ? { ...entry, card: { ...card, mission: revised.mission } } : entry;
+  });
+  const file = { ...catalog.file, entries };
+  return catalogByteLength(file) <= MAX_CATALOG_BYTES ? { ...catalog, file } : catalog;
 }
 
 /** Local-disk adapter. Claims are unique, so stale cleanup never unlinks a replacement writer's lock. */
 export function createFileSessionStore(directory: string, firstGame = false): SessionStore {
-  const root = resolve(directory), file = join(root, firstGame ? 'party-v7.json' : 'session.json'), claims = join(root, '.writers');
+  const root = resolve(directory), file = join(root, firstGame ? 'party-v8.json' : 'session.json'), claims = join(root, '.writers');
   const ownClaim = `${process.pid}-${randomUUID()}.lock`;
   let owned = false, closed = false, writing = false;
   async function acquire() {
@@ -69,22 +72,21 @@ export function createFileSessionStore(directory: string, firstGame = false): Se
       try {
         const parsed = JSON.parse(contents);
         if (parsed?.schemaVersion !== 5) return null;
-        return { schemaVersion: 7 as const, lobby: { catalog: firstGameCatalog(parsed.lobby.catalog), revision: 0, usedCodes: [], room: null } };
+        return { schemaVersion: 8 as const, lobby: { catalog: firstGameCatalog(parsed.lobby.catalog), revision: 0, usedCodes: [], room: null } };
       } catch { return null; }
     } finally { await legacy.close(); }
   }
-  async function loadPreviousParty() {
-    const previous = await open(join(root, 'party-v6.json'), 'r').catch((error: unknown) => {
+  async function loadPreviousParty(version: 7 | 6): Promise<SavedSession | null> {
+    const previous = await open(join(root, `party-v${version}.json`), 'r').catch((error: unknown) => {
       if (!missing(error)) throw error;
       return null;
     });
-    if (!previous) return loadLegacyCatalog();
+    if (!previous) return version === 7 ? loadPreviousParty(6) : loadLegacyCatalog();
     try {
       if ((await previous.stat()).size > 16 * 1024 * 1024) throw new Error('Session file exceeds the supported size.');
       const parsed = JSON.parse(await previous.readFile('utf8'));
-      if (parsed?.schemaVersion !== 6) throw new Error('Invalid previous checkpoint version.');
-      const state = validateSession(parsed);
-      return { ...state, schemaVersion: 7 as const };
+      if (parsed?.schemaVersion !== version) throw new Error('Invalid previous checkpoint version.');
+      return validateSession(parsed);
     } finally { await previous.close(); }
   }
   async function load() {
@@ -94,11 +96,11 @@ export function createFileSessionStore(directory: string, firstGame = false): Se
       handle = await open(file, 'r');
       if ((await handle.stat()).size > 16 * 1024 * 1024) throw new Error('Session file exceeds the supported size.');
       const parsed = JSON.parse(await handle.readFile('utf8'));
-      if (firstGame && parsed?.schemaVersion !== 7) throw Error('Invalid first-game checkpoint version.');
+      if (firstGame && parsed?.schemaVersion !== 8) throw Error('Invalid first-game checkpoint version.');
       return validateSession(parsed);
     } catch (error) {
       if (!missing(error)) throw error;
-      return firstGame ? loadPreviousParty() : null;
+      return firstGame ? loadPreviousParty(7) : null;
     }
     finally { await handle?.close(); }
   }

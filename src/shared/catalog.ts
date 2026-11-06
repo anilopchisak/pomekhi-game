@@ -1,6 +1,9 @@
 import { cardSets, venueFeatures } from './protocol.js';
 import type { CatalogEntry, CatalogFile, PersonalCard } from './protocol.js';
 export const MAX_CATALOG_BYTES = 512 * 1024;
+export function catalogByteLength(file: CatalogFile): number {
+  return new TextEncoder().encode(JSON.stringify(file)).byteLength;
+}
 function record(value: unknown): Record<string, unknown> {
   if (!value || typeof value !== 'object' || Array.isArray(value)) throw Error('Invalid catalog.');
   return value as Record<string, unknown>;
@@ -19,6 +22,7 @@ export function validateEntry(value: unknown): CatalogEntry {
     return [...values];
   };
   const sets = options(card.sets, cardSets), requirements = options(card.requirements, venueFeatures);
+  // Keep the legacy flag in the import payload so the server can replace the mission.
   const common = { id: card.id, title: text(card.title, 120), difficulty: card.difficulty as PersonalCard['difficulty'], ...(sets ? { sets } : {}), ...(requirements ? { requirements } : {}),
     ...(card.harder === true ? { harder: true } : {}), ...(card.offering === true ? { offering: true } : {}) };
   if (card.role === 'possessed') return { enabled: item.enabled, card: { ...common, role: 'possessed', behavior: text(card.behavior, 2000), ...(card.clue === undefined || card.clue === '' ? {} : { clue: text(card.clue, 2000) }), releaseCondition: text(card.releaseCondition, 2000), infectionCondition: text(card.infectionCondition, 2000) } };
@@ -31,6 +35,6 @@ export function validateCatalogFile(value: unknown): CatalogFile {
   const entries = file.entries.map(validateEntry);
   if (new Set(entries.map(e => e.card.id)).size !== entries.length) throw Error('Duplicate card ID.');
   const result: CatalogFile = { format: 'pomekhi.cards', version: file.version, entries };
-  if (new TextEncoder().encode(JSON.stringify(result)).byteLength > MAX_CATALOG_BYTES) throw Error('Catalog exceeds the supported size.');
+  if (catalogByteLength(result) > MAX_CATALOG_BYTES) throw Error('Catalog exceeds the supported size.');
   return result;
 }

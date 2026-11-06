@@ -161,7 +161,7 @@ export function HostPage({ display = false, editor = false }: { display?: boolea
     setBusy(false);
     if (!result.ok) {
       setError(command === 'venue:configure' && result.error === 'INVALID_INPUT'
-        ? 'Проверьте названия локаций, место Обители и список участников.' : describeError(result.error));
+        ? 'Проверьте названия локаций и список участников.' : describeError(result.error));
       setPending(result.error === 'TIMEOUT' || result.error === 'CONNECTION_LOST' ? { command, input } : null);
     } else {
       setPending(null);
@@ -275,40 +275,6 @@ export function HostPage({ display = false, editor = false }: { display?: boolea
             </form>}
           </li>;
         })}</ul>
-      </section>}
-      {view.trialReview && (!cleanReview || view.trialReview.reports.length > 0 || view.trialReview.lateVisit?.status === 'review') && <section aria-label="Сверка свидетельств испытания">
-        <h3>Испытание Мастера</h3>
-        <p>{view.trialReview.status === 'unavailable' ? 'Цель недоступна. Испытание закроется без бонуса.' :
-          view.trialReview.status === 'waiting' ? 'Часть свидетельств отсутствует. Итог учитывает только подтверждённые факты.' :
-          view.trialReview.status === 'conflict' ? 'Участники описали один факт по-разному. Проверьте свидетельства.' : 'Сверьте свидетельства участников.'} Предварительный бонус: {view.trialReview.bonus}.</p>
-        {view.trialReview.lateVisit && <div>
-          <p>{{ review: 'Повторный визит в Обитель. Игрок сообщил после призыва, что завершил визит до него.',
-            accepted: 'Поздний отчёт о повторном визите подтверждён.', rejected: 'Поздний отчёт о повторном визите отклонён.' }[view.trialReview.lateVisit.status]}</p>
-          {view.trialReview.lateVisit.status === 'review' && ([true, false] as const).map(accepted => <ConfirmButton key={String(accepted)}
-            title={accepted ? 'Подтвердить повторный визит?' : 'Отклонить отчёт о повторном визите?'}
-            description={accepted ? 'Уточните, что игрок завершил повторный визит до общего призыва.' : 'Первый визит и ранний возврат останутся в записи.'}
-            confirm={accepted ? 'Подтвердить визит' : 'Отклонить отчёт'} disabled={disabled}
-            onConfirm={() => void run('round:trial-review', { ...gameCommand(room), playerId: view.trialReview!.lateVisit!.playerId, fact: 'repeat', accepted })}>
-            {accepted ? 'Подтвердить повторный визит' : 'Отклонить повторный визит'}
-          </ConfirmButton>)}
-        </div>}
-        {view.trialReview.traitComparisons?.map(row => <div key={`${row.playerId}:${row.trait}`}>
-          <p>{room.players.find(player => player.id === row.playerId)?.name ?? 'Ушедший участник'} · {row.label}</p>
-          <p>Записанный признак · {row.original}. Ответ свидетеля · {row.answer}.</p>
-          <button type="button" aria-pressed={row.equivalent} disabled={disabled}
-            onClick={() => void run('round:trial-review', { ...gameCommand(room), playerId: row.playerId, fact: row.trait, accepted: !row.equivalent })}>
-            {row.equivalent ? 'Признак признан равнозначным' : 'Признать признак равнозначным'}
-          </button>
-        </div>)}
-        {view.trialReview.reports.map(report => <details key={report.playerId}>
-          <summary>{room.players.find(player => player.id === report.playerId)?.name ?? 'Ушедший участник'} · {report.accepted ? 'Учтено' : 'Отклонено'}</summary>
-          <ul>{report.facts.map(fact => <li key={fact.label}>{fact.label} {typeof fact.value === 'boolean' ? fact.value ? 'Да' : 'Нет' : fact.value}</li>)}</ul>
-          <ConfirmButton title={report.accepted ? 'Исключить свидетельство?' : 'Вернуть свидетельство?'} confirm="Подтвердить решение"
-            description="Проверьте сообщённые факты. Итог испытания пересчитает компьютер."
-            disabled={disabled} onConfirm={() => void run('round:trial-review', { ...gameCommand(room), playerId: report.playerId, accepted: !report.accepted })}>
-            {report.accepted ? 'Отклонить свидетельство' : 'Принять свидетельство'}
-          </ConfirmButton>
-        </details>)}
       </section>}
       {view.violations && view.violations.some(report => !cleanReview || report.status === 'review') && <section aria-label="Доклады о прорицаниях">
         <h3>Доклады о прорицаниях</h3>
@@ -470,7 +436,6 @@ export function HostPage({ display = false, editor = false }: { display?: boolea
       </div>}
       {firstGame && !display && <footer className={broadcast.primary}>
         <FirstGameControls key={room.id} room={room} disabled={disabled} run={run}
-          trialPending={view?.kind === 'organizer' && view.trialReview?.lateVisit?.status === 'review'}
           newParty={() => void run('room:restart', { roomId: room.id })} />
       </footer>}
       </div>

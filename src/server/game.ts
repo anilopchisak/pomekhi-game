@@ -1,21 +1,22 @@
-import { cardSets, venueFeatures, DEFAULT_ROUND_LIMIT } from '../shared/protocol.js';
+import { cardSets, DEFAULT_ROUND_LIMIT } from '../shared/protocol.js';
 import { createRitual, newRitual } from './ritual.js';
 import type { SavedRitual } from './ritual.js';
 import { performance } from 'node:perf_hooks';
 import type { Assignment, PresenceCorrection, Difficulty, GameCue, GamePhase, GameSettings, GameSnapshot, LobbyError, PersonalCard, PauseReason, RoundPlan, RoundResult, TimedPhase } from '../shared/protocol.js';
 import { createDealing } from './dealing.js';
+import { drawFromDeck } from './deck-history.js';
+import type { DeckHistory } from './deck-history.js';
 import { createSearch } from './search.js';
 import type { SavedDealing } from './dealing.js';
 import { createRoundSync } from './round-sync.js';
 import type { SavedRoundSync } from './round-sync.js';
 import { CARD_BANK } from './cards.js';
-import { eligibleTrials, selectTrials, beginTrial, personalTrial, submitTrial, trialBonus, trialReview, reviewTrialEvidence } from './trials.js';
-import type { SavedTrials } from './trials.js';
 import { authoredMissions, authoredReferences } from './authored-content.js';
 import { comedyMissions } from './comedy-missions.js';
 import { shortAnswer, shortMission } from './short-cards.js';
-import { dwellingMissions, stories } from './first-game-content.js';
-import type { MissingLocation, OfflineEvent, PhysicalStatus, ReviewPreview, TrialReviewFact, Venue, ViolationReview } from '../shared/protocol.js';
+import { replaceRetiredMission } from './retired-missions.js';
+import { stories } from './first-game-content.js';
+import type { MissingLocation, OfflineEvent, PhysicalStatus, ReviewPreview, Venue, VenueFeature, ViolationReview } from '../shared/protocol.js';
 import type { SavedSearch, RetainedGroup } from './search.js';
 
 const baseMissions = authoredMissions.map(card => shortMission(card));
@@ -33,9 +34,9 @@ export const defaultClock: GameClock = {
   schedule: (callback, delay) => { const timer = setTimeout(callback, delay); return () => clearTimeout(timer); },
 };
 export interface SavedGame {
-  firstGame?: { locked: boolean; retained: RetainedGroup[]; presence: [string, PhysicalStatus][]; waitingFree: string[]; trials?: SavedTrials; violations?: ViolationReview[]; locations?: [string, { proposed?: string; confirmed?: string }][]; story?: { title: string; prologue: string }; unassigned?: [string, Assignment][]; recallWait?: { players: string[]; remainingMs: number } };
+  firstGame?: { locked: boolean; retained: RetainedGroup[]; presence: [string, PhysicalStatus][]; waitingFree: string[]; violations?: ViolationReview[]; locations?: [string, { proposed?: string; confirmed?: string }][]; story?: { title: string; prologue: string }; unassigned?: [string, Assignment][]; recallWait?: { players: string[]; remainingMs: number } };
   ritual?: SavedRitual | null; freeplayFrom?: number | null;
-  venue?: Venue & { horror?: boolean }; roundSync?: SavedRoundSync | null; playerNames?: [string, string][];
+  venue?: Venue & { dwelling?: unknown; horror?: boolean; features?: VenueFeature[] }; roundSync?: SavedRoundSync | null; playerNames?: [string, string][];
   tutorialCompleted: boolean; progressionRounds: number; roundPlan: RoundPlan | null;
   dealing: SavedDealing; settings: GameSettings; phase: GamePhase; waitingPhase: 'lobby' | 'between_rounds'; version: number;
   roundId: string | null; completedRounds: number; started: boolean; paused: boolean; pauseReason: PauseReason | null;
@@ -72,8 +73,9 @@ export function planRound(settings: GameSettings, completedRounds: number, tutor
 }
 
 /** Owns the party lifecycle; membership, authorization and publication belong to lobby. */
-export function createGame({ generateId, randomIndex, clock = defaultClock, onChange, onlinePlayers, getCards = () => CARD_BANK, firstGame = false }: {
+export function createGame({ generateId, randomIndex, clock = defaultClock, onChange, onlinePlayers, getCards = () => CARD_BANK, firstGame = false, deckHistory }: {
   generateId: () => string; randomIndex: (limit: number) => number; clock?: GameClock; onChange: () => void; onlinePlayers?: () => ReadonlySet<string>; getCards?: () => readonly PersonalCard[]; firstGame?: boolean;
+  deckHistory?: DeckHistory;
 }) {
   let locked = false;
   let retained: RetainedGroup[] = [];
@@ -82,7 +84,6 @@ export function createGame({ generateId, randomIndex, clock = defaultClock, onCh
   let cancelRecall: (() => void) | undefined;
   let waitingFree: string[] = [];
   let selectedStory: { title: string; prologue: string } | undefined;
-  let trials: SavedTrials | undefined;
   let violations: ViolationReview[] = [];
   const locations = new Map<string, { proposed?: string; confirmed?: string }>();
   const presence = new Map<string, PhysicalStatus>();
@@ -90,11 +91,15 @@ export function createGame({ generateId, randomIndex, clock = defaultClock, onCh
   const dealing = createDealing({ generateId, randomIndex, getCards, ordered: firstGame ? {
     minimum: () => started ? 1 : FIRST_DEAL_MINIMUM,
     reserved: () => retained.map(g => g.assignment.card.id),
+    deckHistory,
+    bank: () => usesAuthoredBank() ? 'authored' : 'catalog',
     pool: () => {
       const eligible = (card: PersonalCard) => (!card.harder || venue.harder) &&
         (card.sets ?? []).every(set => venue.sets?.includes(set) || set === 'harder' && venue.harder) &&
-        (card.requirements ?? []).every(feature => feature === 'twoZones' ? venue.zones.length >= 2 : feature === 'contact' ? venue.sets?.includes('contact') : venue.features?.includes(feature));
-      if (!usesAuthoredBank()) return [...getCards(), ...dwellingMissions].filter(eligible);
+        (card.requirements ?? []).every(feature =>
+          feature === 'twoZones' && venue.zones.length >= 2 ||
+          feature === 'contact' && venue.sets?.includes('contact'));
+      if (!usesAuthoredBank()) return getCards().filter(eligible);
       const bank = venue.comedy ? [...baseMissions, ...comicMissions] : baseMissions;
       return bank.filter(eligible);
     },
@@ -104,7 +109,7 @@ export function createGame({ generateId, randomIndex, clock = defaultClock, onCh
   let venue: Venue = { base: 'База', zones: [], ...(firstGame ? { mode: 'ordinary', bank: 'authored' } : {}) };
   function initializeStory() {
     if (!firstGame || selectedStory) return;
-    const { id, title } = stories[randomIndex(stories.length)];
+    const { id, title } = drawFromDeck(stories, randomIndex, 'stories', deckHistory);
     selectedStory = { title, prologue: shortAnswer(id) };
     venue = { ...venue, storyId: id };
   }
@@ -120,7 +125,7 @@ export function createGame({ generateId, randomIndex, clock = defaultClock, onCh
   let freeplayFrom: number | null = null;
   const ritualActive = () => settings.ritualEnabled && settings.roundLimit !== null && freeplayFrom === null;
   const reviewPending = () => ritualActive() && results.at(-1)?.status === 'provisional';
-  function ensureRitual(players: number) { if (ritualActive()) ritual ??= newRitual(players, settings.roundLimit!, randomIndex, generateId, firstGame, usesAuthoredBank()); }
+  function ensureRitual(players: number) { if (ritualActive()) ritual ??= newRitual(players, settings.roundLimit!, randomIndex, generateId, firstGame, usesAuthoredBank(), deckHistory); }
   let roundPlan: RoundPlan | null = null;
   const nextPlan = () => planRound(settings, completedRounds, tutorialCompleted, progressionRounds);
   let started = false;
@@ -143,7 +148,6 @@ export function createGame({ generateId, randomIndex, clock = defaultClock, onCh
     const last = results.at(-1);
     if (search && last?.roundId === roundId && last.status === 'provisional') {
       Object.assign(last, search.result(last.number, last.status, last.activeMs));
-      if (trials?.current && trialCard()) last.trialBonus = trialBonus(trialCard()!, trials.current, trialParticipants());
     }
   }
   function sealResult() { updateResult(); const last = results.at(-1); if (last?.status === 'provisional') last.status = 'final'; search?.seal(); roundSync?.seal(); }
@@ -248,7 +252,6 @@ export function createGame({ generateId, randomIndex, clock = defaultClock, onCh
 
   function finishRound() {
     account(); clearTimer();
-    if (trials?.current) trials.current.branch = (ritual?.snapshot().cards.slice(0, 2).filter(card => card.revealed).length ?? 0) >= 2 ? 'late' : 'early';
     if (roundPlan!.kind === 'tutorial') tutorialCompleted = true;
     else {
       completedRounds++;
@@ -271,7 +274,7 @@ export function createGame({ generateId, randomIndex, clock = defaultClock, onCh
       if (!remainingMs) {
         if (phase === 'return') finishRound();
         else if (phase === 'search') recall();
-        else { enterTimed('search'); if (trials && trialCard()) trials.current = beginTrial(trialCard()!, trialParticipants(), randomIndex); bump('phase'); finishSearchIfNeeded(); }
+        else { enterTimed('search'); bump('phase'); finishSearchIfNeeded(); }
       }
       schedule();
     }
@@ -319,18 +322,16 @@ export function createGame({ generateId, randomIndex, clock = defaultClock, onCh
     if (firstGame && violations.some(item => item.status === 'review')) return 'RITUAL_REVIEW_PENDING';
     if (!shuffle && reviewPending()) return 'RITUAL_REVIEW_PENDING';
     if (firstGame) {
-      if (!venue.dwelling || !venue.storyId) return 'PREPARATION_REQUIRED';
+      if (!venue.zones.length || !venue.storyId) return 'PREPARATION_REQUIRED';
       if (shuffle || started) {
         const eligible = new Set(shuffle ? dealing.publicState().assignments.map(item => item.playerId) : returners());
         players = players.filter(id => eligible.has(id));
       }
     }
-    if (firstGame && !locked && venue.mode === 'ordinary' && eligibleTrials(venue).length < 7) return 'TRIAL_POOL_INSUFFICIENT';
     const plan = phase === 'reading' ? roundPlan! : nextPlan();
     const error = dealing.deal(players, count, history, plan.difficulty);
     if (error) return error;
     if (phase !== 'reading') { clearRecall(); sealResult(); search = undefined; roundSync = undefined; }
-    if (firstGame && !locked && venue.mode === 'ordinary') trials = selectTrials(venue, randomIndex);
     if (firstGame) locked = true;
     roundPlan = { ...plan };
     if (phase !== 'reading') waitingPhase = phase as 'lobby' | 'between_rounds';
@@ -358,7 +359,7 @@ export function createGame({ generateId, randomIndex, clock = defaultClock, onCh
     rosterChanged = false; lastRoundAborted = false; started = true; roundId = generateId();
     search = createSearch(roundId, new Map([...assigned, ...retained.flatMap(group => group.members), ...unassigned]), generateId, firstGame ? retained : undefined, unassigned.map(([id]) => id));
     if (firstGame) waitingFree = waitingFree.filter(id => !assigned.has(id));
-    presence.clear(); locations.clear(); if (trials) delete trials.current;
+    presence.clear(); locations.clear();
     roundSync = undefined; ensureSync();
     activeMs = 0; runStarted = null;
     enterTimed('placement'); bump('start');
@@ -393,7 +394,6 @@ export function createGame({ generateId, randomIndex, clock = defaultClock, onCh
         results.push({ ...search.result(roundPlan!.number, 'aborted', activeMs), ...roundPlan! });
       clearRecall(); roundSync?.close(); sealResult(); ritual!.stop();
       for (const report of violations) if (report.status === 'review') report.status = 'rejected';
-      if (trials?.current?.lateVisit === 'review') trials.current.lateVisit = 'rejected';
       clearTimer(); phase = 'finished'; deadline = null; remainingMs = null; paused = false; pauseReason = null;
       bump('finish'); return;
     }
@@ -455,11 +455,9 @@ export function createGame({ generateId, randomIndex, clock = defaultClock, onCh
       roundSync?.close();
       search = roundSync?.current() ?? search;
       for (const report of violations) if (report.status === 'review') report.status = 'rejected';
-      if (trials?.current?.lateVisit === 'review') trials.current.lateVisit = 'rejected';
     } else {
       if (firstGame && violations.some(item => item.status === 'review')) return 'RITUAL_REVIEW_PENDING';
       if (roundSync && !roundSync.ready()) return 'SYNC_PENDING';
-      if (trials?.current?.lateVisit === 'review') return 'TRIAL_REVIEW_PENDING';
     }
     updateResult();
     const last = results.at(-1)!;
@@ -481,32 +479,6 @@ export function createGame({ generateId, randomIndex, clock = defaultClock, onCh
     }
     clearRecall(); sealResult();
     if (ritualActive() && ritual && ritual.snapshot().outcome !== 'playing') { phase = 'finished'; bump('finish'); } else bump();
-  }
-  function trialCard() { return roundPlan && trials?.deck[roundPlan.number - 1]; }
-  function trialParticipants(ledger = search) {
-    return [...playerNames].map(([id, name]) => ({ id, name, play: ledger?.personal(id) ?? null, returned: presence.get(id) === 'at_base' }));
-  }
-  function trialFor(id: string) {
-    const card = trialCard();
-    if (card && trials?.current) return personalTrial(card, trials.current, id, phase, trialParticipants(), venue, paused, results.at(-1)?.roundId === roundId && results.at(-1)?.status !== 'provisional');
-  }
-  function trialStatus() {
-    const card = trialCard();
-    if (card && trials?.current && phase === 'between_rounds' && results.at(-1)?.status === 'provisional') return trialReview(card, trials.current, trialParticipants(), venue);
-  }
-  function reportTrial(id: string, values: unknown): LobbyError | undefined {
-    const card = trialCard();
-    if (!card || !trials?.current) return 'ACTION_UNAVAILABLE';
-    const error = submitTrial(card, trials.current, id, values, phase, trialParticipants(), venue, paused, results.at(-1)?.roundId === roundId && results.at(-1)?.status !== 'provisional');
-    if (!error) { updateResult(); bump(); }
-    return error;
-  }
-  function reviewTrial(id: string, accepted: boolean, fact?: TrialReviewFact): LobbyError | undefined {
-    const card = trialCard(), current = trials?.current;
-    if (!card || !current || phase !== 'between_rounds' || results.at(-1)?.status !== 'provisional') return 'INVALID_PHASE';
-    const error = reviewTrialEvidence(card, current, id, accepted, fact);
-    if (!error) { updateResult(); bump(); }
-    return error;
   }
   function canReportViolation(actor: string, board = ritual?.snapshot()) {
     if (!firstGame || paused || board?.outcome !== 'playing' || !board.cards.some(card => card.slot !== 'C' && card.revealed)) return false;
@@ -595,9 +567,7 @@ export function createGame({ generateId, randomIndex, clock = defaultClock, onCh
     const original = new Map(roundSync.review().map(entry => [entry.id, entry]));
     const rows = copy.review();
     const result = copy.current().result(last.number, last.status, last.activeMs);
-    const card = trialCard();
-    const trial = card && trials?.current ? trialBonus(card, trials.current, trialParticipants(copy.current())) : undefined;
-    const preview = ritual.snapshot({ ...last, ...result, trialBonus: trial }).preview!;
+    const preview = ritual.snapshot({ ...last, ...result }).preview!;
     return { successes: preview.successes, remainingSteps: preview.remainingSteps, applied: rows.find(row => row.id === id)?.status === (decision === 'accept' ? 'accepted' : 'rejected'),
       changed: rows.flatMap(({ id: eventId, status, reason }) => {
         const old = original.get(eventId);
@@ -627,16 +597,13 @@ export function createGame({ generateId, randomIndex, clock = defaultClock, onCh
     if (new Set(names.map(n => n.toLocaleLowerCase('ru'))).size !== names.length) return 'INVALID_INPUT';
     if (firstGame) {
       if (phase !== 'lobby') return 'SETTINGS_LOCKED';
-      if (!v.dwelling || !valid(v.dwelling.place) || !names.slice(1).includes(v.dwelling.zone)) return 'INVALID_INPUT';
+      if (names.length < 2) return 'INVALID_INPUT';
       const sets = v.sets === undefined ? (v.harder === true ? ['harder' as const] : []) : v.sets;
-      const features = v.features ?? [];
       if (!Array.isArray(sets) || !sets.every(set => cardSets.includes(set)) || new Set(sets).size !== sets.length ||
-        !Array.isArray(features) || !features.every(feature => venueFeatures.includes(feature)) || new Set(features).size !== features.length ||
         v.comedy !== undefined && typeof v.comedy !== 'boolean') return 'INVALID_INPUT';
       initializeStory();
-      venue = { base: names[0], zones: names.slice(1), dwelling: { zone: v.dwelling.zone, place: v.dwelling.place.trim() },
+      venue = { base: names[0], zones: names.slice(1),
         storyId: venue.storyId, harder: sets.includes('harder'), mode: 'ordinary', bank: 'authored', sets: [...sets],
-        ...(features.length ? { features: [...features] } : {}),
         ...(v.comedy ? { comedy: true } : {}) };
     } else venue = { base: names[0], zones: names.slice(1) };
     bump();
@@ -731,17 +698,27 @@ export function createGame({ generateId, randomIndex, clock = defaultClock, onCh
   function exportState(): SavedGame {
     updateResult();
     // lastNow/remainingMs are the last healthy clock checkpoint, including clock-gap protection.
-    return structuredClone({ ...(firstGame ? { firstGame: { locked, retained, presence: [...presence], waitingFree, story: selectedStory, trials, violations, locations: [...locations],
+    return structuredClone({ ...(firstGame ? { firstGame: { locked, retained, presence: [...presence], waitingFree, story: selectedStory, violations, locations: [...locations],
       ...(unassigned.length ? { unassigned } : {}), ...(recallWait ? { recallWait: { players: recallWait.players, remainingMs: Math.max(0, recallWait.deadline - clock.now()) } } : {}) } } : {}), ritual: ritual?.exportState() ?? null, freeplayFrom, venue, playerNames: [...playerNames], roundSync: roundSync?.exportState() ?? null, tutorialCompleted, progressionRounds, roundPlan, dealing: dealing.exportState(), settings, phase, waitingPhase, version, roundId, completedRounds, started,
       paused, pauseReason, remainingMs, activePlayerIds, rosterChanged, lastRoundAborted, history: [...history], originalPossessed,
       search: search?.exportState() ?? null, results, activeMs: activeMs + (runStarted === null ? 0 : Math.max(0, lastNow - runStarted)) });
   }
   function restore(state: SavedGame, reason: PauseReason = 'server_restarted', bumpVersion = true) {
+    state = structuredClone(state);
+    const { firstGame: savedFirstGame, search: savedSearch, roundSync: savedSync } = state;
+    const groups = [
+      ...(savedFirstGame?.retained ?? []), ...(savedSearch?.retained ?? []), ...(savedSync?.base.retained ?? []),
+    ];
+    const assignments = [
+      ...state.dealing.assignments, ...(savedFirstGame?.unassigned ?? []),
+      ...(savedSearch?.roster ?? []), ...(savedSync?.base.roster ?? []),
+      ...groups.flatMap(group => group.members),
+    ];
+    for (const [, assignment] of assignments) assignment.card = replaceRetiredMission(assignment.card, 'issued');
     clearTimer(); clearRecall(); cue = undefined;
     unassigned = structuredClone(state.firstGame?.unassigned ?? []);
     locked = state.firstGame?.locked ?? false; retained = structuredClone(state.firstGame?.retained ?? []);
     waitingFree = [...(state.firstGame?.waitingFree ?? [])]; selectedStory = structuredClone(state.firstGame?.story);
-    trials = structuredClone(state.firstGame?.trials);
     violations = structuredClone(state.firstGame?.violations ?? []);
     locations.clear(); for (const [id, location] of state.firstGame?.locations ?? []) locations.set(id, location);
     presence.clear(); for (const [id, status] of state.firstGame?.presence ?? []) presence.set(id, status);
@@ -749,6 +726,8 @@ export function createGame({ generateId, randomIndex, clock = defaultClock, onCh
     playerNames = new Map(state.playerNames ?? []);
     const savedVenue = structuredClone(state.venue ?? { base: 'База', zones: [] });
     delete savedVenue.horror;
+    delete savedVenue.dwelling;
+    delete savedVenue.features;
     venue = savedVenue;
     if (firstGame && !locked) {
       venue.mode = 'ordinary';
@@ -777,5 +756,5 @@ export function createGame({ generateId, randomIndex, clock = defaultClock, onCh
   }
   return { publicState, dealingState: dealing.publicState, personal: dealing.personal, configure, deal, cancelDeal,
     initializeStory, configureVenue, confirmPresence, reconcilePresence, reconcileRecall, setLocation, missingLocations, locationProposal, physicalStatus, roles, syncEvents, completeSync, resolveSync, reviewPreview, closeSync, withdraw, personalSync: (id: string) => roundSync?.personal(id) ?? null, review: () => (roundSync?.review() ?? []).map(entry => ({ ...entry, actorName: playerNames.get(entry.actor), targetName: playerNames.get('targetId' in entry.action ? entry.action.targetId : 'by' in entry.action ? entry.action.by : '') })),
-    trialFor, trialStatus, reportTrial, reviewTrial, canReportViolation, reportViolation, reviewViolation, violations: () => structuredClone(violations), ritualAction, freeplay, start, pause, resume, beginReturn, abort, finishParty, extend, add, remove, change, synchronize, takeCue, dispose, playAction, personalPlay, finalize, exportState, restore };
+    canReportViolation, reportViolation, reviewViolation, violations: () => structuredClone(violations), ritualAction, freeplay, start, pause, resume, beginReturn, abort, finishParty, extend, add, remove, change, synchronize, takeCue, dispose, playAction, personalPlay, finalize, exportState, restore };
 }

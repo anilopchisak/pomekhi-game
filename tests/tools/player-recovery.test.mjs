@@ -174,7 +174,7 @@ it('uploads a retained phone release and acknowledges checking without a new car
       ...session, name: `Медиум ${i}`, resumeKey: (i + 10).toString(16).repeat(64),
     });
     const order = host().room.players.map(p => p.id);
-    game('venue:configure', { venue: { base: 'База', zones: ['Кухня'], dwelling: { zone: 'Кухня', place: 'Угол' }, storyId: 'S001', prologueRead: true, harder: false, order } });
+    game('venue:configure', { venue: { base: 'База', zones: ['Кухня'], storyId: 'S001', prologueRead: true, harder: false, order } });
     deal();
     game('round:start', { confirmWarnings: true });
     time.advance(45000);

@@ -1,9 +1,18 @@
 import { createHash } from 'node:crypto';
 import type { CatalogFile, CatalogInput, CatalogSnapshot, LobbyError } from '../shared/protocol.js';
+import { replaceRetiredMission } from './retired-missions.js';
 import { CARD_BANK } from './cards.js';
 
-import { validateCatalogFile, validateEntry } from '../shared/catalog.js';
+import { catalogByteLength, MAX_CATALOG_BYTES, validateCatalogFile, validateEntry } from '../shared/catalog.js';
 export { validateCatalogFile, validateEntry, MAX_CATALOG_BYTES } from '../shared/catalog.js';
+function replaceRetiredEntries(file: CatalogFile, mode: 'catalog' | 'compact' = 'catalog'): CatalogFile {
+  const entries = file.entries.map(entry => {
+    const card = replaceRetiredMission(entry.card, mode);
+    return card === entry.card ? entry : { ...entry, card };
+  });
+  return entries.some((entry, index) => entry !== file.entries[index]) ? { ...file, entries } : file;
+}
+
 export interface SavedCatalog { revision: number; file: CatalogFile; requests: [string, string][] }
 export function standardCatalog(): SavedCatalog {
   return { revision: 0, file: { format: 'pomekhi.cards', version: 1, entries: CARD_BANK.map(card => ({ enabled: true, card: structuredClone(card) })) }, requests: [] };
@@ -20,7 +29,10 @@ export function validateSavedCatalog(value: unknown): SavedCatalog {
     return pair as [string, string];
   });
   if (new Set(requests.map(p => p[0])).size !== requests.length) throw Error('Duplicate catalog request.');
-  return { revision: saved.revision as number, file: validateCatalogFile(saved.file), requests };
+  const file = validateCatalogFile(saved.file);
+  const expanded = replaceRetiredEntries(file);
+  const migrated = expanded !== file && catalogByteLength(expanded) > MAX_CATALOG_BYTES ? replaceRetiredEntries(file, 'compact') : expanded;
+  return { revision: saved.revision as number, file: migrated, requests };
 }
 /** Owns the global private library; no file, transport or game dependency. */
 export function createCatalog() {
@@ -41,7 +53,9 @@ export function createCatalog() {
       if (data.revision !== state.revision) return 'STALE_CATALOG';
       const entries = entry ? [...state.file.entries.filter(e => e.card.id !== entry.card.id), entry] : undefined;
       const next = action === 'reset' ? standardCatalog().file : file ?? validateCatalogFile({ format: 'pomekhi.cards', version: 2, entries });
-      state = { revision: state.revision + 1, file: next, requests: [...state.requests, [data.requestId, fingerprint] as [string, string]].slice(-256) };
+      const normalized = replaceRetiredEntries(next);
+      if (normalized !== next && catalogByteLength(normalized) > MAX_CATALOG_BYTES) return 'INVALID_INPUT';
+      state = { revision: state.revision + 1, file: normalized, requests: [...state.requests, [data.requestId, fingerprint] as [string, string]].slice(-256) };
     } catch { return 'INVALID_INPUT'; }
   }
   return { execute, snapshot, cards: () => state.file.entries.filter(e => e.enabled).map(e => structuredClone(e.card)),

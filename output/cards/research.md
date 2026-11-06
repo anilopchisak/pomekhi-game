@@ -4,7 +4,7 @@ Status: source study for an authorized content revision. This document records h
 
 ## Scope and evidence
 
-The approved content boundary is the 147-card primary editorial set plus 38 horror replacements. A horror entry replaces its matching primary mission; it is not appended to the playable total. The 97 existing runtime records are comparison material only, not another playable edition to revise or merge. This research does not change the runtime, protocols, import contract, saved assignments or application controls.
+The current primary editorial set contains 136 cards and references. The archive records 38 horror replacements. A horror entry replaces its matching primary mission; it is not appended to the playable total. The 97 existing runtime records are comparison material only, not another playable edition to revise or merge. This research does not change the runtime, protocols, import contract, saved assignments or application controls.
 
 The requested setting is a private house or apartment and its permitted adjacent yard, garden or grounds. A source can contain scenes elsewhere; only its domestic material is eligible for adaptation here. A country mansion is a private dwelling in this classification. Public institutions, hotels, hospitals, theatres and general wilderness are not new story settings. The rural house motifs can be rewritten for an apartment; an apartment scene does not require an outdoor equivalent.
 
@@ -109,7 +109,7 @@ The works contain deaths, violence, jealousy and sometimes sexual themes. Their 
 
 No actor is required to levitate, disappear, alter temperature, move furniture without touching it or produce an unsupported optical effect. No computer is described as observing physical events. Lighting, reflection and acoustic tasks require real local suitability, and their outcomes require the participants' actual adjudication.
 
-Editorial coherence can be checked against this evidence and the card texts. Discoverability without extra assistance, actual fear, venue feasibility, audibility, contact comfort and balance still need a live party. The existing group, scoring and first-game trial rules remain owned by the target rules, not by these fictional inspirations.
+Editorial coherence can be checked against this evidence and the card texts. Discoverability without extra assistance, actual fear, venue feasibility, audibility, contact comfort and balance still need a live party. The existing group and scoring rules remain owned by the target rules, not by these fictional inspirations.
 
 ## Later prop-free instruction
 

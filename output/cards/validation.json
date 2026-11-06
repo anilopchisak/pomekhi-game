@@ -1,15 +1,14 @@
 {
   "status": "pass",
-  "cardCount": 147,
+  "cardCount": 136,
   "counts": {
     "possessed": 75,
     "exorcist": 42,
-    "trial": 11,
     "prophecy": 11,
     "story": 6,
     "reference": 2
   },
-  "sourceEntryCount": 270,
+  "sourceEntryCount": 255,
   "pairCount": 45,
   "witnessCount": 225,
   "perPossessedFamily": {
@@ -31,33 +30,32 @@
     "indoor": 16,
     "outdoor": 12,
     "contact": 14,
-    "harder": 22
+    "harder": 20
   },
   "fictionSourceCount": 12,
-  "revisionRecordCount": 185,
+  "revisionRecordCount": 174,
   "inputs": {
-    "cards.json": "4f9718a5d56ac61d338306f5769fcc0a9638c8d075c1954d42ed3fa537db66f3",
-    "source-audit.json": "262e255f4d2b28b2cc4c3148172bdf1c48a1247971364bbd1e77eefd04faaa12",
-    "editorial-review.json": "ab20ba4b07afffd897cf17df42b5d55e2fe897c2ce64ebd0502494f0caacf7e5",
-    "build.py": "ec74e935c0756b7167fae2e2d8eaef216fc544bf3ff98055d9ea3de0955332f8",
+    "cards.json": "eeb6c3c610ff853893ed128ab166ff9b01a6c3025152cc5cdf8aa2486de75a09",
+    "source-audit.json": "c94fd13ed94109b3aa9ece68f6f6e913b0bbb0f0fba7107c2a911b23f8cb9f8e",
+    "editorial-review.json": "58f456a7b6fde0d8eced5affe6214993f61c6eea1282af9c5c586b74cee872ac",
+    "build.py": "a1064ac2ccf89da22bedb2dce8522264f482508cab2407bc555adab479f6844c",
     "fiction-sources.json": "96d6f048a399801a1f56842d44e8e0c87423eeb655e38f2cd23880ffc588fe70",
-    "revision-audit.json": "840e90b1eb0a6a77c2004aa8eefa97a41b9d93b6255a5a20fc2d33077eb99bf9",
-    "research.md": "ca51f1e68bca1c6137a67b11c01da10f7a6404848b256285d416d507cd86c381"
+    "revision-audit.json": "1d402161b952827d23b5b0b7557e577bb281097d298d9e1701d3549de74b9711",
+    "research.md": "9371739870770f2bbd33a6b0730411ed1f91a32663b98345562d846c9bec6bdc"
   },
   "checks": [
-    "Exact 147-card count and six deck counts.",
+    "Exact 136-card count and five category counts.",
     "Stable unique IDs and titles.",
     "75 distinct behavior/capture/release records; no missing conditions.",
     "No helper fields or helper commands in playable content.",
     "No exact duplicate behavior, capture, release or mission text.",
-    "Source inventory covers 147+90+7+19 historical entries, 7 user requests and every credited target.",
+    "Source inventory covers 255 credited entries, 7 user requests and every credited target.",
     "No carried or staged task props; existing house mirrors are the explicit natural-scene exception.",
-    "All 185 revision decisions link intention, causal action and one of 12 fiction sources where applicable.",
+    "All 174 revision decisions link intention, causal action and one of 12 fiction sources where applicable.",
     "Approved 31/18/26 and 20/14/8 primary decisions and 27/9/2 variant decisions are complete.",
-    "Retained outcome contracts and movement editions match baseline hashes or explicit user-authorized preparation amendments; prophecy mechanics are unchanged.",
+    "Retained outcome contracts and movement editions match baseline hashes or explicit user-authorized card amendments; prophecy mechanics are unchanged.",
     "Paper-free active missions: no printed card, token, cardboard, envelope or drawing sheet is required.",
-    "Optional subset prerequisites and required on-site Dwelling offerings.",
-    "11 trials have private delivery, explicit evidence and two different branches.",
+    "Optional subset prerequisites. No Dwelling offering fields or instructions.",
     "Exactly 10 ordinary prophecies and one final door.",
     "45 unique ordinary-prophecy pairs with 225 bounded executable witnesses."
   ],

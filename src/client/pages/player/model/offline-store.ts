@@ -1,9 +1,18 @@
 import type { EventReceipt, LobbyView, OfflineEvent, PersonalPlay } from '../../../../shared/protocol.js';
+import { isRetiredMission } from '../../../../shared/retired-mission.js';
 export type PlayerView = Extract<LobbyView, { kind: 'player' }>;
 export interface LocalEvent { event: OfflineEvent; receipt?: EventReceipt; before: PersonalPlay | null }
 export interface OfflineRecord { scope: string; cachedAt: number; view: PlayerView | null; clientId: string; sequence: number; events: LocalEvent[] }
 const randomId = () => [...crypto.getRandomValues(new Uint8Array(16))].map(v => v.toString(16).padStart(2, '0')).join('');
 let database: Promise<IDBDatabase> | undefined;
+export function stripRetiredViewFields(view: PlayerView) {
+  Reflect.deleteProperty(view, 'trial');
+  const { results, ritual } = view.room.game;
+  for (const row of results) {
+    if (row.status === 'provisional' && ritual && Reflect.get(row, 'trialBonus') === 1) ritual.preview = null;
+    Reflect.deleteProperty(row, 'trialBonus');
+  }
+}
 function open() {
   return database ??= new Promise<IDBDatabase>((resolve, reject) => {
     if (!globalThis.indexedDB) { reject(new Error('Persistent offline storage is unavailable.')); return; }
@@ -22,14 +31,19 @@ export async function updateOffline(scope: string, mutate: (record: OfflineRecor
     const request = store.get(scope); let next: OfflineRecord;
     request.onsuccess = () => {
       next = request.result ?? { scope, cachedAt: Date.now(), view: null, clientId: randomId(), sequence: 0, events: [] };
-      try { mutate(next); store.put(next); } catch (error) { transaction.abort(); reject(error); }
+      try {
+        mutate(next);
+        if (next.view) stripRetiredViewFields(next.view);
+        store.put(next);
+      } catch (error) { transaction.abort(); reject(error); }
     };
     transaction.oncomplete = () => resolve(structuredClone(next));
     transaction.onerror = () => reject(transaction.error);
     transaction.onabort = () => reject(transaction.error ?? new Error('Offline write was cancelled.'));
   });
 }
-export function appendOffline(scope: string, roundId: string, action: OfflineEvent['action'], view: PlayerView, estimatedServerTime: number | null) {
+export async function appendOffline(scope: string, roundId: string, action: OfflineEvent['action'], view: PlayerView, estimatedServerTime: number | null) {
+  if (action.kind === 'mission' && isRetiredMission(view.play?.card)) throw Error('The mission must be refreshed before reporting.');
   return updateOffline(scope, record => {
     if (record.events.length >= 12000) throw new Error('Offline journal is full.');
     if (action.kind === 'undo' && action.requestReview && record.events.some(row => row.event.roundId === roundId &&
@@ -70,7 +84,20 @@ export function projectOffline(view: PlayerView, entries: LocalEvent[]): PlayerV
         const originalAction = original?.event.action;
         const onlyChangesHistory = view.room.game.firstGame && (originalAction?.kind === 'infect' ||
           originalAction?.kind === 'release' && originalAction.targetIds);
-        if (!onlyChangesHistory && original?.before && !result.synchronization?.withdrawn) result.play = structuredClone(original.before);
+        if (onlyChangesHistory || !original?.before || result.synchronization?.withdrawn) continue;
+        if (originalAction?.kind === 'mission') {
+          if (result.play) {
+            result.play.missionCompleted = original.before.missionCompleted;
+            if (result.play.undo?.id === action.actionId) result.play.undo = structuredClone(original.before.undo);
+          }
+          continue;
+        }
+        const before = structuredClone(original.before);
+        if (isRetiredMission(before.card)) {
+          const current = [view.play?.card, view.assignment?.card].find(card => card?.id === before.card.id && !isRetiredMission(card));
+          if (current) before.card = structuredClone(current);
+        }
+        result.play = before;
       }
     } else if (result.play) {
       if (action.kind === 'mission') result.play.missionCompleted = action.completed;

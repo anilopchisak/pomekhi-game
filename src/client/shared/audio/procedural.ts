@@ -3,6 +3,11 @@ import type { GameCue, GamePhase, RitualOutcome } from '../../../shared/protocol
 export interface AudioLevels { background: number; signals: number; effects: number; muted: boolean }
 export const defaultLevels: AudioLevels = { background: .12, signals: .2, effects: .1, muted: false };
 type Voice = { source: OscillatorNode | AudioBufferSourceNode; gain: GainNode; cleanup?: () => void };
+const phoneChimes = {
+  placement: [784, 1047],
+  search: [880, 1175, 1319],
+  return: [1319, 880, 880],
+};
 
 /** Owns all Web Audio nodes and ambient timers. No networking or game transitions. */
 export function createProceduralAudio(audio: AudioContext, random = Math.random) {
@@ -18,16 +23,19 @@ export function createProceduralAudio(audio: AudioContext, random = Math.random)
     gain.gain.linearRampToValueAtTime(value, audio.currentTime + seconds);
   }
   function disposeVoice(voice: Voice) { if (!voices.delete(voice)) return; voice.cleanup?.(); voice.source.disconnect(); voice.gain.disconnect(); }
-  function oscillator(frequency: number, duration: number, volume: number, type: OscillatorType = 'sine') {
+  function oscillator(frequency: number, duration: number, volume: number, type: OscillatorType = 'sine',
+    note?: { delay: number }) {
     if (closed || audio.state !== 'running' || levels.muted || !volume) return;
+    const start = audio.currentTime + (note?.delay ?? 0);
+    const end = start + duration;
     const source = audio.createOscillator(), gain = audio.createGain(), voice = { source, gain };
-    voices.add(voice); source.type = type; source.frequency.setValueAtTime(frequency, audio.currentTime);
-    source.frequency.exponentialRampToValueAtTime(Math.max(40, frequency * .65), audio.currentTime + duration);
-    gain.gain.setValueAtTime(0, audio.currentTime);
-    gain.gain.linearRampToValueAtTime(volume * .35, audio.currentTime + .035);
-    gain.gain.linearRampToValueAtTime(0, audio.currentTime + duration);
+    voices.add(voice); source.type = type; source.frequency.setValueAtTime(frequency, start);
+    if (!note) source.frequency.exponentialRampToValueAtTime(Math.max(40, frequency * .65), end);
+    gain.gain.setValueAtTime(0, start);
+    gain.gain.linearRampToValueAtTime(volume * .35, start + (note ? .012 : .035));
+    gain.gain.linearRampToValueAtTime(0, end);
     source.connect(gain); gain.connect(master); source.onended = () => disposeVoice(voice);
-    source.start(); source.stop(audio.currentTime + duration + .02);
+    source.start(start); source.stop(end + .02);
   }
   function noise(duration: number, volume: number, frequency: number) {
     if (closed || audio.state !== 'running' || levels.muted || !volume) return;
@@ -88,13 +96,20 @@ export function createProceduralAudio(audio: AudioContext, random = Math.random)
     clearTimeout(duckTimer); duckTimer = setTimeout(() => { if (drone) ramp(drone.gain, target(), .4); }, 650);
     oscillator(pitch, kind === 'finish' ? .65 : .5, levels.signals);
   }
+  function chime(cuePhase: keyof typeof phoneChimes) {
+    if (!running) return;
+    const notes = phoneChimes[cuePhase];
+    notes.forEach((pitch, index) => {
+      oscillator(pitch, index === notes.length - 1 ? .23 : .14, levels.signals, 'triangle', { delay: index * .17 });
+    });
+  }
   function scare(variant: 0 | 1 | 2, volume: number) {
     const level = Math.min(.3, Math.max(0, volume));
     if (variant === 0) noise(.3, level, 1400);
     else if (variant === 1) { noise(.6, level * .6, 700); oscillator(140, .2, level); }
     else { oscillator(390, .65, level * .5, 'triangle'); noise(.45, level * .6, 1000); }
   }
-  return { update, cue, scare, stop, dispose() { if (closed) return; stop(); closed = true; master.disconnect(); void audio.close().catch(() => {}); },
+  return { update, cue, chime, scare, stop, dispose() { if (closed) return; stop(); closed = true; master.disconnect(); void audio.close().catch(() => {}); },
     resume: () => audio.resume(), state: () => audio.state };
 }
 export type ProceduralAudio = ReturnType<typeof createProceduralAudio>;

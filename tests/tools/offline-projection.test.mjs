@@ -1,5 +1,5 @@
 import { expect, it } from 'vitest';
-import { projectOffline } from '../../src/client/pages/player/model/offline-store.js';
+import { appendOffline, projectOffline, stripRetiredViewFields } from '../../src/client/pages/player/model/offline-store.js';
 import { createLobby } from '../../src/server/lobby.js';
 function fixture(status) {
   const lobby = createLobby({ organizerCode: 'TEST' });
@@ -15,11 +15,44 @@ function fixture(status) {
   const event = (action, id) => ({ event: { id, clientId: 'offline-client', sequence: 1, previousId: null, action, roundId: view.room.game.roundId, phase: 'search', paused: false, estimatedServerTime: null }, before: globalThis.structuredClone(view.play) });
   lobby.dispose(); return { view, event };
 }
+it('removes obsolete private fields and their provisional candle preview from an older cached view', () => {
+  const { view, event } = fixture('exorcist');
+  const mission = event({ kind: 'mission', completed: true }, 'mission-event');
+  const card = globalThis.structuredClone(view.play.card);
+  view.trial = { instruction: 'Старое поручение' };
+  view.room.game.results = [{ status: 'final', trialBonus: 1 }, { status: 'provisional', trialBonus: 1 }];
+  view.room.game.ritual = { positions: [1, 2, 3, 4], preview: { successes: 2 } };
+  stripRetiredViewFields(view);
+  expect(view).not.toHaveProperty('trial');
+  expect(view.room.game.results).toEqual([{ status: 'final' }, { status: 'provisional' }]);
+  expect(view.room.game.ritual).toEqual({ positions: [1, 2, 3, 4], preview: null });
+  expect(projectOffline(view, [mission]).play).toMatchObject({ card, missionCompleted: true });
+});
 it('projects only this player and labels a captured notice without claiming to have received another card', () => {
   const { view, event } = fixture('exorcist'), copy = globalThis.structuredClone(view);
   const projected = projectOffline(view, [event({ kind: 'captured', by: 'someone' }, 'captured-event')]);
   expect(projected.play).toMatchObject({ status: 'captured', wasCaptured: true, missionEligible: false, undo: null });
   expect(projected.play.card).toEqual(view.play.card); expect(view).toEqual(copy); expect(projected.room.players).toEqual(view.room.players);
+});
+it('undoes a legacy mission report while keeping the replacement card and current release options', () => {
+  const { view, event } = fixture('exorcist');
+  view.room.game.firstGame = true;
+  view.play.card = { ...view.play.card, id: 'dwelling:E014', mission: 'Дойдите до Обители.', offering: true };
+  const mission = event({ kind: 'mission', completed: true }, 'mission-event');
+  mission.receipt = { id: 'mission-event', status: 'accepted' };
+  const card = { ...view.play.card, mission: 'Поприветствуйте игрока.' };
+  delete card.offering;
+  view.play = { ...view.play, card, missionCompleted: true, releaseGroups: [['recent-group']] };
+  const undo = event({ kind: 'undo', actionId: mission.event.id }, 'undo-event');
+  expect(projectOffline(view, [mission, undo]).play).toMatchObject({
+    card, missionCompleted: false, releaseGroups: [['recent-group']],
+  });
+});
+it('blocks a new offline report for an obsolete cached mission', async () => {
+  const { view } = fixture('exorcist');
+  view.play.card.mission = 'Дойдите до Обители.';
+  await expect(appendOffline('scope', view.play.roundId, { kind: 'mission', completed: true }, view, null))
+    .rejects.toThrow('The mission must be refreshed before reporting.');
 });
 it('reverses a pending local action and excludes rejected/other-round events', () => {
   const { view, event } = fixture();

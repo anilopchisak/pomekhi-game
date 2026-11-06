@@ -2,7 +2,7 @@
 
 > The executable uses the [first-game design](first-game.md). Below, older round, dealing, scoring and schema behavior applies to compatibility fixtures; shared foundation behavior still applies.
 
-Status: implemented. The executable uses one local data/party-v7.json checkpoint. The legacy session.json path remains for compatibility fixtures. Factories default to memory unless a SessionStore is supplied. Supplied launchers select the project working directory. Keep the data directory on one local machine; network/shared filesystems are outside this contract.
+Status: implemented. The executable uses one local data/party-v8.json checkpoint. The previous v7 and v6 party files are read only when the v8 checkpoint is absent. The legacy session.json path remains for compatibility fixtures. Factories default to memory unless a SessionStore is supplied. Supplied launchers select the project working directory. Keep the data directory on one local machine; network/shared filesystems are outside this contract.
 
 ## Owners and private format
 

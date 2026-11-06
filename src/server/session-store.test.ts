@@ -1,4 +1,4 @@
-import { standardCatalog } from './catalog.js';
+import { MAX_CATALOG_BYTES, standardCatalog, validateCatalogFile } from './catalog.js';
 import { mkdtemp, rm, readFile, writeFile, readdir, mkdir } from 'node:fs/promises';
 import { tmpdir } from 'node:os';
 import { join } from 'node:path';
@@ -10,6 +10,54 @@ import { createSession } from './session.js';
 import { controlledClock } from '../../tests/helpers/game-clock.js';
 
 const empty = () => ({ schemaVersion: 5 as const, lobby: { catalog: standardCatalog(), revision: 0, usedCodes: [], room: null } });
+it('rejects expansion on import and migrates a saved bank at the canonical byte limit', async () => {
+  const file = standardCatalog().file;
+  file.entries = Array.from({ length: 500 }, (_, index) => ({ enabled: index !== 0, card: {
+    id: `custom-${index}`, title: index === 0 ? 'Обитель' : 'Задание', role: 'exorcist', difficulty: 3,
+    mission: index === 0 ? 'X' : 'X'.repeat(900),
+  } }));
+  let fill = MAX_CATALOG_BYTES - Buffer.byteLength(JSON.stringify(validateCatalogFile(file)));
+  for (const { card } of file.entries.slice(1)) {
+    if (card.role !== 'exorcist') throw Error('Invalid boundary fixture.');
+    const extra = Math.min(fill, 2000 - card.mission.length);
+    card.mission += 'X'.repeat(extra);
+    fill -= extra;
+  }
+  expect(Buffer.byteLength(JSON.stringify(validateCatalogFile(file)))).toBe(MAX_CATALOG_BYTES);
+
+  const dir = await mkdtemp(join(tmpdir(), 'pomekhi-catalog-limit-'));
+  const makeSession = () => createSession({ organizerCode: 'HOST', firstGame: true, store: createFileSessionStore(dir, true) });
+  let session = makeSession();
+  try {
+    await session.initialize();
+    await session.execute('h', 'organizer:authorize', { code: 'HOST' });
+    expect(await session.catalogExecute('h', { action: 'import', revision: 0, requestId: 'catalog-limit-import', file }))
+      .toEqual({ ok: false, error: 'INVALID_INPUT' });
+    expect(session.viewFor('h')?.persistence?.state).toBe('ready');
+    await session.close();
+
+    await rm(join(dir, 'party-v8.json'));
+    const legacy = { schemaVersion: 7, lobby: { ...empty().lobby, catalog: { revision: 4, requests: [], file } } };
+    const source = JSON.stringify(legacy);
+    await writeFile(join(dir, 'party-v7.json'), source);
+    for (let run = 0; run < 2; run++) {
+      session = makeSession();
+      await session.initialize();
+      await session.execute('h', 'organizer:authorize', { code: 'HOST' });
+      expect(session.viewFor('h')?.persistence?.state).toBe('ready');
+      const result = await session.catalogExecute('h', { action: 'read' });
+      if (!result.ok) throw Error(result.error);
+      expect(result.catalog.revision).toBe(4);
+      const migrated = validateCatalogFile(result.catalog.file);
+      expect(migrated.entries).toHaveLength(500);
+      expect(migrated.entries[0]).toMatchObject({ enabled: false, card: { id: 'custom-0', difficulty: 3, mission: 'Кивни.' } });
+      expect(Buffer.byteLength(JSON.stringify(migrated))).toBe(MAX_CATALOG_BYTES);
+      expect(migrated.entries.slice(1)).toEqual(file.entries.slice(1));
+      await session.close();
+    }
+    expect(await readFile(join(dir, 'party-v7.json'), 'utf8')).toBe(source);
+  } finally { await session.close(); await rm(dir, { recursive: true, force: true }); }
+});
 it('atomically replaces the last checkpoint and ignores unfinished temporary files', async () => {
   const dir = await mkdtemp(join(tmpdir(), 'pomekhi-save-')), store = createFileSessionStore(dir);
   try {
@@ -87,7 +135,7 @@ it('keeps the old room file, preserves catalog edits and revises only an unchang
     await writeFile(legacyFile, legacyBytes);
     await store.acquire();
     const recovered = (await store.load())!;
-    expect(recovered).toMatchObject({ schemaVersion: 7, lobby: { room: null } });
+    expect(recovered).toMatchObject({ schemaVersion: 8, lobby: { room: null } });
     expect(recovered.lobby.catalog!.file.entries.find(e => e.card.id === 'e11')?.card).toMatchObject({ mission: expect.stringContaining('До призыва') });
     expect(recovered.lobby.catalog!.file.entries.find(e => e.card.id === 'e12')?.card).toMatchObject({ mission: edited.mission });
     await store.write(recovered);
@@ -106,7 +154,7 @@ it('allows retrying a failed legacy read without first committing the default ba
     expect(await session.execute('h', 'organizer:authorize', { code: 'ORGANIZER' })).toMatchObject({
       ok: true, view: { persistence: { state: 'load_error' } },
     });
-    expect(await readdir(dir)).not.toContain('party-v7.json');
+    expect(await readdir(dir)).not.toContain('party-v8.json');
 
     await rm(legacyFile, { recursive: true });
     const saved = empty();
@@ -116,7 +164,7 @@ it('allows retrying a failed legacy read without first committing the default ba
     expect(await session.catalogExecute('h', { action: 'read' })).toMatchObject({
       ok: true, catalog: { file: saved.lobby.catalog.file },
     });
-    expect(await readdir(dir)).toContain('party-v7.json');
+    expect(await readdir(dir)).toContain('party-v8.json');
   } finally { await session.close(); await rm(dir, { recursive: true, force: true }); }
 });
 
@@ -139,7 +187,7 @@ it('opens a v6 room at the same paused deadline without re-dealing or rewriting 
     const order = host().players.map(player => player.id);
     const game = () => ({ roomId: host().id, roundId: host().game.roundId, gameVersion: host().game.version });
     expect(lobby.execute('host', 'venue:configure', { ...game(), requestId: 'prepare-v6', venue: { base: 'База',
-      zones: ['Кухня'], dwelling: { zone: 'Кухня', place: 'Угол' }, storyId: 'S001', prologueRead: true, harder: false, order } }).ok).toBe(true);
+      zones: ['Кухня'], storyId: 'S001', prologueRead: true, harder: false, order } }).ok).toBe(true);
     expect(lobby.execute('host', 'deal:create', { roomId: host().id, dealId: null, dealVersion: host().dealing.version,
       requestId: 'deal-room-v6', possessedCount: 0 }).ok).toBe(true);
     expect(lobby.execute('host', 'round:start', { ...game(), requestId: 'start-room-v6', confirmWarnings: true }).ok).toBe(true);
@@ -147,13 +195,12 @@ it('opens a v6 room at the same paused deadline without re-dealing or rewriting 
     const v6 = lobby.exportState();
     const venue = v6.room!.game.venue!;
     delete venue.mode; delete venue.bank; delete venue.sets; delete venue.features; delete venue.prologueRead;
-    delete v6.room!.game.firstGame!.trials;
     delete v6.room!.game.firstGame!.locations; delete v6.room!.game.firstGame!.violations;
     const original = JSON.stringify({ schemaVersion: 6, lobby: v6 });
     await writeFile(file, original);
     await next.acquire();
     const restored = await next.load();
-    expect(restored).toMatchObject({ schemaVersion: 7, lobby: { room: { code: host().code } } });
+    expect(restored).toMatchObject({ schemaVersion: 8, lobby: { room: { code: host().code } } });
     recovered.restore(restored!.lobby);
     expect(recovered.exportState().room?.game).toMatchObject({ phase: 'search', remainingMs: 138000, paused: true });
     expect(recovered.exportState().room?.game.dealing.assignments).toEqual(v6.room?.game.dealing.assignments);

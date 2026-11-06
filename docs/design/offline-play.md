@@ -12,6 +12,8 @@ The [player store](../../src/client/pages/player/model/offline-store.ts) owns on
 
 [useOfflinePlayer](../../src/client/pages/player/model/useOfflinePlayer.ts) caches authorized projections, restores the saved screen, projects pending own actions, and drains batches of at most 24 after identity recovery. A storage failure is visible and prevents an offline action from appearing saved. If IndexedDB is unavailable, online legacy commands remain available; offline recording is explicitly unavailable. Confirmed removal, leave, closure or expired recovery clears the private cache. A new round replaces the cached card and clears old undo snapshots; event metadata retains processing outcomes.
 
+If a cached card still contains a retired Dwelling mission, the phone asks for a fresh projection and disables new reports for that mission. It retains the journal and permits other eligible actions. A provisional mission undo restores the completion mark without replacing the current card or release options.
+
 ## Connection and shell
 
 The shared connection retains the last authorized screen across reconnect, restores identity before synchronization, rejects obsolete acknowledgements and offers a manual reconnect button. Socket.IO continues automatic retries. Only identity recovery and the stable player journal are automatically resent; organizer controls retain manual retry with their original request ID. A phone timer extrapolates the last server clock, labels disconnected state unconfirmed and never advances the authoritative phase. After an estimated search deadline it directs the player to base.

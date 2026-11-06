@@ -150,6 +150,7 @@
         "src/server/lobby.ts",
         "src/server/session-format.ts",
         "src/shared/protocol.ts",
+        "src/shared/retired-mission.ts",
         "src/client/pages/player/model",
         "scripts/start-lan.mjs",
         "vite.config.ts"
@@ -217,6 +218,7 @@
         "src/server/session-format.ts",
         "src/server/session.ts",
         "src/shared/catalog.ts",
+        "src/shared/retired-mission.ts",
         "src/shared/protocol.ts"
       ],
       "prefixes": [
@@ -240,7 +242,6 @@
         "src/server/ritual.ts",
         "src/server/first-game-content.ts",
         "src/server/authored-content.ts",
-        "src/server/trials.ts",
         "src/server/session-format.ts",
         "src/server/session-store.ts",
         "src/shared/protocol.ts"

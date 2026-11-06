@@ -2,10 +2,10 @@
   "format": "pomekhi.editorial-source-audit",
   "version": 1,
   "coverage": {
-    "fanPdf": 147,
+    "fanPdf": 134,
     "currentPersonalCards": 90,
     "currentPropheciesIncludingFinal": 7,
-    "visibleOriginalExamples": 19,
+    "visibleOriginalExamples": 17,
     "userRequests": 7
   },
   "decisions": {
@@ -1077,10 +1077,9 @@
       "decision": "rework",
       "targetIds": [
         "P017",
-        "E009",
-        "T005"
+        "E009"
       ],
-      "reason": "The actor and rescuer use their own body for sound at two positions, not two prepared surfaces. Authored adaptation under the later no-props instruction; no commercial text or supernatural fact is implied. A repeated entrance gesture has a physical trigger and does not block navigation. Domestic-horror revision: retain_core. Domestic-horror framing preserves the private objective, two prophecy branches and participant evidence. T006 uses a distinct fictional cue, not the real stop signal. T007 uses folded empty household cloth. No sensing or runtime implementation is claimed."
+      "reason": "The actor and rescuer use their own body for sound at two positions, not two prepared surfaces. Authored adaptation under the later no-props instruction; no commercial text or supernatural fact is implied. A repeated entrance gesture has a physical trigger and does not block navigation. Domestic-horror revision: retain_core. No sensing or runtime implementation is claimed."
     },
     {
       "sourceId": "pdf:Э-09",
@@ -1227,18 +1226,6 @@
         "E020"
       ],
       "reason": "Observe the already agreed Dwelling place and its natural features, not a container. Authored adaptation under the later no-props instruction; no commercial text or supernatural fact is implied."
-    },
-    {
-      "sourceId": "pdf:Э-21",
-      "sourceTitle": "Нить наблюдений",
-      "type": "exorcist",
-      "page": 15,
-      "sourceObservation": "ЭКЗОРЦИСТ Э-21 Нить наблюдений В течение двадцати секунд наблюдай за одним игроком, не мешая ему.",
-      "decision": "rework",
-      "targetIds": [
-        "T011"
-      ],
-      "reason": "Domestic-horror framing preserves the private objective, two prophecy branches and participant evidence. T006 uses a distinct fictional cue, not the real stop signal. T007 uses folded empty household cloth. No sensing or runtime implementation is claimed."
     },
     {
       "sourceId": "pdf:Э-22",
@@ -1454,10 +1441,9 @@
       "sourceObservation": "ЭКЗОРЦИСТ Э-39 Портрет неизвестного Опиши выдуманного заражённого так, чтобы его можно было нарисовать.",
       "decision": "rework",
       "targetIds": [
-        "E023",
-        "T010"
+        "E023"
       ],
-      "reason": "Recognition is checked against the source participant’s invented image, not supernatural perception. Domestic-horror revision: adapt. Domestic-horror framing preserves the private objective, two prophecy branches and participant evidence. T006 uses a distinct fictional cue, not the real stop signal. T007 uses folded empty household cloth. No sensing or runtime implementation is claimed."
+      "reason": "Recognition is checked against the source participant’s invented image, not supernatural perception. Domestic-horror revision: adapt. No sensing or runtime implementation is claimed."
     },
     {
       "sourceId": "pdf:Э-40",
@@ -1518,18 +1504,6 @@
         "R002"
       ],
       "reason": "Existing rule, trigger, action and scope preserved verbatim. The domestic fiction connection is thematic; it creates no additional restriction."
-    },
-    {
-      "sourceId": "pdf:Р-03",
-      "sourceTitle": "Ночной знак",
-      "type": "prophecy",
-      "page": 18,
-      "sourceObservation": "ПРОРИЦАНИЕ Р-03 Ночной знак Все игроки приветствуют ведущего одним выбранным жестом, прежде чем получить карту.",
-      "decision": "rework",
-      "targetIds": [
-        "T009"
-      ],
-      "reason": "Domestic-horror framing preserves the private objective, two prophecy branches and participant evidence. T006 uses a distinct fictional cue, not the real stop signal. T007 uses folded empty household cloth. No sensing or runtime implementation is claimed."
     },
     {
       "sourceId": "pdf:Р-04",
@@ -1611,10 +1585,9 @@
       "sourceObservation": "ПРОРИЦАНИЕ Р-10 Пляска теней В начале каждого раунда каждый игрок показывает короткий жест, который повторяет вся группа.",
       "decision": "rework",
       "targetIds": [
-        "T009",
         "R009"
       ],
-      "reason": "Domestic-horror framing preserves the private objective, two prophecy branches and participant evidence. T006 uses a distinct fictional cue, not the real stop signal. T007 uses folded empty household cloth. No sensing or runtime implementation is claimed. Existing rule, trigger, action and scope preserved verbatim. The domestic fiction connection is thematic; it creates no additional restriction."
+      "reason": "Existing rule, trigger, action and scope preserved verbatim. The domestic fiction connection is thematic; it creates no additional restriction."
     },
     {
       "sourceId": "pdf:Р-11",
@@ -1627,138 +1600,6 @@
         "R011"
       ],
       "reason": "Existing rule, trigger, action and scope preserved verbatim. The domestic fiction connection is thematic; it creates no additional restriction."
-    },
-    {
-      "sourceId": "pdf:Х-01",
-      "sourceTitle": "Ночной рассказчик",
-      "type": "trial",
-      "page": 20,
-      "sourceObservation": "ИСПЫТАНИЕ ХРАНИТЕЛЯ Х-01 Ночной рассказчик В начале раунда объяви атмосферную фразу не длиннее десяти слов, не подсказывая задания.",
-      "decision": "rework",
-      "targetIds": [
-        "T005"
-      ],
-      "reason": "Domestic-horror framing preserves the private objective, two prophecy branches and participant evidence. T006 uses a distinct fictional cue, not the real stop signal. T007 uses folded empty household cloth. No sensing or runtime implementation is claimed."
-    },
-    {
-      "sourceId": "pdf:Х-02",
-      "sourceTitle": "Неподвижный хранитель",
-      "type": "trial",
-      "page": 20,
-      "sourceObservation": "ИСПЫТАНИЕ ХРАНИТЕЛЯ Х-02 Неподвижный хранитель Первую минуту раунда руководи игрой, не вставая со своего места.",
-      "decision": "rework",
-      "targetIds": [
-        "T011"
-      ],
-      "reason": "Domestic-horror framing preserves the private objective, two prophecy branches and participant evidence. T006 uses a distinct fictional cue, not the real stop signal. T007 uses folded empty household cloth. No sensing or runtime implementation is claimed."
-    },
-    {
-      "sourceId": "pdf:Х-03",
-      "sourceTitle": "Мастер шёпота",
-      "type": "trial",
-      "page": 20,
-      "sourceObservation": "ИСПЫТАНИЕ ХРАНИТЕЛЯ Х-03 Мастер шёпота Все объявления этого раунда делай спокойным шёпотом, сохраняя разборчивость.",
-      "decision": "replace",
-      "targetIds": [
-        "T003"
-      ],
-      "reason": "Domestic-horror framing preserves the private objective, two prophecy branches and participant evidence. T006 uses a distinct fictional cue, not the real stop signal. T007 uses folded empty household cloth. No sensing or runtime implementation is claimed."
-    },
-    {
-      "sourceId": "pdf:Х-04",
-      "sourceTitle": "Забытое имя",
-      "type": "trial",
-      "page": 20,
-      "sourceObservation": "ИСПЫТАНИЕ ХРАНИТЕЛЯ Х-04 Забытое имя Придумай себе новое имя и отвечай на него до окончания раунда.",
-      "decision": "rework",
-      "targetIds": [
-        "T008"
-      ],
-      "reason": "Domestic-horror framing preserves the private objective, two prophecy branches and participant evidence. T006 uses a distinct fictional cue, not the real stop signal. T007 uses folded empty household cloth. No sensing or runtime implementation is claimed."
-    },
-    {
-      "sourceId": "pdf:Х-05",
-      "sourceTitle": "Часовой",
-      "type": "trial",
-      "page": 20,
-      "sourceObservation": "ИСПЫТАНИЕ ХРАНИТЕЛЯ Х-05 Часовой Объяви начало и конец исследования коротким звуковым сигналом собственного сочинения.",
-      "decision": "replace",
-      "targetIds": [
-        "T005"
-      ],
-      "reason": "Domestic-horror framing preserves the private objective, two prophecy branches and participant evidence. T006 uses a distinct fictional cue, not the real stop signal. T007 uses folded empty household cloth. No sensing or runtime implementation is claimed."
-    },
-    {
-      "sourceId": "pdf:Х-06",
-      "sourceTitle": "Хранитель историй",
-      "type": "trial",
-      "page": 20,
-      "sourceObservation": "ИСПЫТАНИЕ ХРАНИТЕЛЯ Х-06 Хранитель историй После общего сбора попроси одного игрока пересказать смешной момент раунда.",
-      "decision": "rework",
-      "targetIds": [
-        "T010"
-      ],
-      "reason": "Domestic-horror framing preserves the private objective, two prophecy branches and participant evidence. T006 uses a distinct fictional cue, not the real stop signal. T007 uses folded empty household cloth. No sensing or runtime implementation is claimed."
-    },
-    {
-      "sourceId": "pdf:Х-07",
-      "sourceTitle": "Невидимая публика",
-      "type": "trial",
-      "page": 20,
-      "sourceObservation": "ИСПЫТАНИЕ ХРАНИТЕЛЯ Х-07 Невидимая публика На протяжении проверки комментируй результаты как ведущий таинственного шоу.",
-      "decision": "replace",
-      "targetIds": [
-        "T007"
-      ],
-      "reason": "A voluntary gaze response replaces acceptance of a bundle. Both private branches use explicit human reports, with no object or inferred observation. Authored adaptation under the later no-props instruction; no commercial text or supernatural fact is implied."
-    },
-    {
-      "sourceId": "pdf:Х-08",
-      "sourceTitle": "Ритуальная пауза",
-      "type": "trial",
-      "page": 20,
-      "sourceObservation": "ИСПЫТАНИЕ ХРАНИТЕЛЯ Х-08 Ритуальная пауза Перед проверкой попроси всех пять секунд молчать.",
-      "decision": "rework",
-      "targetIds": [
-        "T006"
-      ],
-      "reason": "Domestic-horror framing preserves the private objective, two prophecy branches and participant evidence. T006 uses a distinct fictional cue, not the real stop signal. T007 uses folded empty household cloth. No sensing or runtime implementation is claimed."
-    },
-    {
-      "sourceId": "pdf:Х-09",
-      "sourceTitle": "Тёмный архив",
-      "type": "trial",
-      "page": 20,
-      "sourceObservation": "ИСПЫТАНИЕ ХРАНИТЕЛЯ Х-09 Тёмный архив Запомни имена трёх игроков и назови их перед окончанием раунда.",
-      "decision": "rework",
-      "targetIds": [
-        "T008"
-      ],
-      "reason": "Domestic-horror framing preserves the private objective, two prophecy branches and participant evidence. T006 uses a distinct fictional cue, not the real stop signal. T007 uses folded empty household cloth. No sensing or runtime implementation is claimed."
-    },
-    {
-      "sourceId": "pdf:Х-10",
-      "sourceTitle": "Легенда места",
-      "type": "trial",
-      "page": 21,
-      "sourceObservation": "ИСПЫТАНИЕ ХРАНИТЕЛЯ Х-10 Легенда места Сочини одну фразу, которая объясняет, почему заражённые вернулись именно сегодня.",
-      "decision": "replace",
-      "targetIds": [
-        "T010"
-      ],
-      "reason": "Domestic-horror framing preserves the private objective, two prophecy branches and participant evidence. T006 uses a distinct fictional cue, not the real stop signal. T007 uses folded empty household cloth. No sensing or runtime implementation is claimed."
-    },
-    {
-      "sourceId": "pdf:Х-11",
-      "sourceTitle": "Последний сигнал",
-      "type": "trial",
-      "page": 21,
-      "sourceObservation": "ИСПЫТАНИЕ ХРАНИТЕЛЯ Х-11 Последний сигнал Заверши раунд словами собственного сочинения в стиле финала страшной сказки.",
-      "decision": "replace",
-      "targetIds": [
-        "T011"
-      ],
-      "reason": "Domestic-horror framing preserves the private objective, two prophecy branches and participant evidence. T006 uses a distinct fictional cue, not the real stop signal. T007 uses folded empty household cloth. No sensing or runtime implementation is claimed."
     },
     {
       "sourceId": "pdf:И-01",
@@ -3109,52 +2950,26 @@
     {
       "sourceId": "original:03.01",
       "sourceTitle": "Осветить одержимого",
-      "type": "trial",
+      "type": "reference",
       "page": 7,
-      "sourceObservation": "Visible original trial: ask an exorcist to find and illuminate a possessed medium. Branches depend on whether the exorcist returns.",
+      "sourceObservation": "The original example uses a phone light to illuminate a possessed medium.",
       "decision": "rework",
       "targetIds": [
-        "P064",
-        "T001"
+        "P064"
       ],
-      "reason": "Performing an overhead inspection sustains exposure; a low stable light permits voluntary uncovering. Domestic-horror revision: retain_core. Literary connections are thematic; capture and release are authored rules. Domestic-horror framing preserves the private objective, two prophecy branches and participant evidence. T006 uses a distinct fictional cue, not the real stop signal. T007 uses folded empty household cloth. No sensing or runtime implementation is claimed."
+      "reason": "Performing an overhead inspection sustains exposure; a low stable light permits voluntary uncovering. Domestic-horror revision: retain_core. Capture and release are authored rules."
     },
     {
       "sourceId": "original:03.02",
       "sourceTitle": "Напугать первых двух",
-      "type": "trial",
+      "type": "reference",
       "page": 15,
-      "sourceObservation": "Visible full trial: the Master leaves with light off and tries to frighten the first two mediums; thresholds are at least one and both.",
+      "sourceObservation": "The original example uses an encounter intended to frighten other mediums.",
       "decision": "rework",
       "targetIds": [
-        "E030",
-        "T002"
+        "E030"
       ],
-      "reason": "The recipient explicitly confirms fear; silence and a startle are never inferred evidence. Domestic-horror revision: retain_core. Domestic-horror framing preserves the private objective, two prophecy branches and participant evidence. T006 uses a distinct fictional cue, not the real stop signal. T007 uses folded empty household cloth. No sensing or runtime implementation is claimed."
-    },
-    {
-      "sourceId": "original:03.08",
-      "sourceTitle": "Не разговаривать с Мастером",
-      "type": "trial",
-      "page": 10,
-      "sourceObservation": "Rotated example: forbid one exorcist from talking to the accompanying Master. At 0–1 an address leads to a scream and the Master’s return; at 2 no address succeeds. This is not a ban on the word ritual.",
-      "decision": "rework",
-      "targetIds": [
-        "T003"
-      ],
-      "reason": "Domestic-horror framing preserves the private objective, two prophecy branches and participant evidence. T006 uses a distinct fictional cue, not the real stop signal. T007 uses folded empty household cloth. No sensing or runtime implementation is claimed."
-    },
-    {
-      "sourceId": "original:03.11",
-      "sourceTitle": "Принести Обитель",
-      "type": "trial",
-      "page": 13,
-      "sourceObservation": "Visible full trial and explanation: bring and return the Dwelling at 0–1; failure to return or bring it at 2.",
-      "decision": "rework",
-      "targetIds": [
-        "T004"
-      ],
-      "reason": "The user removes the physical Dwelling. The original delivery/return structure is adapted as an on-site call, early return with a remembered fictional name, and a second visit; inverted late scoring and the one-off early-return exception remain. Authored adaptation under the later no-props instruction; no commercial text or supernatural fact is implied."
+      "reason": "The recipient explicitly confirms fear. Domestic-horror revision: retain_core."
     },
     {
       "sourceId": "original:04.02",
@@ -3289,11 +3104,9 @@
         "P044",
         "P068",
         "P070",
-        "P075",
-        "T004",
-        "T007"
+        "P075"
       ],
-      "reason": "Self-directed speech and a real vocal offering give the mission a sender and destination. Domestic-horror revision: retain_core. A real silent visit ends in the specified rim touch; no paper deposit is required. Domestic-horror revision: retain_core. A remembered name is spoken at the actual dwelling, not submitted remotely instead of a visit. Domestic-horror revision: retain_core. The on-site offering has a personal sender and a physical completion. Domestic-horror revision: adapt. The empty-hand journey and final turn form an on-site offering; no mission token or extra reward exists. Domestic-horror revision: adapt. Exterior contact, a step away and an address form one episode without handling nonexistent cards. Domestic-horror revision: retain_core. Actual receptacle and support observations replace counts of nonexistent physical cards. Domestic-horror revision: adapt. Recognition is checked against the source participant’s invented image, not supernatural perception. Domestic-horror revision: adapt. The mental reconstruction has real referents; it is distinct from E040 route scouting and demands no written map. Domestic-horror revision: adapt. The task completes a source/echo/present episode, not an abstract transported finger ring. No exact words or reversed order are tested. Domestic-horror revision: replace. This ends a self-authored habitual act; the cloth rolling exercise is removed. It is not a route or object-fold task. Domestic-horror revision: replace. A completed carried return differs from E017’s empty-hand offering and E013’s two ownership declarations. Domestic-horror revision: adapt. Target-rule reference updated for shared object staging, free story mixing and existing paper-free household props. No runtime controls are asserted. Target-rule reference updated for shared object staging, free story mixing and existing paper-free household props. No runtime controls are asserted. Claiming the item transfers the attachment; moving its whole resting place releases the repeated return. The actor visibly moves it; no autonomous motion is claimed. Domestic-horror revision: replace. Literary connections are thematic; capture and release are authored rules. Transferring the alien trace accepts it; witnessing both hands rejoined interrupts the split. Contact is light, negotiated and requires only one rescuer hand. Domestic-horror revision: replace. Literary connections are thematic; capture and release are authored rules. Pocketing appropriates the debt; leaving the offered coin and removing both hands finishes payment. Domestic-horror revision: adapt. Literary connections are thematic; capture and release are authored rules. Repeated changes accept the replacement; an unchanged face through two passes provides a stable identity. Unlike P024, movement timing is not the puzzle. Domestic-horror revision: replace. Literary connections are thematic; capture and release are authored rules. Opening breaks the scene’s boundary; answering its closed lid and listening completes the exchange. Domestic-horror revision: retain_core. Literary connections are thematic; capture and release are authored rules. Answering lends the channel a second voice; capping and setting it down closes it. Only the performer produces the sound. Domestic-horror revision: replace. Literary connections are thematic; capture and release are authored rules. Encouraging continued sleep gives the intruder time; eliciting the resident’s own account of the present room wakes them. No special candle or factual quiz is used. Domestic-horror revision: replace. Literary connections are thematic; capture and release are authored rules. Inspecting one’s own face accepts the channel; turning its reflective surface down closes it. Domestic-horror revision: retain_core. Literary connections are thematic; capture and release are authored rules. Speaking into the actor’s listening channel joins the intrusion; making one’s own outward listening channel restores a separate listener. Domestic-horror revision: adapt. Literary connections are thematic; capture and release are authored rules. Reopening repeats the interrupted move; fastening the already-closed case finishes the departure. No real luggage or exact password is needed. Domestic-horror revision: replace. Literary connections are thematic; capture and release are authored rules. Peeking and concealing restores the secret; completely uncovering and separating the cloth ends it. Domestic-horror revision: retain_core. Literary connections are thematic; capture and release are authored rules. Claiming the missing resident’s role from the wrong side joins the false return; an actual relocated voice completes the expected arrival. Domestic-horror revision: replace. Literary connections are thematic; capture and release are authored rules. Eviction repeats displacement; recognizing the resident as the one who grants permission restores ownership. Unlike P011, the rescuer rejects no identity imposed on them. Domestic-horror revision: replace. Literary connections are thematic; capture and release are authored rules. Turning the object preserves the light relation; moving the real light changes the trace while leaving its owner still. No impossible independent shadow is claimed. Domestic-horror revision: adapt. Literary connections are thematic; capture and release are authored rules. Outlining preserves the detached trace; linking one’s own chest and a whole hand at that place returns it to a living owner. Unlike P061 this uses no person-to-person palm contact. Domestic-horror revision: replace. Literary connections are thematic; capture and release are authored rules. Taking the observer’s place sustains domination; a visible screen across its sightline lets the person straighten. No actual shadow, strain or support of body weight is required. Domestic-horror revision: replace. Literary connections are thematic; capture and release are authored rules. Domestic-horror framing preserves the private objective, two prophecy branches and participant evidence. T006 uses a distinct fictional cue, not the real stop signal. T007 uses folded empty household cloth. No sensing or runtime implementation is claimed. Domestic-horror framing preserves the private objective, two prophecy branches and participant evidence. T006 uses a distinct fictional cue, not the real stop signal. T007 uses folded empty household cloth. No sensing or runtime implementation is claimed."
+      "reason": "Self-directed speech and a real vocal offering give the mission a sender and destination. Domestic-horror revision: retain_core. A real silent visit ends in the specified rim touch; no paper deposit is required. Domestic-horror revision: retain_core. A remembered name is spoken at the actual dwelling, not submitted remotely instead of a visit. Domestic-horror revision: retain_core. The on-site offering has a personal sender and a physical completion. Domestic-horror revision: adapt. The empty-hand journey and final turn form an on-site offering; no mission token or extra reward exists. Domestic-horror revision: adapt. Exterior contact, a step away and an address form one episode without handling nonexistent cards. Domestic-horror revision: retain_core. Actual receptacle and support observations replace counts of nonexistent physical cards. Domestic-horror revision: adapt. Recognition is checked against the source participant’s invented image, not supernatural perception. Domestic-horror revision: adapt. The mental reconstruction has real referents; it is distinct from E040 route scouting and demands no written map. Domestic-horror revision: adapt. The task completes a source/echo/present episode, not an abstract transported finger ring. No exact words or reversed order are tested. Domestic-horror revision: replace. This ends a self-authored habitual act; the cloth rolling exercise is removed. It is not a route or object-fold task. Domestic-horror revision: replace. A completed carried return differs from E017’s empty-hand offering and E013’s two ownership declarations. Domestic-horror revision: adapt. Target-rule reference updated for shared object staging, free story mixing and existing paper-free household props. No runtime controls are asserted. Target-rule reference updated for shared object staging, free story mixing and existing paper-free household props. No runtime controls are asserted. Claiming the item transfers the attachment; moving its whole resting place releases the repeated return. The actor visibly moves it; no autonomous motion is claimed. Domestic-horror revision: replace. Literary connections are thematic; capture and release are authored rules. Transferring the alien trace accepts it; witnessing both hands rejoined interrupts the split. Contact is light, negotiated and requires only one rescuer hand. Domestic-horror revision: replace. Literary connections are thematic; capture and release are authored rules. Pocketing appropriates the debt; leaving the offered coin and removing both hands finishes payment. Domestic-horror revision: adapt. Literary connections are thematic; capture and release are authored rules. Repeated changes accept the replacement; an unchanged face through two passes provides a stable identity. Unlike P024, movement timing is not the puzzle. Domestic-horror revision: replace. Literary connections are thematic; capture and release are authored rules. Opening breaks the scene’s boundary; answering its closed lid and listening completes the exchange. Domestic-horror revision: retain_core. Literary connections are thematic; capture and release are authored rules. Answering lends the channel a second voice; capping and setting it down closes it. Only the performer produces the sound. Domestic-horror revision: replace. Literary connections are thematic; capture and release are authored rules. Encouraging continued sleep gives the intruder time; eliciting the resident’s own account of the present room wakes them. No special candle or factual quiz is used. Domestic-horror revision: replace. Literary connections are thematic; capture and release are authored rules. Inspecting one’s own face accepts the channel; turning its reflective surface down closes it. Domestic-horror revision: retain_core. Literary connections are thematic; capture and release are authored rules. Speaking into the actor’s listening channel joins the intrusion; making one’s own outward listening channel restores a separate listener. Domestic-horror revision: adapt. Literary connections are thematic; capture and release are authored rules. Reopening repeats the interrupted move; fastening the already-closed case finishes the departure. No real luggage or exact password is needed. Domestic-horror revision: replace. Literary connections are thematic; capture and release are authored rules. Peeking and concealing restores the secret; completely uncovering and separating the cloth ends it. Domestic-horror revision: retain_core. Literary connections are thematic; capture and release are authored rules. Claiming the missing resident’s role from the wrong side joins the false return; an actual relocated voice completes the expected arrival. Domestic-horror revision: replace. Literary connections are thematic; capture and release are authored rules. Eviction repeats displacement; recognizing the resident as the one who grants permission restores ownership. Unlike P011, the rescuer rejects no identity imposed on them. Domestic-horror revision: replace. Literary connections are thematic; capture and release are authored rules. Turning the object preserves the light relation; moving the real light changes the trace while leaving its owner still. No impossible independent shadow is claimed. Domestic-horror revision: adapt. Literary connections are thematic; capture and release are authored rules. Outlining preserves the detached trace; linking one’s own chest and a whole hand at that place returns it to a living owner. Unlike P061 this uses no person-to-person palm contact. Domestic-horror revision: replace. Literary connections are thematic; capture and release are authored rules. Taking the observer’s place sustains domination; a visible screen across its sightline lets the person straighten. No actual shadow, strain or support of body weight is required. Domestic-horror revision: replace. Literary connections are thematic; capture and release are authored rules. No sensing or runtime implementation is claimed. No sensing or runtime implementation is claimed."
     },
     {
       "sourceId": "user:domestic-horror",
@@ -3420,17 +3233,6 @@
         "E040",
         "E041",
         "E042",
-        "T001",
-        "T002",
-        "T003",
-        "T004",
-        "T005",
-        "T006",
-        "T007",
-        "T008",
-        "T009",
-        "T010",
-        "T011",
         "R001",
         "R002",
         "R003",
@@ -3467,7 +3269,6 @@
         "P023",
         "P026",
         "P059",
-        "T007",
         "M001"
       ],
       "reason": "Replace carried-object missions and explicitly stage required scene props in their locations. Preserve a phone as the only required carried equipment."
@@ -3513,8 +3314,6 @@
         "P059",
         "P068",
         "P069",
-        "T004",
-        "T007",
         "P067",
         "E037"
       ],

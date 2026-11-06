@@ -121,7 +121,7 @@ export function RitualBoard({ game, online = true, animate = false }: { game: Ga
         : <><span className={styles.caption}>{captions[i]}</span><small>Закрыто</small></>}
     </li>)}</ol>
     <p>Прорицания → дверь → выход</p>
-    <p>Освобождение · миссия{game.venue.mode === 'ordinary' ? ' · испытание' : ''}<br />Один успех = один шаг.</p>
+    <p>Освобождение · миссия<br />Один успех = один шаг.</p>
     {ritual.preview && <aside className={styles.preview} role="status">
       <strong>Предварительный итог</strong>
       <p>{ritual.preview.successes} успехов · после подтверждения останется {ritual.preview.remainingSteps} шагов.</p>

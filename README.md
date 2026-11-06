@@ -2,7 +2,7 @@
 
 A cooperative horror party game with a shared laptop display and private phone assignments. Product copy is Russian; project and agent documentation is English.
 
-The executable runs [First Game and Ordinary](docs/product/current-implementation.md) under the [accepted rules](docs/product/README.md): seven rounds, persistent possession and the original candle budget. Ordinary adds private computer-Master trials using authored cards.
+The executable runs [First Game and Ordinary](docs/product/current-implementation.md) under the [accepted rules](docs/product/README.md): seven rounds, persistent possession and the original candle budget.
 
 The client uses App, Pages and Shared layers from Feature-Sliced Design. Organizer and player pages expose public interfaces; Shared owns their common connection and CSS Module shell. The server and cross-runtime protocol remain separate. See [architecture](docs/agent/architecture.md) for placement and ESLint import restrictions.
 
@@ -43,15 +43,13 @@ The `.runtime` directory is machine-specific; Windows users should install Node 
 2. Open the panel on the laptop, enter that code and create a room. The laptop does not count as a participant.
 3. For remote phones, start Tuna as described below and paste its public HTTPS origin into the panel. Use the generated invitation link or QR; a manually opened player page asks for the six-character room code and a name.
 4. Join from one phone per participant, including the organizer. Refresh/reconnect retains membership in the same browser and origin. Closing a tab retains its slot; explicit leave or organizer removal releases it.
-5. Stop with Ctrl+C. The program saves to data/party-v7.json and restores the room on restart; active phases return paused. Enter the new organizer code from the startup terminal. Organizer authorization lasts for its browser tab, while phones store their own recovery key locally. Keep the organizer code separate from the invitation.
+5. Stop with Ctrl+C. The program saves to data/party-v8.json and restores the room on restart; active phases return paused. Enter the new organizer code from the startup terminal. Organizer authorization lasts for its browser tab, while phones store their own recovery key locally. Keep the organizer code separate from the invitation.
 
 The public origin field accepts HTTPS without credentials, additional paths, query parameters or fragments. It generates invitations only; it does not reconfigure Tuna. Browser storage must be available before entering. If clipboard copying is unavailable, select the invitation URL manually.
 
 ## Deal and read cards
 
-Choose First Game for seven rounds without trial effects, or Ordinary for seven private Master trials using the authored adaptation. Save the venue, optional subsets, Dwelling and seating order, and read the prologue before issuing cards.
-
-After 5–12 participants join, save the base, permitted locations, empty Spirit Dwelling, story and order around the table. Deal from the laptop. Roles alternate in table order; the organizer's phone participates. At later deals only confirmed returners receive new cards. Players still in groups keep their existing cards and location.
+Save the base, at least one permitted location and the optional mission categories. Once 5–12 participants have joined, deal from the laptop. The organizer participates from a phone. At later deals only confirmed returners receive new cards. Players still in groups keep their existing cards and location.
 
 Phones open cards privately, mark readiness or request replacements. Readiness never starts the timer. Start the round from the laptop after the first story. Replacement retains the recipient's role and does not change anyone else's card.
 
@@ -77,7 +75,7 @@ Release, capture, mission and undo can be recorded without a connection. For rec
 
 ## Saved party and recovery
 
-Normal development/production launch uses one private data/party-v7.json under the working directory (the supplied launchers use the project root). Keep data on local disk. Start one instance per directory; a second writer fails startup. A killed process leaves a uniquely named claim that a later launch removes after confirming its owner has exited. Do not copy data into a public directory or send it to players: it contains bearer keys and private cards. Programmatic test servers default to memory; disk tests use temporary directories.
+Normal development/production launch uses one private data/party-v8.json under the working directory (the supplied launchers use the project root). Keep data on local disk. Start one instance per directory; a second writer fails startup. A killed process leaves a uniquely named claim that a later launch removes after confirming its owner has exited. Do not copy data into a public directory or send it to players: it contains bearer keys and private cards. Programmatic test servers default to memory; disk tests use temporary directories.
 
 After restarting, use the new organizer code printed in the terminal. Phones recover on the same address and browser. Active placement and exorcism restore paused; continue manually after checking everyone. Sound ownership must be selected again. Closing the room saves an empty checkpoint, so it stays closed after restart.
 

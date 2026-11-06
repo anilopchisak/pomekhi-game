@@ -703,28 +703,6 @@
       "rationale": "Two viewpoints on an empty place, an altered ending to a witnessed gesture, and a self-directed release after two visits need no equipment and have distinct completions."
     }
   ],
-  "trialReview": {
-    "originalExamples": [
-      "T001",
-      "T002",
-      "T003",
-      "T004"
-    ],
-    "newOrFanInspired": [
-      "T005",
-      "T006",
-      "T007",
-      "T008",
-      "T009",
-      "T010",
-      "T011"
-    ],
-    "captureReward": "T001 late branch and some T004 outcomes can reward confirmed captivity or non-delivery. This is a trial success only; it never restores invalidated personal mission credit.",
-    "evidence": "T002 fear must be affirmed by the affected participant. T008 and T010 answers must remain independent until recorded. T003 silence and T004 non-delivery require an explicit report, not missing packets.",
-    "firstGame": "All effects and bonuses suppressed; selected cards count rounds only.",
-    "branchTiming": "Both branches are complete. The pre-movement checking-entry convention is explicitly proposed, not asserted as a verified source ruling.",
-    "admission": "Unavailable participants or naturally available required features are checked before assignment, never rerolled after an outcome is known. There are no task props; unknown reports remain pending."
-  },
   "walkthroughs": [
     {
       "scenario": "sole free rescuer",
@@ -743,10 +721,6 @@
       "result": "Only people make sounds and move their bodies/phones. Hand-shadow tasks require a real prechecked dim-screen effect. Existing house mirrors are fixed natural features: the angel must actually see its own face. No unseen autonomous object is claimed."
     },
     {
-      "scenario": "real stop",
-      "result": "T006 uses shoulder-touch plus outward open palm, explicitly unlike a real stop. Stops, technical help, consent and reflexive fear remain outside capture and trial evidence."
-    },
-    {
       "scenario": "zero task props",
       "result": "No carried or staged equipment is used. Group members repeat voice/body performance, with pauses as needed. The user permits ordinary existing house mirrors: the angel simply sees its own face; the mirror is not touched. The Dwelling is an agreed empty place."
     }
@@ -755,7 +729,7 @@
     "Live puzzle discoverability without additional assistance.",
     "Real light visibility, table layout and audible announcements.",
     "Comfort with agreed contact and frightening acting.",
-    "Seven-round candle budget and practical mission/trial success rates.",
+    "Seven-round candle budget and practical mission success rates.",
     "Native device/browser behavior, networking and implementation of presently absent mechanics."
   ]
 }

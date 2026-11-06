@@ -169,7 +169,7 @@ it('closes the roster shuffle confirmation so the organizer can retry a lost ack
     value(lobby.execute(`phone-${i}`, 'player:join', { roomCode: code, name: `Player ${i}`, resumeKey: String(i).repeat(64) }));
   }
   value(lobby.execute('host', 'venue:configure', { ...gameBase(), venue: {
-    base: 'База', zones: ['Кухня'], dwelling: { zone: 'Кухня', place: 'Угол' },
+    base: 'База', zones: ['Кухня'],
     order: lobby.viewFor('host').room.players.map(player => player.id),
   } }));
   const original = value(lobby.execute('host', 'deal:create', { ...base(), possessedCount: 2 })).room.dealing.dealId;
@@ -206,7 +206,7 @@ it('lets the organizer reverse an accepted correction after all journals are con
   const players = phones.map(({ id, credentials }, i) =>
     value(lobby.execute(id, 'player:join', { ...credentials, name: `Player ${i}` })));
   value(lobby.execute('host', 'venue:configure', { ...gameBase(), venue: {
-    base: 'База', zones: ['Кухня'], dwelling: { zone: 'Кухня', place: 'Угол' },
+    base: 'База', zones: ['Кухня'],
   } }));
   value(lobby.execute('host', 'deal:create', { ...base(), possessedCount: 0 }));
   value(lobby.execute('host', 'round:start', { ...gameBase(), confirmWarnings: true }));
@@ -263,8 +263,9 @@ it.each([
     'Подготовка к игре', 'Фаза подготовки', 'Фаза экзорцизма', 'Фаза проверки',
     'Карты прорицания', 'Конец игры', 'Дополнительные сведения',
   ]);
-  expect(dialog.textContent).toContain('Испытания Великого Мастера проходят только в «Обычной партии»');
+  expect(dialog.textContent).not.toMatch(/испытани[ея] (?:Великого )?Мастера/i);
   expect(dialog.textContent).toContain('База — место, где стоит ноутбук и собираются игроки.');
+  expect(dialog.textContent).not.toMatch(/Обител[ьи]|подношени/i);
   expect(dialog.textContent).toContain('В этой партии на расстановку отведено 60 сек.');
   expect(dialog.textContent).toContain('В этой партии на поиск отведено 300 сек.');
   expect(dialog.textContent).toContain('В этой партии ожидание длится до 120 сек.');
@@ -280,7 +281,7 @@ it('shows a group as one release choice and keeps the exorcist’s corrections i
   const players = Array.from({ length: 7 }, (_, i) =>
     value(lobby.execute(`phone-${i}`, 'player:join', { roomCode: code, name: `Player ${i}`, resumeKey: String(i).repeat(64) })));
   value(lobby.execute('host', 'venue:configure', { ...gameBase(), venue: {
-    base: 'База', zones: ['Кухня'], dwelling: { zone: 'Кухня', place: 'Угол' }, order: players.map(player => player.playerId),
+    base: 'База', zones: ['Кухня'], order: players.map(player => player.playerId),
   } }));
   value(lobby.execute('host', 'deal:create', { ...base(), possessedCount: 0 }));
   value(lobby.execute('host', 'round:start', { ...gameBase(), confirmWarnings: true }));

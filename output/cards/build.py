@@ -19,7 +19,7 @@ REVISION = json.loads((HERE / 'revision-audit.json').read_text())
 CARDS = PACK['cards']
 BY_ID = {card['id']: card for card in CARDS}
 TYPE_LABELS = {
-    'possessed': 'Одержимые', 'exorcist': 'Экзорцисты', 'trial': 'Испытания Мастера',
+    'possessed': 'Одержимые', 'exorcist': 'Экзорцисты',
     'prophecy': 'Прорицания', 'story': 'Истории', 'reference': 'Памятки',
 }
 SET_LABELS = {
@@ -31,11 +31,11 @@ FAMILY_LABELS = {
     'movement': 'Движение', 'space': 'Пространство', 'sound': 'Звук',
     'acting': 'Актёрская игра', 'observation': 'Наблюдение', 'rhythm': 'Ритм',
     'gesture': 'Жест', 'pantomime': 'Пантомима', 'posture': 'Поза',
-    'light': 'Свет', 'memory': 'Память', 'dwelling': 'Обитель духов',
+    'light': 'Свет', 'memory': 'Память',
     'release': 'Освобождение', 'social': 'Взаимодействие',
     'ritual': 'Ритуал', 'story': 'Сюжет', 'reference': 'Правила',
 }
-EXPECTED = {'possessed': 75, 'exorcist': 42, 'trial': 11, 'prophecy': 11, 'story': 6, 'reference': 2}
+EXPECTED = {'possessed': 75, 'exorcist': 42, 'prophecy': 11, 'story': 6, 'reference': 2}
 
 
 def save(name, value):
@@ -57,8 +57,8 @@ def validate():
     assert PACK['format'] == 'pomekhi.editorial-card-set'
     assert PACK['version'] == 1
     assert dict(Counter(c['type'] for c in CARDS)) == EXPECTED
-    assert len(CARDS) == len(BY_ID) == 147
-    assert len({c['title'].casefold() for c in CARDS}) == 147
+    assert len(CARDS) == len(BY_ID) == 136
+    assert len({c['title'].casefold() for c in CARDS}) == 136
     source_ids = {row['sourceId'] for row in AUDIT['entries']}
     assert len(source_ids) == len(AUDIT['entries']) == sum(AUDIT['coverage'].values())
     assert Counter(row['sourceId'].split(':')[0] for row in AUDIT['entries']) == {
@@ -71,7 +71,7 @@ def validate():
     assert len({r['mechanic'] for r in review['possessed']}) == 75
     assert all(all(i in BY_ID for i in group['cards']) for group in review['similarityReviews'])
     for c in CARDS:
-        assert re.fullmatch(r'[PETRSM]\d{3}', c['id'])
+        assert re.fullmatch(r'[PERSM]\d{3}', c['id'])
         assert c['title'].strip() and c['family'] in FAMILY_LABELS
         assert isinstance(c['requirements'], list)
         assert len(c['sets']) == len(set(c['sets']))
@@ -89,17 +89,7 @@ def validate():
             assert c['infectionCondition'] != c['releaseCondition']
         if c['type'] == 'exorcist':
             assert c['mission'].strip() and c['successCondition'].strip()
-            assert isinstance(c['depositRequired'], bool)
-            if c['depositRequired']:
-                assert 'Обител' in c['mission'] and c['requirements']
-        if c['type'] == 'trial':
-            assert set(c['branches']) == {'zeroOrOne', 'two'}
-            assert c['delivery']['audience'] == 'selected_exorcist'
-            assert c['delivery']['instruction'].strip() and c['hiddenObjective'].strip()
-            assert len(c['evidence']) >= 2
-            assert c['branches']['zeroOrOne']['success'] != c['branches']['two']['success']
-            for branch in c['branches'].values():
-                assert branch['effect'].startswith('Один дополнительный успех ритуала.')
+            assert 'depositRequired' not in c and 'обител' not in ' '.join(strings({k: v for k, v in c.items() if k != 'provenance'})).lower()
         if c['type'] == 'prophecy':
             assert c['rule'].strip() and c['trigger'].strip() and c['action'].strip()
             assert c['scope'] == ('ritual_end' if c['final'] else 'ritual_table')
@@ -154,7 +144,7 @@ def validate_revision():
         assert source['urls'] and all(url.startswith('https://') for url in source['urls'])
         assert all(source[k] for k in ['creator', 'setting', 'plot', 'fearActions', 'adaptationBoundary'])
     assert {row['id'] for row in REVISION['primary']} == set(BY_ID)
-    assert len(REVISION['primary']) == 147
+    assert len(REVISION['primary']) == 136
     for kind, counts in [('possessed', {'retain_core': 31, 'adapt': 18, 'replace': 26}),
                          ('exorcist', {'retain_core': 20, 'adapt': 14, 'replace': 8})]:
         assert Counter(row['decision'] for row in REVISION['primary'] if row['type'] == kind) == counts
@@ -281,16 +271,6 @@ def card_html(c, *, editorial=True, collection=None, answers=None):
     elif kind == 'exorcist':
         content += paragraph('Миссия', c['mission'])
         content += paragraph('Условие выполнения', c['successCondition'], 'release outcome')
-        if c['depositRequired']:
-            content += '<p class="deposit">Подношение: лично посетите Обитель и выполните указанный жест или фразу. Телефон остаётся у вас.</p>'
-    elif kind == 'trial':
-        content += '<p class="private">Лично выбранному экзорцисту в начале экзорцизма</p>'
-        content += paragraph('Инструкция игроку', c['delivery']['instruction'])
-        content += '<div class="outcome trial-secret">'
-        content += paragraph('Скрытая цель Мастера', c['hiddenObjective'])
-        for branch, title in [('zeroOrOne', 'Открыто 0 или 1 прорицание'), ('two', 'Открыты 2 прорицания')]:
-            content += paragraph(title, c['branches'][branch]['success'] + '\n\n' + c['branches'][branch]['effect'])
-        content += '<h4>Подтверждение физических фактов</h4><ul>' + ''.join('<li>' + escape(t) + '</li>' for t in c['evidence']) + '</ul></div>'
     elif kind == 'prophecy':
         content += paragraph('Финал' if c['final'] else 'Условие у ритуального стола', c['rule'])
         content += paragraph('Когда действует', c['trigger'])
@@ -326,7 +306,7 @@ a{color:var(--moss);text-underline-offset:3px}button,input,select{font:inherit}b
 button{cursor:pointer}button:hover{background:#e7eadf}button:focus-visible,a:focus-visible,summary:focus-visible,input:focus-visible,select:focus-visible{outline:3px solid #9b682c;outline-offset:3px}
 .hero{background:#232a24;color:#f5f1e5;padding:52px max(22px,calc((100vw - 1180px)/2));border-bottom:5px solid #8b604b}.eyebrow{font-size:12px;letter-spacing:.2em;color:#d1b295;font-weight:700}.hero h1{font:normal clamp(34px,6vw,62px)/1.1 Georgia,serif;margin:18px 0}.hero p{max-width:780px;color:#d8dcd2}.hero a{color:#e8ccb0}.hero-links{display:flex;gap:12px;flex-wrap:wrap}.hero-links a{padding:7px 0}
 main{max-width:1224px;padding:26px 22px 64px;margin:auto}.intro{max-width:940px;margin-bottom:22px}.intro summary{font-weight:600;cursor:pointer}.notice{border-left:3px solid var(--blood);padding:10px 16px;background:#e9e4d8}.toolbar{position:sticky;top:0;z-index:2;background:var(--paper);padding:12px 0;border-bottom:1px solid var(--line);margin-bottom:24px;box-shadow:0 10px 12px -12px #0007}.filters{display:grid;grid-template-columns:minmax(150px,1fr) minmax(140px,.8fr) minmax(180px,1.2fr) auto;gap:10px;align-items:end}label{font-size:12px;font-weight:600;display:block}label input,label select{display:block;width:100%;font-size:14px;margin-top:4px}.status{font-size:13px;color:#545f50;margin:10px 0 0}.grid{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:22px;align-items:start}
-.card{min-width:0;background:#fffdf8;border:1px solid var(--line);border-top:3px solid #56634f;border-radius:4px;padding:24px;scroll-margin-top:145px}.card[hidden]{display:none}.card header{border-bottom:1px solid var(--line);padding-bottom:16px}.card-id{font-size:13px;font-weight:700;letter-spacing:.13em;color:#6d4638}.family{font-size:12px;float:right;color:#62705b}.card h3{font:normal 28px/1.2 Georgia,serif;margin:10px 0 12px}.tag{display:inline-block;background:#edf0e8;border:1px solid #d5dacb;border-radius:3px;padding:2px 7px;font-size:11px;margin:2px 5px 0 0}.field{margin:18px 0}.field h4,.requirements h4,.trial-secret h4{font-size:11px;letter-spacing:.09em;text-transform:uppercase;margin:0 0 6px;color:#5c6756}.field p{margin:0 0 10px;font-size:15px;line-height:1.65}.outcomes .field{padding:12px 14px;border-left:3px solid}.capture{border-color:#a25b4e;background:#f5e9e3}.release{border-color:#61825d;background:#edf2e9}.capture h4{color:#854538}.release h4{color:#46653c}.requirements{margin-top:20px;border-top:1px dashed var(--line);padding-top:14px}.requirements li,.trial-secret li{font-size:13px;margin:5px 0}ul{padding-left:20px}.private,.deposit{font-size:12px;font-weight:600;color:#714c39}.trial-secret{background:#eeebe2;border:1px dashed #bcb8a7;padding:0 14px 12px;margin-top:20px}.editorial{border-top:1px solid var(--line);padding-top:12px;margin-top:18px;color:#65705c;font-size:12px;overflow-wrap:anywhere}.editorial summary{cursor:pointer}.editorial p{line-height:1.5}.prologue p{font-family:Georgia,serif;font-size:17px}.conditions-hidden .outcome{display:none}.empty{padding:30px;border:1px dashed var(--line);text-align:center}.supplement{margin-top:48px;border-top:2px solid #5c6756;padding-top:24px}.supplement h2{font:normal 28px Georgia,serif}.scroll{overflow:auto;max-height:580px;border:1px solid var(--line)}table{border-collapse:collapse;width:100%;font-size:12px;background:#fffdf8}th,td{text-align:left;vertical-align:top;padding:12px;border-bottom:1px solid var(--line);min-width:100px}th{background:#e3e7db;position:sticky;top:0}td:last-child{min-width:260px}.legend{display:flex;flex-wrap:wrap;gap:7px;margin:16px 0}.pair{border-bottom:1px solid var(--line);padding:10px 0}.pair summary{cursor:pointer}.pair p{font-size:13px}.pair pre{white-space:pre-wrap;font-size:12px;overflow-wrap:anywhere}.footer{font-size:13px;color:#626e5b;margin-top:32px}code{overflow-wrap:anywhere}
+.card{min-width:0;background:#fffdf8;border:1px solid var(--line);border-top:3px solid #56634f;border-radius:4px;padding:24px;scroll-margin-top:145px}.card[hidden]{display:none}.card header{border-bottom:1px solid var(--line);padding-bottom:16px}.card-id{font-size:13px;font-weight:700;letter-spacing:.13em;color:#6d4638}.family{font-size:12px;float:right;color:#62705b}.card h3{font:normal 28px/1.2 Georgia,serif;margin:10px 0 12px}.tag{display:inline-block;background:#edf0e8;border:1px solid #d5dacb;border-radius:3px;padding:2px 7px;font-size:11px;margin:2px 5px 0 0}.field{margin:18px 0}.field h4,.requirements h4{font-size:11px;letter-spacing:.09em;text-transform:uppercase;margin:0 0 6px;color:#5c6756}.field p{margin:0 0 10px;font-size:15px;line-height:1.65}.outcomes .field{padding:12px 14px;border-left:3px solid}.capture{border-color:#a25b4e;background:#f5e9e3}.release{border-color:#61825d;background:#edf2e9}.capture h4{color:#854538}.release h4{color:#46653c}.requirements{margin-top:20px;border-top:1px dashed var(--line);padding-top:14px}.requirements li{font-size:13px;margin:5px 0}ul{padding-left:20px}.private{font-size:12px;font-weight:600;color:#714c39}.editorial{border-top:1px solid var(--line);padding-top:12px;margin-top:18px;color:#65705c;font-size:12px;overflow-wrap:anywhere}.editorial summary{cursor:pointer}.editorial p{line-height:1.5}.prologue p{font-family:Georgia,serif;font-size:17px}.conditions-hidden .outcome{display:none}.empty{padding:30px;border:1px dashed var(--line);text-align:center}.supplement{margin-top:48px;border-top:2px solid #5c6756;padding-top:24px}.supplement h2{font:normal 28px Georgia,serif}.scroll{overflow:auto;max-height:580px;border:1px solid var(--line)}table{border-collapse:collapse;width:100%;font-size:12px;background:#fffdf8}th,td{text-align:left;vertical-align:top;padding:12px;border-bottom:1px solid var(--line);min-width:100px}th{background:#e3e7db;position:sticky;top:0}td:last-child{min-width:260px}.legend{display:flex;flex-wrap:wrap;gap:7px;margin:16px 0}.pair{border-bottom:1px solid var(--line);padding:10px 0}.pair summary{cursor:pointer}.pair p{font-size:13px}.pair pre{white-space:pre-wrap;font-size:12px;overflow-wrap:anywhere}.footer{font-size:13px;color:#626e5b;margin-top:32px}code{overflow-wrap:anywhere}
 @media(min-width:1000px){.card[data-type=story],.card[data-type=reference]{grid-column:span 2}.card[data-type=story] .prologue{max-width:780px}.card[data-type=reference] .field{max-width:880px}}
 @media(max-width:760px){.filters{grid-template-columns:1fr 1fr}.filters label:nth-child(3){grid-column:1/-1}.filters button{grid-column:1/-1}.grid{grid-template-columns:1fr}.hero{padding-top:30px;padding-bottom:28px}.toolbar{position:relative}.card{padding:18px;scroll-margin-top:20px}.card h3{font-size:25px}.family{float:none;display:block;margin-top:4px}main{padding-inline:14px}}
 @media print{body{background:white;font-size:11px}.hero{background:white;color:#111;padding:0 0 14px;border-color:#111}.hero p{color:#333}.hero-links,.toolbar,.intro,.supplement,.editorial,.footer,.empty{display:none!important}.hero h1{font-size:30px}.hero .eyebrow{color:#333}main{padding:14px 0}.grid{display:block}.card{break-inside:avoid;page-break-inside:avoid;box-shadow:none;margin:0 0 14px;padding:14px}.card[hidden]{display:none}.card h3{font-size:20px}.field p{font-size:11px;line-height:1.45}.field{margin:10px 0}.prologue p{font-size:13px}.tag{font-size:9px}.conditions-hidden .outcome{display:block}}
@@ -401,8 +381,6 @@ def quick_answers(cards):
         'possessed': [('Кто вы и чего хотите?', ''), ('Как заразить экзорциста?', 'capture outcome'),
                       ('Как экзорцисту освободить одержимого?', 'release outcome')],
         'exorcist': [('Как выполнить личную миссию?', '')],
-        'trial': [('Как выполнить испытание?', ''), ('Когда засчитывается при 0–1 прорицании?', 'outcome'),
-                  ('Когда засчитывается при 2 прорицаниях?', 'outcome')],
         'prophecy': [('Как соблюдать прорицание?', '')],
         'story': [('С чего начинается история?', '')],
         'reference': [('Что делать в этой роли?', '')],
@@ -433,7 +411,7 @@ def build_all_html():
     comedy_by_role = json.loads(comedy_source.read_text().strip().removeprefix('export default ').removesuffix(';'))
     comedy = [dict(card, type=role) for role, missions in comedy_by_role.items() for card in missions]
     cards = CARDS + comedy
-    assert len(CARDS) == 147
+    assert len(CARDS) == 136
     assert len({card['id'] for card in cards}) == len(cards)
     assert Counter(card['type'] for card in comedy) == {'possessed': 24, 'exorcist': 16}
     answers = quick_answers(cards)
@@ -479,7 +457,7 @@ def build_html(pair_review):
         pairs += ''.join('<p lang="en">' + escape(note) + '</p>' for note in row['notes'])
         pairs += '<pre lang="en">' + escape(json.dumps(row['witnesses'], ensure_ascii=False, indent=2)) + '</pre></details>'
     revision_rows = ''
-    decision_labels = {'retain_core': 'Сохранена основа', 'adapt': 'Адаптировано', 'replace': 'Заменено', 'adapt_no_props': 'Без реквизита', 'existing_house_mirror': 'Зеркало дома'}
+    decision_labels = {'retain_core': 'Сохранена основа', 'adapt': 'Адаптировано', 'replace': 'Заменено', 'adapt_no_props': 'Без реквизита', 'adapt_observable_scene': 'Сцена для других игроков', 'existing_house_mirror': 'Зеркало дома'}
     for row in REVISION['primary']:
         target = '#' + row['id']
         revision_rows += '<tr><td><a href="' + target + '">' + row['id'] + '</a></td><td>' + escape(row['title']) + '</td><td>' + decision_labels[row.get('currentDecision', row['decision'])] + '</td><td lang="en">' + escape(row['entityIntent']) + '</td><td lang="en">' + escape(row['causalLink']) + '</td></tr>'
@@ -491,19 +469,19 @@ def build_html(pair_review):
     css_hash = hashlib.sha256(STYLE.encode()).hexdigest()
     return f'''<!doctype html>
 <html lang="ru"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1">
-<meta name="description" content="Полный авторский набор из 147 карт для игры с компьютерным Мастером.">
-<title>Помехи — 147 карт</title><style>{STYLE}</style></head>
+<meta name="description" content="Полный авторский набор из 136 карт для игры с компьютерным Мастером.">
+<title>Помехи — 136 карт</title><style>{STYLE}</style></head>
 <body><header class="hero"><div class="eyebrow">ПОМЕХИ / АВТОРСКАЯ КОЛОДА / 03.11.2026</div>
 <h1>Кто-то остался<br>по ту сторону света.</h1>
-<p>147 карт: одержимые, миссии экзорцистов, испытания Мастера, прорицания, истории и памятки. Здесь открыт полный текст для авторского просмотра. Этот каталог нельзя показывать игрокам на общем экране во время партии.</p>
-<nav class="hero-links" aria-label="Материалы набора"><a href="all.html">Все карты на одной странице</a><a href="cards.json" download>Полный JSON</a><a href="#domestic-review">Что изменено в 147 картах</a><a href="#fiction-review">12 произведений</a><a href="#source-review">{len(AUDIT['entries'])} исходных записей</a><a href="#pair-review">45 пар прорицаний</a></nav></header>
+<p>136 карт: одержимые, миссии экзорцистов, прорицания, истории и памятки. Здесь открыт полный текст для авторского просмотра. Этот каталог нельзя показывать игрокам на общем экране во время партии.</p>
+<nav class="hero-links" aria-label="Материалы набора"><a href="all.html">Все карты на одной странице</a><a href="cards.json" download>Полный JSON</a><a href="#domestic-review">Что изменено в 136 картах</a><a href="#fiction-review">12 произведений</a><a href="#source-review">{len(AUDIT['entries'])} исходных записей</a><a href="#pair-review">45 пар прорицаний</a></nav></header>
 <main><div class="intro"><p class="notice">Авторская адаптация оригинальных правил «Одержимых» с компьютерным Мастером. Набор подготовлен отдельно от приложения: текущий импорт игры его не поддерживает. Проверка текстов выполнена; живой игровой тест ещё не проводился.</p>
 <details><summary>Как читать набор и выбирать дополнительные карты</summary><p>Обычные карты не имеют дополнительных отметок. Карты помещения и улицы выбирают по месту игры, физический контакт — по согласию группы, повышенную сложность — по желанию. Совместные отметки действуют одновременно. Все необходимые условия места и реквизит указаны на карточках.</p>{rules}</details></div>
 {toolbar(CARDS)}
 <div class="grid">{''.join(card_html(c) for c in CARDS)}</div><p class="empty" id="empty" hidden>По этим условиям карт нет. Измените поиск или набор.</p>
-<section class="supplement" id="domestic-review"><h2>Домашний хоррор: решения по всем картам</h2><p>Первая домашняя редакция: у одержимых 31 сохранённая основа, 18 адаптаций и 26 замен; у экзорцистов — 20, 14 и 8. Последующая правка убирает весь реквизит: в таблице она отмечена отдельно. Ангел видит себя в уже имеющемся зеркале дома. Вступления свободно сочетаются с колодой. Широкую таблицу можно прокручивать в сторону.</p><p><a href="revision-audit.json">Полный реестр JSON</a> · <a href="revision-audit.csv" download>Таблица CSV</a> · <a href="research.md">Исследование</a></p><div class="scroll" tabindex="0" role="region" aria-label="Решения по 147 картам"><table><thead><tr><th>Карта</th><th>Название</th><th>Решение</th><th>Entity intention</th><th>Why the actions fit</th></tr></thead><tbody>{revision_rows}</tbody></table></div></section>
+<section class="supplement" id="domestic-review"><h2>Домашний хоррор: решения по всем картам</h2><p>Первая домашняя редакция: у одержимых 31 сохранённая основа, 18 адаптаций и 26 замен; у экзорцистов — 20, 14 и 8. Последующая правка убирает весь реквизит: в таблице она отмечена отдельно. Ангел видит себя в уже имеющемся зеркале дома. Вступления свободно сочетаются с колодой. Широкую таблицу можно прокручивать в сторону.</p><p><a href="revision-audit.json">Полный реестр JSON</a> · <a href="revision-audit.csv" download>Таблица CSV</a> · <a href="research.md">Исследование</a></p><div class="scroll" tabindex="0" role="region" aria-label="Решения по 136 картам"><table><thead><tr><th>Карта</th><th>Название</th><th>Решение</th><th>Entity intention</th><th>Why the actions fit</th></tr></thead><tbody>{revision_rows}</tbody></table></div></section>
 <section class="supplement" id="fiction-review"><h2>Произведения и художественные мотивы</h2><p>Литературные тексты, материалы изданий фильмов и авторские свидетельства использованы как источники мотивов. Условия заражения и освобождения написаны для нашей игры. Это не восстановленные коммерческие карточки и не утверждения о настоящих духах.</p>{fiction_rows}</section>
-<section class="supplement" id="source-review"><h2>Что изменено в исходных картах</h2><p>147 карт авторского PDF, 90 действующих личных карт, 7 действующих прорицаний, 19 оригинальных примеров ; явных запросов пользователя: {AUDIT['coverage']['userRequests']}. Упоминания реквизита в исторических источниках не являются требованиями текущих карточек. «Заменить» связывает исходную запись с заменой. Пояснения для последующего внедрения оставлены на английском.</p>
+<section class="supplement" id="source-review"><h2>Что изменено в исходных картах</h2><p>136 карт авторского PDF, 90 действующих личных карт, 7 действующих прорицаний, 19 оригинальных примеров ; явных запросов пользователя: {AUDIT['coverage']['userRequests']}. Упоминания реквизита в исторических источниках не являются требованиями текущих карточек. «Заменить» связывает исходную запись с заменой. Пояснения для последующего внедрения оставлены на английском.</p>
 <div class="scroll" tabindex="0" role="region" aria-label="Таблица переработок"><table><thead><tr><th>Источник</th><th>Название</th><th>Решение</th><th>Новые карты</th><th>Причина / адаптация</th></tr></thead><tbody>{rows}</tbody></table></div></section>
 <section class="supplement" id="pair-review"><h2>Все 45 пар прорицаний</h2><p>Для каждой пары проверены обычная речь, ответ, отклик на слово-триггер, возвращение и завершение перемещения свечей. Это проверка описанных условий, а не доказательство удобства за настоящим столом.</p>{pairs}</section>
 <footer class="footer">Все карты — адаптации или новый авторский текст. Полная коммерческая колода по книге правил не восстановлена. Реквизит, свет, контакт, сложность разгадки, страх и баланс требуют проверки с участниками. Тексты и источники: <a href="cards.json">cards.json</a> · <a href="source-audit.json">source-audit.json</a> · <a href="prophecy-pairs.json">prophecy-pairs.json</a>.</footer></main><script>{SCRIPT}</script>
@@ -529,31 +507,30 @@ def main():
             writer.writerow({key: '; '.join(row[key]) if key == 'inspirations' else row.get(key, '') for key in fields})
     (HERE / 'index.html').write_text(build_html(pair_review))
     (HERE / 'all.html').write_text(build_all_html())
-    summary = dict(status='pass', cardCount=147, counts=EXPECTED,
+    summary = dict(status='pass', cardCount=136, counts=EXPECTED,
         sourceEntryCount=len(AUDIT['entries']), pairCount=45, witnessCount=225,
         perPossessedFamily=dict(Counter(c['family'] for c in CARDS if c['type'] == 'possessed')),
         perSubset={s: sum(s in c['sets'] for c in CARDS) for s in SET_LABELS},
         fictionSourceCount=len(FICTION_BY_ID), revisionRecordCount=len(REVISION['primary']) + len(REVISION['variants']),
         inputs={name: hashlib.sha256((HERE / name).read_bytes()).hexdigest() for name in ['cards.json', 'source-audit.json', 'editorial-review.json', 'build.py', 'fiction-sources.json', 'revision-audit.json', 'research.md']},
-        checks=['Exact 147-card count and six deck counts.', 'Stable unique IDs and titles.',
+        checks=['Exact 136-card count and five category counts.', 'Stable unique IDs and titles.',
             '75 distinct behavior/capture/release records; no missing conditions.',
             'No helper fields or helper commands in playable content.',
             'No exact duplicate behavior, capture, release or mission text.',
-            f"Source inventory covers 147+90+7+19 historical entries, {AUDIT['coverage']['userRequests']} user requests and every credited target.",
+            f"Source inventory covers {len(AUDIT['entries'])} credited entries, {AUDIT['coverage']['userRequests']} user requests and every credited target.",
             'No carried or staged task props; existing house mirrors are the explicit natural-scene exception.',
-            'All 185 revision decisions link intention, causal action and one of 12 fiction sources where applicable.',
+            'All 174 revision decisions link intention, causal action and one of 12 fiction sources where applicable.',
             'Approved 31/18/26 and 20/14/8 primary decisions and 27/9/2 variant decisions are complete.',
-            'Retained outcome contracts and movement editions match baseline hashes or explicit user-authorized preparation amendments; prophecy mechanics are unchanged.',
+            'Retained outcome contracts and movement editions match baseline hashes or explicit user-authorized card amendments; prophecy mechanics are unchanged.',
             'Paper-free active missions: no printed card, token, cardboard, envelope or drawing sheet is required.',
-            'Optional subset prerequisites and required on-site Dwelling offerings.',
-            '11 trials have private delivery, explicit evidence and two different branches.',
+            'Optional subset prerequisites. No Dwelling offering fields or instructions.',
             'Exactly 10 ordinary prophecies and one final door.',
             '45 unique ordinary-prophecy pairs with 225 bounded executable witnesses.'],
         limitations=['Text uniqueness is not proof of semantic diversity; see editorial-review.json.',
             'Finite prophecy witnesses do not cover every utterance or accessibility requirement.',
             'No live playtest, no physical phone, no LAN/Tuna scenario and no runtime integration.'])
     save('validation.json', summary)
-    print(f"PASS 147 paper-free cards; {len(AUDIT['entries'])} source entries; 45 prophecy pairs / 225 witnesses; offline HTML rebuilt.")
+    print(f"PASS 136 paper-free cards; {len(AUDIT['entries'])} source entries; 45 prophecy pairs / 225 witnesses; offline HTML rebuilt.")
 
 
 if __name__ == '__main__':

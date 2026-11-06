@@ -1,6 +1,5 @@
 import { createCatalog } from './catalog.js';
-import { trialTraits } from '../shared/protocol.js';
-import type { PresenceCorrection, TrialReviewFact } from '../shared/protocol.js';
+import type { PresenceCorrection } from '../shared/protocol.js';
 import type { SavedCatalog } from './catalog.js';
 import type { CatalogReply } from '../shared/protocol.js';
 import { createHash, randomInt, randomUUID, timingSafeEqual } from 'node:crypto';
@@ -8,6 +7,8 @@ import type { GameCue, GameSettings, LobbyCommand, LobbyError, LobbyReply, Lobby
 import { validOfflineEvent, validReleaseTargets } from './round-sync.js';
 import { createGame, validSettings } from './game.js';
 import type { GameClock, SavedGame } from './game.js';
+import { maxDeckHistory } from './deck-history.js';
+import type { DeckHistory } from './deck-history.js';
 
 const alphabet = 'ABCDEFGHJKLMNPQRSTUVWXYZ23456789';
 const maximumRequestsPerPrincipal = 1024;
@@ -26,9 +27,24 @@ interface Room {
 }
 export interface SavedLobby {
   catalog?: SavedCatalog;
+  deckHistory?: DeckHistory;
   revision: number; usedCodes: string[];
   room: null | { id: string; code: string; players: { id: string; name: string; key: string }[]; revoked: string[];
     game: SavedGame; requests: [string, [string, string][]][] };
+}
+function deckHistoryFromRoom(game: SavedGame | undefined): DeckHistory {
+  if (!game?.firstGame) return {};
+  const history: DeckHistory = {};
+  if (game.firstGame.story && game.venue?.storyId) history.stories = [game.venue.storyId];
+  const authored = game.venue?.mode === 'ordinary' || game.venue?.bank === 'authored';
+  if (game.ritual) history[authored ? 'authored-prophecies' : 'classic-prophecies'] = game.ritual.cards.slice(0, 2).map(card => card.id);
+  for (const role of ['exorcist', 'possessed'] as const) {
+    const used = game.dealing.usage?.find(([key]) => key === `${role}:3`)?.[1] ?? [];
+    const assigned = game.dealing.assignments.flatMap(([, { card }]) => card.role === role ? [card.id] : []);
+    const ids = [...new Set([...used, ...assigned])].slice(-maxDeckHistory);
+    if (ids.length) history[`${authored ? 'authored' : 'catalog'}-${role}`] = ids;
+  }
+  return history;
 }
 export interface LobbyOptions {
   organizerCode: string;
@@ -41,6 +57,7 @@ export interface LobbyOptions {
 
 export function createLobby({ organizerCode, generateId = randomUUID, generateRoomCode = () => randomCode(6), randomIndex = randomInt, clock, firstGame }: LobbyOptions) {
   const catalog = createCatalog();
+  let deckHistory: DeckHistory | undefined = firstGame ? {} : undefined;
   let room: Room | undefined;
   let revision = 0;
   const actors = new Map<string, Actor>();
@@ -77,7 +94,7 @@ export function createLobby({ organizerCode, generateId = randomUUID, generateRo
     const actor = actors.get(connection);
     if (!actor) return undefined;
     if (actor.kind === 'organizer') return { revision, kind: 'organizer', room: snapshot(), audioEnabled: audioOwner === connection,
-      ...(firstGame && room ? { roles: room.game.roles(), missingLocations: room.game.missingLocations(), violations: room.game.violations(), trialReview: room.game.trialStatus(), presence: [...room.players.keys()].flatMap(id => {
+      ...(firstGame && room ? { roles: room.game.roles(), missingLocations: room.game.missingLocations(), violations: room.game.violations(), presence: [...room.players.keys()].flatMap(id => {
         const status = room!.game.physicalStatus(id); return status ? [status] : [];
       }) } : {}), review: room && ['between_rounds', 'finished'].includes(room.game.publicState().phase) ? room.game.review() : [] };
     if (actor.kind === 'ended') return { revision, ...actor };
@@ -87,7 +104,7 @@ export function createLobby({ organizerCode, generateId = randomUUID, generateRo
       state.dealing = { ...state.dealing, initialPossessedCount: null, assignments: state.dealing.assignments.filter(item => item.playerId === actor.playerId) };
       delete state.game.venue.order;
     }
-    return { revision, kind: 'player', room: state, playerId: actor.playerId, audioEnabled: phoneOwners.get(actor.playerId) === connection, assignment: room!.game.personal(actor.playerId), play: room!.game.personalPlay(actor.playerId), synchronization: room!.game.personalSync(actor.playerId), presence: room!.game.physicalStatus(actor.playerId), locationProposal: room!.game.locationProposal(actor.playerId), trial: room!.game.trialFor(actor.playerId), canReportViolation: firstGame ? room!.game.canReportViolation(actor.playerId, state.game.ritual ?? undefined) : undefined, violations: room!.game.violations().filter(row => row.reporterId === actor.playerId).map(({ id, slot, details, status }) => ({ id, slot, details, status })) };
+    return { revision, kind: 'player', room: state, playerId: actor.playerId, audioEnabled: phoneOwners.get(actor.playerId) === connection, assignment: room!.game.personal(actor.playerId), play: room!.game.personalPlay(actor.playerId), synchronization: room!.game.personalSync(actor.playerId), presence: room!.game.physicalStatus(actor.playerId), locationProposal: room!.game.locationProposal(actor.playerId), canReportViolation: firstGame ? room!.game.canReportViolation(actor.playerId, state.game.ritual ?? undefined) : undefined, violations: room!.game.violations().filter(row => row.reporterId === actor.playerId).map(({ id, slot, details, status }) => ({ id, slot, details, status })) };
   }
 
   function disconnect(connection: string) {
@@ -183,7 +200,7 @@ export function createLobby({ organizerCode, generateId = randomUUID, generateRo
           let code = generateRoomCode();
           for (let attempts = 0; usedCodes.has(code) && attempts < 32; attempts++) code = generateRoomCode();
           if (usedCodes.has(code)) throw new Error('Room code generator did not provide an unused code.');
-          const next: Room = { id: generateId(), code, players: new Map(), revoked: new Set(), game: createGame({ generateId, randomIndex, clock, firstGame, onlinePlayers, onChange: notify, getCards: catalog.cards }), requests: new Map() };
+          const next: Room = { id: generateId(), code, players: new Map(), revoked: new Set(), game: createGame({ generateId, randomIndex, clock, firstGame, onlinePlayers, onChange: notify, getCards: catalog.cards, deckHistory }), requests: new Map() };
           next.game.initializeStory();
           usedCodes.add(code);
           if (room) {
@@ -233,8 +250,8 @@ export function createLobby({ organizerCode, generateId = randomUUID, generateRo
       if (!player) return fail('SESSION_EXPIRED');
       remove(player, 'left');
     } else if (['deal:create', 'deal:shuffle', 'deal:cancel', 'deal:replace', 'card:ready', 'card:request',
-      'game:configure', 'round:start', 'round:pause', 'round:resume', 'round:return', 'round:abort', 'party:finish', 'party:extend', 'play:infect', 'play:release', 'play:mission', 'play:undo', 'results:finalize', 'venue:configure', 'play:withdraw', 'sync:resolve', 'sync:close', 'play:presence', 'play:location', 'round:location', 'round:presence', 'round:reconcile', 'play:trial', 'round:trial-review', 'play:violation', 'ritual:review', 'ritual:penalty', 'ritual:undo-penalty', 'party:freeplay'].includes(command)) {
-      const personalReport = command === 'play:presence' || command === 'play:location' || command === 'play:violation' || command === 'play:trial';
+      'game:configure', 'round:start', 'round:pause', 'round:resume', 'round:return', 'round:abort', 'party:finish', 'party:extend', 'play:infect', 'play:release', 'play:mission', 'play:undo', 'results:finalize', 'venue:configure', 'play:withdraw', 'sync:resolve', 'sync:close', 'play:presence', 'play:location', 'round:location', 'round:presence', 'round:reconcile', 'play:violation', 'ritual:review', 'ritual:penalty', 'ritual:undo-penalty', 'party:freeplay'].includes(command)) {
+      const personalReport = command === 'play:presence' || command === 'play:location' || command === 'play:violation';
       const playAction = command.startsWith('play:') && !personalReport;
       const gameAction = command.startsWith('game:') || command.startsWith('round:') || command.startsWith('party:') || playAction || personalReport || command === 'results:finalize' || command === 'venue:configure' || command.startsWith('sync:') || command.startsWith('ritual:');
       const organizerAction = command.startsWith('deal:') || gameAction && !playAction && !personalReport;
@@ -263,7 +280,6 @@ export function createLobby({ organizerCode, generateId = randomUUID, generateRo
       if (command === 'card:ready' && typeof data.ready !== 'boolean') return fail('INVALID_INPUT');
       if (command === 'card:request' && typeof data.requested !== 'boolean') return fail('INVALID_INPUT');
       if (command === 'sync:resolve' && (typeof data.eventId !== 'string' || !['accept', 'reject'].includes(data.decision as string) || data.beforeId !== undefined && typeof data.beforeId !== 'string')) return fail('INVALID_INPUT');
-      if (command === 'round:trial-review' && (typeof data.playerId !== 'string' || typeof data.accepted !== 'boolean' || data.fact !== undefined && data.fact !== 'repeat' && !trialTraits.includes(data.fact as typeof trialTraits[number]))) return fail('INVALID_INPUT');
       if (command === 'play:violation' && (data.slot !== 'A' && data.slot !== 'B' || typeof data.details !== 'string')) return fail('INVALID_INPUT');
       if (command === 'ritual:review' && (typeof data.reportId !== 'string' || typeof data.accept !== 'boolean')) return fail('INVALID_INPUT');
       if (command === 'sync:close' && data.confirm !== true) return fail('INVALID_INPUT');
@@ -283,9 +299,7 @@ export function createLobby({ organizerCode, generateId = randomUUID, generateRo
       if (command === 'play:release' && data.targetIds !== undefined) fields.push(data.targetIds);
       if (command === 'play:undo') fields.push(data.actionId, ...(data.requestReview === undefined ? [] : [data.requestReview]));
       if (command === 'play:mission') fields.push(data.completed);
-      if (command === 'play:trial') fields.push(data.values);
       if (command === 'round:reconcile') fields.push(data.playerId, data.correction, data.groupMemberId);
-      if (command === 'round:trial-review') fields.push(data.playerId, data.accepted, ...(data.fact === undefined ? [] : [data.fact]));
       if (command === 'play:violation') fields.push(data.slot, data.details);
       if (command === 'ritual:review') fields.push(data.reportId, data.accept);
       if (command === 'round:start' || command === 'round:resume') fields.push(data.confirmWarnings);
@@ -323,8 +337,6 @@ export function createLobby({ organizerCode, generateId = randomUUID, generateRo
       else if (command === 'round:return') error = room.game.beginReturn();
       else if (command === 'round:abort') error = room.game.abort();
       else if (command === 'party:finish') error = room.game.finishParty();
-      else if (command === 'play:trial' && actor!.kind === 'player') error = room.game.reportTrial(actor!.playerId, data.values);
-      else if (command === 'round:trial-review') error = room.game.reviewTrial(data.playerId as string, data.accepted as boolean, data.fact as TrialReviewFact | undefined);
       else if (command === 'play:violation' && actor!.kind === 'player') error = room.game.reportViolation(actor!.playerId, data.slot as 'A' | 'B', data.details as string, generateId());
       else if (command === 'ritual:review') error = room.game.reviewViolation(data.reportId as string, data.accept as boolean);
       else if (command === 'ritual:penalty' || command === 'ritual:undo-penalty') error = room.game.ritualAction(command === 'ritual:penalty' ? 'penalty' : 'undoPenalty');
@@ -343,19 +355,20 @@ export function createLobby({ organizerCode, generateId = randomUUID, generateRo
 
   function subscribe(listener: (cue?: GameCue) => void) { listeners.add(listener); return () => { listeners.delete(listener); }; }
   function exportState(): SavedLobby {
-    return structuredClone({ catalog: catalog.exportState(), revision, usedCodes: [...usedCodes], room: room ? { id: room.id, code: room.code,
+    return structuredClone({ catalog: catalog.exportState(), ...(deckHistory ? { deckHistory } : {}), revision, usedCodes: [...usedCodes], room: room ? { id: room.id, code: room.code,
       players: [...room.players.values()].map(({ id, name, key }) => ({ id, name, key })), revoked: [...room.revoked],
       game: room.game.exportState(), requests: [...room.requests].map(([id, entries]) => [id, [...entries]]) } : null });
   }
   function liveState() { return { actors: new Map(structuredClone([...actors])), audioOwner, phoneOwners: new Map(phoneOwners), phoneScaresEnabled }; }
   function restore(state: SavedLobby, reason: 'server_restarted' | 'storage_error' = 'server_restarted', live?: ReturnType<typeof liveState>) {
     catalog.restore(state.catalog ?? createCatalog().exportState());
+    if (firstGame) deckHistory = structuredClone(state.deckHistory ?? deckHistoryFromRoom(state.room?.game));
     const previousGame = room?.id === state.room?.id ? room?.game.exportState() : undefined;
     room?.game.dispose(); room = undefined; audioOwner = null; actors.clear(); phoneOwners.clear(); phoneScaresEnabled = false;
     revision = Math.max(revision, state.revision) + 1; usedCodes.clear(); for (const code of state.usedCodes) usedCodes.add(code);
     if (state.room) {
       const saved = state.room;
-      const game = createGame({ generateId, randomIndex, clock, firstGame, onlinePlayers, onChange: notify, getCards: catalog.cards });
+      const game = createGame({ generateId, randomIndex, clock, firstGame, onlinePlayers, onChange: notify, getCards: catalog.cards, deckHistory });
       const restored = structuredClone(saved.game);
       restored.version = Math.max(restored.version, previousGame?.version ?? 0);
       restored.dealing.version = Math.max(restored.dealing.version, previousGame?.dealing.version ?? 0);

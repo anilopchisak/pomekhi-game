@@ -2,11 +2,16 @@ import type { LobbyError, Prophecy, RitualOutcome, RitualSnapshot, RoundResult }
 import { authoredProphecies } from './authored-content.js';
 import { shortAnswer } from './short-cards.js';
 import { finalProphecy, prophecies } from './prophecies.js';
+import { drawFromDeck } from './deck-history.js';
+import type { DeckHistory } from './deck-history.js';
 
 type Positions = [number, number, number, number];
 type RitualEvent = { kind: 'round'; id: string; number: number; successes: number }
   | { kind: 'penalty'; id: string; undone: boolean } | { kind: 'lock' } | { kind: 'stop' } | { kind: 'all_possessed' | 'no_return' } | { kind: 'dismissed_penalty' };
-export interface SavedRitual { players: number; roundLimit: number; cards: [Prophecy, Prophecy, Prophecy]; events: RitualEvent[]; firstGame?: true }
+export interface SavedRitual {
+  players: number; roundLimit: number; cards: [Prophecy, Prophecy, Prophecy]; events: RitualEvent[]; firstGame?: true;
+  legacyCredits?: string[];
+}
 export function ritualSetup(players: number, rounds: number) {
   const target = Math.max(3, Math.round((3 * players + 7) * rounds / 7));
   const b = Math.min(Math.round(2 * rounds / 7), Math.floor((target - 3) / 2));
@@ -21,15 +26,22 @@ function advance(positions: Positions, successes: number) {
   }
 }
 const remaining = (p: Positions) => 3 * p[0] + 2 * p[1] + p[2];
-export function newRitual(players: number, rounds: number, randomIndex: (limit: number) => number, generateId: () => string, firstGame = false, useAuthoredBank = false) {
+export function newRitual(players: number, rounds: number, randomIndex: (limit: number) => number, generateId: () => string, firstGame = false, useAuthoredBank = false, deckHistory?: DeckHistory) {
   const publicCard = ({ id, title }: Prophecy) => ({ id, title, rule: shortAnswer(id) });
   const bank = useAuthoredBank ? authoredProphecies.filter(card => !card.final).map(publicCard) : [...prophecies];
-  const take = () => structuredClone(bank.splice(randomIndex(bank.length), 1)[0]);
+  const take = () => {
+    const card = drawFromDeck(bank, randomIndex, useAuthoredBank ? 'authored-prophecies' : 'classic-prophecies', deckHistory);
+    bank.splice(bank.indexOf(card), 1);
+    return structuredClone(card);
+  };
   return createRitual({ players, roundLimit: rounds, cards: [take(), take(), useAuthoredBank ? publicCard(authoredProphecies.find(card => card.final)!) : structuredClone(finalProphecy)], events: [], ...(firstGame ? { firstGame: true } : {}) }, generateId);
 }
 
 /** The ritual consumes sealed outcomes. Game remains the sole owner of lifecycle phases. */
 export function createRitual(saved: SavedRitual, generateId: () => string) {
+  return buildRitual(saved, generateId).ritual;
+}
+function buildRitual(saved: SavedRitual, generateId: () => string) {
   const state = structuredClone(saved);
   const initial: Positions = [state.players + 1, 2, 3, 0];
   const setup = state.firstGame ? { positions: initial, target: remaining(initial) } : ritualSetup(state.players, state.roundLimit);
@@ -66,15 +78,19 @@ export function createRitual(saved: SavedRitual, generateId: () => string) {
     }
   }
   rebuild();
-  const successes = (row: RoundResult) => row.rescuedGroups + row.missions + (row.trialBonus ?? 0);
+  const successes = (row: RoundResult) => row.rescuedGroups + row.missions;
   function commit(row: RoundResult): LobbyError | undefined {
     if (row.kind === 'tutorial' || row.status === 'aborted') return;
     if (row.status !== 'final') return 'INVALID_INPUT';
-    const old = state.events.find(e => e.kind === 'round' && e.id === row.roundId);
-    if (old) return old.kind === 'round' && old.number === row.number && old.successes === successes(row) ? undefined : 'INVALID_INPUT';
+    return commitRound({ kind: 'round', id: row.roundId, number: row.number, successes: successes(row) });
+  }
+  function commitRound(event: Extract<RitualEvent, { kind: 'round' }>, legacyCredit = false): LobbyError | undefined {
+    const old = state.events.find(e => e.kind === 'round' && e.id === event.id);
+    if (old) return old.kind === 'round' && old.number === event.number && old.successes === event.successes ? undefined : 'INVALID_INPUT';
     if (outcome !== 'playing') return 'RESULTS_FINAL';
-    if (row.number !== state.events.filter(e => e.kind === 'round').length + 1 || row.number > state.roundLimit || !Number.isInteger(successes(row)) || successes(row) < 0 || successes(row) > (row.trialBonus ? 13 : 12)) return 'INVALID_INPUT';
-    state.events.push({ kind: 'round', id: row.roundId, number: row.number, successes: successes(row) }); rebuild();
+    if (event.number !== state.events.filter(e => e.kind === 'round').length + 1 || event.number > state.roundLimit ||
+      !Number.isInteger(event.successes) || event.successes < Number(legacyCredit) || event.successes > 12 + Number(legacyCredit)) return 'INVALID_INPUT';
+    state.events.push(event); rebuild();
   }
   function snapshot(row?: RoundResult): RitualSnapshot {
     const next = [...positions] as Positions;
@@ -99,10 +115,10 @@ export function createRitual(saved: SavedRitual, generateId: () => string) {
     if (!snapshot().canUndoPenalty) return 'ACTION_UNAVAILABLE';
     const last = state.events.at(-1)!; if (last.kind === 'penalty') last.undone = true; rebuild();
   }
-  return { snapshot, commit, penalty, undoPenalty, lastPenaltyId: () => { const last = state.events.at(-1); return last?.kind === 'penalty' && !last.undone ? last.id : undefined; },
+  return { commitRound, ritual: { snapshot, commit, penalty, undoPenalty, lastPenaltyId: () => { const last = state.events.at(-1); return last?.kind === 'penalty' && !last.undone ? last.id : undefined; },
     lock: () => { if (outcome === 'playing' && state.events.at(-1)?.kind === 'penalty') state.events.push({ kind: 'lock' }); },
     stop: (reason: 'stop' | 'all_possessed' | 'no_return' = 'stop') => { if (outcome === 'playing' || reason !== 'stop' && (outcome === 'lost' || outcome === 'won')) { state.events.push({ kind: reason }); rebuild(); } },
-    exportState: (): SavedRitual => structuredClone(state) };
+    exportState: (): SavedRitual => structuredClone(state) } };
 }
 
 /** Validate by replaying through the same interface used by game. No bank lookup changes issued text. */
@@ -113,9 +129,12 @@ export function validateRitual(value: unknown): asserts value is SavedRitual {
   check(Array.isArray(s.cards) && s.cards.length === 3 && new Set(s.cards.map(c => c?.id)).size === 3);
   check(s.cards.every(c => c && [c.id, c.title, c.rule].every(t => typeof t === 'string' && t.length > 0 && t.length <= 10000)));
   check(Array.isArray(s.events) && s.events.length <= 10000);
-  let nextId = '', number = 0;
+  let nextId = '';
   check(s.firstGame === undefined || s.firstGame === true && s.players >= 5 && s.roundLimit === 7);
-  const replay = createRitual({ ...s, events: [] }, () => nextId);
+  check(s.legacyCredits === undefined || s.firstGame && Array.isArray(s.legacyCredits) && s.legacyCredits.length <= s.roundLimit &&
+    new Set(s.legacyCredits).size === s.legacyCredits.length && s.legacyCredits.every(id => typeof id === 'string'));
+  const credits = new Set(s.legacyCredits);
+  const { ritual: replay, commitRound } = buildRitual({ ...s, events: [] }, () => nextId);
   const ids = new Set<string>();
   for (const e of s.events) {
     check(e && (replay.snapshot().outcome === 'playing' || s.firstGame && (e.kind === 'all_possessed' || e.kind === 'no_return') && ['lost', 'won'].includes(replay.snapshot().outcome)));
@@ -124,8 +143,7 @@ export function validateRitual(value: unknown): asserts value is SavedRitual {
     }
     const before = replay.exportState().events.length;
     if (e.kind === 'round') {
-      check(Number.isInteger(e.number) && e.number === ++number && e.number <= s.roundLimit && Number.isInteger(e.successes) && e.successes >= 0 && e.successes <= (s.firstGame ? 13 : 12));
-      check(replay.commit({ roundId: e.id, number: e.number, kind: 'regular', status: 'final', rescuedGroups: Math.min(12, e.successes), missions: 0, trialBonus: e.successes === 13 ? 1 : undefined } as RoundResult) === undefined);
+      check(commitRound(e, credits.delete(e.id)) === undefined);
     } else if (e.kind === 'penalty') {
       check(typeof e.undone === 'boolean' && replay.snapshot().canPenalize && replay.penalty() === undefined);
       if (e.undone) check(replay.undoPenalty() === undefined);
@@ -134,4 +152,5 @@ export function validateRitual(value: unknown): asserts value is SavedRitual {
     else { check(e.kind === 'stop' || s.firstGame && (e.kind === 'all_possessed' || e.kind === 'no_return')); replay.stop(e.kind); }
     check(replay.exportState().events.length === before + 1);
   }
+  check(credits.size === 0);
 }

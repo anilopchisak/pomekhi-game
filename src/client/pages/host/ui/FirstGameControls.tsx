@@ -3,12 +3,11 @@ import { dealCommand, gameCommand } from '../../../shared/api/index.js';
 import { ConfirmButton } from '../../../shared/ui/index.js';
 import styles from './Broadcast.module.css';
 
-export function FirstGameControls({ room, disabled, run, newParty, trialPending }: {
+export function FirstGameControls({ room, disabled, run, newParty }: {
   room: RoomSnapshot;
   disabled: boolean;
   run: <C extends LobbyCommand>(command: C, input: LobbyInputs[C]) => Promise<void>;
   newParty: () => void;
-  trialPending?: boolean;
 }) {
   const { game } = room;
   const sync = game.synchronization;
@@ -19,9 +18,9 @@ export function FirstGameControls({ room, disabled, run, newParty, trialPending 
   if (game.phase === 'lobby') {
     const count = Math.min(3, Math.floor(room.players.length / 2));
     return <div className={styles.sceneActions}>
-      {!game.venue.dwelling && <p>Укажите места игры в настройках партии.</p>}
+      {!game.venue.zones.length && <p>Укажите места игры в настройках партии.</p>}
       {room.players.length < 5 && <p>Для раздачи нужно не меньше пяти участников.</p>}
-      <button disabled={disabled || room.players.length < 5 || !game.venue.dwelling}
+      <button disabled={disabled || room.players.length < 5 || !game.venue.zones.length}
         onClick={() => void run('deal:create', { ...dealCommand(room), possessedCount: count })}>Раздать карточки</button>
     </div>;
   }
@@ -45,10 +44,9 @@ export function FirstGameControls({ room, disabled, run, newParty, trialPending 
         onConfirm={() => void run('round:return', gameCommand(room))}>Досрочный призыв</ConfirmButton>}
     </>}
     {game.phase === 'return' && <button disabled={disabled} onClick={() => void run('round:return', gameCommand(room))}>Открыть сверку</button>}
-    {provisional && trialPending && <p>Разберите отчёт о повторном визите в Обитель.</p>}
     {provisional && <ConfirmButton title="Подтвердить итоги раунда?"
       description={ritual?.preview ? `Предварительный итог: ${ritual.preview.successes} успехов, останется ${ritual.preview.remainingSteps} шагов. После подтверждения поздние записи не изменят результат.` : 'Подтверждённый результат больше не изменится.'}
-      confirm="Подтвердить итог" disabled={disabled || Boolean(waiting) || trialPending}
+      confirm="Подтвердить итог" disabled={disabled || Boolean(waiting)}
       onConfirm={() => void run('results:finalize', gameCommand(room))}>Подтвердить итоги раунда</ConfirmButton>}
     {ritual?.outcome === 'playing' && ['reading', 'between_rounds'].includes(game.phase) && <>
       {penalty && <ConfirmButton eyebrow="Ритуал · сверка нарушения" title="Подтвердить шаг назад?" confirm="Подтвердить штраф" cancel="Отклонить нарушение"

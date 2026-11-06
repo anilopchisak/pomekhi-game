@@ -10,15 +10,13 @@ The interface brand is **Oderzhimye** in both modes, including the browser title
 | --- | --- |
 | Organizer | A participating person who configures the session on the laptop. This is not a separate acting game master. |
 | Medium | Any human participant, playing an exorcist, a possessed medium or a captured exorcist. The computer Master is not a medium. |
-| Computer Master | The replacement for the original Great Master: administrator, narrator and owner of hidden trials, exempt from medium roles and prophecy conditions. |
+| Computer Master | The replacement for the original Great Master: administrator and narrator, exempt from medium roles and prophecy conditions. |
 | Shared display | The laptop screen showing public phase, placement and exorcism countdowns, announcements, results and atmosphere. The computer owns the authoritative clock. Controls are located on the laptop. |
 | Player screen | A browser on a phone showing only that participant's assignment and permitted actions. |
 | Room | A logical multiplayer session. It is distinct from a physical zone in the house. |
 | Base | The ritual room containing the laptop and ritual table; only free or released mediums gather there during ordinary checking. |
 | Ritual table | The shared ritual position at base containing the prophecy cards and candles. |
 | Zone | A named physical area used for possessed-player placement. |
-| Spirit Dwelling | An agreed empty place in a permitted zone, associated with three private digital exorcist missions. It needs no receptacle or marker; some missions require an on-site gesture or address. |
-| Offering | A card-defined gesture or spoken address performed at the agreed Spirit Dwelling place and reported for that mission. No physical card, token, vessel or other offering is left. |
 | Round | One of seven preparation, exorcism and checking cycles. Unresolved possession can span several rounds. |
 | Preparation | The phase for private dealing to free mediums at the table, reading, strategy and the departure of newly possessed mediums. |
 | Reading phase | Untimed private reading within preparation. It does not start exorcism by itself. |
@@ -27,7 +25,7 @@ The interface brand is **Oderzhimye** in both modes, including the browser title
 | Search | The application's name for the exploration part of exorcism. |
 | Ritual call | The Master's announcement ending exorcism and recalling free exorcists; unreleased possessed and captured mediums stay in their locations. |
 | Return | A free medium's movement back to base after release or the ritual call. It does not free an unresolved group. |
-| Checking | The phase for reporting completed actions, resolving trial outcomes and moving candles. |
+| Checking | The phase for reporting completed actions and moving candles. |
 | Returning medium | A free participant available at the ritual table for checking and the next deal. |
 | Table order | Historical order retained in older checkpoints. Current deals assign roles randomly within the eligible roster. |
 | Pause | A suspension of play during which participants stop actions and wait safely; possession and earned results are retained. |
@@ -38,9 +36,8 @@ The interface brand is **Oderzhimye** in both modes, including the browser title
 | Release | Freedom from possession after the card's physical condition is satisfied, judged by the possessed performer. |
 | Task | A private possessed-player card. |
 | Mission | A medium's private card objective; an exorcist's additional mission earns a success only if completed without capture. |
-| Master trial | A hidden round-specific objective for the computer Master and affected mediums, with the original outcome tied to the applicable prophecy stage. |
 | Story | The selected opening situation read before the first round, with an environment appropriate to the playing area. |
-| First-game variant | Seven rounds without applying Master trial effects; trials serve only as the round counter. |
+| First-game variant | A seven-round ruleset retained for saved games. |
 | Tutorial | Application instruction for using private cards and controls; a separate practice round is a legacy variant, not part of the target seven-round game. |
 | Difficulty | Card complexity; the original permits an optional harder-card subset rather than mandatory numbered-round progression. |
 | Card catalog | The editable local collection of enabled and disabled tasks, retained between rooms. |
@@ -52,7 +49,7 @@ The interface brand is **Oderzhimye** in both modes, including the browser title
 | Capture | An exorcist becoming possessed after meeting a card's capture condition. The approved Russian interface consistently calls this infection; capture remains a technical alias rather than a second mechanic. |
 | Provisional result | A completed round outcome that accepts mission reports and valid undo until sealed. |
 | Final result | An immutable scored round outcome. |
-| Ritual | The shared candle objective advanced by eligible releases, exorcist missions and Master trial results. |
+| Ritual | The shared candle objective advanced by eligible releases and exorcist missions. |
 | Prophecy | A card revealed when its candle position is cleared; ordinary conditions accumulate at the ritual table, and the final card closes the ritual. |
 | Ritual outcome | Immutable won, lost or stopped result; freeplay cannot reopen it. |
 | Total-party capture | No medium remains free to return to the ritual table; it causes defeat, unlike capture of all currently searching exorcists when another medium is already free at base. |

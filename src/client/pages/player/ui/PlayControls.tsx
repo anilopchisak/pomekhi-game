@@ -3,15 +3,15 @@ import type { ReactNode } from 'react';
 import { createPortal } from 'react-dom';
 import styles from './PlayerScene.module.css';
 import type { LobbyCommand, LobbyInputs, LobbyView, OfflineAction } from '../../../../shared/protocol.js';
+import { isRetiredMission } from '../../../../shared/retired-mission.js';
 import { gameCommand } from '../../../shared/api/index.js';
 import { ConfirmButton, DialogButton } from '../../../shared/ui/index.js';
 
-export function PlayControls({ view, disabled, run, queue, online = true, estimatedSearchEnded = false, actorTrial, feedback, pendingReports = false, roleControlsTarget }: {
+export function PlayControls({ view, disabled, run, queue, online = true, estimatedSearchEnded = false, feedback, pendingReports = false, roleControlsTarget }: {
   view: Extract<LobbyView, { kind: 'player' }>; disabled: boolean;
   queue?: (action: OfflineAction) => Promise<void>;
   online?: boolean;
   estimatedSearchEnded?: boolean;
-  actorTrial?: ReactNode;
   feedback?: ReactNode;
   pendingReports?: boolean;
   roleControlsTarget?: HTMLElement | null;
@@ -28,7 +28,6 @@ export function PlayControls({ view, disabled, run, queue, online = true, estima
   const mutable = !game.lastRoundAborted && !game.results.some(result => result.roundId === play.roundId && result.status !== 'provisional');
   const searching = game.phase === 'search' && !game.paused && !estimatedSearchEnded && mutable;
   const possessed = !play.unknownGroup && (play.status === 'possessed' || play.status === 'captured');
-  const offering = game.firstGame && play.card.offering;
   const missionAllowed = mutable && !game.paused && ['search', 'return', 'between_rounds', 'finished'].includes(game.phase);
   const eligibleIds = game.firstGame && possessed ? play.targets ?? [] : game.activePlayerIds;
   const eligible = room.players.filter(p => p.id !== view.playerId && eligibleIds.includes(p.id));
@@ -56,12 +55,13 @@ export function PlayControls({ view, disabled, run, queue, online = true, estima
   const releaseOptions = (play.releaseGroups ?? []).filter(group => !group.some(id => pendingReleaseMembers.has(id)));
   const selectedGroup = releaseOptions.find(group => JSON.stringify(group) === releaseSelection);
   const memberNames = (ids: string[]) => ids.map(id => room.players.find(player => player.id === id)?.name ?? 'Участник').join(', ');
-  const mission = play.missionEligible && <ConfirmButton native={native}
+  const missionEligible = play.missionEligible && !isRetiredMission(play.card);
+  const mission = missionEligible && <ConfirmButton native={native}
       title={play.missionCompleted ? 'Снять отметку выполнения миссии?' : 'Подтвердить выполнение миссии?'}
-      description={play.missionCompleted ? undefined : offering ? 'Подтвердите, что лично дошли до Обители и выполнили действие карточки до призыва.' : 'Миссия должна быть выполнена до призыва на базу.'}
+      description={play.missionCompleted ? undefined : 'Миссия должна быть выполнена до призыва на базу.'}
       confirm={play.missionCompleted ? 'Снять отметку' : 'Подтвердить миссию'} disabled={disabled || !missionAllowed}
       onConfirm={() => void (!online && queue ? queue({ kind: 'mission', completed: !play.missionCompleted }) : run('play:mission', { ...base, completed: !play.missionCompleted }))}>
-      {play.missionCompleted ? 'Снять отметку миссии' : offering ? 'Подтвердить подношение и миссию' : 'Миссия выполнена'}
+      {play.missionCompleted ? 'Снять отметку миссии' : 'Миссия выполнена'}
     </ConfirmButton>;
 
   function undoAction(actionId: string, requestReview?: true) {
@@ -99,8 +99,8 @@ export function PlayControls({ view, disabled, run, queue, online = true, estima
           </>}
           {feedback}
         </>}>Заразить</DialogButton>}
-      {(play.missionEligible || actorTrial || missionUndo) && <DialogButton data-role-action="missions" title="Миссии" content={<>
-        {play.missionEligible && play.card.role === 'exorcist' && <section aria-label="Личная миссия">
+      {(missionEligible || missionUndo) && <DialogButton data-role-action="missions" title="Миссии" content={<>
+        {missionEligible && play.card.role === 'exorcist' && <section aria-label="Личная миссия">
           <h3>{play.card.brief ? 'Как выполнить личную миссию?' : 'Личная миссия'}</h3>
           <p>{play.card.mission}</p>
           {!play.card.brief && play.card.successCondition && <p><strong>Условие зачёта:</strong> {play.card.successCondition}</p>}
@@ -109,7 +109,6 @@ export function PlayControls({ view, disabled, run, queue, online = true, estima
         {missionUndo && <ConfirmButton data-secondary title="Отменить последнюю отметку миссии?"
           confirm="Отменить отметку" disabled={disabled || !mutable || game.paused || !missionUndo.available || waitingUndo}
           onConfirm={() => void undoAction(missionUndo.id)}>Отменить последнюю отметку миссии</ConfirmButton>}
-        {actorTrial}
         {feedback}
       </>}>Миссии</DialogButton>}
       {(play.status === 'exorcist' || Boolean(play.releases?.length)) && <DialogButton data-role-action="release" title="Освобождение"

@@ -5,6 +5,13 @@ import type { SavedSession } from './session-format.js';
 import { validateSession } from './session-format.js';
 import type { LobbyReply, LobbyCommand, LobbyInputs } from '../shared/protocol.js';
 import { controlledClock } from '../../tests/helpers/game-clock.js';
+import { stories } from './first-game-content.js';
+import { authoredProphecies } from './authored-content.js';
+import { createRitual } from './ritual.js';
+import { createFileSessionStore } from './session-store.js';
+import { mkdtemp, readFile, rm, writeFile } from 'node:fs/promises';
+import { tmpdir } from 'node:os';
+import { join } from 'node:path';
 
 function memoryDisk() {
   let state: SavedSession | null = null, failure = false, afterWrite = false, corrupt = false, gate: Promise<void> | undefined;
@@ -32,7 +39,7 @@ async function fixture(tutorialEnabled = false, firstGame = false) {
   await session.initialize(); value(await send('host', 'organizer:authorize', { code })); value(await send('host', 'room:create', {}));
   for (let n = 1; n <= 7; n++) value(await send(`p${n}`, 'player:join', { roomCode: room().code, name: `Игрок ${n}`, resumeKey: key(n) }));
   if (firstGame) value(await send('host', 'venue:configure', { ...gameCommand(), venue: {
-    base: 'База', zones: ['Кухня'], dwelling: { zone: 'Кухня', place: 'Угол' },
+    base: 'База', zones: ['Кухня'],
   } }));
   const settings = { ...room().game.settings, ...(firstGame ? { placementSeconds: 1, offlineWaitSeconds: 2 } :
     { ritualEnabled: false, roundLimit: 5, infectionMode: 'auto' as const, tutorialEnabled }) };
@@ -203,6 +210,203 @@ it('persists revocation and room closure instead of resurrecting a closed game',
     try { expect(await restored.execute('p1', 'player:resume', { roomCode: code, resumeKey: key(1) })).toEqual({ ok: false, error: 'SESSION_EXPIRED' }); }
     finally { await restored.close(); }
   } finally { await f.close(); }
+});
+
+it('cycles every authored deck across new parties and preserves its progress on disk', async () => {
+  const disk = memoryDisk(), time = controlledClock();
+  const make = () => createSession({ organizerCode: code, store: disk.store, clock: time.clock, firstGame: true, randomIndex: () => 0 });
+  let session = make(), sequence = 0;
+  const room = () => {
+    const view = session.viewFor('host');
+    if (view?.kind !== 'organizer' || !view.room) throw new Error('Missing room');
+    expect(view).not.toHaveProperty('deckHistory');
+    return view.room;
+  };
+  const authorize = async () => {
+    await session.initialize();
+    value(await session.execute('host', 'organizer:authorize', { code }));
+  };
+  const gameCommand = () => ({ roomId: room().id, gameVersion: room().game.version, roundId: room().game.roundId, requestId: `deck-test-${++sequence}` });
+  const venue = { base: 'База', zones: ['Кухня', 'Зал'],
+    harder: true };
+  const storyIds: string[] = [], prophecyIds: string[] = [], missionIds: string[] = [];
+  try {
+    await authorize();
+    for (let party = 0; party <= stories.length; party++) {
+      value(await session.execute('host', party === 0 || party === 3 ? 'room:create' : 'room:restart',
+        party === 0 || party === 3 ? {} : { roomId: room().id }));
+      storyIds.push(room().game.venue.storyId!);
+      for (let n = 1; n <= 5; n++) value(await session.execute(`p${n}`, 'player:join', {
+        roomCode: room().code, name: `Игрок ${n}`, resumeKey: key(n),
+      }));
+      value(await session.execute('host', 'venue:configure', { ...gameCommand(), venue }));
+      value(await session.execute('host', 'deal:create', {
+        ...gameCommand(), dealId: null, dealVersion: room().dealing.version, possessedCount: 0,
+      }));
+      value(await session.execute('host', 'round:start', { ...gameCommand(), confirmWarnings: true }));
+      const game = disk.read().lobby.room!.game;
+      if (party < 2) {
+        missionIds.push(...game.dealing.assignments.map(([, assignment]) => assignment.card.id));
+      }
+      prophecyIds.push(...game.ritual!.cards.slice(0, 2).map(card => card.id));
+      if (party === 0 || party === 2) {
+        if (party === 2) value(await session.execute('host', 'room:close', { roomId: room().id }));
+        await session.close();
+        if (party === 0) {
+          const legacy = disk.read();
+          delete legacy.lobby.deckHistory;
+          await disk.store.write(legacy);
+        }
+        session = make();
+        await authorize();
+        if (party === 0) expect(room().game.venue.storyId).toBe(storyIds[0]);
+      }
+    }
+    expect(new Set(storyIds.slice(0, stories.length))).toEqual(new Set(stories.map(card => card.id)));
+    expect(storyIds[stories.length]).not.toBe(storyIds[stories.length - 1]);
+    const prophecies = authoredProphecies.filter(card => !card.final).map(card => card.id);
+    expect(new Set(prophecyIds.slice(0, prophecies.length))).toEqual(new Set(prophecies));
+    expect(new Set(missionIds).size).toBe(missionIds.length);
+  } finally { await session.close(); }
+});
+
+it('replaces issued Dwelling cards on disk without changing mission receipts or replaying credit', async () => {
+  const f = await fixture(false, true);
+  const directory = await mkdtemp(join(tmpdir(), 'pomekhi-retired-missions-'));
+  const file = join(directory, 'party-v8.json');
+  const restored = createSession({ organizerCode: code, store: createFileSessionStore(directory, true), clock: f.time.clock, firstGame: true });
+  try {
+    await f.deal(); await f.start(); await f.advance(1000);
+    const completed = f.view('p1'), pending = f.view('p3');
+    if (completed?.kind !== 'player' || pending?.kind !== 'player') throw Error('Missing exorcists');
+    value(await f.send('p1', 'play:mission', { ...f.playCommand('p1'), completed: true }));
+    value(await f.send('host', 'round:return', f.gameCommand()));
+    value(await f.send('host', 'round:return', f.gameCommand()));
+    const roundId = f.room().game.roundId!;
+    const upload = { roomId: f.room().id, roundId, events: [{
+      id: 'legacy-mission-01', roundId, clientId: 'legacy-phone-01', sequence: 1, previousId: null,
+      action: { kind: 'mission' as const, completed: true }, phase: 'search' as const, paused: false, estimatedServerTime: null,
+    }] };
+    value(await f.send('p3', 'play:sync', upload));
+    const state = f.disk.read(), game = state.lobby.room!.game;
+    expect(game.results.at(-1)?.missions).toBe(1);
+    expect(game.roundSync!.entries.find(entry => entry.event.id === upload.events[0].id)?.receipt.status).toBe('review');
+    game.venue!.dwelling = { zone: 'Кухня', place: 'Угол' };
+    for (const [playerId, assignment] of [...game.dealing.assignments, ...game.search!.roster, ...game.roundSync!.base.roster]) {
+      if (playerId === completed.playerId || playerId === pending.playerId) {
+        assignment.card = { id: playerId === completed.playerId ? 'E001' : 'dwelling:E014',
+          title: 'У Обители', difficulty: 1, role: 'exorcist', mission: 'Дойдите до Обители.' };
+        Reflect.set(assignment.card, 'offering', true);
+      }
+    }
+    await writeFile(file, JSON.stringify(state));
+
+    await restored.initialize();
+    value(await restored.execute('host', 'organizer:authorize', { code }));
+    for (const index of [1, 3]) value(await restored.execute(`p${index}`, 'player:resume', { roomCode: f.room().code, resumeKey: key(index) }));
+    expect(restored.viewFor('p1')).toMatchObject({
+      assignment: { id: completed.assignment!.id, card: { id: 'E001', mission: expect.stringContaining('Я здесь живу') } },
+      play: { missionCompleted: true },
+    });
+    expect(restored.viewFor('p3')).toMatchObject({
+      assignment: { id: pending.assignment!.id, card: { title: 'Немой швейцар' } },
+      play: { card: { title: 'Немой швейцар' }, missionCompleted: false },
+    });
+    const host = () => {
+      const view = restored.viewFor('host');
+      if (view?.kind !== 'organizer' || !view.room) throw Error('Missing restored room');
+      return view.room;
+    };
+    expect(host().game.venue).not.toHaveProperty('dwelling');
+    const onDisk = JSON.parse(await readFile(file, 'utf8')) as SavedSession;
+    expect(JSON.stringify(onDisk.lobby.room!.game)).not.toMatch(/Обител[ьи]|"offering"/i);
+    expect(onDisk.lobby.room!.game.roundSync!.entries).toEqual(game.roundSync!.entries);
+    value(await restored.execute('p3', 'play:sync', upload));
+    expect(host().game.results.at(-1)?.missions).toBe(1);
+    value(await restored.execute('host', 'sync:resolve', {
+      roomId: host().id, gameVersion: host().game.version, roundId, requestId: 'legacy-mission-accept',
+      eventId: upload.events[0].id, decision: 'accept',
+    }));
+    value(await restored.execute('p3', 'play:sync', upload));
+    expect(host().game.results.at(-1)?.missions).toBe(2);
+  } finally {
+    await restored.close(); await f.close();
+    await rm(directory, { recursive: true, force: true });
+  }
+});
+
+it.each(['provisional', 'final'] as const)('migrates a v7 %s round without exposing its retired report', async status => {
+  const f = await fixture(false, true);
+  const directory = await mkdtemp(join(tmpdir(), 'pomekhi-v7-'));
+  const previous = join(directory, 'party-v7.json'), current = join(directory, 'party-v8.json');
+  const make = () => createSession({ organizerCode: code, store: createFileSessionStore(directory, true), clock: f.time.clock, firstGame: true });
+  let restored = make();
+  try {
+    await f.deal(); await f.start(); await f.advance(1000);
+    const players = f.phones.map(connection => {
+      const view = f.view(connection);
+      if (view?.kind !== 'player') throw Error('Missing player');
+      return { connection, id: view.playerId, role: view.play?.status };
+    });
+    const exorcists = players.filter(row => row.role === 'exorcist');
+    const possessed = players.filter(row => row.role === 'possessed');
+    for (const { connection } of exorcists) value(await f.send(connection, 'play:mission', { ...f.playCommand(connection), completed: true }));
+    const actor = exorcists[0].connection;
+    value(await f.send(actor, 'play:release', { ...f.playCommand(actor), targetIds: possessed.map(row => row.id) }));
+    value(await f.send('host', 'round:return', f.gameCommand()));
+    await f.settle();
+    if (status === 'final') value(await f.send('host', 'results:finalize', f.gameCommand()));
+    const { lobby } = f.disk.read();
+    const savedRoom = lobby.room!, game = savedRoom.game, round = game.results.at(-1)!;
+    expect(round).toMatchObject({ status, rescuedGroups: 3, missions: 4 });
+    Reflect.set(game.firstGame!, 'trials', { current: { lateVisit: 'review' } });
+    Reflect.set(lobby.deckHistory!, 'trials', ['T004']);
+    Reflect.set(round, 'trialBonus', 1);
+    const ritual = game.ritual!;
+    if (status === 'final') {
+      const last = ritual.events.at(-1);
+      if (last?.kind !== 'round') throw Error('Missing committed round');
+      last.successes++;
+    }
+    const expected = createRitual(ritual, () => 'unused').snapshot();
+    if (status === 'final') expect(expected.cards[0].revealed).toBe(true);
+    const source = JSON.stringify({ schemaVersion: 7, lobby });
+    await writeFile(previous, source);
+
+    await restored.initialize();
+    value(await restored.execute('host', 'organizer:authorize', { code }));
+    const host = () => {
+      const view = restored.viewFor('host');
+      if (view?.kind !== 'organizer' || !view.room) throw Error('Missing restored room');
+      expect(view).not.toHaveProperty('trialReview');
+      return view.room;
+    };
+    expect(host().game).toMatchObject({ phase: 'between_rounds', ritual: {
+      positions: expected.positions, cards: expected.cards, outcome: expected.outcome,
+      preview: status === 'provisional' ? { successes: 7 } : null,
+    } });
+    expect(host().game.results.at(-1)).not.toHaveProperty('trialBonus');
+    const upgraded = JSON.parse(await readFile(current, 'utf8'));
+    expect(upgraded.schemaVersion).toBe(8);
+    expect(upgraded.lobby.room.game.firstGame).not.toHaveProperty('trials');
+    expect(upgraded.lobby.deckHistory).not.toHaveProperty('trials');
+    expect(await readFile(previous, 'utf8')).toBe(source);
+    if (status === 'provisional') {
+      for (const [index, player] of players.entries()) value(await restored.execute(player.connection, 'player:resume', { roomCode: savedRoom.code, resumeKey: key(index + 1) }));
+      const room = host();
+      value(await restored.execute('host', 'results:finalize', { roomId: room.id, gameVersion: room.game.version, roundId: room.game.roundId, requestId: 'migrated-finalize' }));
+      expect(host().game.ritual?.cards[0].revealed).toBe(false);
+      expect(host().game.ritual?.positions[0]).toBe(1);
+    } else {
+      expect(upgraded.lobby.room.game.ritual.legacyCredits).toEqual([round.roundId]);
+    }
+    const board = host().game.ritual;
+    await restored.close();
+    restored = make();
+    await restored.initialize();
+    value(await restored.execute('host', 'organizer:authorize', { code }));
+    expect(host().game.ritual).toEqual(board);
+  } finally { await restored.close(); await f.close(); await rm(directory, { recursive: true, force: true }); }
 });
 
 it('recovers an already paused phase and an aborted attempt without crediting another round', async () => {

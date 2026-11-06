@@ -21,7 +21,7 @@ export function DealControls({ room, disabled, run }: {
       <ConfirmButton title="Перевыдать карточки?" description="Новые карточки получат участники текущей раздачи."
         confirm="Перевыдать карточки" disabled={disabled}
         onConfirm={() => void run('deal:shuffle', { ...dealCommand(room), possessedCount: count })}>Перевыдать карточки</ConfirmButton>
-    </> : <button disabled={disabled || !room.game.started && room.players.length < 5 || !room.game.venue.dwelling}
+    </> : <button disabled={disabled || !room.game.started && room.players.length < 5 || !room.game.venue.zones.length}
       onClick={() => void run('deal:create', { ...dealCommand(room), possessedCount: count })}>
       {room.game.started ? 'Раздать свободным' : 'Раздать карточки'}
     </button>}

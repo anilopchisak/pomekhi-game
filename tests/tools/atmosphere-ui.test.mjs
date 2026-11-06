@@ -4,6 +4,7 @@ import { createRoot } from 'react-dom/client';
 import { afterEach, beforeEach, expect, it, vi } from 'vitest';
 import { PhoneSound } from '../../src/client/pages/player/ui/PhoneSound.js';
 import { SoundControls } from '../../src/client/pages/host/ui/SoundControls.js';
+import { PhaseSignals } from '../../src/client/shared/ui/index.js';
 import { createProceduralAudio, defaultLevels } from '../../src/client/shared/audio/index.js';
 import { createGame } from '../../src/server/game.js';
 import { createSession } from '../../src/server/session.js';
@@ -15,6 +16,47 @@ beforeEach(() => {
 });
 afterEach(async () => { await act(async () => root.unmount()); container.remove(); vi.unstubAllGlobals(); vi.restoreAllMocks(); vi.useRealTimers(); });
 function game() { const owner = createGame({ generateId: () => 'id', randomIndex: () => 0, onChange() {} }); const v = owner.publicState(); owner.dispose(); return v; }
+it('plays distinct phone chimes for the three live round transitions without replaying them', async () => {
+  const props = { online: true, clockOffset: 0, enabled: false, phoneChimes: true };
+  const render = () => root.render(createElement(PhaseSignals, { ...props, claim: async enabled => { props.enabled = enabled; render(); return true; } }));
+  await act(async () => render());
+  await act(async () => container.querySelector('input').click());
+  expect(harness.tones).toHaveLength(2);
+  harness.finish();
+  await act(async () => container.querySelector('button').click());
+  expect(harness.tones).toHaveLength(2);
+  harness.finish();
+
+  const patterns = [];
+  for (const [index, phase] of ['placement', 'search', 'return'].entries()) {
+    props.cue = { roomId: 'room', version: index + 1, phase, kind: index === 0 ? 'start' : 'phase', serverNow: globalThis.performance.now() };
+    if (phase === 'search') {
+      const audio = harness.contexts[0];
+      audio.state = 'suspended';
+      let resume;
+      vi.spyOn(audio, 'resume').mockImplementationOnce(() => new Promise(resolve => {
+        resume = () => { audio.state = 'running'; resolve(); };
+      }));
+      await act(async () => render());
+      expect(harness.tones).toHaveLength(0);
+      props.clockOffset = 1;
+      await act(async () => render());
+      await act(async () => resume());
+    } else {
+      await act(async () => render());
+    }
+    expect(harness.tones.length).toBeGreaterThan(1);
+    patterns.push(harness.tones.map(tone => tone.frequency.value).join(','));
+    harness.finish();
+    props.cue = { ...props.cue };
+    await act(async () => render());
+    expect(harness.tones).toHaveLength(0);
+  }
+  expect(new Set(patterns).size).toBe(3);
+  props.cue = { ...props.cue, version: 4, serverNow: globalThis.performance.now() - 3000 };
+  await act(async () => render());
+  expect(harness.tones).toHaveLength(0);
+});
 it('keeps host audio silent after storage recovery until a new source selection', async () => {
   globalThis.sessionStorage.clear();
   let disk = null, fail = false;

@@ -7,7 +7,6 @@
   "expectedCounts": {
     "possessed": 75,
     "exorcist": 42,
-    "trial": 11,
     "prophecy": 11,
     "story": 6,
     "reference": 2
@@ -25,9 +24,7 @@
     "outsideFiction": "Техническая помощь, уточнение правил, согласование и отказ от контакта, остановка и действия ради безопасности всегда вне роли: они не заражают и не нарушают прорицаний. При невозможности выполнить карту остановите попытку; успех автоматически не начисляется.",
     "props": "Реквизита для заданий нет: ничего не покупают, не приносят и не раскладывают заранее. Используются голос, тело, жесты, движения, телефон и естественное пространство. Допустимы уже имеющиеся стены, пол, двери, дерево и обычное зеркало дома в соответствующих картах; их не переставляют и не подготавливают. Для движения выбирают уже свободное место.",
     "groups": "Заражённые копируют задание своей группы. Неосвобождённые остаются в локации между раундами; освобождение группы даёт один успех за исходное назначение.",
-    "prophecies": "Обычные открытые прорицания действуют только у ритуального стола и складываются. Реплики духу не считаются обращениями к другим медиумам. Условия миссий и испытаний имеют приоритет над общими правилами и прорицаниями.",
-    "firstGame": "В первой партии испытания Мастера не применяются и не приносят успехов; выбранные карты только отсчитывают семь раундов.",
-    "dwelling": "Обитель — условное место в разрешённой локации, которое все знают по договорённости. Ёмкости, маркера и оставленных вещей нет. Для подношения игрок лично приходит туда, выполняет указанный жест или фразу и сообщает результат. Удалённое сообщение не заменяет посещение.",
+    "prophecies": "Обычные открытые прорицания действуют только у ритуального стола и складываются. Реплики духу не считаются обращениями к другим медиумам. Условия миссий имеют приоритет над общими правилами и прорицаниями.",
     "staging": "Все играют голосом, выражением лица и собственными движениями. Заражённые повторяют сцену своей группы; дополнительные роли, предметы или актёры не требуются. Выполненное условие у любого члена освобождает всю группу, исходная миссия получает один успех. Настоящая остановка сразу прекращает отыгрыш.",
     "stories": "Каждая история — самостоятельный вымысел о частном доме, квартире или прилегающем дворе. Она не назначает персонажей, не требует специальных предметов и не сообщает решения карт. Любую подходящую месту историю можно сочетать с обеими редакциями колоды.",
     "loadout": "Экзорцисту нужен только телефон. Ни у него, ни в локации не должно быть подготовленного набора вещей. Упомянутые воображаемые постель, покрытие или подношение — только пантомима пустыми руками, а не предметы."
@@ -35,26 +32,20 @@
   "technicalNotes": {
     "compatibility": "This is an editorial interchange format, not pomekhi.cards v1. The existing importer requires a clue field and only accepts possessed/exorcist cards. Do not import this file or supply placeholder clues. No runtime, catalog, protocol or save has been changed.",
     "authority": "The rulebook establishes deck structure and a few visible examples, not every commercial card. Authored mechanics and adaptations are explicit per card. This pack does not resolve unrelated ambiguous candle-penalty ties.",
-    "branchTiming": "For editorial walkthroughs take the opened-prophecy count at checking entry, before this check moves candles. This is a proposed deterministic interpretation for future integration, not a verified original ruling. Both branches are supplied for every trial.",
-    "trialSelection": "For future integration prefilter the trial deck by agreed subsets and venue props before selecting seven. At each round freeze an eligible free exorcist and any targets before actions. Never replace or redraw a trial after its outcome can be known. Confirmed missing prerequisites yield an explicit incomplete trial with no bonus; unresolved reports remain unknown and require review.",
-    "trialPrivacy": "Only the delivery instruction goes to its selected exorcist. Hidden objectives, branches and other participants’ evidence must stay on the server until checking. Independent reports must be captured before showing the compared answers. Full trial text in this local editorial HTML is for the author, not a shared in-game display.",
-    "trialAccounting": "Each trial awards at most one additional success, including late branches that reward capture or a deliberate failure. Unknown evidence is never false, silence, absence or capture. Capture still invalidates the original exorcist mission independently of a trial bonus.",
     "integrationDependencies": [
       "A no-clue card schema and UI.",
       "Optional-subset admission without forced difficulty levels.",
       "Persistent possession and returner-only alternating dealing.",
       "An agreed empty Dwelling place, three private digital initial mission records and on-site gesture/voice reports. No physical container or markers.",
-      "Private trial delivery, explicit evidence, private response messages, branch/result storage and conflict review.",
-      "First-game suppression of all trial effects.",
       "Original candle setup and terminal ritual outcome."
     ],
     "designImpact": "No implemented ownership, lifecycle, state or persistence mechanism changes. Existing design documents remain descriptions of the current application; an integration stage must update them with its code.",
-    "acceptanceLimits": "Editorial review and automated structure checks do not establish live puzzle discoverability, fear response, group balance, native phone lighting, audibility, LAN/Tuna behavior or unsupported trial delivery. No playtest has been performed.",
+    "acceptanceLimits": "Editorial review and automated structure checks do not establish live puzzle discoverability, fear response, group balance, native phone lighting, audibility, LAN/Tuna behavior. No playtest has been performed.",
     "paperFree": "The earlier paper-free requirement is superseded by the stricter no-task-props rule. Fictional story imagery does not require physical facsimiles. Existing mirrors, walls, floors, safe doors and trees are natural features, never equipment to prepare.",
     "dwellingAdaptation": "The latest user-approved Dwelling is an agreed empty place, not a receptacle. Three private initial mission records remain digital and add no new draw or reward. Former container/transport tasks are explicitly authored bodily or spoken adaptations.",
     "domesticRevision": "User-approved domestic-horror revision. Human-created fiction supplies motifs, not recovered commercial cards or supernatural factual rules. Stories freely mix with both card editions; no fixed plot cast, special prop kit or application feature is assumed.",
     "fictionRegistry": "provenance.inspirations refers to fiction-sources.json. These are separately identified narrative inspirations; provenance.sources continues to trace the historical card comparison. Author-only reasoning is in revision-audit.json and is never a player assistance block.",
-    "exorcistLoadout": "Only a phone is required. No carried or staged task equipment. T004 transports no object: its delivery is a reported visit/name/return sequence.",
+    "exorcistLoadout": "Only a phone is required. No carried or staged task equipment.",
     "propFree": "User instruction supersedes staged-prop preparation as well as carried equipment. No task props exist. Ordinary house mirrors are an explicit user exception as natural fixed scenery; the angel simply sees its own face. Other ordinary building/ground features are not prepared or moved."
   },
   "cards": [
@@ -1957,9 +1948,7 @@
       "title": "Голос, который идёт за тобой",
       "sets": [],
       "family": "voice",
-      "requirements": [
-        "Обитель — заранее оговорённое место в разрешённой локации: угол комнаты или участок двора. Ничего ставить, раскладывать или рисовать там не нужно."
-      ],
+      "requirements": [],
       "provenance": {
         "classification": "adaptation",
         "sources": [
@@ -1969,14 +1958,13 @@
           "user:domestic-horror",
           "user:no-task-props"
         ],
-        "adaptation": "The on-site offering is made at an agreed empty place, without a vessel, marker or physical deposit. Authored adaptation under the later no-props instruction; no commercial text or supernatural fact is implied.",
+        "adaptation": "Authored revision for a brief scene another player can see or hear during the search.",
         "inspirations": [
           "others"
         ]
       },
-      "mission": "С выхода на экзорцизм и до призыва негромко разговаривайте сами с собой. Паузы для слушания, освобождения и внеигровой помощи допустимы. Во время поиска самостоятельно дойдите до Обители духов, раскройте свободную ладонь в сторону этого места и произнесите внутри роли: «Оставляю свой голос здесь».",
-      "successCondition": "Вы поддерживали разговор с собой на всём поиске и физически выполнили подношение голосом и жестом у Обители до призыва. На проверке сообщите оба факта.",
-      "depositRequired": true
+      "mission": "При встречном разыграйте спор с собственным голосом: скажите «Я здесь живу», ответьте себе другим голосом «А я здесь был раньше» и замолчите. Если вы одни, произнесите обе реплики громко в сторону других локаций так, чтобы хотя бы один игрок там их услышал.",
+      "successCondition": "Один другой игрок услышал обе реплики до призыва, при встрече или из другой локации."
     },
     {
       "id": "E002",
@@ -1991,14 +1979,13 @@
           "pdf:Э-09",
           "user:domestic-horror"
         ],
-        "adaptation": "Silence is maintained through the search; technical and consent speech remains available. Domestic-horror revision: retain_core.",
+        "adaptation": "Authored revision for a brief scene another player can see or hear during the search.",
         "inspirations": [
           "others"
         ]
       },
-      "mission": "От выхода на экзорцизм до ритуального призыва общайтесь с другими участниками только жестами. Можно говорить при обсуждении согласия на контакт, технической проблемы или остановки игры.",
-      "successCondition": "За весь поиск вы не произнесли ни одной обычной игровой реплики. Внеигровое общение выполнение не нарушает.",
-      "depositRequired": false
+      "mission": "При встрече поприветствуйте другого игрока жестом так, чтобы он его увидел. До призыва общайтесь в игре только жестами. Внеигровое общение разрешено.",
+      "successCondition": "Хотя бы один игрок увидел ваше приветствие, и за время поиска вы не произнесли ни одной обычной игровой реплики."
     },
     {
       "id": "E003",
@@ -2014,15 +2001,14 @@
           "pdf:Э-24",
           "user:domestic-horror"
         ],
-        "adaptation": "The completed action identifies who actually answered rather than requiring question-only speech or a real supernatural response. Domestic-horror revision: replace.",
+        "adaptation": "Authored revision for a brief scene another player can see or hear during the search.",
         "inspirations": [
           "empty-house",
           "others"
         ]
       },
-      "mission": "При одном посещении локации задайте пустому месту вопрос о доме. Не изображайте ответ сами. Если другой настоящий участник откликнется, спросите, он ли говорил, и выслушайте ответ; если никто не откликнется, вслух отметьте отсутствие ответа. Продолжайте поиск в одиночку.",
-      "successCondition": "До призыва вы задали вопрос, выдержали обычную паузу и различили ответ реального человека либо его отсутствие. Не объявляли тишину доказательством присутствия духа.",
-      "depositRequired": false
+      "mission": "При другом игроке задайте пустому месту вопрос о доме, выдержите паузу и вслух отметьте, был ответ или стояла тишина.",
+      "successCondition": "Другой игрок услышал вопрос и итог до призыва. Ответ собеседника необязателен."
     },
     {
       "id": "E004",
@@ -2044,8 +2030,7 @@
         ]
       },
       "mission": "При одной краткой встрече попросите другого участника придумать себе вымышленное имя. Сразу же обратитесь к нему этим именем в новой фразе. Настоящие имена и раскрытие роли не нужны.",
-      "successCondition": "Участник назвал вымышленное имя, и вы употребили его в обращении до расставания.",
-      "depositRequired": false
+      "successCondition": "Участник назвал вымышленное имя, и вы употребили его в обращении до расставания."
     },
     {
       "id": "E005",
@@ -2060,15 +2045,14 @@
           "pdf:Э-12",
           "user:domestic-horror"
         ],
-        "adaptation": "A complete protective act replaces rhyme composition. It does not automatically rescue an unrelated possessed group. Domestic-horror revision: replace.",
+        "adaptation": "Authored revision for a brief scene another player can see or hear during the search.",
         "inspirations": [
           "monkeys-paw",
           "vourdalak"
         ]
       },
-      "mission": "В одном разрешённом месте вспомните полностью вымышленное приглашение, которое здесь могли когда-то произнести. Не произносите само приглашение. Обратитесь к пустому месту, ясно отзовите его и своей свободной рукой изобразите закрывание воображаемой двери.",
-      "successCondition": "Отзыв приглашения и завершённое закрывание выполнены в одном месте до призыва. Точный текст не задан, настоящие двери не закрывают.",
-      "depositRequired": false
+      "mission": "На виду у другого игрока отзовите вслух вымышленное приглашение и изобразите, как закрываете невидимую дверь.",
+      "successCondition": "Один игрок услышал отзыв приглашения и увидел жест до призыва."
     },
     {
       "id": "E006",
@@ -2091,8 +2075,7 @@
         ]
       },
       "mission": "До призыва не используйте в игровых репликах слова «я», «меня», «мне» и «мой». При этом хотя бы один раз предложите кому-нибудь помощь понятной фразой.",
-      "successCondition": "Вы предложили помощь и за весь поиск не употребили четыре запрещённых слова. Технические обращения и согласование контакта не учитываются.",
-      "depositRequired": false
+      "successCondition": "Вы предложили помощь и за весь поиск не употребили четыре запрещённых слова. Технические обращения и согласование контакта не учитываются."
     },
     {
       "id": "E007",
@@ -2114,8 +2097,7 @@
         ]
       },
       "mission": "При первой краткой встрече покажите участнику короткое приветствие из двух последовательных движений одной свободной руки, будто проверяете, узнают ли вас в этом доме. Получите ответный жест и разойдитесь. Никакое касание в основной версии не нужно.",
-      "successCondition": "Вы показали оба движения, собеседник ответил намеренным жестом, после чего вы продолжили путь отдельно до призыва.",
-      "depositRequired": false
+      "successCondition": "Вы показали оба движения, собеседник ответил намеренным жестом, после чего вы продолжили путь отдельно до призыва."
     },
     {
       "id": "E008",
@@ -2129,14 +2111,13 @@
         "sources": [
           "user:domestic-horror"
         ],
-        "adaptation": "A real observation anchors the feared gaze instead of inventing evidence. Domestic-horror revision: adapt.",
+        "adaptation": "Authored revision for a brief scene another player can see or hear during the search.",
         "inspirations": [
           "turn-screw"
         ]
       },
-      "mission": "При каждом первом входе в новую локацию сначала остановитесь, затем осмотрите пространство над собой, словно проверяете источник чужого взгляда. Хотя бы в одной локации назовите одну реально видимую деталь. Не ходите, глядя вверх.",
-      "successCondition": "Остановки выполнены при первых входах; одна настоящая деталь названа до призыва. Наличие сущности или ощущение страха не требуется.",
-      "depositRequired": false
+      "mission": "При первом входе в каждую локацию остановитесь и посмотрите вверх. Хотя бы при одном таком входе назовите видимую деталь наверху так, чтобы её услышал игрок, который заметил вашу остановку.",
+      "successCondition": "Вы выполнили остановки, и хотя бы один игрок увидел одну из них и услышал названную деталь до призыва."
     },
     {
       "id": "E009",
@@ -2151,14 +2132,13 @@
           "pdf:Э-08",
           "user:domestic-horror"
         ],
-        "adaptation": "A repeated entrance gesture has a physical trigger and does not block navigation. Domestic-horror revision: retain_core.",
+        "adaptation": "Authored revision for a brief scene another player can see or hear during the search.",
         "inspirations": [
           "monkeys-paw"
         ]
       },
-      "mission": "Перед каждым входом в новую локацию остановитесь у её условной границы и дважды тихо постучите пальцем по собственной ладони. Продолжайте идти только после этого.",
-      "successCondition": "Вы выполнили знак хотя бы перед одним входом и не пропустили его при остальных первых входах до призыва.",
-      "depositRequired": false
+      "mission": "Перед каждым первым входом в локацию остановитесь и дважды тихо постучите пальцем по своей ладони. Хотя бы один такой знак сделайте на виду у другого игрока.",
+      "successCondition": "Вы не пропустили знак при первых входах, и хотя бы один игрок увидел оба постукивания одного знака до призыва."
     },
     {
       "id": "E010",
@@ -2185,8 +2165,7 @@
         ]
       },
       "mission": "При краткой встрече попросите участника жестами указать два разрешённых места, через которые он уже прошёл. После расставания самостоятельно посетите их в обратном порядке, как проверку пути возвращения. Не идите следом за ним и не требуйте сопровождения.",
-      "successCondition": "Оба места посещены отдельно в обратном порядке до призыва. Вы сообщаете уже пройденный путь, а не выполняете его на проверке.",
-      "depositRequired": false
+      "successCondition": "Оба места посещены отдельно в обратном порядке до призыва. Вы сообщаете уже пройденный путь, а не выполняете его на проверке."
     },
     {
       "id": "E011",
@@ -2203,14 +2182,13 @@
           "user:domestic-horror",
           "user:no-task-props"
         ],
-        "adaptation": "Use naturally available building or ground surfaces only, without laid-out textures. Authored adaptation under the later no-props instruction; no commercial text or supernatural fact is implied.",
+        "adaptation": "Authored revision for a brief scene another player can see or hear during the search.",
         "inspirations": [
           "others"
         ]
       },
-      "mission": "В разрешённых местах поочерёдно остановитесь и легко коснитесь трёх доступных безопасных поверхностей с разной фактурой: стены, пола, земли или дерева. После третьей назовите три реально почувствованных свойства. Мебель, личные вещи и людей не трогайте.",
-      "successCondition": "Вы коснулись трёх разных разрешённых поверхностей окружающего места и назвали ощущения до призыва. Специальные образцы не нужны.",
-      "depositRequired": false
+      "mission": "Коснитесь трёх разрешённых поверхностей с разной фактурой и опишите три ощутимых свойства так, чтобы их услышал один встречный.",
+      "successCondition": "Один игрок услышал все три свойства, которые вы ощутили, до призыва."
     },
     {
       "id": "E012",
@@ -2228,14 +2206,13 @@
         "sources": [
           "user:domestic-horror"
         ],
-        "adaptation": "The stationary screen-cover interval is completed and then light restored; nobody approaches during it. Domestic-horror revision: retain_core.",
+        "adaptation": "Authored revision for a brief scene another player can see or hear during the search.",
         "inspirations": [
           "others"
         ]
       },
-      "mission": "Один раз в знакомой свободной локации остановитесь, закройте экран своего телефона ладонью и негромко досчитайте до пяти. Затем сразу откройте экран и продолжите поиск. Во время закрытого экрана не двигайтесь.",
-      "successCondition": "Вы выполнили одно непрерывное закрытие экрана на весь собственный счёт до пяти, оставаясь на месте.",
-      "depositRequired": false
+      "mission": "На виду у другого игрока остановитесь в безопасном месте, прикройте экран ладонью, вслух досчитайте до пяти и сразу откройте экран. Стойте на месте, пока экран закрыт.",
+      "successCondition": "Другой игрок увидел закрытие и открытие экрана и услышал весь счёт до призыва."
     },
     {
       "id": "E013",
@@ -2253,24 +2230,21 @@
           "user:no-exorcist-loadout",
           "user:no-task-props"
         ],
-        "adaptation": "Inspect one empty place from two viewpoints, using no object. Authored adaptation under the later no-props instruction; no commercial text or supernatural fact is implied.",
+        "adaptation": "Authored revision for a brief scene another player can see or hear during the search.",
         "inspirations": [
           "beckoning"
         ]
       },
-      "mission": "Выберите одно пустое место в разрешённой локации. Остановитесь и осмотрите его, затем сделайте небольшой боковой шаг и осмотрите то же место снова. Назовите вслух одну настоящую деталь пространства, которую со второго положения видно иначе: границу света, линию стены, участок пола или земли. Не заявляйте, что видели духа.",
-      "successCondition": "До призыва вы осмотрели то же место с двух безопасных положений и назвали реально замеченное различие вида. Ничего не брали и не приносили.",
-      "depositRequired": false
+      "mission": "Осмотрите одно пустое место с двух безопасных позиций и расскажите встречному, какая реальная деталь выглядит иначе после бокового шага.",
+      "successCondition": "Другой игрок услышал названное различие до призыва."
     },
     {
       "id": "E014",
       "type": "exorcist",
-      "title": "Тихое подношение",
+      "title": "Немой швейцар",
       "sets": [],
-      "family": "dwelling",
-      "requirements": [
-        "Обитель — заранее оговорённое место в разрешённой локации: угол комнаты или участок двора. Ничего ставить, раскладывать или рисовать там не нужно."
-      ],
+      "family": "gesture",
+      "requirements": [],
       "provenance": {
         "classification": "adaptation",
         "sources": [
@@ -2278,24 +2252,21 @@
           "user:domestic-horror",
           "user:no-task-props"
         ],
-        "adaptation": "The on-site offering is made at an agreed empty place, without a vessel, marker or physical deposit. Authored adaptation under the later no-props instruction; no commercial text or supernatural fact is implied.",
+        "adaptation": "Authored revision for a brief scene another player can see or hear during the search.",
         "inspirations": [
           "others"
         ]
       },
-      "mission": "Дойдите до Обители духов в одиночку. От входа в её локацию до выхода не произносите обычных игровых слов. Раскройте свободную ладонь в сторону выбранного места на один спокойный выдох, затем опустите её. Техническая помощь, согласование контакта и остановка разрешены.",
-      "successCondition": "Вы физически дошли до Обители и выполнили жест подношения без обычной игровой речи до призыва. Сообщите результат на проверке; удалённое сообщение из другой локации не заменяет посещение.",
-      "depositRequired": true
+      "mission": "При встрече молча изобразите, как открываете воображаемую дверь, и поприветствуйте игрока поклоном. Дождитесь ответного приветствия словом или жестом и разойдитесь.",
+      "successCondition": "До призыва игрок ответил на ваше приветствие."
     },
     {
       "id": "E015",
       "type": "exorcist",
-      "title": "Неназванный адресат",
+      "title": "Зов несуществующего жильца",
       "sets": [],
-      "family": "dwelling",
-      "requirements": [
-        "Обитель — заранее оговорённое место в разрешённой локации: угол комнаты или участок двора. Ничего ставить, раскладывать или рисовать там не нужно."
-      ],
+      "family": "voice",
+      "requirements": [],
       "provenance": {
         "classification": "adaptation",
         "sources": [
@@ -2304,24 +2275,21 @@
           "user:domestic-horror",
           "user:no-task-props"
         ],
-        "adaptation": "The on-site offering is made at an agreed empty place, without a vessel, marker or physical deposit. Authored adaptation under the later no-props instruction; no commercial text or supernatural fact is implied.",
+        "adaptation": "Authored revision for a brief scene another player can see or hear during the search.",
         "inspirations": [
           "old-nurse"
         ]
       },
-      "mission": "До выхода придумайте вымышленное имя адресата и держите его в памяти. Во время поиска дойдите до Обители духов, коснитесь свободной ладонью собственной груди и негромко назовите только это имя. До посещения в игровом разговоре его не произносите.",
-      "successCondition": "Вы сохранили имя до посещения и физически произнесли его у Обители вместе с жестом до призыва. На проверке сообщите выполнение; настоящие имена не нужны.",
-      "depositRequired": true
+      "mission": "Придумайте вымышленное имя жильца и позовите его фразой «[Имя], ты опять оставил свет!». Произнесите её при другом игроке или, если вы одни, громко в сторону других локаций так, чтобы хотя бы один игрок там услышал фразу.",
+      "successCondition": "Хотя бы один другой игрок услышал полный зов до призыва."
     },
     {
       "id": "E016",
       "type": "exorcist",
-      "title": "Свой знак у Обители",
+      "title": "Запоздалый салют",
       "sets": [],
-      "family": "dwelling",
-      "requirements": [
-        "Обитель — заранее оговорённое место в разрешённой локации: угол комнаты или участок двора. Ничего ставить, раскладывать или рисовать там не нужно."
-      ],
+      "family": "gesture",
+      "requirements": [],
       "provenance": {
         "classification": "adaptation",
         "sources": [
@@ -2329,27 +2297,24 @@
           "user:domestic-horror",
           "user:no-task-props"
         ],
-        "adaptation": "The on-site offering is made at an agreed empty place, without a vessel, marker or physical deposit. Authored adaptation under the later no-props instruction; no commercial text or supernatural fact is implied.",
+        "adaptation": "Authored revision for a brief scene another player can see or hear during the search.",
         "inspirations": [
           "others",
           "beckoning"
         ]
       },
-      "mission": "Перед выходом придумайте личное приветствие из трёх движений свободной руки. В одиночку дойдите до Обители, выполните приветствие как обращение от себя и завершите раскрытой ладонью в сторону выбранного места. Телефон остаётся у вас.",
-      "successCondition": "Три движения и завершающее раскрытие ладони выполнены у настоящей Обители до призыва. Не требуется повторять знак другой карты.",
-      "depositRequired": true
+      "mission": "При встрече предложите обменяться приветствием без слов. Покажите два пальца у виска, раскройте ладонь и спрячьте её за спину. Дождитесь, пока собеседник повторит хотя бы одно движение, и разойдитесь.",
+      "successCondition": "До призыва собеседник увидел приветствие и намеренно повторил хотя бы одно движение."
     },
     {
       "id": "E017",
       "type": "exorcist",
-      "title": "Пустые руки для Обители",
+      "title": "Невидимая ноша",
       "sets": [
         "harder"
       ],
-      "family": "dwelling",
-      "requirements": [
-        "Обитель — заранее оговорённое место в разрешённой локации: угол комнаты или участок двора. Ничего ставить, раскладывать или рисовать там не нужно."
-      ],
+      "family": "gesture",
+      "requirements": [],
       "provenance": {
         "classification": "adaptation",
         "sources": [
@@ -2357,25 +2322,22 @@
           "user:domestic-horror",
           "user:no-task-props"
         ],
-        "adaptation": "The on-site offering is made at an agreed empty place, without a vessel, marker or physical deposit. Authored adaptation under the later no-props instruction; no commercial text or supernatural fact is implied.",
+        "adaptation": "Authored revision for a brief scene another player can see or hear during the search.",
         "inspirations": [
           "monkeys-paw",
           "beckoning"
         ]
       },
-      "mission": "После выхода с базы держите свободную ладонь открытой вверх, словно показываете, что ничего чужого не несёте. Самостоятельно дойдите до Обители и поверните ладонь вниз в сторону выбранного пустого места. Другой рукой держите включённый телефон. При необходимости безопасности прекратите позу.",
-      "successCondition": "Вы сохранили открытую ладонь до Обители и завершили переворот над ней до призыва. Прерванная попытка не выполнена; реальный предмет не переносится.",
-      "depositRequired": true
+      "mission": "На виду у другого игрока изобразите, как на вашей открытой ладони лежит что-то очень тяжёлое, а затем как оно вдруг становится невесомым. Спросите, когда ноша стала легче.",
+      "successCondition": "До призыва зритель увидел обе части пантомимы и указал момент смены веса."
     },
     {
       "id": "E018",
       "type": "exorcist",
-      "title": "Место Обители не занимают",
+      "title": "Пропустите жильца",
       "sets": [],
-      "family": "dwelling",
-      "requirements": [
-        "Обитель — заранее оговорённое место в разрешённой локации: угол комнаты или участок двора. Ничего ставить, раскладывать или рисовать там не нужно."
-      ],
+      "family": "gesture",
+      "requirements": [],
       "provenance": {
         "classification": "adaptation",
         "sources": [
@@ -2383,14 +2345,13 @@
           "user:domestic-horror",
           "user:no-task-props"
         ],
-        "adaptation": "The on-site offering is made at an agreed empty place, without a vessel, marker or physical deposit. Authored adaptation under the later no-props instruction; no commercial text or supernatural fact is implied.",
+        "adaptation": "Authored revision for a brief scene another player can see or hear during the search.",
         "inspirations": [
           "beckoning"
         ]
       },
-      "mission": "В одиночку подойдите к оговорённому месту Обители, оставив его свободным перед собой. Поверните свободную ладонь тыльной стороной к этому месту, сделайте один обычный шаг назад и негромко скажите: «Я оставил её как была». Ничего настоящего внутри этого места нет.",
-      "successCondition": "До призыва вы посетили место, показали тыльную сторону ладони, отступили и произнесли фразу. Никакого содержимого осматривать и никаких вещей сохранять не требуется.",
-      "depositRequired": false
+      "mission": "При встрече уступите дорогу воображаемому жильцу сбоку от себя и скажите встречному: «Извините, он всегда так спешит». Продолжите поиск отдельно.",
+      "successCondition": "До призыва встречный увидел, как вы уступили дорогу, и услышал фразу."
     },
     {
       "id": "E019",
@@ -2414,18 +2375,15 @@
         ]
       },
       "mission": "При краткой встрече попросите согласного участника придумать и показать два последовательных движения одной руки. Повторите первое движение, а второе сознательно замените своим, будто не позволяете чужой привычке завершиться через вас. Спросите, различил ли собеседник изменение, и разойдитесь. Его задание раскрывать не нужно.",
-      "successCondition": "До призыва вы повторили первое движение и заменили второе другим; собеседник подтвердил различие. Ни шнур, ни воображаемый переносимый предмет не нужны.",
-      "depositRequired": false
+      "successCondition": "До призыва вы повторили первое движение и заменили второе другим; собеседник подтвердил различие. Ни шнур, ни воображаемый переносимый предмет не нужны."
     },
     {
       "id": "E020",
       "type": "exorcist",
-      "title": "Как выглядит место Обители",
+      "title": "Две улики невидимки",
       "sets": [],
       "family": "observation",
-      "requirements": [
-        "Обитель — оговорённое место внутри разрешённой локации без ёмкости или отметки."
-      ],
+      "requirements": [],
       "provenance": {
         "classification": "adaptation",
         "sources": [
@@ -2434,14 +2392,13 @@
           "user:domestic-horror",
           "user:no-task-props"
         ],
-        "adaptation": "Observe the already agreed Dwelling place and its natural features, not a container. Authored adaptation under the later no-props instruction; no commercial text or supernatural fact is implied.",
+        "adaptation": "Authored revision for a brief scene another player can see or hear during the search.",
         "inspirations": [
           "others"
         ]
       },
-      "mission": "При одном посещении Обители осмотрите само выбранное место и его ближайшую границу. Отойдите и назовите две действительно видимые приметы: например, линию стены и пола, цвет участка земли, светлую полосу или положение дерева. Ничего не берите и не переставляйте.",
-      "successCondition": "Две разные реальные приметы места названы после одного посещения до призыва. Никакого предмета Обители искать не требуется.",
-      "depositRequired": false
+      "mission": "Покажите встречному две реальные детали вокруг и назовите их уликами вымышленного происшествия. Спросите, какая улика выглядит подозрительнее.",
+      "successCondition": "До призыва собеседник увидел обе детали, услышал объяснение и выбрал одну улику."
     },
     {
       "id": "E021",
@@ -2456,14 +2413,13 @@
           "pdf:Э-09",
           "user:domestic-horror"
         ],
-        "adaptation": "A bounded stationary listen reports real sound or honest silence. Domestic-horror revision: retain_core.",
+        "adaptation": "Authored revision for a brief scene another player can see or hear during the search.",
         "inspirations": [
           "uninvited"
         ]
       },
-      "mission": "В одной разрешённой локации остановитесь и молча прослушайте десять собственных медленных счётов. Не производите специальных звуков. После этого назовите один реально услышанный звук; если звуков не было, так и скажите.",
-      "successCondition": "Вы завершили спокойное слушание на месте и вслух описали его реальный результат до призыва.",
-      "depositRequired": false
+      "mission": "Молча слушайте на месте десять медленных счётов. Назовите встречному услышанный звук или скажите ему, что было тихо.",
+      "successCondition": "До призыва один игрок услышал, что вы заметили во время слушания."
     },
     {
       "id": "E022",
@@ -2486,8 +2442,7 @@
         ]
       },
       "mission": "При краткой встрече расскажите участнику полностью вымышленный домашний эпизод тремя предложениями: обычное действие, его странное повторение и отличие последнего повтора. Не выдавайте рассказ за действительное происшествие или новое правило игры.",
-      "successCondition": "Один слушатель услышал все три части до призыва; после рассказа вы разошлись. Испуг и вера в рассказ не оцениваются.",
-      "depositRequired": false
+      "successCondition": "Один слушатель услышал все три части до призыва; после рассказа вы разошлись. Испуг и вера в рассказ не оцениваются."
     },
     {
       "id": "E023",
@@ -2513,8 +2468,7 @@
         ]
       },
       "mission": "Попросите согласного участника назвать один полностью вымышленный образ домашнего призрака. Изобразите его позой и выражением лица, не касаясь человека, и получите ответ, узнал ли он свой образ. Настоящие сны не обсуждайте.",
-      "successCondition": "Участник узнал названный им образ в вашей пантомиме до призыва. Реальный страх, качество игры и конкретная карта одержимого не требуются.",
-      "depositRequired": false
+      "successCondition": "Участник узнал названный им образ в вашей пантомиме до призыва. Реальный страх, качество игры и конкретная карта одержимого не требуются."
     },
     {
       "id": "E024",
@@ -2530,14 +2484,13 @@
           "runtime:e04",
           "user:domestic-horror"
         ],
-        "adaptation": "One observed pose is reproduced after withdrawing, rather than performing a whole possessed mission. Domestic-horror revision: retain_core.",
+        "adaptation": "Authored revision for a brief scene another player can see or hear during the search.",
         "inspirations": [
           "jolly-corner"
         ]
       },
-      "mission": "Увидев одержимого, запомните одну характерную позу его корпуса или рук. После отхода от него в пределах разрешённой зоны воспроизведите эту позу один раз, затем продолжите поиск.",
-      "successCondition": "Вы наблюдали конкретную позу и воспроизвели её после отхода до призыва. Не касались исполнителя и не препятствовали освобождению.",
-      "depositRequired": false
+      "mission": "Запомните позу одержимого. Отойдите на свободное место и один раз повторите её так, чтобы другой игрок увидел повтор.",
+      "successCondition": "До призыва другой игрок увидел, как вы воспроизвели позу, без контакта и помех игре одержимого."
     },
     {
       "id": "E025",
@@ -2553,14 +2506,13 @@
           "pdf:Э-05",
           "user:domestic-horror"
         ],
-        "adaptation": "Actual before/after observation supplies evidence without delaying a freed person. Domestic-horror revision: retain_core.",
+        "adaptation": "Authored revision for a brief scene another player can see or hear during the search.",
         "inspirations": [
           "turn-screw"
         ]
       },
-      "mission": "Понаблюдайте за одним одержимым до освобождения и сразу после него. Пока он уходит на базу, тихо назовите себе одно реальное изменение: голос, позу или свет. Не останавливайте освобождённого.",
-      "successCondition": "Вы своими глазами или на слух заметили одно изменение у одного освобождённого и назвали его до призыва.",
-      "depositRequired": false
+      "mission": "Понаблюдайте за одержимым до и сразу после освобождения. Назовите другому игроку одно замеченное изменение, не задерживая освобождённого.",
+      "successCondition": "Другой игрок услышал описание реального изменения до призыва."
     },
     {
       "id": "E026",
@@ -2583,8 +2535,7 @@
         ]
       },
       "mission": "Освободите хотя бы одного одержимого, выполняя все намеренные движения руками по условию освобождения одной и той же свободной рукой. Другой рукой всё время держите включённый телефон и не используйте его в освобождении. Говорить и менять положение можно.",
-      "successCondition": "Одержимый подтвердил освобождение, в котором было хотя бы одно необходимое движение вашей свободной руки. Все такие движения выполнены одной рукой; другая держала включённый телефон. Освобождение одними словами эту миссию не выполняет.",
-      "depositRequired": false
+      "successCondition": "Одержимый подтвердил освобождение, в котором было хотя бы одно необходимое движение вашей свободной руки. Все такие движения выполнены одной рукой; другая держала включённый телефон. Освобождение одними словами эту миссию не выполняет."
     },
     {
       "id": "E027",
@@ -2607,8 +2558,7 @@
         ]
       },
       "mission": "Освободите хотя бы одного одержимого, не произнося обычных игровых слов во время попытки. Выбирайте того, чьё поведение можно понять и изменить действием. Контакт сначала согласуйте вне роли.",
-      "successCondition": "Одержимый подтвердил освобождение после вашей полностью безмолвной игровой попытки; внеигровые обращения допустимы.",
-      "depositRequired": false
+      "successCondition": "Одержимый подтвердил освобождение после вашей полностью безмолвной игровой попытки; внеигровые обращения допустимы."
     },
     {
       "id": "E028",
@@ -2628,15 +2578,14 @@
           "user:domestic-horror",
           "user:no-task-props"
         ],
-        "adaptation": "Recall three existing spatial landmarks rather than objects or prepared markers. Authored adaptation under the later no-props instruction; no commercial text or supernatural fact is implied.",
+        "adaptation": "Authored revision for a brief scene another player can see or hear during the search.",
         "inspirations": [
           "others",
           "jolly-corner"
         ]
       },
-      "mission": "В одной разрешённой локации остановитесь и выберите три неподвижных ориентира пространства слева направо. Повернитесь к ним спиной, оставаясь на месте, и назовите их справа налево. Затем повернитесь обратно и проверьте себя. Подходят линии стен, участки пола или земли, дерево и границы света; ничего не расставляйте и глаза не закрывайте.",
-      "successCondition": "До призыва вы без взгляда правильно назвали три выбранных ориентира в обратном порядке и проверили результат. При ошибке можно выбрать новые ориентиры.",
-      "depositRequired": false
+      "mission": "На виду у другого игрока выберите три ориентира слева направо, отвернитесь, назовите их в обратном порядке и повернитесь обратно, чтобы проверить себя.",
+      "successCondition": "Другой игрок увидел поворот и услышал все три ориентира в правильном обратном порядке до призыва."
     },
     {
       "id": "E029",
@@ -2651,14 +2600,13 @@
           "pdf:Э-18",
           "user:domestic-horror"
         ],
-        "adaptation": "Introduction, pause and goodbye complete an act without requiring a paranormal reply. Domestic-horror revision: retain_core.",
+        "adaptation": "Authored revision for a brief scene another player can see or hear during the search.",
         "inspirations": [
           "beckoning"
         ]
       },
-      "mission": "Найдите в разрешённой локации пустое место и, стоя перед ним, представьтесь вымышленным именем. Выдержите паузу для ответа, затем попрощайтесь, не изображая ответ за духа.",
-      "successCondition": "Вы выполнили представление, паузу и прощание в одном эпизоде до призыва.",
-      "depositRequired": false
+      "mission": "При другом игроке представьтесь пустому месту вымышленным именем, выдержите паузу для ответа и попрощайтесь.",
+      "successCondition": "Другой игрок услышал представление и прощание до призыва."
     },
     {
       "id": "E030",
@@ -2683,8 +2631,7 @@
         ]
       },
       "mission": "При встрече с участником, согласившимся на пугающую игру, разыграйте короткий тревожный эпизод голосом или выражением лица с видимого места. Не подкрадывайтесь, не кричите в ухо, не касайтесь и не перекрывайте путь. Один раз после сцены спросите вне роли, удалось ли вызвать испуг.",
-      "successCondition": "Другой участник сам подтвердил, что действительно испугался. Сам показ сцены и молчание зрителя не считаются успехом.",
-      "depositRequired": false
+      "successCondition": "Другой участник сам подтвердил, что действительно испугался. Сам показ сцены и молчание зрителя не считаются успехом."
     },
     {
       "id": "E031",
@@ -2700,15 +2647,14 @@
           "user:paper-free",
           "user:domestic-horror"
         ],
-        "adaptation": "The task completes a source/echo/present episode, not an abstract transported finger ring. No exact words or reversed order are tested. Domestic-horror revision: replace.",
+        "adaptation": "Authored revision for a brief scene another player can see or hear during the search.",
         "inspirations": [
           "empty-house",
           "old-nurse"
         ]
       },
-      "mission": "В разрешённой локации произнесите одну короткую вымышленную фразу своим обычным голосом. Затем, оставаясь на месте, изобразите её отголосок более тихим голосом. Завершите эпизод третьей фразой от себя о том, что действительно видите сейчас. Не требуйте ответа от других.",
-      "successCondition": "Вы последовательно различили свою фразу, её изображённое эхо и новое обращение о реальной обстановке до призыва. Самостоятельно сыгранное эхо не выдавали за услышанного духа.",
-      "depositRequired": false
+      "mission": "При другом игроке произнесите вымышленную фразу, повторите её тише как эхо и завершите сцену словами о том, что действительно видите.",
+      "successCondition": "Один игрок услышал все три реплики до призыва."
     },
     {
       "id": "E032",
@@ -2724,14 +2670,13 @@
           "runtime:e27",
           "user:domestic-horror"
         ],
-        "adaptation": "Two actually heard sounds are reproduced, not invented as proof of a presence. Domestic-horror revision: retain_core.",
+        "adaptation": "Authored revision for a brief scene another player can see or hear during the search.",
         "inspirations": [
           "empty-house"
         ]
       },
-      "mission": "По ходу поиска услышьте два разных звука, которые издали другие участники или обстановка. После второго воспроизведите оба подряд собственным голосом в том порядке, в котором услышали.",
-      "successCondition": "Вы изобразили два действительно услышанных разных звука в правильном порядке до призыва.",
-      "depositRequired": false
+      "mission": "Услышьте два разных звука и повторите их голосом в том же порядке, чтобы другой игрок услышал оба.",
+      "successCondition": "Один игрок услышал оба звука, которые вы изобразили в исходном порядке, до призыва."
     },
     {
       "id": "E033",
@@ -2747,14 +2692,13 @@
           "user:paper-free",
           "user:domestic-horror"
         ],
-        "adaptation": "This ends a self-authored habitual act; the cloth rolling exercise is removed. It is not a route or object-fold task. Domestic-horror revision: replace.",
+        "adaptation": "Authored revision for a brief scene another player can see or hear during the search.",
         "inspirations": [
           "beckoning"
         ]
       },
-      "mission": "В одной локации придумайте короткое безопасное бытовое движение без предметов: разгладить пустую скатерть, поправить отсутствующую подушку или вытереть воображаемую пыль. Один раз повторите его, затем намеренно прекратите, раскройте ладонь и назовите себя вымышленным именем. Не изображайте чужое задание одержимого целиком.",
-      "successCondition": "Вы начали, повторили и явно прекратили одну придуманную домашнюю привычку до призыва. Другому участнику не пришлось угадывать её и исполнять за вас.",
-      "depositRequired": false
+      "mission": "На виду у другого игрока изобразите бытовое действие без предметов, повторите его один раз, затем остановитесь, раскройте ладонь и назовитесь вымышленным именем.",
+      "successCondition": "Один игрок увидел действие и его повтор и услышал вымышленное имя до призыва."
     },
     {
       "id": "E034",
@@ -2777,8 +2721,7 @@
         ]
       },
       "mission": "При краткой встрече попросите согласного участника произнести одну полностью вымышленную короткую фразу обычным голосом, затем повторить её с изменённым темпом, громкостью или тембром. Назовите одно действительно услышанное отличие и получите его подтверждение. После этого разойдитесь. Раскрывать карту, изображать болезнь или вызывать испуг не нужно.",
-      "successCondition": "До призыва вы услышали две версии одной фразы, назвали одно реальное различие и получили подтверждение собеседника. Правильные слова не угадывают и задом наперёд не повторяют.",
-      "depositRequired": false
+      "successCondition": "До призыва вы услышали две версии одной фразы, назвали одно реальное различие и получили подтверждение собеседника. Правильные слова не угадывают и задом наперёд не повторяют."
     },
     {
       "id": "E035",
@@ -2800,8 +2743,7 @@
         ]
       },
       "mission": "При краткой встрече добейтесь, чтобы участник добровольно указал ладонью направление базы. Просите или объясняйте своими словами, но не называйте его имени и не произносите «покажи». Затем идите отдельно; вести вас не нужно.",
-      "successCondition": "Участник намеренно указал направление после вашей просьбы до призыва, а оба речевых ограничения соблюдены. Настоящие вопросы о безопасности разрешены.",
-      "depositRequired": false
+      "successCondition": "Участник намеренно указал направление после вашей просьбы до призыва, а оба речевых ограничения соблюдены. Настоящие вопросы о безопасности разрешены."
     },
     {
       "id": "E036",
@@ -2821,15 +2763,14 @@
           "pdf:З-25",
           "user:domestic-horror"
         ],
-        "adaptation": "An honest light-hand-shadow sequence replaces a claim that a ghost was detected. Domestic-horror revision: adapt.",
+        "adaptation": "Authored revision for a brief scene another player can see or hear during the search.",
         "inspirations": [
           "innocents",
           "others"
         ]
       },
-      "mission": "В заранее проверенном месте остановитесь и тусклым экраном создайте видимую тень своей свободной руки на светлой поверхности. Измените пальцы так, чтобы тень стала похожа на птицу, затем уберите руку из света и убедитесь, что тень исчезла. Яркость не повышайте.",
-      "successCondition": "Вы увидели собственную тень, изменение её формы и исчезновение до призыва. Самостоятельно движущуюся тень не выдумывают.",
-      "depositRequired": false
+      "mission": "На виду у другого игрока тусклым экраном создайте тень руки, придайте ей форму птицы и уберите руку, чтобы тень исчезла.",
+      "successCondition": "Один игрок увидел появление тени, её форму и исчезновение до призыва."
     },
     {
       "id": "E037",
@@ -2844,15 +2785,14 @@
           "user:domestic-horror",
           "user:no-task-props"
         ],
-        "adaptation": "Later user instruction removes all material task props; the action uses the player’s body and phone only.",
+        "adaptation": "Authored revision for a brief scene another player can see or hear during the search.",
         "inspirations": [
           "beckoning",
           "monkeys-paw"
         ]
       },
-      "mission": "После одной встречи с одержимым самостоятельно отойдите на свободное место. Посмотрите на собственную свободную ладонь, разожмите пальцы и поверните кисть ладонью вверх, затем вниз. Своим обычным голосом назовите одну реальную деталь окружающего пространства. Не приписывайте руке настоящих следов или изменений.",
-      "successCondition": "До призыва вы после встречи выполнили осмотр и поворот собственной кисти, затем назвали настоящую деталь места обычным голосом. Вещей, образцов или отметин не требуется.",
-      "depositRequired": false
+      "mission": "После встречи с одержимым отойдите на свободное место. На виду у другого игрока разожмите пальцы, поверните ладонь вверх и вниз и назовите обычным голосом реальную деталь места.",
+      "successCondition": "Один игрок увидел оба поворота и услышал названную деталь до призыва."
     },
     {
       "id": "E038",
@@ -2870,14 +2810,13 @@
           "user:domestic-horror",
           "user:no-exorcist-loadout"
         ],
-        "adaptation": "Two independent visits end in a completed self-directed shoulder-sweeping gesture. No cloth, pocket, inventory or actual mark is needed.",
+        "adaptation": "Authored revision for a brief scene another player can see or hear during the search.",
         "inspirations": [
           "beckoning"
         ]
       },
-      "mission": "Самостоятельно посетите две разрешённые локации. Во второй остановитесь на свободном месте. Свободной ладонью проведите над одним своим плечом, затем над другим, будто убираете оставшийся чужой след, и завершите жест стряхиванием пальцев в пустое место в стороне от себя. Ничего не снимайте с одежды и никого не касайтесь.",
-      "successCondition": "До призыва вы отдельно посетили обе локации, затем выполнили оба движения над собственными плечами и завершающее стряхивание. Реквизит и настоящий след не требуются.",
-      "depositRequired": false
+      "mission": "Самостоятельно посетите две локации. Во второй на виду у другого игрока проведите ладонью над обоими плечами по очереди и стряхните воображаемый след в сторону.",
+      "successCondition": "Вы самостоятельно посетили обе локации, и другой игрок увидел все три движения до призыва."
     },
     {
       "id": "E039",
@@ -2895,14 +2834,13 @@
           "user:domestic-horror",
           "user:no-task-props"
         ],
-        "adaptation": "Ground attention in five real spatial details, not a collection of objects. Authored adaptation under the later no-props instruction; no commercial text or supernatural fact is implied.",
+        "adaptation": "Authored revision for a brief scene another player can see or hear during the search.",
         "inspirations": [
           "others"
         ]
       },
-      "mission": "В одной локации назовите вслух пять действительно видимых деталей пространства и после каждой укажите свободной рукой. Это могут быть углы, линии стен, участки пола или земли, границы света, небо или дерево. Ничего специально не ищите как предмет и не трогайте.",
-      "successCondition": "Вы назвали и показали пять разных реальных деталей места до призыва. Никакой реквизит не требуется.",
-      "depositRequired": false
+      "mission": "Назовите другому игроку пять видимых деталей одной локации и на каждую укажите рукой.",
+      "successCondition": "Один игрок услышал все пять деталей и увидел, куда вы указали, до призыва."
     },
     {
       "id": "E040",
@@ -2920,14 +2858,13 @@
           "runtime:e08",
           "user:domestic-horror"
         ],
-        "adaptation": "Two real entrance landmarks are inspected on independent visits. Domestic-horror revision: retain_core.",
+        "adaptation": "Authored revision for a brief scene another player can see or hear during the search.",
         "inspirations": [
           "empty-house"
         ]
       },
-      "mission": "Самостоятельно посетите две разрешённые локации. В каждой остановитесь, осмотрите вход и назовите вслух, что останется видимым ориентиром при возвращении. Выбирайте реальные неподвижные признаки.",
-      "successCondition": "Вы указали по одному настоящему ориентиру в двух разных локациях до призыва; совместного обхода не было.",
-      "depositRequired": false
+      "mission": "Самостоятельно посетите две локации и у входа в каждую назовите неподвижный ориентир. Хотя бы один ориентир назовите так, чтобы его услышал другой игрок.",
+      "successCondition": "Вы самостоятельно посетили обе локации и назвали оба ориентира; хотя бы один услышал другой игрок до призыва."
     },
     {
       "id": "E041",
@@ -2949,8 +2886,7 @@
         ]
       },
       "mission": "Придумайте одну заведомо вымышленную примету этого места. Кратко расскажите её встреченному участнику и получите от него ответ — верит ли его персонаж в эту примету. Не утверждайте, что это настоящее правило игры.",
-      "successCondition": "Примета рассказана, собеседник ответил от лица персонажа, обмен завершён до призыва.",
-      "depositRequired": false
+      "successCondition": "Примета рассказана, собеседник ответил от лица персонажа, обмен завершён до призыва."
     },
     {
       "id": "E042",
@@ -2972,472 +2908,7 @@
         ]
       },
       "mission": "При краткой встрече с одним участником попрощайтесь с ним внутри роли и получите намеренный ответ словом или жестом. Затем самостоятельно отойдите от него и не начинайте новый игровой разговор с тем же человеком до следующего посещения другой локации. Техническое общение разрешено.",
-      "successCondition": "Ответное прощание и отдельный уход завершены до призыва. До посещения другой локации вы не возобновляли обычный разговор с тем же участником.",
-      "depositRequired": false
-    },
-    {
-      "id": "T001",
-      "type": "trial",
-      "title": "Посланник света",
-      "sets": [],
-      "family": "light",
-      "requirements": [
-        "Хотя бы один доступный одержимый и один свободный экзорцист; тусклый экран различим."
-      ],
-      "provenance": {
-        "classification": "adaptation",
-        "sources": [
-          "original:03.01",
-          "user:domestic-horror"
-        ],
-        "adaptation": "Domestic-horror framing preserves the private objective, two prophecy branches and participant evidence. T006 uses a distinct fictional cue, not the real stop signal. T007 uses folded empty household cloth. No sensing or runtime implementation is claimed.",
-        "inspirations": [
-          "turn-screw"
-        ]
-      },
-      "delivery": {
-        "audience": "selected_exorcist",
-        "at": "exorcism_start",
-        "instruction": "Найдите одного одержимого и ненадолго направьте свет тусклого экрана на его лицо ниже уровня глаз. Не приближайте экран вплотную и не увеличивайте яркость. После ритуального призыва вернитесь, если останетесь свободны."
-      },
-      "hiddenObjective": "Подтвердить освещение одержимого и установить, вернулся ли выбранный экзорцист свободным или был заражён до возвращения.",
-      "branches": {
-        "zeroOrOne": {
-          "success": "Посланник подтвердил освещение одержимого и вернулся свободным.",
-          "effect": "Один дополнительный успех ритуала."
-        },
-        "two": {
-          "success": "Посланник подтвердил освещение одержимого, но был заражён до возвращения.",
-          "effect": "Один дополнительный успех ритуала. Заражение не даёт зачёта его личной миссии."
-        }
-      },
-      "evidence": [
-        "Посланник сообщает, выполнил ли поручение и кого осветил.",
-        "Названный одержимый подтверждает встречу; факт заражения сверяется с записями участников."
-      ]
-    },
-    {
-      "id": "T002",
-      "type": "trial",
-      "title": "Тот, кто заставляет вздрогнуть",
-      "sets": [
-        "harder"
-      ],
-      "family": "acting",
-      "requirements": [
-        "Согласие группы на пугающую актёрскую игру; после назначения доступны два других активных участника."
-      ],
-      "provenance": {
-        "classification": "adaptation",
-        "sources": [
-          "original:03.02",
-          "user:domestic-horror"
-        ],
-        "adaptation": "Domestic-horror framing preserves the private objective, two prophecy branches and participant evidence. T006 uses a distinct fictional cue, not the real stop signal. T007 uses folded empty household cloth. No sensing or runtime implementation is claimed.",
-        "inspirations": [
-          "turn-screw",
-          "jolly-corner"
-        ]
-      },
-      "delivery": {
-        "audience": "selected_exorcist",
-        "at": "exorcism_start",
-        "instruction": "При двух первых кратких встречах с разными участниками разыграйте с видимого места короткое узнаваемое приветствие, в котором голос или выражение лица на мгновение становится чужим. Не касайтесь, не перекрывайте путь и не кричите рядом с ухом. Затем продолжайте обычный поиск в одиночку."
-      },
-      "hiddenObjective": "Сколько из двух участников действительно испугались представления, а не просто заметили его.",
-      "branches": {
-        "zeroOrOne": {
-          "success": "Хотя бы один из двух участников сам подтвердил испуг.",
-          "effect": "Один дополнительный успех ритуала."
-        },
-        "two": {
-          "success": "Оба участника сами подтвердили испуг.",
-          "effect": "Один дополнительный успех ритуала."
-        }
-      },
-      "evidence": [
-        "Исполнитель называет две первые встречи и отмечает, где успел разыграть сцену.",
-        "Каждый из двух зрителей независимо сообщает, был ли испуг. Отсутствие ответа остаётся неизвестным фактом."
-      ]
-    },
-    {
-      "id": "T003",
-      "type": "trial",
-      "title": "Мастер не отвечает",
-      "sets": [],
-      "family": "voice",
-      "requirements": [
-        "Отдельный личный отчёт об игровом обращении; технические каналы должны оставаться доступными."
-      ],
-      "provenance": {
-        "classification": "adaptation",
-        "sources": [
-          "original:03.08",
-          "user:domestic-horror"
-        ],
-        "adaptation": "Domestic-horror framing preserves the private objective, two prophecy branches and participant evidence. T006 uses a distinct fictional cue, not the real stop signal. T007 uses folded empty household cloth. No sensing or runtime implementation is claimed.",
-        "inspirations": [
-          "others"
-        ]
-      },
-      "delivery": {
-        "audience": "selected_exorcist",
-        "at": "exorcism_start",
-        "instruction": "До ритуального призыва не обращайтесь к компьютерному Мастеру внутри роли. С другими медиумами можно разговаривать как обычно. Если всё же намеренно заговорите с Мастером в роли, отметьте этот факт в отдельном личном отчёте об испытании. Техническая помощь, вопросы о согласии и остановка игры разрешены."
-      },
-      "hiddenObjective": "Нарушил ли выбранный экзорцист запрет на игровой разговор с Мастером.",
-      "branches": {
-        "zeroOrOne": {
-          "success": "Посланник явно подтвердил, что обратился к Мастеру внутри роли до призыва; компьютер принял отчёт и прислал личное сообщение «Обращение принято. Разговор окончен».",
-          "effect": "Один дополнительный успех ритуала. Личное сообщение не является общим призывом и не освобождает заражённых."
-        },
-        "two": {
-          "success": "Посланник явно подтвердил, что ни разу не обращался к Мастеру внутри роли до призыва.",
-          "effect": "Один дополнительный успех ритуала."
-        }
-      },
-      "evidence": [
-        "Посланник подтверждает наличие или отсутствие игрового обращения.",
-        "Если обращение было, компьютер сохраняет собственное подтверждение получения личного отчёта; микрофон и распознавание речи не используются."
-      ]
-    },
-    {
-      "id": "T004",
-      "type": "trial",
-      "title": "Принести зов Обители",
-      "sets": [],
-      "family": "dwelling",
-      "requirements": [
-        "Обитель — заранее оговорённое место в разрешённой локации: угол комнаты или участок двора. Ничего ставить, раскладывать или рисовать там не нужно.",
-        "Доступен путь к ритуальному столу и обратно при включённом свете."
-      ],
-      "provenance": {
-        "classification": "adaptation",
-        "sources": [
-          "original:03.11",
-          "user:paper-free",
-          "user:domestic-horror",
-          "user:no-task-props"
-        ],
-        "adaptation": "The user removes the physical Dwelling. The original delivery/return structure is adapted as an on-site call, early return with a remembered fictional name, and a second visit; inverted late scoring and the one-off early-return exception remain. Authored adaptation under the later no-props instruction; no commercial text or supernatural fact is implied.",
-        "inspirations": [
-          "beckoning"
-        ]
-      },
-      "delivery": {
-        "audience": "selected_exorcist",
-        "at": "exorcism_start",
-        "instruction": "Самостоятельно посетите место Обители и негромко назовите там придуманное вымышленное имя. Вам разрешено один раз вернуться к ритуальному столу до общего призыва: у стола произнесите это имя и лично подтвердите выполнение поручения. После личного сообщения Мастера «Верни зов на место» снова посетите Обитель и попрощайтесь с тем, кого назвали. Никакого предмета не берут и не переносят."
-      },
-      "hiddenObjective": "Посетил ли посланник Обитель, принёс ли её вымышленное обращение к столу и вернулся ли завершить обращение на прежнем месте; либо явно подтверждено отсутствие раннего возвращения к столу.",
-      "branches": {
-        "zeroOrOne": {
-          "success": "Посланник явно подтвердил первое посещение Обители, произнесение вымышленного имени у стола до призыва и второе посещение с прощанием после личного сообщения Мастера.",
-          "effect": "Один дополнительный успех ритуала."
-        },
-        "two": {
-          "success": "Посланник явно подтвердил, что до общего призыва не возвращался к столу с этим обращением, в том числе если был заражён. Одного отсутствия отчёта недостаточно.",
-          "effect": "Один дополнительный успех ритуала."
-        }
-      },
-      "evidence": [
-        "Посланник отдельно подтверждает первое посещение, раннее возвращение с обращением и завершённое второе посещение.",
-        "При невыполнении нужен явный отчёт о том, что раннего возвращения с обращением не было. Отсутствие сообщения не доказывает результат.",
-        "Компьютер не слышит имя и не видит перемещений; учитываются подтверждённые физические действия, а личное сообщение не является общим призывом."
-      ]
-    },
-    {
-      "id": "T005",
-      "type": "trial",
-      "title": "Ответ пустой комнате",
-      "sets": [],
-      "family": "sound",
-      "requirements": [
-        "Две разрешённые локации; для второй ветви в партии есть два других активных участника."
-      ],
-      "provenance": {
-        "classification": "adaptation",
-        "sources": [
-          "pdf:Э-08",
-          "pdf:Х-01",
-          "user:domestic-horror"
-        ],
-        "adaptation": "Domestic-horror framing preserves the private objective, two prophecy branches and participant evidence. T006 uses a distinct fictional cue, not the real stop signal. T007 uses folded empty household cloth. No sensing or runtime implementation is claimed.",
-        "inspirations": [
-          "empty-house"
-        ]
-      },
-      "delivery": {
-        "audience": "selected_exorcist",
-        "at": "exorcism_start",
-        "instruction": "В первой посещённой локации негромко спросите: «Здесь кто-нибудь есть?» Повторите тот же вопрос в другой локации. После каждой попытки выслушайте один ответ, не отвечая за других."
-      },
-      "hiddenObjective": "Сколько разных участников самостоятельно откликнулись на два обращения.",
-      "branches": {
-        "zeroOrOne": {
-          "success": "Хотя бы один другой участник ответил на обращение словом или намеренным жестом.",
-          "effect": "Один дополнительный успех ритуала."
-        },
-        "two": {
-          "success": "На обращения откликнулись два разных участника.",
-          "effect": "Один дополнительный успех ритуала."
-        }
-      },
-      "evidence": [
-        "Посланник называет места, откликнувшихся и их ответы.",
-        "Названные участники подтверждают собственный отклик."
-      ]
-    },
-    {
-      "id": "T006",
-      "type": "trial",
-      "title": "Жест чужого жильца",
-      "sets": [],
-      "family": "observation",
-      "requirements": [],
-      "provenance": {
-        "classification": "adaptation",
-        "sources": [
-          "pdf:Х-08",
-          "user:domestic-horror"
-        ],
-        "adaptation": "Domestic-horror framing preserves the private objective, two prophecy branches and participant evidence. T006 uses a distinct fictional cue, not the real stop signal. T007 uses folded empty household cloth. No sensing or runtime implementation is claimed.",
-        "inspirations": [
-          "others"
-        ]
-      },
-      "delivery": {
-        "audience": "selected_exorcist",
-        "at": "exorcism_start",
-        "instruction": "В одной локации остановитесь, коснитесь свободной рукой своего плеча и разверните ту же раскрытую ладонь в сторону пустого места рядом. Это только игровой жест, не сигнал остановки. Не объясняя его внутри роли, мысленно досчитайте до пяти, затем идите дальше. Отметьте, кто сам прервал обычную речь или движение, заметив жест."
-      },
-      "hiddenObjective": "Был ли новый игровой жест замечен и вызвал ли он самостоятельное краткое прерывание обычной речи или движения другого участника. Реальная остановка игры не оценивается.",
-      "branches": {
-        "zeroOrOne": {
-          "success": "Хотя бы один участник подтвердил, что заметил последовательность касания плеча и раскрытия ладони и из-за неё прервал обычную игровую речь либо движение.",
-          "effect": "Один дополнительный успех ритуала."
-        },
-        "two": {
-          "success": "Один участник подтвердил, что из-за этой последовательности одновременно прервал обычную игровую речь и движение на один спокойный выдох. Реальная просьба остановиться и техническая пауза не считаются.",
-          "effect": "Один дополнительный успех ритуала."
-        }
-      },
-      "evidence": [
-        "Посланник сообщает локацию, выполнение обеих частей жеста и замеченную реакцию.",
-        "Затронутый участник независимо подтверждает, что именно заметил и какие обычные действия прервал.",
-        "При отсутствии ответа факт неизвестен. Реальный стоп, техническая помощь и согласование контакта исключаются из результата."
-      ]
-    },
-    {
-      "id": "T007",
-      "type": "trial",
-      "title": "Пустое место у плеча",
-      "sets": [],
-      "family": "observation",
-      "requirements": [
-        "Доступен один другой участник для короткой встречи. Никакие предметы не нужны."
-      ],
-      "provenance": {
-        "classification": "adaptation",
-        "sources": [
-          "user:paper-free",
-          "user:domestic-horror",
-          "user:no-exorcist-loadout",
-          "user:no-task-props"
-        ],
-        "adaptation": "A voluntary gaze response replaces acceptance of a bundle. Both private branches use explicit human reports, with no object or inferred observation. Authored adaptation under the later no-props instruction; no commercial text or supernatural fact is implied.",
-        "inspirations": [
-          "turn-screw",
-          "others"
-        ]
-      },
-      "delivery": {
-        "audience": "selected_exorcist",
-        "at": "exorcism_start",
-        "instruction": "При одной краткой встрече посмотрите на пустое место сбоку от собеседника, затем ему в лицо. Негромко скажите: «Здесь стало тесно». Сами оставайтесь на месте, не подходите сзади, не касайтесь и не просите оборачиваться. Продолжите обычный поиск в одиночку."
-      },
-      "hiddenObjective": "Последовал ли собеседник взглядом к указанной пустоте и вернулся ли затем взглядом к живому посланнику.",
-      "branches": {
-        "zeroOrOne": {
-          "success": "Собеседник явно подтвердил, что заметил взгляд и реплику посланника, но не посмотрел на указанное пустое место.",
-          "effect": "Один дополнительный успех ритуала."
-        },
-        "two": {
-          "success": "Собеседник явно подтвердил, что посмотрел на указанное пустое место, а затем снова на лицо посланника в той же встрече.",
-          "effect": "Один дополнительный успех ритуала."
-        }
-      },
-      "evidence": [
-        "Посланник описывает завершённую встречу и направление своего взгляда.",
-        "Собеседник независимо сообщает, заметил ли обращение и куда посмотрел.",
-        "При неизвестном ответе результат не установлен. Компьютер не наблюдает взгляд и не превращает молчание или испуг в подтверждение."
-      ]
-    },
-    {
-      "id": "T008",
-      "type": "trial",
-      "title": "Чужое имя в ответ",
-      "sets": [],
-      "family": "social",
-      "requirements": [],
-      "provenance": {
-        "classification": "adaptation",
-        "sources": [
-          "pdf:Х-04",
-          "pdf:Х-09",
-          "user:domestic-horror"
-        ],
-        "adaptation": "Domestic-horror framing preserves the private objective, two prophecy branches and participant evidence. T006 uses a distinct fictional cue, not the real stop signal. T007 uses folded empty household cloth. No sensing or runtime implementation is claimed.",
-        "inspirations": [
-          "jolly-corner"
-        ]
-      },
-      "delivery": {
-        "audience": "selected_exorcist",
-        "at": "exorcism_start",
-        "instruction": "При краткой встрече представьтесь одним вымышленным именем. Не требуйте повторять его. Позднее в этой же встрече спросите что-нибудь о локации и выслушайте ответ."
-      },
-      "hiddenObjective": "Запомнил ли собеседник вымышленное имя и использовал ли его самостоятельно.",
-      "branches": {
-        "zeroOrOne": {
-          "success": "Собеседник при проверке правильно вспомнил вымышленное имя, не читая чужую карту.",
-          "effect": "Один дополнительный успех ритуала."
-        },
-        "two": {
-          "success": "Собеседник сам обратился к посланнику этим именем во время встречи, до любого вопроса о запоминании.",
-          "effect": "Один дополнительный успех ритуала."
-        }
-      },
-      "evidence": [
-        "Посланник сообщает придуманное имя и собеседника.",
-        "Собеседник сначала сообщает запомненное имя и факт собственного обращения; после этого отчёты сопоставляются."
-      ]
-    },
-    {
-      "id": "T009",
-      "type": "trial",
-      "title": "Знак, который вернулся",
-      "sets": [],
-      "family": "gesture",
-      "requirements": [],
-      "provenance": {
-        "classification": "adaptation",
-        "sources": [
-          "pdf:Р-03",
-          "pdf:Р-10",
-          "user:domestic-horror"
-        ],
-        "adaptation": "Domestic-horror framing preserves the private objective, two prophecy branches and participant evidence. T006 uses a distinct fictional cue, not the real stop signal. T007 uses folded empty household cloth. No sensing or runtime implementation is claimed.",
-        "inspirations": [
-          "vourdalak"
-        ]
-      },
-      "delivery": {
-        "audience": "selected_exorcist",
-        "at": "exorcism_start",
-        "instruction": "На первой встрече покажите другому участнику короткий знак: два пальца к собственной груди, затем ладонь в сторону. Не объясняйте его и не требуйте повторить. Продолжайте путь отдельно. Если позже встретитесь, сначала выдержите короткую паузу, не показывая знак; после паузы можно показать его снова."
-      },
-      "hiddenObjective": "Ответил ли участник тем же знаком сразу или запомнил его к отдельной следующей встрече.",
-      "branches": {
-        "zeroOrOne": {
-          "success": "Участник подтвердил, что намеренно повторил оба движения хотя бы на одной встрече.",
-          "effect": "Один дополнительный успех ритуала."
-        },
-        "two": {
-          "success": "Участник повторил оба движения на второй отдельной встрече до повторного показа посланником.",
-          "effect": "Один дополнительный успех ритуала."
-        }
-      },
-      "evidence": [
-        "Оба участника сообщают, были ли две отдельные встречи и кто первым показал знак на второй.",
-        "Совместное перемещение между встречами делает вторую ветвь невыполненной."
-      ]
-    },
-    {
-      "id": "T010",
-      "type": "trial",
-      "title": "Два свидетеля одной тени",
-      "sets": [
-        "harder"
-      ],
-      "family": "observation",
-      "requirements": [
-        "Два других доступных активных участника."
-      ],
-      "provenance": {
-        "classification": "adaptation",
-        "sources": [
-          "pdf:Х-06",
-          "pdf:Э-39",
-          "user:domestic-horror"
-        ],
-        "adaptation": "Domestic-horror framing preserves the private objective, two prophecy branches and participant evidence. T006 uses a distinct fictional cue, not the real stop signal. T007 uses folded empty household cloth. No sensing or runtime implementation is claimed.",
-        "inspirations": [
-          "turn-screw"
-        ]
-      },
-      "delivery": {
-        "audience": "selected_exorcist",
-        "at": "exorcism_start",
-        "instruction": "По очереди при двух отдельных встречах опишите одну и ту же вымышленную фигуру тремя признаками: рост, одежда, движение. Не сообщайте, кому уже рассказывали, и не собирайте людей вместе."
-      },
-      "hiddenObjective": "Сколько признаков два независимых слушателя сохранили в памяти.",
-      "branches": {
-        "zeroOrOne": {
-          "success": "Хотя бы один слушатель независимо вспомнил все три признака.",
-          "effect": "Один дополнительный успех ритуала."
-        },
-        "two": {
-          "success": "Оба слушателя независимо вспомнили все три признака.",
-          "effect": "Один дополнительный успех ритуала."
-        }
-      },
-      "evidence": [
-        "Посланник заранее сохраняет три придуманных признака в собственном отчёте.",
-        "Два слушателя дают свои ответы до знакомства с его отчётом и ответом другого слушателя."
-      ]
-    },
-    {
-      "id": "T011",
-      "type": "trial",
-      "title": "До последнего слова",
-      "sets": [],
-      "family": "release",
-      "requirements": [
-        "Один доступный одержимый с повторяемым поведением и один свободный экзорцист."
-      ],
-      "provenance": {
-        "classification": "adaptation",
-        "sources": [
-          "pdf:Э-21",
-          "pdf:Х-02",
-          "user:domestic-horror"
-        ],
-        "adaptation": "Domestic-horror framing preserves the private objective, two prophecy branches and participant evidence. T006 uses a distinct fictional cue, not the real stop signal. T007 uses folded empty household cloth. No sensing or runtime implementation is claimed.",
-        "inspirations": [
-          "empty-house"
-        ]
-      },
-      "delivery": {
-        "audience": "selected_exorcist",
-        "at": "exorcism_start",
-        "instruction": "При встрече с одержимым сначала молча понаблюдайте один полный повтор его поведения. Затем попробуйте освободить его, не подражая этому поведению целиком. Если не получится, продолжайте обычный поиск."
-      },
-      "hiddenObjective": "Состоялось ли осмысленное наблюдение до попытки и была ли группа освобождена этим посланником без его заражения.",
-      "branches": {
-        "zeroOrOne": {
-          "success": "Одержимый подтвердил полный повтор молчаливого наблюдения перед попыткой и отсутствие полного подражания; посланник не был заражён в этом эпизоде.",
-          "effect": "Один дополнительный успех ритуала."
-        },
-        "two": {
-          "success": "После полного повтора молчаливого наблюдения посланник лично освободил эту группу, не подражая поведению целиком, и не был заражён в данном назначении до призыва.",
-          "effect": "Один дополнительный успех ритуала."
-        }
-      },
-      "evidence": [
-        "Одержимый подтверждает полный повтор молчаливого наблюдения перед попыткой и отсутствие полного подражания поведению.",
-        "Посланник сообщает исход; заражение сверяется с отчётами и учётом группы."
-      ]
+      "successCondition": "Ответное прощание и отдельный уход завершены до призыва. До посещения другой локации вы не возобновляли обычный разговор с тем же участником."
     },
     {
       "id": "R001",
@@ -3870,17 +3341,17 @@
           "user:no-exorcist-loadout",
           "user:no-task-props"
         ],
-        "adaptation": "The reference now explains zero task props, a place-only Dwelling and body/voice group performance. Authored adaptation under the later no-props instruction; no commercial text or supernatural fact is implied.",
+        "adaptation": "The reference covers solo movement, brief observable scenes and play without task props.",
         "inspirations": []
       },
       "sections": [
         {
           "title": "Перед выходом",
-          "text": "Прочитайте свою миссию втайне от других. Главная цель — освобождать одержимых; дополнительная миссия необязательна. До разрешения Мастера оставайтесь у стола. На поиск берите телефон. Реквизит не нужен и заранее не раскладывается. Если миссия требует подношения, лично посетите оговорённое место Обители и выполните указанный жест или фразу."
+          "text": "Прочитайте свою миссию втайне от других. Главная цель — освобождать одержимых; дополнительная миссия необязательна. До разрешения Мастера оставайтесь у стола. На поиск берите телефон. Реквизит не нужен и заранее не раскладывается. Если по карте вашу сцену должны увидеть или услышать, выполните её при другом игроке или так, как указано на карте."
         },
         {
           "title": "Во время экзорцизма",
-          "text": "Передвигайтесь в одиночку по разрешённым местам и держите тусклый источник света включённым. Исключение возможно только по условию карты или испытания. При краткой встрече разговаривать можно; объединяться для совместного поиска нельзя. Наблюдайте за поведением одержимого и пробуйте действовать. Универсальной команды проверки нет. Реагируйте на намерение в сцене: кому отвечают, чего ждут, какое действие снова не заканчивается. Знание выбранной вступительной истории для освобождения не требуется."
+          "text": "Передвигайтесь в одиночку по разрешённым местам и держите тусклый источник света включённым. Исключение возможно только по условию карты. При краткой встрече разговаривать можно; объединяться для совместного поиска нельзя. Наблюдайте за поведением одержимого и пробуйте действовать. Универсальной команды проверки нет. Реагируйте на намерение в сцене: кому отвечают, чего ждут, какое действие снова не заканчивается. Знание выбранной вступительной истории для освобождения не требуется."
         },
         {
           "title": "Заражение",
