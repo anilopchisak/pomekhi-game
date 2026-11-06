@@ -19,7 +19,7 @@ export function PlayControls({ view, disabled, run, queue, online = true, estima
 }) {
   const selectRef = useRef<HTMLSelectElement>(null);
   const [selection, setSelection] = useState<{ id: string; round: string; role: string }>();
-  const [releaseIds, setReleaseIds] = useState<string[]>([]);
+  const [releaseSelection, setReleaseSelection] = useState('');
   const { play, room } = view;
   if (!play) return null;
   const game = room.game;
@@ -37,6 +37,7 @@ export function PlayControls({ view, disabled, run, queue, online = true, estima
   const native = !game.firstGame;
   const undoRequests = view.synchronization?.undoRequests ?? [];
   const waitingUndo = undoRequests.some(row => row.actionId === play.undo?.id && (row.status === 'queued' || row.status === 'review'));
+  const missionUndo = play.undo?.label === 'Отметка миссии' ? play.undo : null;
   const undoHistory = undoRequests.length > 0 ? <ul aria-label="Запросы на разбор">{undoRequests.map(row => <li key={row.id}>
       {{ queued: 'Запрос сохранён на телефоне и ждёт отправки.', review: 'Запрос ждёт решения организатора.',
         accepted: 'Отмена подтверждена.', rejected: 'Запрос на отмену отклонён.' }[row.status]}
@@ -51,7 +52,10 @@ export function PlayControls({ view, disabled, run, queue, online = true, estima
     </select>
   </label>;
 
-  const selectedReleaseIds = releaseIds.filter(id => eligible.some(player => player.id === id));
+  const pendingReleaseMembers = new Set(play.releases?.filter(row => row.pending).flatMap(row => row.memberIds));
+  const releaseOptions = (play.releaseGroups ?? []).filter(group => !group.some(id => pendingReleaseMembers.has(id)));
+  const selectedGroup = releaseOptions.find(group => JSON.stringify(group) === releaseSelection);
+  const memberNames = (ids: string[]) => ids.map(id => room.players.find(player => player.id === id)?.name ?? 'Участник').join(', ');
   const mission = play.missionEligible && <ConfirmButton native={native}
       title={play.missionCompleted ? 'Снять отметку выполнения миссии?' : 'Подтвердить выполнение миссии?'}
       description={play.missionCompleted ? undefined : offering ? 'Подтвердите, что лично дошли до Обители и выполнили действие карточки до призыва.' : 'Миссия должна быть выполнена до призыва на базу.'}
@@ -60,7 +64,7 @@ export function PlayControls({ view, disabled, run, queue, online = true, estima
       {play.missionCompleted ? 'Снять отметку миссии' : offering ? 'Подтвердить подношение и миссию' : 'Миссия выполнена'}
     </ConfirmButton>;
 
-  function infectionUndo(actionId: string, requestReview?: true) {
+  function undoAction(actionId: string, requestReview?: true) {
     return !online && queue ? queue({ kind: 'undo', actionId, ...(requestReview ? { requestReview } : {}) }) :
       run('play:undo', { ...base, actionId, ...(requestReview ? { requestReview } : {}) });
   }
@@ -77,12 +81,12 @@ export function PlayControls({ view, disabled, run, queue, online = true, estima
               {infection.pending && <small>Ждёт отправки или сверки</small>}
               <ConfirmButton data-secondary title="Отменить заражение?" confirm="Отменить заражение"
                 disabled={disabled || !mutable || game.paused || !infection.available || waiting || online && infection.pending}
-                onConfirm={() => void infectionUndo(infection.id)}>Отменить заражение</ConfirmButton>
+                onConfirm={() => void undoAction(infection.id)}>Отменить заражение</ConfirmButton>
               {waiting ? <small>Отмена ждёт сверки.</small> : infection.canRequestReview && mutable && !game.synchronization?.closed && <>
                 <small>Отмену блокируют связанные действия.</small>
                 <ConfirmButton data-secondary title="Запросить разбор отмены?" confirm="Отправить запрос"
                   description="Организатор проверит связанные действия на базе."
-                  disabled={disabled || game.paused} onConfirm={() => void infectionUndo(infection.id, true)}>Запросить разбор</ConfirmButton>
+                  disabled={disabled || game.paused} onConfirm={() => void undoAction(infection.id, true)}>Запросить разбор</ConfirmButton>
               </>}
             </li>;
           })}</ul> : <p>Вы ещё никого не заразили в этом раунде.</p>}
@@ -95,33 +99,56 @@ export function PlayControls({ view, disabled, run, queue, online = true, estima
           </>}
           {feedback}
         </>}>Заразить</DialogButton>}
-      {(play.missionEligible || actorTrial) && <DialogButton data-role-action="missions" title="Миссии" content={<>
+      {(play.missionEligible || actorTrial || missionUndo) && <DialogButton data-role-action="missions" title="Миссии" content={<>
         {play.missionEligible && play.card.role === 'exorcist' && <section aria-label="Личная миссия">
           <h3>{play.card.brief ? 'Как выполнить личную миссию?' : 'Личная миссия'}</h3>
           <p>{play.card.mission}</p>
           {!play.card.brief && play.card.successCondition && <p><strong>Условие зачёта:</strong> {play.card.successCondition}</p>}
           {mission}
         </section>}
+        {missionUndo && <ConfirmButton data-secondary title="Отменить последнюю отметку миссии?"
+          confirm="Отменить отметку" disabled={disabled || !mutable || game.paused || !missionUndo.available || waitingUndo}
+          onConfirm={() => void undoAction(missionUndo.id)}>Отменить последнюю отметку миссии</ConfirmButton>}
         {actorTrial}
         {feedback}
       </>}>Миссии</DialogButton>}
-      {play.status === 'exorcist' && <DialogButton data-role-action="release" title="Освободить участников" disabled={!searching}
+      {(play.status === 'exorcist' || Boolean(play.releases?.length)) && <DialogButton data-role-action="release" title="Освобождение"
+        disabled={!searching && !play.releases?.length}
         content={<>
-          <p>Отметьте тех, чьё условие освобождения вы выполнили. Вместе с ними освободятся их группы.</p>
-          <fieldset disabled={disabled || !searching}>
-            <legend>Участники раунда</legend>
-            {eligible.map(player => <label key={player.id}>
-              <input type="checkbox" checked={selectedReleaseIds.includes(player.id)} onChange={event => {
-                setReleaseIds(event.currentTarget.checked ? [...selectedReleaseIds, player.id] : selectedReleaseIds.filter(id => id !== player.id));
-              }} /> {player.name}
-            </label>)}
-          </fieldset>
-          <button type="button" disabled={disabled || !searching || !selectedReleaseIds.length} onClick={() => {
-            const targetIds = selectedReleaseIds;
-            const clear = () => setReleaseIds([]);
-            if (!online && queue) void queue({ kind: 'release', targetIds }).then(clear);
-            else void run('play:release', { ...base, targetIds }, clear);
-          }}>Подтвердить освобождение</button>
+          <h3>Кого вы освободили</h3>
+          {play.releases?.length ? <ul>{play.releases.map(release => {
+            const waiting = undoRequests.some(row => row.actionId === release.id && ['queued', 'review'].includes(row.status));
+            return <li key={release.id}>
+              <span>{memberNames(release.memberIds)}</span>
+              {release.pending && <small>Ждёт отправки или сверки</small>}
+              <ConfirmButton data-secondary title="Отменить освобождение?" confirm="Отменить освобождение"
+                disabled={disabled || !mutable || game.paused || !release.available || play.undo?.id !== release.id || waiting || online && release.pending}
+                onConfirm={() => void undoAction(release.id)}>Отменить освобождение</ConfirmButton>
+              {waiting ? <small>Отмена ждёт сверки.</small> : release.canRequestReview && mutable && !game.synchronization?.closed && <>
+                <small>Отмену блокируют связанные действия.</small>
+                <ConfirmButton data-secondary title="Запросить разбор отмены?" confirm="Отправить запрос"
+                  description="Организатор проверит связанные действия на базе."
+                  disabled={disabled || game.paused} onConfirm={() => void undoAction(release.id, true)}>Запросить разбор</ConfirmButton>
+              </>}
+            </li>;
+          })}</ul> : <p>Вы ещё никого не освободили в этом раунде.</p>}
+          {play.status === 'exorcist' && <>
+            <h3>Освободить группу</h3>
+            <label>Кого освободить
+              <select value={selectedGroup ? releaseSelection : ''} disabled={disabled || !searching} onChange={event => setReleaseSelection(event.target.value)}>
+                <option value="">{releaseOptions.length ? 'Выберите группу' : 'Нет доступных групп'}</option>
+                {releaseOptions.map(group => <option key={group[0]} value={JSON.stringify(group)}>{memberNames(group)}</option>)}
+              </select>
+            </label>
+            <button type="button" disabled={disabled || !searching || !selectedGroup} onClick={() => {
+              if (!selectedGroup) return;
+              const targetIds = [selectedGroup[0]];
+              const clear = () => setReleaseSelection('');
+              if (!online && queue) void queue({ kind: 'release', targetIds }).then(clear);
+              else void run('play:release', { ...base, targetIds }, clear);
+            }}>Подтвердить освобождение</button>
+            {undoHistory}
+          </>}
           {pendingReports && <p role="status">На телефоне есть записи, которые ждут отправки.</p>}
           {feedback}
         </>}>Освободить</DialogButton>}
@@ -152,21 +179,16 @@ export function PlayControls({ view, disabled, run, queue, online = true, estima
     </>}
     {!game.firstGame && mission}
     {roleControlsTarget ? createPortal(roleControls, roleControlsTarget) : roleControls}
-    {play.undo && (!game.firstGame || play.undo.label !== 'Заражение') && <>
+    {play.undo && !game.firstGame && <>
       <p>Последнее действие: {play.undo.label}.</p>
       <ConfirmButton native={native} title={`Отменить: ${play.undo.label}?`} description="Завершённый поиск не возобновится."
-        confirm="Отменить действие" disabled={disabled || !mutable || !play.undo.available || waitingUndo || game.firstGame && game.paused}
+        confirm="Отменить действие" disabled={disabled || !mutable || !play.undo.available || waitingUndo}
         onConfirm={() => void (!online && queue ? queue({ kind: 'undo', actionId: play.undo!.id }) : run('play:undo', { ...base, actionId: play.undo!.id }))}>
         Отменить моё последнее действие
       </ConfirmButton>
       {!play.undo.available && mutable && <p>Отмену блокируют связанные записи.</p>}
-      {game.firstGame && play.undo.canRequestReview && mutable && !game.synchronization?.closed && !waitingUndo &&
-        <ConfirmButton title="Запросить разбор отмены?" description="Организатор проверит связанные записи на сверке. До решения действие остаётся в силе."
-          confirm="Отправить запрос" disabled={disabled || game.paused}
-          onConfirm={() => void (!online && queue ? queue({ kind: 'undo', actionId: play.undo!.id, requestReview: true }) :
-            run('play:undo', { ...base, actionId: play.undo!.id, requestReview: true }))}>Запросить разбор</ConfirmButton>}
     </>}
-    {undoHistory}
+    {(!game.firstGame || play.status !== 'exorcist') && undoHistory}
     {!mutable && <p>Результат закрыт для изменений.</p>}
   </section>;
 }

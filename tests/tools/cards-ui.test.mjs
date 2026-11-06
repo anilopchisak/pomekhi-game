@@ -234,6 +234,62 @@ it('lets the organizer reverse an accepted correction after all journals are con
   expect(lobby.viewFor('host').room.game.results.at(-1).missions).toBe(1);
 });
 
+it('shows a group as one release choice and keeps the exorcist’s corrections inside the dialog', async () => {
+  lobby.dispose();
+  lobby = createLobby({ firstGame: true, organizerCode: 'HOST', generateRoomCode: () => 'ABCDEF', randomIndex: () => 0, clock: clock.clock });
+  lobby.subscribe(publish);
+  value(lobby.execute('host', 'organizer:authorize', { code: 'HOST' }));
+  const { code } = value(lobby.execute('host', 'room:create', {})).room;
+  const players = Array.from({ length: 7 }, (_, i) =>
+    value(lobby.execute(`phone-${i}`, 'player:join', { roomCode: code, name: `Player ${i}`, resumeKey: String(i).repeat(64) })));
+  value(lobby.execute('host', 'venue:configure', { ...gameBase(), venue: {
+    base: 'База', zones: ['Кухня'], dwelling: { zone: 'Кухня', place: 'Угол' }, order: players.map(player => player.playerId),
+  } }));
+  value(lobby.execute('host', 'deal:create', { ...base(), possessedCount: 0 }));
+  value(lobby.execute('host', 'round:start', { ...gameBase(), confirmWarnings: true }));
+  clock.advance(45000);
+  value(lobby.execute('phone-1', 'play:infect', { ...gameBase(), playVersion: lobby.viewFor('phone-1').play.version, targetId: players[0].playerId }));
+  savePlayerSession({ roomCode: code, name: 'Player 2', resumeKey: '2'.repeat(64), pending: false });
+  io.mockReturnValue(socket('phone'));
+  await act(async () => root.render(createElement(PlayerPage)));
+  await click('Освободить');
+  const dialog = container.querySelector('dialog[open]');
+  const select = dialog.querySelector('select');
+  expect([...select.options].map(option => option.textContent)).toEqual(['Выберите группу', 'Player 1, Player 0', 'Player 3', 'Player 5']);
+  await act(async () => {
+    select.selectedIndex = 1;
+    select.dispatchEvent(new globalThis.Event('change', { bubbles: true }));
+  });
+  await click('Подтвердить освобождение');
+  expect(dialog.querySelector('li span').textContent.split(', ').sort()).toEqual(['Player 0', 'Player 1']);
+  expect([...select.options].map(option => option.textContent)).toEqual(['Выберите группу', 'Player 3', 'Player 5']);
+  expect(lobby.viewFor('phone-0').play.status).toBe('released');
+  expect(lobby.viewFor('phone-4').play.releases).toEqual([]);
+  expect(lobby.viewFor('phone-1').play.releaseGroups).toBeUndefined();
+  expect(lobby.viewFor('host').room).not.toHaveProperty('releaseGroups');
+  expect(container.textContent).not.toMatch(/Отменить моё последнее действие|Последнее действие:|Ждут отправки:/);
+
+  await act(async () => value(lobby.execute('phone', 'play:mission', {
+    ...gameBase(), playVersion: lobby.viewFor('phone').play.version, completed: true,
+  })));
+  expect(button('Отменить освобождение').disabled).toBe(true);
+  await act(async () => dialog.querySelector('[aria-label="Закрыть окно"]').click());
+  await click('Миссии');
+  await click('Отменить последнюю отметку миссии');
+  await click('Отменить отметку');
+  expect(lobby.viewFor('phone').play.missionCompleted).toBe(false);
+  await act(async () => container.querySelector('dialog[open] [aria-label="Закрыть окно"]').click());
+  await click('Освободить');
+  expect(button('Отменить освобождение').disabled).toBe(false);
+  await click('Отменить освобождение');
+  const confirm = [...container.querySelectorAll('dialog[open]')].at(-1);
+  await act(async () => [...confirm.querySelectorAll('button')].find(item => item.textContent === 'Отменить освобождение').click());
+  const reopened = container.querySelector('dialog[open]');
+  expect(reopened.textContent).toContain('Вы ещё никого не освободили');
+  expect(lobby.viewFor('phone-0').play.status).toBe('captured');
+  expect([...reopened.querySelector('select').options].map(option => option.textContent)).toContain('Player 1, Player 0');
+});
+
 it('confirms a warned start, retries a lost acknowledgement once and restores paused controls', async () => {
   globalThis.sessionStorage.setItem('pomekhi.organizer', 'HOST');
   io.mockReturnValue(socket('panel', 'round:start'));

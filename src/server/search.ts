@@ -99,6 +99,13 @@ export function createSearch(roundId: string, initial: ReadonlyMap<string, Assig
         const blocked = dependencies(entry).length > 0;
         return [{ id: entry.id, targetId: action.target, available: !finalized && !blocked, canRequestReview: !finalized && blocked }];
       }) } : {}),
+      ...(retained ? { releases: events.flatMap(entry => {
+        const action = entry.action;
+        if (entry.undone || action.kind !== 'release' || action.actor !== playerId || !action.targetIds) return [];
+        const error = undoError(playerId, entry.id);
+        return [{ id: entry.id, memberIds: [...entry.touches].filter(key => key.startsWith('p:') && key !== `p:${playerId}`).map(key => key.slice(2)),
+          available: !error, canRequestReview: error === 'UNDO_DEPENDENCY' }];
+      }) } : {}),
       undo: event ? { id: event.id, label: event.action.kind === 'infect' ? 'Заражение' : event.action.kind === 'release' ? 'Освобождение группы' : 'Отметка миссии', available: !finalized && dependencies(event).length === 0, ...(!finalized && (event.action.kind === 'infect' || event.action.kind === 'release') && dependencies(event).length > 0 ? { canRequestReview: true } : {}) } : null };
   }
   // Undoing capture also closes a previously revealed card, without closing unrelated cards.
@@ -199,13 +206,24 @@ export function createSearch(roundId: string, initial: ReadonlyMap<string, Assig
     if (!id || states.get(actor)?.left || finalized) return 'ACTION_UNAVAILABLE';
     locations.set(id, zone);
   }
+  function releaseOptions() {
+    const members = new Map<string, string[]>();
+    for (const [id, state] of states) {
+      if (!state.group || state.left || state.released) continue;
+      const group = members.get(state.group) ?? [];
+      if (groups.get(state.group)?.origin === id) group.unshift(id);
+      else group.push(id);
+      members.set(state.group, group);
+    }
+    return [...members.values()];
+  }
   function exportState(): SavedSearch { return structuredClone({ roundId, roster: [...roster], events: events.map(e => ({ ...e, touches: [...e.touches] })), version, finalized,
     ...(retained ? { retained: inherited, locations: [...locations] } : {}), ...(unassigned.length ? { unassigned } : {}) }); }
   function restore(state: SavedSearch, bump = true) {
     events.splice(0, events.length, ...structuredClone(state.events).map(e => ({ ...e, touches: new Set(e.touches) })));
     locations = new Map(state.locations ?? []); version = state.version + Number(bump); finalized = state.finalized; rebuild();
   }
-  return { group: (playerId: string) => states.get(playerId)?.group ?? null, personal, act, releaseSelected, reconcile,
+  return { group: (playerId: string) => states.get(playerId)?.group ?? null, personal, act, releaseSelected, releaseOptions, reconcile,
     unassigned: () => [...roster].filter(([id]) => states.get(id)?.unknownGroup && !states.get(id)?.left),
     undo, undoError, undoBlockers, depart, canSearch, result, carry, place,
     targets: () => [...states].filter(([, s]) => !s.group && !s.unknownGroup && !s.released && !s.left).map(([id]) => id),

@@ -312,7 +312,7 @@ export function PlayerPage() {
         {playerView.room.game.phase !== 'finished' && card}
         {actions}
         {trialControl}
-        {journal}
+        {playerView.play?.status !== 'exorcist' && journal}
         {playerView.room.game.phase === 'finished' && <>
           <RitualBoard game={playerView.room.game} online={liveConnection === 'online'} />
         {violationControl}

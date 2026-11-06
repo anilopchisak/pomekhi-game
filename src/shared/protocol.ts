@@ -49,6 +49,8 @@ export interface PersonalPlay {
   targets?: string[];
   unknownGroup?: boolean;
   infections?: { id: string; targetId: string; available: boolean; canRequestReview?: boolean; pending?: boolean }[];
+  releaseGroups?: string[][];
+  releases?: { id: string; memberIds: string[]; available: boolean; canRequestReview?: boolean; pending?: boolean }[];
 }
 interface PlayCommand extends GameCommand { playVersion: number }
 export type GameMode = 'first' | 'ordinary';

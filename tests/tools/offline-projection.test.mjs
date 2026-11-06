@@ -64,3 +64,51 @@ it('keeps gameplay intact while an explicit undo request is queued for the organ
   expect(projected.play.status).toBe('released');
   expect(projected.synchronization.undoRequests).toEqual([{ id: request.event.id, actionId: release.event.id, status: 'queued' }]);
 });
+
+it('lists cached group members for a pending release and removes the entry on local undo', () => {
+  const { view, event } = fixture('exorcist');
+  view.room.game.firstGame = true;
+  view.play.releaseGroups = [['holder', 'captured'], ['other']];
+  const release = event({ kind: 'release', targetIds: ['holder'] }, 'release-event');
+  const undo = event({ kind: 'undo', actionId: release.event.id }, 'undo-event');
+  const projected = projectOffline(view, [release]);
+  expect(projected.play.releases).toEqual([{ id: release.event.id, memberIds: ['holder', 'captured'], available: true, pending: true }]);
+  expect(projectOffline(view, [release, undo]).play).toEqual(view.play);
+  expect(view.play.releases).toBeUndefined();
+});
+
+it('keeps the recorded group members when a fresh recall snapshot no longer lists release options', () => {
+  const { view, event } = fixture('exorcist');
+  view.room.game.firstGame = true;
+  view.play.releaseGroups = [['holder', 'captured']];
+  const release = event({ kind: 'release', targetIds: ['holder'] }, 'release-event');
+  release.receipt = { id: release.event.id, status: 'review', reason: 'timing' };
+  view.room.game.phase = 'return';
+  delete view.play.releaseGroups;
+
+  expect(projectOffline(view, [release]).play.releases).toEqual([
+    { id: release.event.id, memberIds: ['holder', 'captured'], available: true, pending: true },
+  ]);
+});
+
+it('preserves a fresh personal snapshot when replaying an offline release and its undo', () => {
+  const { view, event } = fixture('exorcist');
+  view.room.game.firstGame = true;
+  view.play.releaseGroups = [['holder', 'captured']];
+  const release = event({ kind: 'release', targetIds: ['holder'] }, 'release-event');
+  const undo = event({ kind: 'undo', actionId: release.event.id }, 'undo-event');
+  const { view: captured } = fixture('possessed');
+  view.play = { ...captured.play, status: 'captured', wasCaptured: true, version: view.play.version + 1 };
+
+  expect(projectOffline(view, [release, undo]).play).toEqual(view.play);
+});
+
+it('keeps the accepted release row when the live snapshot arrives before the journal receipt', () => {
+  const { view, event } = fixture('exorcist');
+  view.room.game.firstGame = true;
+  const release = event({ kind: 'release', targetIds: ['holder'] }, 'release-event');
+  view.play.releases = [{ id: release.event.id, memberIds: ['holder', 'captured'], available: false, canRequestReview: true }];
+  view.play.undo = { id: 'later-action', label: 'Отметка миссии', available: true };
+
+  expect(projectOffline(view, [release]).play).toEqual(view.play);
+});

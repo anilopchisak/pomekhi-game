@@ -64,10 +64,27 @@ export function projectOffline(view: PlayerView, entries: LocalEvent[]): PlayerV
       const original = entries.find(e => e.event.id === action.actionId);
       const infection = result.play?.infections?.find(row => row.id === action.actionId);
       if (infection) result.play!.infections = result.play!.infections!.filter(row => row.id !== action.actionId);
-      else if (!(view.room.game.firstGame && original?.event.action.kind === 'infect') && original?.before && !result.synchronization?.withdrawn) result.play = structuredClone(original.before);
+      else if (result.play?.releases?.some(row => row.id === action.actionId)) {
+        result.play.releases = result.play.releases.filter(row => row.id !== action.actionId);
+      } else {
+        const originalAction = original?.event.action;
+        const onlyChangesHistory = view.room.game.firstGame && (originalAction?.kind === 'infect' ||
+          originalAction?.kind === 'release' && originalAction.targetIds);
+        if (!onlyChangesHistory && original?.before && !result.synchronization?.withdrawn) result.play = structuredClone(original.before);
+      }
     } else if (result.play) {
       if (action.kind === 'mission') result.play.missionCompleted = action.completed;
       if (action.kind === 'release' && !action.targetIds) result.play.status = 'released';
+      if (action.kind === 'release' && action.targetIds && view.room.game.firstGame) {
+        if (result.play.releases?.some(row => row.id === item.event.id)) continue;
+        const members = new Set(action.targetIds);
+        for (const group of item.before?.releaseGroups ?? result.play.releaseGroups ?? []) {
+          if (group.some(id => members.has(id))) group.forEach(id => members.add(id));
+        }
+        result.play.releases = [
+          ...(result.play.releases ?? []), { id: item.event.id, memberIds: [...members], available: true, pending: true },
+        ];
+      }
       if (action.kind === 'infect' && view.room.game.firstGame) {
         const infections = result.play.infections ?? [];
         if (!infections.some(row => row.targetId === action.targetId)) result.play.infections = [

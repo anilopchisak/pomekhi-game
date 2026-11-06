@@ -710,6 +710,7 @@ export function createGame({ generateId, randomIndex, clock = defaultClock, onCh
     if (play) {
       if (play.unknownGroup) play.retained = true;
       if (phase === 'search' && !paused && !play.unknownGroup && (play.status === 'captured' || play.status === 'possessed')) play.targets = search!.targets();
+      if (phase === 'search' && !paused && play.status === 'exorcist') play.releaseGroups = search!.releaseOptions();
       if (play.location === null) play.location = locations.get(search!.group(playerId) ?? '')?.confirmed ?? null;
       return play;
     }
