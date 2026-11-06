@@ -26,7 +26,8 @@
 .guide { font-size: 1rem; line-height: 1.55; }
 .guideIntro { padding: 12px 16px; margin-block-end: 12px; border: 1px solid var(--line); border-radius: 8px; background: var(--surface); }
 .guideIntro p { margin: 0; }
-.guideIntro .guideMode { margin-block-end: 6px; color: var(--gold); font-size: .875rem; font-weight: 600; }
+.guideIntro p + p { margin-block-start: 6px; }
+.guideIntro .guideMode { color: var(--gold); font-size: .875rem; font-weight: 600; }
 .guideChapter { border-block-end: 1px solid var(--line); }
 .guide .guideChapter > summary {
   display: grid;

@@ -234,6 +234,43 @@ it('lets the organizer reverse an accepted correction after all journals are con
   expect(lobby.viewFor('host').room.game.results.at(-1).missions).toBe(1);
 });
 
+it.each([
+  ['laptop', HostPage, 'Как играть'],
+  ['phone', PlayerPage, 'Как играть и прорицания'],
+])('opens all seven rules chapters and the room timers on the %s', async (device, Page, openerName) => {
+  lobby.dispose();
+  lobby = createLobby({ firstGame: true, organizerCode: 'HOST', generateRoomCode: () => 'ABCDEF', clock: clock.clock });
+  value(lobby.execute('host', 'organizer:authorize', { code: 'HOST' }));
+  const { code } = value(lobby.execute('host', 'room:create', {})).room;
+  const settings = lobby.viewFor('host').room.game.settings;
+  value(lobby.execute('host', 'game:configure', {
+    ...gameBase(), settings: { ...settings, placementSeconds: 60, searchSeconds: 300, offlineWaitSeconds: 120 },
+  }));
+  const player = { roomCode: code, name: 'Медиум', resumeKey: '1'.repeat(64), pending: false };
+  value(lobby.execute('player', 'player:join', player));
+  savePlayerSession(player);
+  globalThis.sessionStorage.setItem('pomekhi.organizer', 'HOST');
+  io.mockReturnValue(socket(device));
+
+  await act(async () => root.render(createElement(Page)));
+  const opener = [...container.querySelectorAll('button')]
+    .find(item => (item.getAttribute('aria-label') ?? item.textContent) === openerName);
+  await act(async () => opener.click());
+  const dialog = container.querySelector('dialog[open]');
+  expect(dialog.querySelector('h2').textContent).toBe('Как играть');
+  const summaries = [...dialog.querySelectorAll('details > summary')];
+  expect(summaries.slice(0, 7).map(item => item.lastElementChild.textContent)).toEqual([
+    'Подготовка к игре', 'Фаза подготовки', 'Фаза экзорцизма', 'Фаза проверки',
+    'Карты прорицания', 'Конец игры', 'Дополнительные сведения',
+  ]);
+  expect(dialog.textContent).toContain('Испытания Великого Мастера проходят только в «Обычной партии»');
+  expect(dialog.textContent).toContain('База — место, где стоит ноутбук и собираются игроки.');
+  expect(dialog.textContent).toContain('В этой партии на расстановку отведено 60 сек.');
+  expect(dialog.textContent).toContain('В этой партии на поиск отведено 300 сек.');
+  expect(dialog.textContent).toContain('В этой партии ожидание длится до 120 сек.');
+  if (device === 'phone') expect(summaries[7].textContent).toBe('Открытые прорицания и свечи');
+});
+
 it('shows a group as one release choice and keeps the exorcist’s corrections inside the dialog', async () => {
   lobby.dispose();
   lobby = createLobby({ firstGame: true, organizerCode: 'HOST', generateRoomCode: () => 'ABCDEF', randomIndex: () => 0, clock: clock.clock });
