@@ -1,6 +1,7 @@
 import { trialTraits } from '../shared/protocol.js';
 import type { LateVisitStatus, TrialReviewFact, TrialTrait, GamePhase, LobbyError, PersonalPlay, PersonalTrial, TrialField, TrialReview, TrialValue, Venue } from '../shared/protocol.js';
 import { authoredTrials } from './authored-content.js';
+import { shortAnswer } from './short-cards.js';
 import type { TrialCard } from './authored-content.js';
 
 type Values = Record<string, TrialValue>;
@@ -47,7 +48,10 @@ export function eligibleTrials(venue: Venue) {
 export function selectTrials(venue: Venue, randomIndex: (limit: number) => number): SavedTrials | undefined {
   const eligible = eligibleTrials(venue);
   if (eligible.length < 7) return;
-  return { deck: Array.from({ length: 7 }, () => structuredClone(eligible.splice(randomIndex(eligible.length), 1)[0])) };
+  return { deck: Array.from({ length: 7 }, () => {
+    const [card] = eligible.splice(randomIndex(eligible.length), 1);
+    return { ...card, instruction: shortAnswer(card.id) };
+  }) };
 }
 
 function requiresPossessedTarget(card: TrialCard) {

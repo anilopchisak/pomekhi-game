@@ -1,4 +1,4 @@
-import { cardSets, DEFAULT_ROUND_LIMIT } from '../shared/protocol.js';
+import { cardSets, venueFeatures, DEFAULT_ROUND_LIMIT } from '../shared/protocol.js';
 import { createRitual, newRitual } from './ritual.js';
 import type { SavedRitual } from './ritual.js';
 import { performance } from 'node:perf_hooks';
@@ -13,9 +13,15 @@ import { eligibleTrials, selectTrials, beginTrial, personalTrial, submitTrial, t
 import type { SavedTrials } from './trials.js';
 import { authoredMissions, authoredReferences } from './authored-content.js';
 import { comedyMissions } from './comedy-missions.js';
+import { shortAnswer, shortMission } from './short-cards.js';
 import { dwellingMissions, stories } from './first-game-content.js';
 import type { MissingLocation, OfflineEvent, PhysicalStatus, ReviewPreview, TrialReviewFact, Venue, ViolationReview } from '../shared/protocol.js';
 import type { SavedSearch, RetainedGroup } from './search.js';
+
+const baseMissions = authoredMissions.map(card => shortMission(card));
+const comicMissions = comedyMissions.map(card => shortMission(card));
+const shortReferences = authoredReferences.map(({ id, title }) => ({ id, title,
+  sections: [{ title: 'Что делать в этой роли?', text: shortAnswer(id) }] }));
 
 export interface GameClock {
   now: () => number;
@@ -29,7 +35,7 @@ export const defaultClock: GameClock = {
 export interface SavedGame {
   firstGame?: { locked: boolean; retained: RetainedGroup[]; presence: [string, PhysicalStatus][]; waitingFree: string[]; trials?: SavedTrials; violations?: ViolationReview[]; locations?: [string, { proposed?: string; confirmed?: string }][]; story?: { title: string; prologue: string }; unassigned?: [string, Assignment][]; recallWait?: { players: string[]; remainingMs: number } };
   ritual?: SavedRitual | null; freeplayFrom?: number | null;
-  venue?: Venue; roundSync?: SavedRoundSync | null; playerNames?: [string, string][];
+  venue?: Venue & { horror?: boolean }; roundSync?: SavedRoundSync | null; playerNames?: [string, string][];
   tutorialCompleted: boolean; progressionRounds: number; roundPlan: RoundPlan | null;
   dealing: SavedDealing; settings: GameSettings; phase: GamePhase; waitingPhase: 'lobby' | 'between_rounds'; version: number;
   roundId: string | null; completedRounds: number; started: boolean; paused: boolean; pauseReason: PauseReason | null;
@@ -89,7 +95,7 @@ export function createGame({ generateId, randomIndex, clock = defaultClock, onCh
         (card.sets ?? []).every(set => venue.sets?.includes(set) || set === 'harder' && venue.harder) &&
         (card.requirements ?? []).every(feature => feature === 'twoZones' ? venue.zones.length >= 2 : feature === 'contact' ? venue.sets?.includes('contact') : venue.features?.includes(feature));
       if (!usesAuthoredBank()) return [...getCards(), ...dwellingMissions].filter(eligible);
-      const bank = venue.comedy ? [...authoredMissions, ...comedyMissions] : authoredMissions;
+      const bank = venue.comedy ? [...baseMissions, ...comicMissions] : baseMissions;
       return bank.filter(eligible);
     },
   } : undefined });
@@ -98,8 +104,8 @@ export function createGame({ generateId, randomIndex, clock = defaultClock, onCh
   let venue: Venue = { base: 'База', zones: [], ...(firstGame ? { mode: 'ordinary', bank: 'authored' } : {}) };
   function initializeStory() {
     if (!firstGame || selectedStory) return;
-    const { id, title, prologue } = stories[randomIndex(stories.length)];
-    selectedStory = { title, prologue };
+    const { id, title } = stories[randomIndex(stories.length)];
+    selectedStory = { title, prologue: shortAnswer(id) };
     venue = { ...venue, storyId: id };
   }
   let roundSync: ReturnType<typeof createRoundSync> | undefined;
@@ -277,7 +283,7 @@ export function createGame({ generateId, randomIndex, clock = defaultClock, onCh
     const story = firstGame && selectedStory;
     return {
       ...(firstGame ? { firstGame: true as const, preparationLocked: locked } : {}),
-      ...(usesAuthoredBank() ? { references: structuredClone(authoredReferences) } : {}),
+      ...(usesAuthoredBank() ? { references: structuredClone(shortReferences) } : {}),
       ...(story ? { story: { title: story.title, prologue: story.prologue } } : {}),
       ritual: ritual?.snapshot(['between_rounds', 'finished'].includes(phase) ? results.at(-1) : undefined) ?? null, freeplayFrom,
       ...(recallWait ? { offlineWait: { deadline: recallWait.deadline, awaitingReview: recallWait.deadline <= clock.now() && reviewCanReturnPlayer() } } : {}),
@@ -623,11 +629,14 @@ export function createGame({ generateId, randomIndex, clock = defaultClock, onCh
       if (phase !== 'lobby') return 'SETTINGS_LOCKED';
       if (!v.dwelling || !valid(v.dwelling.place) || !names.slice(1).includes(v.dwelling.zone)) return 'INVALID_INPUT';
       const sets = v.sets === undefined ? (v.harder === true ? ['harder' as const] : []) : v.sets;
+      const features = v.features ?? [];
       if (!Array.isArray(sets) || !sets.every(set => cardSets.includes(set)) || new Set(sets).size !== sets.length ||
+        !Array.isArray(features) || !features.every(feature => venueFeatures.includes(feature)) || new Set(features).size !== features.length ||
         v.comedy !== undefined && typeof v.comedy !== 'boolean') return 'INVALID_INPUT';
       initializeStory();
       venue = { base: names[0], zones: names.slice(1), dwelling: { zone: v.dwelling.zone, place: v.dwelling.place.trim() },
         storyId: venue.storyId, harder: sets.includes('harder'), mode: 'ordinary', bank: 'authored', sets: [...sets],
+        ...(features.length ? { features: [...features] } : {}),
         ...(v.comedy ? { comedy: true } : {}) };
     } else venue = { base: names[0], zones: names.slice(1) };
     bump();
@@ -737,12 +746,12 @@ export function createGame({ generateId, randomIndex, clock = defaultClock, onCh
     presence.clear(); for (const [id, status] of state.firstGame?.presence ?? []) presence.set(id, status);
     ritual = state.ritual ? createRitual(state.ritual, generateId) : undefined; freeplayFrom = state.freeplayFrom ?? null;
     playerNames = new Map(state.playerNames ?? []);
-    venue = structuredClone(state.venue ?? { base: 'База', zones: [] });
+    const savedVenue = structuredClone(state.venue ?? { base: 'База', zones: [] });
+    delete savedVenue.horror;
+    venue = savedVenue;
     if (firstGame && !locked) {
       venue.mode = 'ordinary';
       venue.bank = 'authored';
-      delete venue.horror;
-      delete venue.features;
       delete venue.prologueRead;
       initializeStory();
     }

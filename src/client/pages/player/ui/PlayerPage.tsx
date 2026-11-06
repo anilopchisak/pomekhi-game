@@ -267,8 +267,8 @@ export function PlayerPage() {
         </svg>
       </DialogButton>
       <DialogButton data-secondary title="Комната" content={roster}>{playerView.room.game.venue.base || playerView.room.code}</DialogButton>
-      <DialogButton data-secondary title="Как играть и прорицания" aria-label="Как играть и прорицания" content={<>
-        <HowToPlay game={playerView.room.game} compact />
+      <DialogButton data-secondary title="Как играть" aria-label="Как играть и прорицания" content={<>
+        <HowToPlay game={playerView.room.game} />
         <details>
           <summary>Открытые прорицания и свечи</summary>
           <RitualBoard game={playerView.room.game} online={liveConnection === 'online'} />

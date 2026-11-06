@@ -266,12 +266,14 @@ def paragraph(label, text, cls=''):
         '<p>' + escape(p) + '</p>' for p in text.split('\n\n')) + '</div>'
 
 
-def card_html(c, *, editorial=True, collection=None):
+def card_html(c, *, editorial=True, collection=None, answers=None):
     labels = c['sets'] or ['ordinary']
     badges = ''.join('<span class="tag">' + escape(SET_LABELS.get(s, 'Обычная')) + '</span>' for s in labels)
     content = ''
     kind = c['type']
-    if kind == 'possessed':
+    if answers is not None:
+        content = ''.join(paragraph(question, answer, style) for question, answer, style in answers)
+    elif kind == 'possessed':
         content += paragraph('Поведение', c['behavior'])
         content += '<div class="outcomes">'
         content += paragraph('Заражение', c['infectionCondition'], 'capture outcome')
@@ -307,15 +309,12 @@ def card_html(c, *, editorial=True, collection=None):
         inspiration = ', '.join('<a href="#fiction-' + key + '">' + escape(FICTION_BY_ID[key]['titleRu']) + '</a>' for key in provenance['inspirations'])
         if inspiration:
             content += '<p class="private">Художественные мотивы: ' + inspiration + '</p>'
-    base_id = c.get('baseCard')
     edition = f' data-collection="{collection}"' if collection else ''
-    if base_id:
-        badges += '<span class="tag">Страшный вариант</span>'
-        content = '<p class="private">Вместо <a href="#' + escape(base_id) + '">' + escape(base_id + ' · ' + BY_ID[base_id]['title']) + '</a></p>' + content
     if collection == 'comedy':
         badges += '<span class="tag comedy-tag">Смешная колода</span>'
     searchable = {key: value for key, value in c.items() if key not in ('provenance', 'fearMechanism')}
-    text = ' '.join(strings(searchable)).casefold().replace('ё', 'е')
+    search_text = strings(searchable) if answers is None else [c['id'], c['title'], *(answer for _, answer, _ in answers)]
+    text = ' '.join(search_text).casefold().replace('ё', 'е')
     return f'<article class="card" id="{c["id"]}" data-type="{kind}" data-sets="{" ".join(c["sets"])}" data-search="{escape(text, quote=True)}"{edition}>' + \
         f'<header><span class="card-id">{c["id"]}</span><span class="family">{escape(FAMILY_LABELS[c["family"]])}</span><h3>{escape(c["title"])}</h3><div class="tags">{badges}</div></header>' + content + '</article>'
 
@@ -384,7 +383,7 @@ def toolbar(cards, *, collections=False):
     options = ''.join(f'<option value="{kind}">{label} · {counts[kind]}</option>' for kind, label in TYPE_LABELS.items())
     subsets = ''.join(f'<option value="{key}">{label}</option>' for key, label in SET_LABELS.items())
     if collections:
-        subsets += '<option value="horror">Страшные варианты</option><option value="comedy">Смешная колода</option>'
+        subsets += '<option value="comedy">Смешная колода</option>'
     total = len(cards)
     return f'''<section class="toolbar" aria-label="Фильтры каталога"><div class="filters">
 <label for="type">Колода<select id="type"><option value="">Все {total} карт</option>{options}</select></label>
@@ -394,29 +393,70 @@ def toolbar(cards, *, collections=False):
 <p class="status" id="count" role="status" aria-live="polite">Показано {total} из {total} карт</p></section>'''
 
 
+def quick_answers(cards):
+    source = HERE.parents[1] / 'src' / 'server' / 'short-card-copy.ts'
+    copy = json.loads(source.read_text().strip().removeprefix('export default ').removesuffix(';'))['answers']
+    assert set(copy) == {card['id'] for card in cards}
+    questions = {
+        'possessed': [('Кто вы и чего хотите?', ''), ('Как заразить экзорциста?', 'capture outcome'),
+                      ('Как экзорцисту освободить одержимого?', 'release outcome')],
+        'exorcist': [('Как выполнить личную миссию?', '')],
+        'trial': [('Как выполнить испытание?', ''), ('Когда засчитывается при 0–1 прорицании?', 'outcome'),
+                  ('Когда засчитывается при 2 прорицаниях?', 'outcome')],
+        'prophecy': [('Как соблюдать прорицание?', '')],
+        'story': [('С чего начинается история?', '')],
+        'reference': [('Что делать в этой роли?', '')],
+    }
+    result = {}
+    for card in cards:
+        id = card['id']
+        kind = card['type']
+        prompts = questions[kind]
+        if card.get('final'):
+            prompts = [('Как заканчивается ритуал?', '')]
+        assert len(copy[id]) == len(prompts), id
+        answers = []
+        for index, (question, style) in enumerate(prompts):
+            text = copy[id][index]
+            assert text and not text.endswith('.'), id
+            answers.append((question, text + '.', style))
+        if kind == 'possessed':
+            answers.insert(1, ('Что сделать, заняв своё место?', 'Войдя в игровую локацию и заняв выбранное место, выключите свой источник освещения.', ''))
+        if kind == 'exorcist':
+            answers.append(('Как освободить одержимого?', 'Поймите, чего добивается одержимый, выполните условие его карты и подтвердите освобождение на телефоне.', ''))
+        result[id] = answers
+    return result
+
+
 def build_all_html():
-    variants = json.loads((HERE / 'horror' / 'cards.json').read_text())['cards']
     comedy_source = HERE.parents[1] / 'src' / 'server' / 'comedy-cards.ts'
     comedy_by_role = json.loads(comedy_source.read_text().strip().removeprefix('export default ').removesuffix(';'))
     comedy = [dict(card, type=role) for role, missions in comedy_by_role.items() for card in missions]
-    cards = CARDS + variants + comedy
-    assert len(CARDS) == 147 and len(variants) == 38
+    cards = CARDS + comedy
+    assert len(CARDS) == 147
     assert len({card['id'] for card in cards}) == len(cards)
-    assert all(BY_ID[card['baseCard']]['type'] == card['type'] for card in variants)
     assert Counter(card['type'] for card in comedy) == {'possessed': 24, 'exorcist': 16}
+    answers = quick_answers(cards)
     rendered = (
-        ''.join(card_html(card, editorial=False) for card in CARDS)
-        + ''.join(card_html(card, editorial=False, collection='horror') for card in variants)
-        + ''.join(card_html(card, editorial=False, collection='comedy') for card in comedy)
+        ''.join(card_html(card, editorial=False, answers=answers[card['id']]) for card in CARDS)
+        + ''.join(card_html(card, editorial=False, collection='comedy', answers=answers[card['id']]) for card in comedy)
     )
     return f'''<!doctype html>
 <html lang="ru"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1">
 <title>Одержимые — все карты</title><style>{STYLE}</style></head>
 <body><header class="hero"><div class="eyebrow">ОДЕРЖИМЫЕ / КАТАЛОГ</div>
 <h1>Все карты игры</h1>
-<p>{len(CARDS)} карт из текущего авторского банка, {len(variants)} страшных вариантов и {len(comedy)} смешных карт. Смешные карты можно добавить к основному банку в настройках партии. Страшные варианты доступны для просмотра.</p>
+<p>{len(CARDS)} карт из текущего авторского банка и {len(comedy)} смешных карт. Смешные карты можно добавить в настройках партии.</p>
 <nav class="hero-links" aria-label="Подборки"><a href="#comedy">Смешная колода</a></nav>
 </header><main>
+<section class="intro" aria-label="Общие правила">
+<h2>Как понять, что человек заражён?</h2>
+<p>Заражённый остаётся с группой одержимого и играет ту же ситуацию, а на своём телефоне видит «Вы заражены».</p>
+<h2>Что не считается заражением?</h2>
+<p>Случайный испуг, обсуждение согласия, просьба о помощи или остановке вне роли не считаются заражением.</p>
+<h2>Когда делать личную миссию?</h2>
+<p>Выполните её до призыва и отметьте результат на телефоне.</p>
+</section>
 {toolbar(cards, collections=True)}
 <div class="grid">{rendered}</div>
 <p class="empty" id="empty" hidden>По этим условиям карт нет. Измените поиск или набор.</p>
@@ -440,8 +480,8 @@ def build_html(pair_review):
         pairs += '<pre lang="en">' + escape(json.dumps(row['witnesses'], ensure_ascii=False, indent=2)) + '</pre></details>'
     revision_rows = ''
     decision_labels = {'retain_core': 'Сохранена основа', 'adapt': 'Адаптировано', 'replace': 'Заменено', 'adapt_no_props': 'Без реквизита', 'existing_house_mirror': 'Зеркало дома'}
-    for row in REVISION['primary'] + REVISION['variants']:
-        target = ('horror/index.html#' if row['id'].startswith('H') else '#') + row['id']
+    for row in REVISION['primary']:
+        target = '#' + row['id']
         revision_rows += '<tr><td><a href="' + target + '">' + row['id'] + '</a></td><td>' + escape(row['title']) + '</td><td>' + decision_labels[row.get('currentDecision', row['decision'])] + '</td><td lang="en">' + escape(row['entityIntent']) + '</td><td lang="en">' + escape(row['causalLink']) + '</td></tr>'
     fiction_rows = ''
     for source in FICTION['sources']:
@@ -456,12 +496,12 @@ def build_html(pair_review):
 <body><header class="hero"><div class="eyebrow">ПОМЕХИ / АВТОРСКАЯ КОЛОДА / 03.11.2026</div>
 <h1>Кто-то остался<br>по ту сторону света.</h1>
 <p>147 карт: одержимые, миссии экзорцистов, испытания Мастера, прорицания, истории и памятки. Здесь открыт полный текст для авторского просмотра. Этот каталог нельзя показывать игрокам на общем экране во время партии.</p>
-<nav class="hero-links" aria-label="Материалы набора"><a href="all.html">Все карты на одной странице</a><a href="cards.json" download>Полный JSON</a><a href="#domestic-review">Что изменено в 185 картах</a><a href="#fiction-review">12 произведений</a><a href="horror/index.html">Страшные варианты</a><a href="#source-review">{len(AUDIT['entries'])} исходных записей</a><a href="#pair-review">45 пар прорицаний</a></nav></header>
+<nav class="hero-links" aria-label="Материалы набора"><a href="all.html">Все карты на одной странице</a><a href="cards.json" download>Полный JSON</a><a href="#domestic-review">Что изменено в 147 картах</a><a href="#fiction-review">12 произведений</a><a href="#source-review">{len(AUDIT['entries'])} исходных записей</a><a href="#pair-review">45 пар прорицаний</a></nav></header>
 <main><div class="intro"><p class="notice">Авторская адаптация оригинальных правил «Одержимых» с компьютерным Мастером. Набор подготовлен отдельно от приложения: текущий импорт игры его не поддерживает. Проверка текстов выполнена; живой игровой тест ещё не проводился.</p>
 <details><summary>Как читать набор и выбирать дополнительные карты</summary><p>Обычные карты не имеют дополнительных отметок. Карты помещения и улицы выбирают по месту игры, физический контакт — по согласию группы, повышенную сложность — по желанию. Совместные отметки действуют одновременно. Все необходимые условия места и реквизит указаны на карточках.</p>{rules}</details></div>
 {toolbar(CARDS)}
 <div class="grid">{''.join(card_html(c) for c in CARDS)}</div><p class="empty" id="empty" hidden>По этим условиям карт нет. Измените поиск или набор.</p>
-<section class="supplement" id="domestic-review"><h2>Домашний хоррор: решения по всем картам</h2><p>Первая домашняя редакция: у одержимых 31 сохранённая основа, 18 адаптаций и 26 замен; у экзорцистов — 20, 14 и 8; у страшных вариантов — 27, 9 и 2. Последующая правка убирает весь реквизит: в таблице она отмечена отдельно. Ангел видит себя в уже имеющемся зеркале дома. Вступления свободно сочетаются с колодой. Широкую таблицу можно прокручивать в сторону.</p><p><a href="revision-audit.json">Полный реестр JSON</a> · <a href="revision-audit.csv" download>Таблица CSV</a> · <a href="research.md">Исследование</a></p><div class="scroll" tabindex="0" role="region" aria-label="Решения по 185 картам"><table><thead><tr><th>Карта</th><th>Название</th><th>Решение</th><th>Entity intention</th><th>Why the actions fit</th></tr></thead><tbody>{revision_rows}</tbody></table></div></section>
+<section class="supplement" id="domestic-review"><h2>Домашний хоррор: решения по всем картам</h2><p>Первая домашняя редакция: у одержимых 31 сохранённая основа, 18 адаптаций и 26 замен; у экзорцистов — 20, 14 и 8. Последующая правка убирает весь реквизит: в таблице она отмечена отдельно. Ангел видит себя в уже имеющемся зеркале дома. Вступления свободно сочетаются с колодой. Широкую таблицу можно прокручивать в сторону.</p><p><a href="revision-audit.json">Полный реестр JSON</a> · <a href="revision-audit.csv" download>Таблица CSV</a> · <a href="research.md">Исследование</a></p><div class="scroll" tabindex="0" role="region" aria-label="Решения по 147 картам"><table><thead><tr><th>Карта</th><th>Название</th><th>Решение</th><th>Entity intention</th><th>Why the actions fit</th></tr></thead><tbody>{revision_rows}</tbody></table></div></section>
 <section class="supplement" id="fiction-review"><h2>Произведения и художественные мотивы</h2><p>Литературные тексты, материалы изданий фильмов и авторские свидетельства использованы как источники мотивов. Условия заражения и освобождения написаны для нашей игры. Это не восстановленные коммерческие карточки и не утверждения о настоящих духах.</p>{fiction_rows}</section>
 <section class="supplement" id="source-review"><h2>Что изменено в исходных картах</h2><p>147 карт авторского PDF, 90 действующих личных карт, 7 действующих прорицаний, 19 оригинальных примеров ; явных запросов пользователя: {AUDIT['coverage']['userRequests']}. Упоминания реквизита в исторических источниках не являются требованиями текущих карточек. «Заменить» связывает исходную запись с заменой. Пояснения для последующего внедрения оставлены на английском.</p>
 <div class="scroll" tabindex="0" role="region" aria-label="Таблица переработок"><table><thead><tr><th>Источник</th><th>Название</th><th>Решение</th><th>Новые карты</th><th>Причина / адаптация</th></tr></thead><tbody>{rows}</tbody></table></div></section>

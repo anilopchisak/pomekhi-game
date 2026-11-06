@@ -30,6 +30,7 @@ function assignment(value: unknown): Assignment {
   requireValue(text(a.id, 256) && typeof a.ready === 'boolean' && typeof a.replacementRequested === 'boolean' && !(a.ready && a.replacementRequested));
   requireValue(text(card.id, 256) && text(card.title) && validDifficulty(card.difficulty));
   requireValue(card.setup === undefined || text(card.setup, 2000));
+  requireValue(card.brief === undefined || card.brief === true);
   if (card.role === 'possessed') requireValue(['behavior', 'releaseCondition', 'infectionCondition'].every(k => text(card[k])) && (card.clue === undefined || text(card.clue)));
   else requireValue(card.role === 'exorcist' && text(card.mission));
   return value as Assignment;

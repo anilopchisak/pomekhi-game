@@ -56,7 +56,7 @@ export const cardSets = ['indoor', 'outdoor', 'contact', 'harder'] as const;
 export type CardSet = typeof cardSets[number];
 export const venueFeatures = ['space', 'door', 'mirror', 'tree', 'dimLight', 'wall', 'twoZones', 'scary', 'touchSurfaces', 'contact', 'landmarks'] as const;
 export type VenueFeature = typeof venueFeatures[number];
-export interface Venue { mode?: GameMode; bank?: 'local' | 'authored'; horror?: boolean; comedy?: boolean; sets?: CardSet[]; features?: VenueFeature[]; prologueRead?: boolean; base: string; zones: string[]; dwelling?: { zone: string; place: string }; storyId?: string; harder?: boolean; order?: string[] }
+export interface Venue { mode?: GameMode; bank?: 'local' | 'authored'; comedy?: boolean; sets?: CardSet[]; features?: VenueFeature[]; prologueRead?: boolean; base: string; zones: string[]; dwelling?: { zone: string; place: string }; storyId?: string; harder?: boolean; order?: string[] }
 export type PhysicalStatus = 'at_base' | 'in_group';
 export interface Presence {
   playerId: string; expected: PhysicalStatus; confirmed: boolean;
@@ -144,7 +144,7 @@ export interface GameCue { roomId: string; version: number; phase: GamePhase; ki
 interface GameCommand { roomId: string; requestId: string; gameVersion: number; roundId: string | null }
 
 export type Role = 'possessed' | 'exorcist';
-export type PersonalCard = { id: string; title: string; difficulty: Difficulty; harder?: boolean; offering?: boolean; sets?: CardSet[]; requirements?: VenueFeature[]; setup?: string } & (
+export type PersonalCard = { id: string; title: string; difficulty: Difficulty; brief?: true; harder?: boolean; offering?: boolean; sets?: CardSet[]; requirements?: VenueFeature[]; setup?: string } & (
   | { role: 'possessed'; behavior: string; clue?: string; releaseCondition: string; infectionCondition: string }
   | { role: 'exorcist'; mission: string; successCondition?: string }
 );

@@ -232,6 +232,7 @@ export function validateRoundSync(value: unknown, roundId: unknown): asserts val
     assert(typeof id === 'string' && typeof assignment?.id === 'string' && typeof assignment.ready === 'boolean' && typeof assignment.replacementRequested === 'boolean');
     assert(card && typeof card.id === 'string' && typeof card.title === 'string' && [1, 2, 3].includes(card.difficulty));
     assert(card.setup === undefined || typeof card.setup === 'string' && card.setup.length > 0 && card.setup.length <= 2000);
+    assert(card.brief === undefined || card.brief === true);
     assert(card.role === 'possessed' ? [card.behavior, ...(card.clue === undefined ? [] : [card.clue]), card.releaseCondition, card.infectionCondition].every(v => typeof v === 'string' && v.length > 0 && v.length <= 10000) : card.role === 'exorcist' && typeof card.mission === 'string');
   }
   for (const event of s.base.events) {

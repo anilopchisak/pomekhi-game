@@ -1,8 +1,8 @@
 # Behind Your Back: horror revisions
 
-This user-requested collection supplies 38 frightening entries of the authored original-rule adaptation: 26 possessed cards and 12 exorcist missions. The game offers these entries as optional one-for-one mission replacements in the authored bank. All game-facing text is Russian; author metadata is English. Active missions require no paper, printed token or cardboard task prop.
+This archive records 38 retired variants of the authored original-rule adaptation. It contains 26 possessed cards and 12 exorcist missions. All game-facing text is Russian; author metadata is English. Active missions require no paper, printed token or cardboard task prop.
 
-Open [index.html](index.html). The offline catalog has deck/requirement filters, ID/action search and outcome concealment. Its print stylesheet is an optional author-review capability, never a requirement for play. Fear is the purpose of the collection. HP011, HP012, HP025 and HE005 are marked harder for reflection reasoning or optical placement; being frightening alone does not add that mark.
+HP011, HP012, HP025 and HE005 are marked harder for reflection reasoning or optical placement; being frightening alone does not add that mark.
 
 The domestic revision retains 27 core variants, adapts nine and replaces HP009/HP017. The [complete decision register](../revision-audit.json), [human-source registry](../fiction-sources.json) and [research](../research.md) document the intention and physical causal chain for every variant. All six primary opening stories freely mix with this selection. Two-hand actions can use a safe nearby place for the lit phone. Captives use the same card as the group.
 
@@ -12,13 +12,12 @@ The domestic revision retains 27 core variants, adapts nine and replaces HP009/H
 | --- | --- |
 | [cards.json](cards.json) | 38 authoritative horror entries and their baseCard references |
 | [merged-selection.json](merged-selection.json) | Detached 147-card editorial selection with all 38 one-for-one replacements applied |
-| [index.html](index.html) | Complete offline author catalog with a replacement table |
 | [editorial-review.json](editorial-review.json) | Individual actor/outcome review of all 38 cards and similarity checks |
 | [validation.json](validation.json) | Structural checks, replacement counts and input hashes |
-| [build.py](build.py) | Standard-library validator, selection builder and HTML renderer |
+| [build.py](build.py) | Standard-library validator and detached selection builder |
 | [verification report](../../../artifacts/prop-free-20261103/verification.md) | Current browser/repository checks and acceptance limits |
 
-The adjacent [primary set](../README.md) remains authoritative for its 147 original authored entries. Rebuilding this supplement requires that primary cards.json and index.html remain alongside it. The generated horror HTML embeds its stylesheet and needs no server, remote fonts, audio assets or account.
+The adjacent [primary set](../README.md) remains authoritative for its 147 original authored entries. Rebuilding the detached selection requires the exact primary cards.json recorded in the archive.
 
 ```sh
 python3 output/cards/horror/build.py
@@ -34,7 +33,7 @@ The user explicitly keeps ordinary existing house mirrors: HP025 releases upon a
 
 ## Selection and mechanics
 
-In the editorial selection, choose any horror revisions before dealing. In the game, turn on the horror option during preparation to apply all eligible replacements together. For each chosen baseCard, remove that original card and use the horror entry instead. Do not append both entries of the same mission. Selecting all 38 still yields 147 cards with 75 possessed, 42 exorcist, 11 trial, 11 prophecy, six story and two reference cards. The two new requested behaviors, HP025 and HP026, share the same current physical edition as primary P026 and P030; they belong to both collections rather than introducing a second different solution. No trial, prophecy, ritual currency or phase is added.
+In the editorial selection, choose any horror revisions before dealing. For each chosen baseCard, remove that original card and use the horror entry instead. Do not append both entries of the same mission. Selecting all 38 still yields 147 cards with 75 possessed, 42 exorcist, 11 trial, 11 prophecy, six story and two reference cards. The two new requested behaviors, HP025 and HP026, share the same current physical edition as primary P026 and P030; they belong to both collections rather than introducing a second different solution. No trial, prophecy, ritual currency or phase is added.
 
 Original optional categories remain available: indoor, outdoor, agreed physical contact and harder. Venue/contact labels are cumulative. Most old harder marks are deliberately removed from these versions when their actual action is simple; fear comes from pacing, gaze, voice, touch or anticipation. These are author revisions of the prior authored set, not newly recovered commercial card text.
 

@@ -3,6 +3,7 @@ import { controlledClock } from '../../tests/helpers/game-clock.js';
 import { createGame } from './game.js';
 import { createLobby } from './lobby.js';
 import { stories } from './first-game-content.js';
+import { shortAnswer } from './short-cards.js';
 import { createCatalog } from './catalog.js';
 import { createRitual, newRitual, validateRitual } from './ritual.js';
 import type { PersonalCard, PhysicalStatus, RoundResult } from '../shared/protocol.js';
@@ -268,7 +269,8 @@ it('keeps the chosen story when settings are saved before players join and the r
     expect(lobby.execute('host', 'organizer:authorize', { code: 'ORGANIZER' }).ok).toBe(true);
     expect(lobby.execute('host', 'room:create', {}).ok).toBe(true);
     const initial = roomOf(lobby);
-    const { id, ...story } = stories.at(-1)!;
+    const { id, title } = stories.at(-1)!;
+    const story = { title, prologue: shortAnswer(id) };
     expect(initial.game.story).toEqual(story);
     expect(initial.game.venue).toMatchObject({ storyId: id, mode: 'ordinary', bank: 'authored' });
     expect(lobby.execute('host', 'room:create', {}).ok).toBe(true);
@@ -278,7 +280,7 @@ it('keeps the chosen story when settings are saved before players join and the r
       venue: { ...venue, dwelling: { zone: 'Кухня', place }, storyId: 'S001', mode: 'first', bank: 'local', horror: true, features: ['mirror'] },
     }).ok).toBe(true);
     expect(roomOf(lobby).game.venue).toEqual({ ...venue, dwelling: { zone: 'Кухня', place: 'У стены' },
-      storyId: id, mode: 'ordinary', bank: 'authored', harder: false, sets: [] });
+      storyId: id, mode: 'ordinary', bank: 'authored', harder: false, sets: [], features: ['mirror'] });
     for (let i = 0; i < 5; i++) expect(lobby.execute('phone-' + i, 'player:join', {
       roomCode: initial.code, name: 'Медиум ' + i, resumeKey: String(i).repeat(64),
     }).ok).toBe(true);
@@ -348,18 +350,19 @@ it('keeps confirmed total possession terminal if an ordinary trial would exhaust
   expect(() => validateRitual(ritual.exportState())).not.toThrow();
 });
 
-it.each<{ sets: string[]; comedy?: boolean }>([
+it.each<{ sets: string[]; comedy?: boolean; features?: string[] }>([
   { sets: [], comedy: undefined },
   { sets: ['contact'], comedy: false },
   { sets: ['indoor', 'harder'], comedy: true },
-])('draws eligible missions for $sets with comedy $comedy', ({ sets, comedy }) => {
+  { sets: ['indoor', 'harder'], features: ['space', 'mirror'] },
+])('draws eligible missions for $sets, comedy $comedy and venue features $features', ({ sets, comedy, features }) => {
   const time = controlledClock();
   let sequence = 0;
   const make = () => createGame({ firstGame: true, generateId: () => 'authored-' + ++sequence, randomIndex: () => 0, clock: time.clock, onChange() {} });
   const game = make();
   const ids = ['p0', 'p1', 'p2', 'p3', 'p4'];
   expect(game.configureVenue({ base: 'База', zones: ['Кухня'], dwelling: { zone: 'Кухня', place: 'Угол' },
-    order: ids, sets, comedy, horror: true, features: ['space', 'mirror'] })).toBeUndefined();
+    order: ids, sets, comedy, features })).toBeUndefined();
   const seen = new Map<string, PersonalCard>();
   // Canceled previews still consume cards. Walk through the pool via normal deals.
   for (let attempt = 0; attempt < 55; attempt++) {
@@ -374,20 +377,45 @@ it.each<{ sets: string[]; comedy?: boolean }>([
   const extra = [...seen.values()].filter(card => /^C[PE]/.test(card.id));
   expect(extra.filter(card => card.role === 'possessed')).toHaveLength(comedy ? 24 : 0);
   expect(extra.filter(card => card.role === 'exorcist')).toHaveLength(comedy ? 16 : 0);
-  expect(seen.get('P001')).toMatchObject({ title: 'Колыбельная пустой комнаты' });
+  expect(seen.get('P001')).toMatchObject({ title: 'Колыбельная пустой комнаты', behavior: shortAnswer('P001'), brief: true });
   expect(seen.get('P007')?.title).toBe(sets.includes('harder') ? 'Запись из соседней жизни' : undefined);
   expect(seen.has('P003')).toBe(sets.includes('contact'));
-  expect(seen.has('P030')).toBe(false);
-  expect(seen.has('P026')).toBe(false);
+  expect(seen.has('P030')).toBe(Boolean(features?.includes('space')));
+  expect(seen.has('P026')).toBe(Boolean(features?.includes('mirror')));
   const restored = make();
   restored.restore(game.exportState());
   expect(restored.publicState().venue).toMatchObject({ bank: 'authored', mode: 'ordinary' });
-  expect(restored.publicState().venue.horror).toBeUndefined();
+  expect(restored.publicState().venue.features).toEqual(features);
   expect(restored.publicState().venue.comedy).toBe(comedy ? true : undefined);
   expect(ids.map(id => restored.personal(id))).toEqual(ids.map(id => game.personal(id)));
   expect(restored.start(ids.map(id => ({ id, online: true })), true)).toBeUndefined();
   expect(restored.exportState().ritual?.cards.map(card => card.id)).toEqual(['R001', 'R002', 'R011']);
   expect(restored.exportState().firstGame?.trials?.deck).toHaveLength(7);
+});
+
+it('keeps an issued historical card while removing the old horror setting from recovery', () => {
+  const { game, make, ids } = fixture(5);
+  const saved = game.exportState();
+  const [playerId, assignment] = saved.dealing.assignments.find(([, item]) => item.card.role === 'possessed')!;
+  assignment.card.title = 'Колыбельная снизу';
+  saved.venue = { ...saved.venue!, horror: true, harder: true, sets: ['harder'] };
+
+  const restored = make();
+  restored.restore(saved);
+  expect(restored.publicState().venue).not.toHaveProperty('horror');
+  expect(restored.personal(playerId)).toEqual(assignment);
+  expect(restored.cancelDeal()).toBeUndefined();
+  const seen = new Map<string, string>();
+  for (let attempt = 0; attempt < 55; attempt++) {
+    expect(restored.deal(ids, 0, false)).toBeUndefined();
+    for (const id of ids) {
+      const { card } = restored.personal(id)!;
+      seen.set(card.id, card.title);
+    }
+    expect(restored.cancelDeal()).toBeUndefined();
+  }
+  expect(seen.get('P007')).toBe('Запись из соседней жизни');
+  expect([...seen.values()]).not.toContain('Колыбельная снизу');
 });
 
 it('applies saved timer durations and redraws roles within the balanced roster', () => {

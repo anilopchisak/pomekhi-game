@@ -97,9 +97,9 @@ export function PlayControls({ view, disabled, run, queue, online = true, estima
         </>}>Заразить</DialogButton>}
       {(play.missionEligible || actorTrial) && <DialogButton data-role-action="missions" title="Миссии" content={<>
         {play.missionEligible && play.card.role === 'exorcist' && <section aria-label="Личная миссия">
-          <h3>Личная миссия</h3>
+          <h3>{play.card.brief ? 'Как выполнить личную миссию?' : 'Личная миссия'}</h3>
           <p>{play.card.mission}</p>
-          {play.card.successCondition && <p><strong>Условие зачёта:</strong> {play.card.successCondition}</p>}
+          {!play.card.brief && play.card.successCondition && <p><strong>Условие зачёта:</strong> {play.card.successCondition}</p>}
           {mission}
         </section>}
         {actorTrial}

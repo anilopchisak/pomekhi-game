@@ -2974,7 +2974,7 @@
         "requirements",
         "sets"
       ],
-      "sha256": "60ad3188b66e172639b4bc39977f2c3720b980cb6b780f6301090651f01b11bc",
+      "sha256": "89ef2cdb46e9aff92de9b5601b19c543f21f1ecde08f3a44c3109c26ed390119",
       "amendmentHistory": [
         {
           "request": "user:no-task-props",
@@ -2987,6 +2987,18 @@
             "sets"
           ],
           "reason": "Later user instruction replaces material requirements with body/voice/space; existing house mirror self-view is explicitly retained for the angel."
+        },
+        {
+          "request": "revision:56aa1e7",
+          "previousSha256": "60ad3188b66e172639b4bc39977f2c3720b980cb6b780f6301090651f01b11bc",
+          "fields": [
+            "behavior",
+            "infectionCondition",
+            "releaseCondition",
+            "requirements",
+            "sets"
+          ],
+          "reason": "The player-facing wording uses infection terminology while keeping the same conditions."
         }
       ]
     },
@@ -3443,7 +3455,19 @@
         "hiddenObjective",
         "evidence"
       ],
-      "sha256": "2882043e3b6154d9baf366b96fbb26ad91cae9675c578289efb4e3a0af4c9725"
+      "sha256": "307b8dbd5674c147acc5998406463a73751170c397db5001eba023ff06bb48d7",
+      "amendmentHistory": [
+        {
+          "request": "revision:56aa1e7",
+          "previousSha256": "2882043e3b6154d9baf366b96fbb26ad91cae9675c578289efb4e3a0af4c9725",
+          "fields": [
+            "branches",
+            "hiddenObjective",
+            "evidence"
+          ],
+          "reason": "The player-facing wording uses infection terminology while keeping the same conditions."
+        }
+      ]
     },
     {
       "id": "T002",
@@ -3463,7 +3487,19 @@
         "hiddenObjective",
         "evidence"
       ],
-      "sha256": "7bb0ad944dda4c9a6197048a4b46dc4a07d5fbb87d810c614f772a6b1a8e021d"
+      "sha256": "8e0f71199e734f923535e83106c1f8291879a8c4f562b01a60256208b95febe6",
+      "amendmentHistory": [
+        {
+          "request": "revision:56aa1e7",
+          "previousSha256": "7bb0ad944dda4c9a6197048a4b46dc4a07d5fbb87d810c614f772a6b1a8e021d",
+          "fields": [
+            "branches",
+            "hiddenObjective",
+            "evidence"
+          ],
+          "reason": "The player-facing wording uses infection terminology while keeping the same conditions."
+        }
+      ]
     },
     {
       "id": "T004",
@@ -3473,7 +3509,7 @@
         "hiddenObjective",
         "evidence"
       ],
-      "sha256": "3018664438f41c86937f87f41e5db600e562c1683a89be99bbb889fbd3c8b6bf",
+      "sha256": "8992e79bc2c4c3e200ee530fd94b2c1d2155d0d7e2d446597e6fcf05c7a25138",
       "amendmentHistory": [
         {
           "request": "user:no-task-props",
@@ -3484,6 +3520,16 @@
             "evidence"
           ],
           "reason": "Later user instruction replaces material requirements with body/voice/space; existing house mirror self-view is explicitly retained for the angel."
+        },
+        {
+          "request": "revision:56aa1e7",
+          "previousSha256": "3018664438f41c86937f87f41e5db600e562c1683a89be99bbb889fbd3c8b6bf",
+          "fields": [
+            "branches",
+            "hiddenObjective",
+            "evidence"
+          ],
+          "reason": "The player-facing wording uses infection terminology while keeping the same conditions."
         }
       ]
     },
@@ -3535,7 +3581,19 @@
         "hiddenObjective",
         "evidence"
       ],
-      "sha256": "e50831a2e9f6a89aa37bcbaaff4630f814cbe55b95e1425bb5558c08c1d756d9"
+      "sha256": "0b2e2771baf17b9458c8e016c8000a3616facd54aee28c8305705dde32c3e9a6",
+      "amendmentHistory": [
+        {
+          "request": "revision:56aa1e7",
+          "previousSha256": "e50831a2e9f6a89aa37bcbaaff4630f814cbe55b95e1425bb5558c08c1d756d9",
+          "fields": [
+            "branches",
+            "hiddenObjective",
+            "evidence"
+          ],
+          "reason": "The player-facing wording uses infection terminology while keeping the same conditions."
+        }
+      ]
     },
     {
       "id": "R001",

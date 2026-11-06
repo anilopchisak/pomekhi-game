@@ -1,5 +1,6 @@
 import type { LobbyError, Prophecy, RitualOutcome, RitualSnapshot, RoundResult } from '../shared/protocol.js';
 import { authoredProphecies } from './authored-content.js';
+import { shortAnswer } from './short-cards.js';
 import { finalProphecy, prophecies } from './prophecies.js';
 
 type Positions = [number, number, number, number];
@@ -21,7 +22,7 @@ function advance(positions: Positions, successes: number) {
 }
 const remaining = (p: Positions) => 3 * p[0] + 2 * p[1] + p[2];
 export function newRitual(players: number, rounds: number, randomIndex: (limit: number) => number, generateId: () => string, firstGame = false, useAuthoredBank = false) {
-  const publicCard = ({ id, title, rule }: Prophecy) => ({ id, title, rule });
+  const publicCard = ({ id, title }: Prophecy) => ({ id, title, rule: shortAnswer(id) });
   const bank = useAuthoredBank ? authoredProphecies.filter(card => !card.final).map(publicCard) : [...prophecies];
   const take = () => structuredClone(bank.splice(randomIndex(bank.length), 1)[0]);
   return createRitual({ players, roundLimit: rounds, cards: [take(), take(), useAuthoredBank ? publicCard(authoredProphecies.find(card => card.final)!) : structuredClone(finalProphecy)], events: [], ...(firstGame ? { firstGame: true } : {}) }, generateId);

@@ -151,7 +151,9 @@ it('keeps the card bank out of browser assets and production HTTP', async () => 
   const files = await readdir('dist/client/assets');
   const browserAssets = (await Promise.all(files.filter(path => path.endsWith('.js') || path.endsWith('.map')).map(path => readFile(`dist/client/assets/${path}`, 'utf8')))).join('\n');
   for (const card of CARD_BANK) expect(browserAssets).not.toContain(card.title);
-  for (const path of ['/src/server/cards.ts', '/dist/server/cards.js', '/@fs/' + resolve('src/server/cards.ts') + '?raw']) {
+  expect(browserAssets).not.toContain('Дух украл ваше настоящее имя');
+  for (const path of ['/src/server/cards.ts', '/dist/server/cards.js', '/@fs/' + resolve('src/server/cards.ts') + '?raw',
+    '/src/server/short-card-copy.ts', '/dist/server/short-card-copy.js']) {
     const response = await fetch(origin + path); expect(response.status).toBe(404);
     expect(await response.json()).toEqual({ error: 'Not found' });
   }

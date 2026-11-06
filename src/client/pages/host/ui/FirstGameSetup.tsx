@@ -1,13 +1,24 @@
 import { useEffect, useId, useRef, useState } from 'react';
 import type { ReactNode } from 'react';
 import { cardSets } from '../../../../shared/protocol.js';
-import type { LobbyCommand, LobbyInputs, RoomSnapshot } from '../../../../shared/protocol.js';
+import type { LobbyCommand, LobbyInputs, RoomSnapshot, VenueFeature } from '../../../../shared/protocol.js';
 import { ConfirmButton, GameDialog } from '../../../shared/ui/index.js';
 import { gameCommand } from '../../../shared/api/index.js';
 import styles from './Broadcast.module.css';
 
 type Run = <C extends LobbyCommand>(command: C, input: LobbyInputs[C], onSuccess?: () => void) => Promise<void>;
 type SetupProps = { room: RoomSnapshot; disabled: boolean; run: Run };
+const venueChecks = {
+  space: 'Есть свободное ровное место для движений и обхода',
+  mirror: 'В разрешённой комнате есть зеркало и свободный подход',
+  door: 'Есть безопасная внутренняя дверь, которая не перекрывает выход',
+  tree: 'Во дворе есть дерево с безопасным подходом',
+  dimLight: 'Тусклый экран даёт видимый свет и тень',
+  wall: 'Есть доступная безопасная стена',
+  touchSurfaces: 'Можно касаться безопасных поверхностей',
+  landmarks: 'В локациях есть заметные неподвижные ориентиры',
+  scary: 'Группа согласна на пугающую актёрскую игру',
+} satisfies Record<Exclude<VenueFeature, 'twoZones' | 'contact'>, string>;
 
 function PlaceField({ label, help, children }: { label: string; help: string; children: (id: string, helpId: string) => ReactNode }) {
   const id = useId();
@@ -43,9 +54,10 @@ function PartyForm({ room, disabled, run, error, retry, close }: SetupProps & { 
   const [place, setPlace] = useState(venue.dwelling?.place ?? '');
   const [sets, setSets] = useState(venue.sets ?? (venue.harder ? ['harder' as const] : []));
   const [comedy, setComedy] = useState(venue.comedy ?? false);
+  const [features, setFeatures] = useState(venue.features ?? []);
   const [validation, setValidation] = useState('');
   const zoneList = zones.split('\n').map(value => value.trim()).filter(Boolean);
-  const setLabels = { indoor: 'В помещении', outdoor: 'На улице', contact: 'С физическим контактом', harder: 'Сложнее' };
+  const setLabels = { indoor: 'Для помещения', outdoor: 'Для улицы', contact: 'С физическим контактом', harder: 'Повышенная сложность' };
   return <form onSubmit={event => {
     event.preventDefault();
     if (locked || disabled) return;
@@ -60,7 +72,7 @@ function PartyForm({ room, disabled, run, error, retry, close }: SetupProps & { 
       return;
     }
     setValidation('');
-    void run('venue:configure', { ...gameCommand(room), venue: { base, zones: zoneList, dwelling: { zone, place }, sets, comedy } }, close);
+    void run('venue:configure', { ...gameCommand(room), venue: { base, zones: zoneList, dwelling: { zone, place }, sets, comedy, features } }, close);
   }}>
     {locked && <p>Настройки зафиксированы первой раздачей.</p>}
     <fieldset disabled={locked || disabled} className={styles.partyFields}>
@@ -79,11 +91,18 @@ function PartyForm({ room, disabled, run, error, retry, close }: SetupProps & { 
         {(id, helpId) => <input id={id} aria-describedby={helpId} required maxLength={64} value={place} onChange={event => setPlace(event.target.value)} />}
       </PlaceField>
       <fieldset><legend>Допустимые задания</legend>
+        <p>Основные задания входят в раздачу, если подходят для ваших локаций.</p>
         {cardSets.map(set => <label key={set}>
           <input type="checkbox" checked={sets.includes(set)} onChange={event => setSets(event.target.checked ? [...sets, set] : sets.filter(item => item !== set))} /> {setLabels[set]}
         </label>)}
         <label><input type="checkbox" checked={comedy} onChange={event => setComedy(event.target.checked)} /> Добавить смешные карты</label>
         <p>Для любого прикосновения сначала получите согласие участника.</p>
+        <details>
+          <summary>Проверенные условия места</summary>
+          {(Object.keys(venueChecks) as (keyof typeof venueChecks)[]).map(feature => <label key={feature}>
+            <input type="checkbox" checked={features.includes(feature)} onChange={event => setFeatures(event.target.checked ? [...features, feature] : features.filter(item => item !== feature))} /> {venueChecks[feature]}
+          </label>)}
+        </details>
       </fieldset>
     </fieldset>
     {(validation || error) && <p role="alert">{validation || error}</p>}

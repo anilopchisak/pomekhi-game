@@ -35,17 +35,25 @@ export function PersonalCardPanel({ assignment, disabled, readOnly = false, infe
     </div>}
     {open && <div>
       <h4>{card.title}</h4>
-      {card.setup && <p><strong>Условия места и подготовки:</strong> {card.setup}</p>}
+      {card.setup && <p><strong>{card.brief ? 'Где играть?' : 'Условия места и подготовки:'}</strong> {card.setup}</p>}
       {!firstGame && <p>Сложность карточки: {card.difficulty}</p>}
       {tutorial && <p>{card.role === 'possessed'
         ? 'Обучение: изображайте поведение и помогайте подсказкой. Когда условие выполнено, нажмите «Нас освободили» и возвращайтесь на базу.'
         : 'Обучение: дождитесь поиска, затем помогайте одержимым по их подсказкам. Если выполните необязательную миссию, нажмите «Миссия выполнена».'}</p>}
       {tutorial && infectionEnabled && <p>Попробуйте заражение: заражённый читает поведение группы и может её освободить. Заражение лишает зачёта миссии. Это обучение без общего зачёта.</p>}
-      {card.role === 'possessed' ? <>
+      {card.role === 'possessed' && card.brief ? <>
+        <p><strong>Кто вы и чего хотите?</strong> {card.behavior}</p>
+        <p><strong>Что сделать, заняв своё место?</strong> Войдя в игровую локацию и заняв выбранное место, выключите свой источник освещения.</p>
+        {infectionEnabled && <p><strong>Как заразить экзорциста?</strong> {card.infectionCondition}</p>}
+        <p><strong>Как экзорцисту освободить одержимого?</strong> {card.releaseCondition}</p>
+      </> : card.role === 'possessed' ? <>
         <p><strong>Поведение:</strong> {card.behavior.replaceAll('Пленённые повторяют позу', 'Заражённые повторяют позу')}</p>
         {card.clue && <p><strong>Подсказка:</strong> {card.clue} Её можно произнести, если экзорцисту нужна помощь.</p>}
         <p><strong>Условие освобождения:</strong> {card.releaseCondition}</p>
         {infectionEnabled && <p><strong>Условие заражения:</strong> {card.infectionCondition}</p>}
+      </> : card.brief ? <>
+        <p><strong>Как выполнить личную миссию?</strong> {card.mission}</p>
+        <p><strong>Как освободить одержимого?</strong> Поймите, чего добивается одержимый, выполните условие его карты и подтвердите освобождение на телефоне.</p>
       </> : <>
         <p>Ваша основная цель — находить одержимых и помогать им освободиться.</p>
         <p><strong>Дополнительная миссия:</strong> {card.mission}</p>

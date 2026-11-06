@@ -36,12 +36,12 @@
   "fictionSourceCount": 12,
   "revisionRecordCount": 185,
   "inputs": {
-    "cards.json": "a5054fad8b7c2dc2c6c5894cb097fcc7b72b4b2eb10ff65e83d8d7ef17a9fc92",
+    "cards.json": "4f9718a5d56ac61d338306f5769fcc0a9638c8d075c1954d42ed3fa537db66f3",
     "source-audit.json": "262e255f4d2b28b2cc4c3148172bdf1c48a1247971364bbd1e77eefd04faaa12",
     "editorial-review.json": "ab20ba4b07afffd897cf17df42b5d55e2fe897c2ce64ebd0502494f0caacf7e5",
-    "build.py": "c198485a58274b0cb053029f633ecbd0cdb5d201485560240a0feb20454cff3f",
+    "build.py": "ec74e935c0756b7167fae2e2d8eaef216fc544bf3ff98055d9ea3de0955332f8",
     "fiction-sources.json": "96d6f048a399801a1f56842d44e8e0c87423eeb655e38f2cd23880ffc588fe70",
-    "revision-audit.json": "e8c164b1b15df913f00efe2651c5fb255978efe02fefdb80b192bfaeb9ec4d7c",
+    "revision-audit.json": "840e90b1eb0a6a77c2004aa8eefa97a41b9d93b6255a5a20fc2d33077eb99bf9",
     "research.md": "ca51f1e68bca1c6137a67b11c01da10f7a6404848b256285d416d507cd86c381"
   },
   "checks": [

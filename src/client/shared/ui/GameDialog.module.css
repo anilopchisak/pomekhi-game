@@ -22,10 +22,42 @@
 .dialog [data-dialog-panel] strong { display: block; color: var(--accent); font-weight: 500; }
 .dialog [data-dialog-panel] p { margin: 4px 0 0; }
 .dialog:has(> .guide) > .heading h2,
-.dialog:has(> .guide) > details > summary,
-.dialog .guide > details > summary { color: var(--gold); }
-.guide { font-size: 1.125rem; }
-.guide > details { border-block-start: 1px solid var(--line); }
-.guide > details > summary { font-weight: 600; }
-.guide ol { padding-inline-start: 1.5em; }
-.guide ol > li { display: list-item; padding-block: 6px; border: 0; line-height: 1.5; }
+.dialog:has(> .guide) > details > summary { color: var(--gold); }
+.guide { font-size: 1rem; line-height: 1.55; }
+.guideIntro { padding: 12px 16px; margin-block-end: 12px; border: 1px solid var(--line); border-radius: 8px; background: var(--surface); }
+.guideIntro p { margin: 0; }
+.guideIntro .guideMode { margin-block-end: 6px; color: var(--gold); font-size: .875rem; font-weight: 600; }
+.guideChapter { border-block-end: 1px solid var(--line); }
+.guide .guideChapter > summary {
+  display: grid;
+  grid-template-columns: 2ch minmax(0, 1fr) auto;
+  align-items: center;
+  gap: 12px;
+  min-height: 48px;
+  padding: 8px;
+  border-radius: 4px;
+  color: var(--text);
+  font-weight: 600;
+  list-style: none;
+}
+.guideChapter > summary::-webkit-details-marker { display: none; }
+.chapterNumber { color: var(--gold); font-size: .875rem; font-variant-numeric: tabular-nums; }
+.guideChapter > summary::after {
+  content: '';
+  inline-size: .5em;
+  block-size: .5em;
+  margin-inline: 4px;
+  border: solid currentColor;
+  border-width: 0 2px 2px 0;
+  transform: rotate(45deg);
+}
+.guideChapter[open] > summary, .guideChapter > summary:active { background: var(--surface); }
+.guideChapter[open] > summary::after { transform: rotate(225deg); }
+.chapterBody { padding: 8px 8px 16px; }
+.chapterBody > * { margin: 0; }
+.chapterBody > * + * { margin-block-start: 10px; }
+.chapterBody > h3 { margin-block-start: 14px; font-size: 1rem; font-weight: 700; }
+.guide .chapterBody :is(ol, ul) { padding-inline-start: 1.4em; }
+.guide .chapterBody ul { list-style: disc; }
+.chapterBody li { display: list-item; padding: 0; border: 0; }
+.chapterBody li + li { margin-block-start: 6px; }
