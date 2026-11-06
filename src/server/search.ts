@@ -197,7 +197,7 @@ export function createSearch(roundId: string, initial: ReadonlyMap<string, Assig
   function canSearch() {
     const live = [...states.values()].filter(s => !s.left);
     return live.some(s => !s.group && !s.unknownGroup && !s.released) &&
-      live.some(s => s.group && (!s.released || lastGroupExitWasRelease));
+      (lastGroupExitWasRelease || live.some(s => s.group && !s.released));
   }
   function result(number: number, status: RoundResult['status'], activeMs: number): Omit<RoundResult, 'kind' | 'difficulty' | 'infectionEnabled'> {
     return { roundId, number, status, activeMs, rescuedGroups: released.size, totalGroups: groups.size,

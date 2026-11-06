@@ -129,14 +129,30 @@ it('manually retries a lost ready acknowledgement without overwriting a newer ch
   expect(button('Я прочитал карточку')).toBeDefined();
 });
 
-it('shows the request limit without changing readiness', async () => {
+it.each([false, true])('shows the applicable recovery at the request limit (seven-round game: %s)', async firstGame => {
+  if (firstGame) {
+    lobby.dispose();
+    lobby = createLobby({ firstGame: true, organizerCode: 'HOST', generateRoomCode: () => 'ABCDEF', clock: clock.clock });
+    value(lobby.execute('host', 'organizer:authorize', { code: 'HOST' }));
+    value(lobby.execute('host', 'room:create', {}));
+    for (let index = 0; index < 5; index++) {
+      value(lobby.execute(`player-${index}`, 'player:join', {
+        ...saved, name: `Player ${index}`, resumeKey: String(index + 1).repeat(64),
+      }));
+    }
+    value(lobby.execute('host', 'venue:configure', { ...gameBase(), venue: { base: 'База', zones: ['Кухня'] } }));
+    value(lobby.execute('host', 'deal:create', { ...base(), possessedCount: 0 }));
+  }
   io.mockReturnValue(socket('phone')); await act(async () => root.render(createElement(PlayerPage)));
   const assignmentId = lobby.viewFor('phone').assignment.id;
   for (let i = 0; i < 1024; i++) {
     expect(lobby.execute('phone', 'card:ready', { ...base(), assignmentId, ready: false }).ok).toBe(true);
   }
-  await click('Я прочитал карточку');
-  expect(container.querySelector('[role="alert"]').textContent).toBe('Слишком много действий в этой комнате. Попросите организатора открыть новую комнату.');
+  if (firstGame) await act(async () => container.querySelector('[aria-label="Действия с карточкой"] input').click());
+  else await click('Я прочитал карточку');
+  expect(container.querySelector('[role="alert"]').textContent).toBe(firstGame
+    ? 'Лимит действий исчерпан. Организатор может выбрать «Новая партия» в меню приглашения. Код комнаты и участники сохранятся.'
+    : 'Слишком много действий в этой комнате. Попросите организатора открыть новую комнату.');
   expect(lobby.viewFor('phone').assignment.ready).toBe(false);
 });
 
@@ -348,9 +364,10 @@ it('lets the organizer reverse an accepted correction after all journals are con
 });
 
 it.each([
-  ['laptop', HostPage, 'Как играть'],
-  ['phone', PlayerPage, 'Как играть и прорицания'],
-])('opens all seven rules chapters and the room timers on the %s', async (device, Page, openerName) => {
+  { device: 'laptop', Page: HostPage, openerName: 'Как играть', mode: 'ordinary' },
+  { device: 'phone', Page: PlayerPage, openerName: 'Как играть и прорицания', mode: 'ordinary' },
+  { device: 'phone', Page: PlayerPage, openerName: 'Как играть и прорицания', mode: 'first' },
+])('opens the rules and room timers on the $device in $mode mode', async ({ device, Page, openerName, mode }) => {
   lobby.dispose();
   lobby = createLobby({ firstGame: true, organizerCode: 'HOST', generateRoomCode: () => 'ABCDEF', clock: clock.clock });
   value(lobby.execute('host', 'organizer:authorize', { code: 'HOST' }));
@@ -359,6 +376,13 @@ it.each([
   value(lobby.execute('host', 'game:configure', {
     ...gameBase(), settings: { ...settings, placementSeconds: 60, searchSeconds: 300, offlineWaitSeconds: 120 },
   }));
+  if (mode === 'first') {
+    value(lobby.execute('host', 'venue:configure', { ...gameBase(), venue: { base: 'База', zones: ['Кухня'] } }));
+    const checkpoint = lobby.exportState();
+    checkpoint.room.game.firstGame.locked = true;
+    checkpoint.room.game.venue.mode = 'first';
+    lobby.restore(checkpoint);
+  }
   const player = { roomCode: code, name: 'Медиум', resumeKey: '1'.repeat(64), pending: false };
   value(lobby.execute('player', 'player:join', player));
   savePlayerSession(player);
@@ -382,6 +406,9 @@ it.each([
   expect(dialog.textContent).toContain('В этой партии на расстановку отведено 60 сек.');
   expect(dialog.textContent).toContain('В этой партии на поиск отведено 300 сек.');
   expect(dialog.textContent).toContain('В этой партии ожидание длится до 120 сек.');
+  expect(dialog.textContent).toContain(mode === 'ordinary'
+    ? 'Например, на семерых нужно 18 шагов.'
+    : 'На семерых это 8, 2 и 3 свечи, всего 31 шаг до открытия двери.');
   if (device === 'phone') expect(summaries[7].textContent).toBe('Открытые прорицания и свечи');
 });
 

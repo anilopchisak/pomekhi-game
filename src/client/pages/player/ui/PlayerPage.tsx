@@ -87,12 +87,12 @@ export function PlayerPage() {
     if (attempt !== operation.current) return;
     setBusy(false);
     if (!result.ok) {
+      const message = describeError(result.error, playerView?.room.game.firstGame);
       if (isPrivateForm(command)) {
         const { roomId, roundId } = input as LobbyInputs[PrivateFormCommand];
-        const message = result.error !== 'INVALID_INPUT' ? describeError(result.error) :
-          'Кратко опишите, что произошло на базе.';
-        setFormError({ command, roomId, roundId, message });
-      } else setError(describeError(result.error));
+        setFormError({ command, roomId, roundId, message: result.error === 'INVALID_INPUT'
+          ? 'Кратко опишите, что произошло на базе.' : message });
+      } else setError(message);
       setPending(result.error === 'TIMEOUT' || result.error === 'CONNECTION_LOST' ? { command, input } : null);
     } else { setPending(null); onSuccess?.(); }
   }

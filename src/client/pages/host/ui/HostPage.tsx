@@ -161,7 +161,7 @@ export function HostPage({ display = false, editor = false }: { display?: boolea
     setBusy(false);
     if (!result.ok) {
       setError(command === 'venue:configure' && result.error === 'INVALID_INPUT'
-        ? 'Проверьте базу, названия локаций и порог открытия двери.' : describeError(result.error));
+        ? 'Проверьте базу, названия локаций и порог открытия двери.' : describeError(result.error, room?.game.firstGame));
       setPending(result.error === 'TIMEOUT' || result.error === 'CONNECTION_LOST' ? { command, input } : null);
     } else {
       setPending(null);

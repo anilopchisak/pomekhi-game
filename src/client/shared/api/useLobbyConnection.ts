@@ -41,7 +41,11 @@ const messages: Record<RequestError, string> = {
   CONNECTION_LOST: 'Нет связи с домом. Дождитесь подключения и повторите действие.',
   TIMEOUT: 'Ответ задерживается. Проверьте состояние комнаты перед повтором действия.',
 };
-export function describeError(error: RequestError) { return messages[error]; }
+export function describeError(error: RequestError, partyResetAvailable = false) {
+  if (error === 'REQUEST_LIMIT' && partyResetAvailable)
+    return 'Лимит действий исчерпан. Организатор может выбрать «Новая партия» в меню приглашения. Код комнаты и участники сохранятся.';
+  return messages[error];
+}
 
 export function useLobbyConnection() {
   const socketRef = useRef<ClientSocket | null>(null);

@@ -116,6 +116,19 @@ it('keeps search running when the last active group is released after an earlier
   expect(game.publicState()).toMatchObject({ phase: 'search', deadline });
 });
 
+it('keeps the mission window when all released players leave the room', () => {
+  const { game, start, time } = fixture(5);
+  start();
+  const { deadline } = game.publicState();
+  expect(game.playAction('p0', 'release', undefined, undefined, undefined, ['p1', 'p3'])).toBeUndefined();
+  game.remove('p1');
+  game.remove('p3');
+  expect(game.publicState()).toMatchObject({ phase: 'search', deadline });
+  expect(game.playAction('p2', 'mission', undefined, true)).toBeUndefined();
+  time.advance(240000);
+  expect(game.publicState().phase).toBe('return');
+});
+
 it('does not unlock preparation when the first deal is canceled', () => {
   const { game, deal } = fixture(5);
   const saved = game.publicState().venue;
